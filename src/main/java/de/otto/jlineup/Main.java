@@ -32,7 +32,8 @@ public class Main {
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
         driver.get("http://www.otto.de");
         driver.manage().window().setPosition(new Point(0, 0));
-        Long height = (Long) ((JavascriptExecutor) driver).executeScript("return document.body.clientHeight;");
+
+        Long height = (Long) ((JavascriptExecutor)driver).executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);");
         driver.manage().window().setSize(new Dimension(1200, height.intValue()));
         System.out.println(driver.getPageSource());
         System.out.println(driver.getTitle());
@@ -45,7 +46,7 @@ public class Main {
 
         File screenshot2 = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         final BufferedImage image2 = ImageIO.read(screenshot2);
-        ImageIO.write(getDifferenceImage(image, image2), "png", new File("diff.png"));
+        ImageIO.write(getDifferenceImage(image, image2), "png", new File("build/diff.png"));
         driver.close();
         driver.quit();
     }
