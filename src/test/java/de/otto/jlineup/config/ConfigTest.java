@@ -19,8 +19,8 @@ public class ConfigTest {
 
         assertThat(config.browser, is(FIREFOX));
         assertThat(config.asyncWait, is(2f));
-        assertThat(config.urls.get("https://#env#.otto.de").resolutions, is(ImmutableList.of(600, 800, 1200)));
-        assertThat(config.urls.get("https://#env#.otto.de").paths, is(ImmutableList.of("/","multimedia","moebel","damenmode","mittesten")));
+        assertThat(config.urls.get("https://www.otto.de").resolutions, is(ImmutableList.of(600, 800, 1200)));
+        assertThat(config.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));
     }
 
 }

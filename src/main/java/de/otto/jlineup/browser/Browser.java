@@ -14,6 +14,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -33,7 +34,7 @@ public class Browser {
         PHANTOMJS
     }
 
-    public static void browseAndTakeScreenshots(Config config, boolean before) throws IOException {
+    public static void browseAndTakeScreenshots(Config config, boolean before) throws IOException, InterruptedException {
 
         WebDriver driver;
 
@@ -55,52 +56,76 @@ public class Browser {
 
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
-        Map<String, UrlConfig> urls = config.urls;
-        for (String url : urls.keySet()) {
-            UrlConfig urlConfig = urls.get(url);
-            List<Integer> resolutions = urlConfig.resolutions;
-            List<String> paths = urlConfig.paths;
+        try {
 
-            for (String path : paths) {
-                for (Integer resolution : resolutions) {
-                    takeSingleScreenshot(driver, config, url, path, resolution, before);
+            Map<String, UrlConfig> urls = config.urls;
+            for (String url : urls.keySet()) {
+                UrlConfig urlConfig = urls.get(url);
+                List<Integer> resolutions = urlConfig.resolutions;
+                List<String> paths = urlConfig.paths;
+
+                for (String path : paths) {
+                    for (Integer resolution : resolutions) {
+                        takeSingleScreenshot(driver, config, url, path, resolution, before);
+                        if (!before) {
+                            Browser.generateDifferenceImage(config, url, path, resolution);
+                        }
+                    }
                 }
             }
+        } finally {
+            if (driver != null) {
+                driver.close();
+                driver.quit();
+            }
         }
-
-        driver.close();
-        driver.quit();
-
     }
 
-    private static void takeSingleScreenshot(WebDriver driver, Config config, String url, String path, int width, boolean before) throws IOException {
 
-        if (!url.endsWith("/")) {
-            url = url + "/";
-        }
+    private static void takeSingleScreenshot(WebDriver driver, Config config, String url, String path, int width, boolean before) throws IOException, InterruptedException {
 
-        driver.get(url + path);
         driver.manage().window().setPosition(new Point(0, 0));
+        driver.manage().window().setSize(new Dimension(width, 800));
 
+        driver.get(buildUrl(url, path));
         Long height = (Long) ((JavascriptExecutor) driver).executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);");
         driver.manage().window().setSize(new Dimension(width, height.intValue()));
-        System.out.println(driver.getPageSource());
-        System.out.println(driver.getTitle());
+
+        Thread.sleep(Math.round(config.asyncWait * 1000));
+
+        //System.out.println(driver.getPageSource());
+        //System.out.println(driver.getTitle());
         File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         final BufferedImage image = ImageIO.read(screenshot);
 
-        ImageIO.write(image, "png", new File(config.workingDir + "/" + generateFileName(url, path, width, before)));
+        ImageIO.write(image, "png", new File(config.workingDir + "/" + generateFileName(url, path, width, before ? "before" : "after")));
+    }
+
+    private static String buildUrl(String url, String path) {
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        if (!url.endsWith("/")) {
+            url = url + "/";
+        }
+        return url + path;
     }
 
     private static void generateDifferenceImage(Config config, String url, String path, int width) throws IOException {
 
-        BufferedImage imageBefore = ImageIO.read(new File(config.workingDir + "/" + generateFileName(url, path, width, true)));
-        BufferedImage imageAfter = ImageIO.read(new File(config.workingDir + "/" + generateFileName(url, path, width, false)));
+        BufferedImage imageBefore = null;
+        try {
+             imageBefore = ImageIO.read(new File(config.workingDir + "/" + generateFileName(url, path, width, "before")));
+        } catch (IIOException e) {
+            System.err.println("Cannot read 'before' screenshot. Please run jlineup with parameter --before before you try to run it with --after.");
+            throw e;
+        }
+        BufferedImage imageAfter = ImageIO.read(new File(config.workingDir + "/" + generateFileName(url, path, width, "after")));
 
-        ImageIO.write(ImageUtils.getDifferenceImage(imageBefore, imageAfter), "png", new File("build/diff.png"));
+        ImageIO.write(ImageUtils.getDifferenceImage(imageBefore, imageAfter), "png", new File(config.workingDir + "/" + generateFileName(url, path, width, "DIFFERENCE")));
     }
 
-    static String generateFileName(String url, String path, int width, boolean before) {
+    static String generateFileName(String url, String path, int width, String type) {
 
         if (path.equals("/") || path.equals("")) {
             path = "root";
@@ -110,7 +135,7 @@ public class Browser {
             url = url.substring(0, url.length() - 1);
         }
 
-        String fileName = url + "_" + path + "_" + width + "_" + (before ? "before" : "after");
+        String fileName = url + "_" + path + "_" + width + "_" + type;
 
         fileName = fileName.replace("http://", "");
         fileName = fileName.replace("https://", "");
