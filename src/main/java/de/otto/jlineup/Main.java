@@ -33,13 +33,13 @@ public class Main {
     @Parameter(names={"--working-dir", "-d"})
     String workingDirectory = ".";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Main main = new Main();
         new JCommander(main, args);
         main.run();
     }
 
-    public void run() throws IOException {
+    public void run() throws IOException, InterruptedException {
         Config config = Config.readConfig(workingDirectory + "/" + configFile);
         config.workingDir = workingDirectory;
         Browser.browseAndTakeScreenshots(config, !after);

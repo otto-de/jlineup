@@ -9,19 +9,13 @@ public class BrowserTest {
 
     @Test
     public void shouldGenerateFilename() throws Exception {
-
-        String outputString = Browser.generateFileName("https://www.otto.de/", "multimedia", 1000, false);
-
+        String outputString = Browser.generateFileName("https://www.otto.de/", "multimedia", 1000, "after");
         assertThat(outputString, is("www_otto_de_multimedia_1000_after.png"));
-
     }
 
     @Test
     public void shouldConvertRoot() throws Exception {
-
-        String outputString = Browser.generateFileName("https://www.otto.de/", "/", 1000, false);
-
-        assertThat(outputString, is("www_otto_de_root_1000_after.png"));
-
+        String outputString = Browser.generateFileName("https://www.otto.de/", "/", 1000, "before");
+        assertThat(outputString, is("www_otto_de_root_1000_before.png"));
     }
 }
