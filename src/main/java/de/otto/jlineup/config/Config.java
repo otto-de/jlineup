@@ -11,14 +11,20 @@ import java.util.Map;
 
 public final class Config {
 
-    public Map<String, UrlConfig> urls;
-    public Browser.Type browser;
+    public final Map<String, UrlConfig> urls;
+    public final Browser.Type browser;
     @SerializedName("async-wait")
-    public float asyncWait;
+    public final float asyncWait;
 
     public String workingDir =".";
 
     private final static Gson gson = new Gson();
+
+    public Config(Map<String, UrlConfig> urls, Browser.Type browser, float asyncWait) {
+        this.urls = urls;
+        this.browser = browser;
+        this.asyncWait = asyncWait;
+    }
 
     public static Config readConfig(String path) throws FileNotFoundException {
 
