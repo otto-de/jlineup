@@ -1,6 +1,7 @@
 package de.otto.jlineup.browser;
 
 import com.google.gson.annotations.SerializedName;
+import de.otto.jlineup.Main;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.image.ImageUtils;
@@ -8,8 +9,6 @@ import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.MarionetteDriverManager;
 import io.github.bonigarcia.wdm.PhantomJsDriverManager;
 import org.openqa.selenium.*;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Point;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
@@ -36,24 +35,7 @@ public class Browser {
 
     public static void browseAndTakeScreenshots(Config config, boolean before) throws IOException, InterruptedException {
 
-        WebDriver driver;
-
-        switch (config.browser) {
-            case FIREFOX:
-                MarionetteDriverManager.getInstance().setup();
-                driver = new MarionetteDriver();
-                break;
-            case CHROME:
-                ChromeDriverManager.getInstance().setup();
-                driver = new ChromeDriver();
-                break;
-            case PHANTOMJS:
-            default:
-                PhantomJsDriverManager.getInstance().setup();
-                driver = new PhantomJSDriver();
-                break;
-        }
-
+        WebDriver driver = getWebDriverByConfig(config);
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 
         try {
@@ -81,6 +63,25 @@ public class Browser {
         }
     }
 
+    static WebDriver getWebDriverByConfig(Config config) {
+        WebDriver driver;
+        switch (config.browser) {
+            case FIREFOX:
+                MarionetteDriverManager.getInstance().setup();
+                driver = new MarionetteDriver();
+                break;
+            case CHROME:
+                ChromeDriverManager.getInstance().setup();
+                driver = new ChromeDriver();
+                break;
+            case PHANTOMJS:
+            default:
+                PhantomJsDriverManager.getInstance().setup();
+                driver = new PhantomJSDriver();
+                break;
+        }
+        return driver;
+    }
 
     private static void takeSingleScreenshot(WebDriver driver, Config config, String url, String path, int width, boolean before) throws IOException, InterruptedException {
 
@@ -93,15 +94,13 @@ public class Browser {
 
         Thread.sleep(Math.round(config.asyncWait * 1000));
 
-        //System.out.println(driver.getPageSource());
-        //System.out.println(driver.getTitle());
         File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         final BufferedImage image = ImageIO.read(screenshot);
 
-        ImageIO.write(image, "png", new File(config.workingDir + "/" + generateFileName(url, path, width, before ? "before" : "after")));
+        ImageIO.write(image, "png", new File(Main.getWorkingDirectory() + "/" + generateFileName(url, path, width, before ? "before" : "after")));
     }
 
-    private static String buildUrl(String url, String path) {
+    static String buildUrl(String url, String path) {
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
@@ -111,18 +110,18 @@ public class Browser {
         return url + path;
     }
 
-    private static void generateDifferenceImage(Config config, String url, String path, int width) throws IOException {
+    static void generateDifferenceImage(Config config, String url, String path, int width) throws IOException {
 
         BufferedImage imageBefore = null;
         try {
-             imageBefore = ImageIO.read(new File(config.workingDir + "/" + generateFileName(url, path, width, "before")));
+             imageBefore = ImageIO.read(new File(Main.getWorkingDirectory() + "/" + generateFileName(url, path, width, "before")));
         } catch (IIOException e) {
             System.err.println("Cannot read 'before' screenshot. Please run jlineup with parameter --before before you try to run it with --after.");
             throw e;
         }
-        BufferedImage imageAfter = ImageIO.read(new File(config.workingDir + "/" + generateFileName(url, path, width, "after")));
+        BufferedImage imageAfter = ImageIO.read(new File(Main.getWorkingDirectory() + "/" + generateFileName(url, path, width, "after")));
 
-        ImageIO.write(ImageUtils.getDifferenceImage(imageBefore, imageAfter), "png", new File(config.workingDir + "/" + generateFileName(url, path, width, "DIFFERENCE")));
+        ImageIO.write(ImageUtils.getDifferenceImage(imageBefore, imageAfter), "png", new File(Main.getWorkingDirectory() + "/" + generateFileName(url, path, width, "DIFFERENCE")));
     }
 
     static String generateFileName(String url, String path, int width, String type) {

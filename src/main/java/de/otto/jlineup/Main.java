@@ -4,20 +4,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.config.Config;
-import de.otto.jlineup.image.ImageUtils;
-import io.github.bonigarcia.wdm.ChromeDriverManager;
-import io.github.bonigarcia.wdm.MarionetteDriverManager;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.*;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.chrome.ChromeDriver;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
 
@@ -31,7 +19,11 @@ public class Main {
     String configFile = "lineup.json";
 
     @Parameter(names={"--working-dir", "-d"})
-    String workingDirectory = ".";
+    private static String workingDirectory = ".";
+
+    public static String getWorkingDirectory() {
+        return workingDirectory;
+    }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Main main = new Main();
@@ -41,7 +33,6 @@ public class Main {
 
     public void run() throws IOException, InterruptedException {
         Config config = Config.readConfig(workingDirectory + "/" + configFile);
-        config.workingDir = workingDirectory;
         Browser.browseAndTakeScreenshots(config, !after);
     }
 

@@ -7,17 +7,26 @@ import java.util.Map;
 
 public class UrlConfig {
 
-    public List<String> paths;
+    public final List<String> paths;
     @SerializedName("max-diff")
-    float maxDiff;
-    public List<Cookie> cookies;
+    public final float maxDiff;
+    public final List<Cookie> cookies;
     @SerializedName("env-mapping")
-    public Map<String, String> envMapping;
+    public final Map<String, String> envMapping;
 
     @SerializedName("local-storage")
-    public Map<String, String> localStorage;
+    public final Map<String, String> localStorage;
 
-    public List<Integer> resolutions;
+    public final List<Integer> resolutions;
+
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> resolutions) {
+        this.paths = paths;
+        this.maxDiff = maxDiff;
+        this.cookies = cookies;
+        this.envMapping = envMapping;
+        this.localStorage = localStorage;
+        this.resolutions = resolutions;
+    }
 
     @Override
     public String toString() {
