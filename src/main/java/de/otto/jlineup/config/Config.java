@@ -16,8 +16,6 @@ public final class Config {
     @SerializedName("async-wait")
     public final float asyncWait;
 
-    public String workingDir =".";
-
     private final static Gson gson = new Gson();
 
     public Config(Map<String, UrlConfig> urls, Browser.Type browser, float asyncWait) {

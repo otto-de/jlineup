@@ -1,8 +1,13 @@
 package de.otto.jlineup.config;
 
 public class Cookie {
-    String name;
-    String value;
+    public final String name;
+    public final String value;
+
+    public Cookie(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
 
     @Override
     public String toString() {
