@@ -13,7 +13,7 @@ public class ConfigTest {
 
     @Test
     public void shouldReadConfig() throws FileNotFoundException {
-        Config config = Config.readConfig("src/test/resources/lineup.json");
+        Config config = Config.readConfig("src/test/resources/lineup_test.json");
 
         assertThat(config.browser, is(CHROME));
         assertThat(config.asyncWait, is(2f));
