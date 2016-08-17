@@ -35,13 +35,13 @@ public class BrowserTest {
     @Test
     @Ignore
     public void shouldGetFirefoxDriver() {
-        final Config config = new Config(null, FIREFOX, 5);
+        final Config config = new Config(null, FIREFOX, 5f, 800);
         assertSetDriverType(config, MarionetteDriver.class);
     }
 
     @Test
     public void shouldGetChromeDriver() throws InterruptedException {
-        final Config config = new Config(null, CHROME, 5);
+        final Config config = new Config(null, CHROME, 5f, 800);
         assertSetDriverType(config, ChromeDriver.class);
     }
 
