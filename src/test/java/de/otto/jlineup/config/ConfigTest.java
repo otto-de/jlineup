@@ -15,10 +15,10 @@ public class ConfigTest {
     public void shouldReadConfig() throws FileNotFoundException {
         Config config = Config.readConfig("src/test/resources/lineup_test.json");
 
-        assertThat(config.browser, is(CHROME));
-        assertThat(config.asyncWait, is(2f));
-        assertThat(config.urls.get("https://www.otto.de").resolutions, is(ImmutableList.of(600, 800, 1200)));
-        assertThat(config.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));
+        assertThat(config.getBrowser(), is(CHROME));
+        assertThat(config.getAsyncWait(), is(2f));
+        assertThat(config.getUrls().get("https://www.otto.de").resolutions, is(ImmutableList.of(600, 800, 1200)));
+        assertThat(config.getUrls().get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));
     }
 
 }

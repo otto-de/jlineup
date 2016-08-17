@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Browser {
 
+    public static final int WINDOW_HEIGHT = 800;
+
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
         FIREFOX,
@@ -56,7 +58,7 @@ public class Browser {
 
     private void generateDifferenceImages(Config config) throws IOException {
 
-        Map<String, UrlConfig> urls = config.urls;
+        Map<String, UrlConfig> urls = config.getUrls();
         for (String url : urls.keySet()) {
             generateDifferenceImagesForUrl(config, url);
         }
@@ -64,7 +66,7 @@ public class Browser {
 
 
     private void generateDifferenceImagesForUrl(Config config, String url) throws IOException {
-        UrlConfig urlConfig = config.urls.get(url);
+        UrlConfig urlConfig = config.getUrls().get(url);
         List<Integer> resolutions = urlConfig.resolutions;
         List<String> paths = urlConfig.paths;
         for (String path : paths) {
@@ -80,7 +82,7 @@ public class Browser {
 
     private void takeScreenshots(Config config, boolean before, WebDriver driver) throws IOException, InterruptedException {
         try {
-            Map<String, UrlConfig> urls = config.urls;
+            Map<String, UrlConfig> urls = config.getUrls();
             for (String url : urls.keySet()) {
                 takeScreenshotsForUrl(config, before, driver, urls, url);
             }
@@ -113,7 +115,7 @@ public class Browser {
 
     static WebDriver getWebDriverByConfig(Config config) {
         WebDriver driver;
-        switch (config.browser) {
+        switch (config.getBrowser()) {
             case FIREFOX:
                 MarionetteDriverManager.getInstance().setup();
                 driver = new MarionetteDriver();
@@ -134,18 +136,22 @@ public class Browser {
     private void takeSingleScreenshot(WebDriver driver, Config config, String url, String path, int width, boolean before) throws IOException, InterruptedException {
 
         driver.manage().window().setPosition(new Point(0, 0));
-        driver.manage().window().setSize(new Dimension(width, 800));
+        driver.manage().window().setSize(new Dimension(width, config.getWindowHeight()));
 
         driver.get(buildUrl(url, path));
-        Long height = (Long) ((JavascriptExecutor) driver).executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);");
-        driver.manage().window().setSize(new Dimension(width, height.intValue()));
 
-        Thread.sleep(Math.round(config.asyncWait * 1000));
+        JavascriptExecutor jse = (JavascriptExecutor)driver;
+        Long pageHeight = (Long)(jse.executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);"));
+        Long viewportHeight = (Long)(jse.executeScript("return document.documentElement.clientHeight"));
 
-        File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-        final BufferedImage image = ImageIO.read(screenshot);
-
-        ImageIO.write(image, "png", new File(getFullFileNameWithPath(url, path, width, before ? "before" : "after")));
+        Thread.sleep(Math.round(config.getAsyncWait() * 1000));
+        for (long yPosition = 0; yPosition < pageHeight; yPosition += viewportHeight) {
+            File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            final BufferedImage image = ImageIO.read(screenshot);
+            ImageIO.write(image, "png", new File(getFullFileNameWithPath(url, path, width, yPosition + (before ? "_before" : "_after"))));
+            jse.executeScript("window.scrollBy(0," + viewportHeight + ")", "");
+            Thread.sleep(500);
+        }
     }
 
     static String buildUrl(String url, String path) {

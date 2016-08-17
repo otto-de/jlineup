@@ -11,17 +11,29 @@ import java.util.Map;
 
 public final class Config {
 
-    public final Map<String, UrlConfig> urls;
-    public final Browser.Type browser;
+    private static final Integer DEFAULT_WINDOW_HEIGHT = 800;
+    private static final Float DEFAULT_ASYNC_WAIT = 0f;
+
+    private Map<String, UrlConfig> urls;
+    private Browser.Type browser;
     @SerializedName("async-wait")
-    public final float asyncWait;
+    private Float asyncWait = DEFAULT_ASYNC_WAIT;
+    @SerializedName("window-height")
+    private Integer windowHeight = DEFAULT_WINDOW_HEIGHT;
 
     private final static Gson gson = new Gson();
 
-    public Config(Map<String, UrlConfig> urls, Browser.Type browser, float asyncWait) {
+    /* Used by GSON to set default values */
+    public Config() {
+        asyncWait = DEFAULT_ASYNC_WAIT;
+        windowHeight = DEFAULT_WINDOW_HEIGHT;
+    }
+
+    public Config(Map<String, UrlConfig> urls, Browser.Type browser, Float asyncWait, Integer windowHeight) {
         this.urls = urls;
         this.browser = browser;
-        this.asyncWait = asyncWait;
+        this.asyncWait = asyncWait != null ? asyncWait : 0;
+        this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
     }
 
     public static Config readConfig(String path) throws FileNotFoundException {
@@ -31,5 +43,19 @@ public final class Config {
 
     }
 
+    public Browser.Type getBrowser() {
+        return browser;
+    }
 
+    public Float getAsyncWait() {
+        return asyncWait;
+    }
+
+    public Map<String, UrlConfig> getUrls() {
+        return urls;
+    }
+
+    public Integer getWindowHeight() {
+        return windowHeight;
+    }
 }
