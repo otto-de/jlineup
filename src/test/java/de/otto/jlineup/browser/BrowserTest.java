@@ -9,8 +9,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
+import static com.google.common.io.Files.equal;
 import static de.otto.jlineup.browser.Browser.Type.CHROME;
 import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
 import static org.hamcrest.CoreMatchers.is;
@@ -22,14 +26,14 @@ public class BrowserTest {
 
     @Test
     public void shouldGenerateFilename() throws Exception {
-        String outputString = Browser.generateFileName("https://www.otto.de/", "multimedia", 1000, "after");
-        assertThat(outputString, is("www_otto_de_multimedia_1000_after.png"));
+        String outputString = Browser.generateFileName("https://www.otto.de/", "multimedia", 1000, 2000, "after");
+        assertThat(outputString, is("www_otto_de_multimedia_1000_2000_after.png"));
     }
 
     @Test
     public void shouldConvertRoot() throws Exception {
-        String outputString = Browser.generateFileName("https://www.otto.de/", "/", 1000, "before");
-        assertThat(outputString, is("www_otto_de_root_1000_before.png"));
+        String outputString = Browser.generateFileName("https://www.otto.de/", "/", 1000, 2000, "before");
+        assertThat(outputString, is("www_otto_de_root_1000_2000_before.png"));
     }
 
     @Test
@@ -63,22 +67,24 @@ public class BrowserTest {
         Parameters parameters = Mockito.mock(Parameters.class);
         when(parameters.getWorkingDirectory()).thenReturn("/src/test/resources/");
         Browser browser = new Browser(parameters);
-        final String fullFileNameWithPath = browser.getFullFileNameWithPath("testurl", "/", 1001, "step");
-        assertThat(fullFileNameWithPath, is("/src/test/resources/testurl_root_1001_step.png"));
+        final String fullFileNameWithPath = browser.getFullFileNameWithPath("testurl", "/", 1001, 2002, "step");
+        assertThat(fullFileNameWithPath, is("/src/test/resources/testurl_root_1001_2002_step.png"));
     }
 
     @Test
-    @Ignore
     public void shouldGenerateDifferenceImage() throws IOException {
-
         Parameters parameters = Mockito.mock(Parameters.class);
         Browser browser = new Browser(parameters);
-        when(parameters.getWorkingDirectory()).thenReturn("/src/test/resources/");
+        when(parameters.getWorkingDirectory()).thenReturn("src/test/resources/");
 
-        browser.generateDifferenceImage("url", "/", 1001);
+        browser.generateDifferenceImage("url", "/", 1001, 2002);
 
-        //System.err.println(Main.getWorkingDirectory());
+        final String generatedDifferenceImagePath = browser.getFullFileNameWithPath("url", "/", 1001, 2002, "DIFFERENCE");
+        final String referenceDifferenceImagePath = browser.getFullFileNameWithPath("url", "/", 1001, 2002, "DIFFERENCE_reference");
 
+        assertThat(equal(new File(generatedDifferenceImagePath), new File(referenceDifferenceImagePath)), is(true));
+
+        Files.delete(Paths.get(generatedDifferenceImagePath));
     }
 
 }
