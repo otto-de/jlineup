@@ -16,8 +16,15 @@ public class Parameters {
     @Parameter(names = {"--working-dir", "-d"})
     private String workingDirectory = ".";
 
+    @Parameter(names = {"--screenshot-dir", "-s"}, description = "Screenshots directory name - relative to working dir!")
+    private String screenshotDirectory = "screenshots";
+
     public String getWorkingDirectory() {
         return workingDirectory;
+    }
+
+    public String getScreenshotDirectory() {
+        return screenshotDirectory;
     }
 
     public String getConfigFile() {

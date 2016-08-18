@@ -13,8 +13,17 @@ public class ConfigTest {
 
     @Test
     public void shouldReadConfig() throws FileNotFoundException {
-        Config config = Config.readConfig("src/test/resources/lineup_test.json");
+        Config config = Config.readConfig("src/test/resources/", "lineup_test.json");
+        assertThatConfigContentsAreCorrect(config);
+    }
 
+    @Test
+    public void shouldReadConfigFromDifferentPathThanWorkingDir() throws FileNotFoundException {
+        Config config = Config.readConfig("someWorkingDir", "src/test/resources/lineup_test.json");
+        assertThatConfigContentsAreCorrect(config);
+    }
+
+    private void assertThatConfigContentsAreCorrect(Config config) {
         assertThat(config.getBrowser(), is(CHROME));
         assertThat(config.getAsyncWait(), is(2f));
         assertThat(config.getUrls().get("https://www.otto.de").resolutions, is(ImmutableList.of(600, 800, 1200)));

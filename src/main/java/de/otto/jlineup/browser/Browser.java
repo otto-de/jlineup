@@ -13,6 +13,7 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
@@ -42,7 +43,7 @@ public class Browser {
     }
 
 
-    public void browseAndTakeScreenshots(Config config, boolean before) throws IOException, InterruptedException {
+    public void browseAndTakeScreenshots(final Config config, final boolean before) throws IOException, InterruptedException {
         WebDriver driver = getWebDriverByConfig(config);
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
         takeScreenshots(driver, config, before);
@@ -113,7 +114,7 @@ public class Browser {
         for (int yPosition = 0; yPosition < pageHeight; yPosition += viewportHeight) {
             File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             final BufferedImage image = ImageIO.read(screenshot);
-            ImageIO.write(image, "png", new File(getFullFileNameWithPath(url, path, width, yPosition, before ? "before" : "after")));
+            ImageIO.write(image, "png", new File(getFullScreenshotFileNameWithPath(url, path, width, yPosition, before ? "before" : "after")));
             if (!before) {
                 generateDifferenceImage(url, path, width, yPosition);
             }
@@ -136,23 +137,30 @@ public class Browser {
 
         BufferedImage imageBefore;
         final String before = "before";
-        final String fullFileNameWithPath = getFullFileNameWithPath(url, path, width, yPosition, before);
+        final String fullFileNameWithPath = getFullScreenshotFileNameWithPath(url, path, width, yPosition, before);
         try {
             imageBefore = ImageIO.read(new File(fullFileNameWithPath));
         } catch (IIOException e) {
-            System.err.println("Cannot read 'before' screenshot (" + fullFileNameWithPath + "). Please run jlineup with parameter --before before you try to run it with --after.");
-            throw e;
+            if (yPosition == 0) {
+                System.err.println("Cannot read 'before' screenshot (" + fullFileNameWithPath + "). Did you run jlineup with parameter --before before you tried to run it with --after?");
+                throw e;
+            } else {
+                //There is a difference in the amount of vertical screenshots, this means the page's vertical size changed
+                return;
+            }
         }
         final String after = "after";
-        BufferedImage imageAfter = ImageIO.read(new File(getFullFileNameWithPath(url, path, width, yPosition, after)));
-        ImageIO.write(ImageUtils.getDifferenceImage(imageBefore, imageAfter), "png", new File(getFullFileNameWithPath(url, path, width, yPosition, "DIFFERENCE")));
+        BufferedImage imageAfter = ImageIO.read(new File(getFullScreenshotFileNameWithPath(url, path, width, yPosition, after)));
+        ImageIO.write(ImageUtils.getDifferenceImage(imageBefore, imageAfter), "png", new File(getFullScreenshotFileNameWithPath(url, path, width, yPosition, "DIFFERENCE")));
     }
 
-    String getFullFileNameWithPath(String url, String path, int width, int yPosition, String step) {
-        return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/") + generateFileName(url, path, width, yPosition, step);
+    String getFullScreenshotFileNameWithPath(String url, String path, int width, int yPosition, String step) {
+        return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
+                + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
+                + generateScreenshotFileName(url, path, width, yPosition, step);
     }
 
-    static String generateFileName(String url, String path, int width, int yPosition, String type) {
+    static String generateScreenshotFileName(String url, String path, int width, int yPosition, String type) {
 
         if (path.equals("/") || path.equals("")) {
             path = "root";
@@ -167,6 +175,7 @@ public class Browser {
         fileName = fileName.replace("..", "");
         fileName = fileName.replace(".", "_");
         fileName = fileName + ".png";
+
         return fileName;
     }
 

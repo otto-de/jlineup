@@ -7,6 +7,12 @@ import de.otto.jlineup.browser.Browser;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public final class Config {
@@ -36,9 +42,24 @@ public final class Config {
         this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
     }
 
-    public static Config readConfig(String path) throws FileNotFoundException {
+    public static Config readConfig(final String workingDir, final String configFileName) throws FileNotFoundException {
 
-        BufferedReader br = new BufferedReader(new FileReader(path));
+        List<String> searchPaths = new ArrayList<>();
+        Path configFilePath = Paths.get(workingDir + "/" + configFileName);
+        searchPaths.add(configFilePath.toString());
+        if (!Files.exists(configFilePath)) {
+            configFilePath = Paths.get(configFileName);
+            searchPaths.add(configFilePath.toString());
+            if (!Files.exists(configFilePath)) {
+                configFilePath = Paths.get("./lineup.json");
+                searchPaths.add(configFilePath.toString());
+                if (!Files.exists(configFilePath)) {
+                    throw new FileNotFoundException("Config file not found. Search locations were: " + Arrays.toString(searchPaths.toArray()));
+                }
+            }
+        }
+
+        BufferedReader br = new BufferedReader(new FileReader(configFilePath.toString()));
         return gson.fromJson(br, Config.class);
 
     }
