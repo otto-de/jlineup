@@ -6,14 +6,11 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.image.ImageUtils;
-import io.github.bonigarcia.wdm.ChromeDriverManager;
-import io.github.bonigarcia.wdm.MarionetteDriverManager;
-import io.github.bonigarcia.wdm.PhantomJsDriverManager;
+import io.github.bonigarcia.wdm.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
@@ -46,15 +43,9 @@ public class Browser {
     public void browseAndTakeScreenshots(final Config config, final boolean before) throws IOException, InterruptedException {
         WebDriver driver = getWebDriverByConfig(config);
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-        takeScreenshots(driver, config, before);
-    }
 
-    private void takeScreenshots(WebDriver driver, Config config, boolean before) throws IOException, InterruptedException {
         try {
-            Map<String, UrlConfig> urls = config.getUrls();
-            for (String url : urls.keySet()) {
-                takeScreenshotsForUrl(config, before, driver, urls, url);
-            }
+            takeScreenshots(driver, config, before);
         } finally {
             if (driver != null) {
                 driver.close();
@@ -63,19 +54,17 @@ public class Browser {
         }
     }
 
-    private void takeScreenshotsForUrl(Config config, boolean before, WebDriver driver, Map<String, UrlConfig> urls, String url) throws IOException, InterruptedException {
-        UrlConfig urlConfig = urls.get(url);
-        List<Integer> resolutions = urlConfig.resolutions;
-        List<String> paths = urlConfig.paths;
-
-        for (String path : paths) {
-            takeScreenshotsForPath(config, before, driver, url, resolutions, path);
-        }
-    }
-
-    private void takeScreenshotsForPath(Config config, boolean before, WebDriver driver, String url, List<Integer> resolutions, String path) throws IOException, InterruptedException {
-        for (Integer resolution : resolutions) {
-            takeScreenshots(driver, config, url, path, resolution, before);
+    private void takeScreenshots(WebDriver driver, Config config, boolean before) throws IOException, InterruptedException {
+        Map<String, UrlConfig> urls = config.getUrls();
+        for (String url : urls.keySet()) {
+            UrlConfig urlConfig = urls.get(url);
+            List<Integer> resolutions = urlConfig.windowWidths;
+            List<String> paths = urlConfig.paths;
+            for (String path : paths) {
+                for (Integer windowWidth : resolutions) {
+                    takeScreenshots(driver, config, url, path, windowWidth, before);
+                }
+            }
         }
     }
 
@@ -99,24 +88,24 @@ public class Browser {
         return driver;
     }
 
-    private void takeScreenshots(WebDriver driver, Config config, String url, String path, int width, boolean before) throws IOException, InterruptedException {
+    private void takeScreenshots(WebDriver driver, Config config, String url, String path, int windowWidth, boolean before) throws IOException, InterruptedException {
 
         driver.manage().window().setPosition(new Point(0, 0));
-        driver.manage().window().setSize(new Dimension(width, config.getWindowHeight()));
+        driver.manage().window().setSize(new Dimension(windowWidth, config.getWindowHeight()));
 
         driver.get(buildUrl(url, path));
 
-        JavascriptExecutor jse = (JavascriptExecutor)driver;
-        Long pageHeight = (Long)(jse.executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);"));
-        Long viewportHeight = (Long)(jse.executeScript("return document.documentElement.clientHeight"));
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        Long pageHeight = (Long) (jse.executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);"));
+        Long viewportHeight = (Long) (jse.executeScript("return document.documentElement.clientHeight"));
 
         Thread.sleep(Math.round(config.getAsyncWait() * 1000));
         for (int yPosition = 0; yPosition < pageHeight; yPosition += viewportHeight) {
             File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             final BufferedImage image = ImageIO.read(screenshot);
-            ImageIO.write(image, "png", new File(getFullScreenshotFileNameWithPath(url, path, width, yPosition, before ? "before" : "after")));
+            ImageIO.write(image, "png", new File(getFullScreenshotFileNameWithPath(url, path, windowWidth, yPosition, before ? "before" : "after")));
             if (!before) {
-                generateDifferenceImage(url, path, width, yPosition);
+                generateDifferenceImage(url, path, windowWidth, yPosition);
             }
             jse.executeScript("window.scrollBy(0," + viewportHeight + ")", "");
             Thread.sleep(50);
