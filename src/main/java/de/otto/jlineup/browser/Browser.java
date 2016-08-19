@@ -1,12 +1,13 @@
 package de.otto.jlineup.browser;
 
 import com.google.gson.annotations.SerializedName;
-import com.google.inject.Inject;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.image.ImageUtils;
-import io.github.bonigarcia.wdm.*;
+import io.github.bonigarcia.wdm.ChromeDriverManager;
+import io.github.bonigarcia.wdm.MarionetteDriverManager;
+import io.github.bonigarcia.wdm.PhantomJsDriverManager;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
@@ -17,9 +18,12 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Browser {
 
@@ -32,40 +36,88 @@ public class Browser {
         PHANTOMJS
     }
 
-    private Parameters parameters;
+    final private Parameters parameters;
+    final private Config config;
+    final private WebDriver driver;
 
-    @Inject
-    public Browser(Parameters parameters) {
+    public Browser(Parameters parameters, Config config) {
         this.parameters = parameters;
-    }
-
-
-    public void browseAndTakeScreenshots(final Config config, final boolean before) throws IOException, InterruptedException {
-        WebDriver driver = getWebDriverByConfig(config);
+        this.config = config;
+        driver = getWebDriverByConfig(config);
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+    }
 
-        try {
-            takeScreenshots(driver, config, before);
-        } finally {
-            if (driver != null) {
-                driver.close();
-                driver.quit();
-            }
+    final static class ScreenshotParameters {
+        final String url;
+        final String path;
+        final int windowWidth;
+        final boolean before;
+        private ScreenshotParameters(String url, String path, int windowWidth, boolean before) {
+            this.url = url;
+            this.path = path;
+            this.windowWidth = windowWidth;
+            this.before = before;
+        }
+
+        public static ScreenshotParameters of(String url, String path, int windowWidth, boolean before) {
+            return new ScreenshotParameters(url, path, windowWidth, before);
+        }
+
+        @Override
+        public String toString() {
+            return "ScreenshotParameters{" +
+                    "url='" + url + '\'' +
+                    ", path='" + path + '\'' +
+                    ", windowWidth=" + windowWidth +
+                    ", before=" + before +
+                    '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ScreenshotParameters that = (ScreenshotParameters) o;
+            return windowWidth == that.windowWidth &&
+                    before == that.before &&
+                    Objects.equals(url, that.url) &&
+                    Objects.equals(path, that.path);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(url, path, windowWidth, before);
         }
     }
 
-    private void takeScreenshots(WebDriver driver, Config config, boolean before) throws IOException, InterruptedException {
+    public void browseAndTakeScreenshots() throws IOException, InterruptedException {
+        takeScreenshots(config, !parameters.isAfter());
+    }
+
+    public void close() {
+        if (driver != null) {
+            driver.close();
+            driver.quit();
+        }
+    }
+
+    private void takeScreenshots(Config config, boolean before) throws IOException, InterruptedException {
+        List<ScreenshotParameters> screenshotParametersList = generateScreenshotsParametersFromConfig(config, before);
+        takeScreenshots(screenshotParametersList);
+    }
+
+    static List<ScreenshotParameters> generateScreenshotsParametersFromConfig(Config config, boolean before) {
+        List<ScreenshotParameters> screenshotParametersList = new ArrayList<>();
         Map<String, UrlConfig> urls = config.getUrls();
-        for (String url : urls.keySet()) {
-            UrlConfig urlConfig = urls.get(url);
-            List<Integer> resolutions = urlConfig.windowWidths;
-            List<String> paths = urlConfig.paths;
-            for (String path : paths) {
-                for (Integer windowWidth : resolutions) {
-                    takeScreenshots(driver, config, url, path, windowWidth, before);
-                }
+        for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
+            final UrlConfig urlConfig = urlConfigEntry.getValue();
+            final List<Integer> resolutions = urlConfig.windowWidths;
+            final List<String> paths = urlConfig.paths;
+            for (final String path : paths) {
+                screenshotParametersList.addAll(resolutions.stream().map(windowWidth -> new ScreenshotParameters(urlConfigEntry.getKey(), path, windowWidth, before)).collect(Collectors.toList()));
             }
         }
+        return screenshotParametersList;
     }
 
     static WebDriver getWebDriverByConfig(Config config) {
@@ -88,27 +140,31 @@ public class Browser {
         return driver;
     }
 
-    private void takeScreenshots(WebDriver driver, Config config, String url, String path, int windowWidth, boolean before) throws IOException, InterruptedException {
+    private void takeScreenshots(final List<ScreenshotParameters> parameters) throws IOException, InterruptedException {
 
-        driver.manage().window().setPosition(new Point(0, 0));
-        driver.manage().window().setSize(new Dimension(windowWidth, config.getWindowHeight()));
+        for (final ScreenshotParameters parameter : parameters) {
 
-        driver.get(buildUrl(url, path));
+            driver.manage().window().setPosition(new Point(0, 0));
+            driver.manage().window().setSize(new Dimension(parameter.windowWidth, config.getWindowHeight()));
+            driver.get(buildUrl(parameter.url, parameter.path));
 
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
-        Long pageHeight = (Long) (jse.executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);"));
-        Long viewportHeight = (Long) (jse.executeScript("return document.documentElement.clientHeight"));
+            JavascriptExecutor jse = (JavascriptExecutor) driver;
+            Long pageHeight = (Long) (jse.executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);"));
+            Long viewportHeight = (Long) (jse.executeScript("return document.documentElement.clientHeight"));
 
-        Thread.sleep(Math.round(config.getAsyncWait() * 1000));
-        for (int yPosition = 0; yPosition < pageHeight; yPosition += viewportHeight) {
-            File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-            final BufferedImage image = ImageIO.read(screenshot);
-            ImageIO.write(image, "png", new File(getFullScreenshotFileNameWithPath(url, path, windowWidth, yPosition, before ? "before" : "after")));
-            if (!before) {
-                generateDifferenceImage(url, path, windowWidth, yPosition);
+            Thread.sleep(Math.round(config.getAsyncWait() * 1000));
+            for (int yPosition = 0; yPosition < pageHeight; yPosition += viewportHeight) {
+                File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                final BufferedImage image = ImageIO.read(screenshot);
+                ImageIO.write(image, "png", new File(getFullScreenshotFileNameWithPath(parameter.url, parameter.path, parameter.windowWidth, yPosition, parameter.before ? "before" : "after")));
+                if (!parameter.before) {
+                    generateDifferenceImage(parameter.url, parameter.path, parameter.windowWidth, yPosition, viewportHeight.intValue());
+                }
+                //PhantomJS always makes full page screenshots, so no scrolling and multi-screenshooting
+                if (config.getBrowser() == Type.PHANTOMJS) break;
+                jse.executeScript("window.scrollBy(0," + viewportHeight + ")", "");
+                Thread.sleep(50);
             }
-            jse.executeScript("window.scrollBy(0," + viewportHeight + ")", "");
-            Thread.sleep(50);
         }
     }
 
@@ -122,7 +178,18 @@ public class Browser {
         return url + path;
     }
 
-    void generateDifferenceImage(String url, String path, int width, int yPosition) throws IOException {
+    /**
+     *
+     * @param url the url
+     * @param path the path that is appended to the url
+     * @param width the window width
+     * @param yPosition the current vertical scroll position
+     * @param viewportHeight is needed to calculate the difference level
+     * @return a double between 0 and 1 that measures the difference between the two pictures. 1 means 100% difference,
+     *         0 means, that both pictures are identical
+     * @throws IOException
+     */
+    double generateDifferenceImage(String url, String path, int width, int yPosition, int viewportHeight) throws IOException {
 
         BufferedImage imageBefore;
         final String before = "before";
@@ -135,12 +202,14 @@ public class Browser {
                 throw e;
             } else {
                 //There is a difference in the amount of vertical screenshots, this means the page's vertical size changed
-                return;
+                return 1;
             }
         }
         final String after = "after";
         BufferedImage imageAfter = ImageIO.read(new File(getFullScreenshotFileNameWithPath(url, path, width, yPosition, after)));
-        ImageIO.write(ImageUtils.getDifferenceImage(imageBefore, imageAfter), "png", new File(getFullScreenshotFileNameWithPath(url, path, width, yPosition, "DIFFERENCE")));
+        final ImageUtils.BufferedImageComparisonResult differenceImage = ImageUtils.getDifferenceImage(imageBefore, imageAfter, viewportHeight);
+        ImageIO.write(differenceImage.differenceImage, "png", new File(getFullScreenshotFileNameWithPath(url, path, width, yPosition, "DIFFERENCE")));
+        return differenceImage.difference;
     }
 
     String getFullScreenshotFileNameWithPath(String url, String path, int width, int yPosition, String step) {

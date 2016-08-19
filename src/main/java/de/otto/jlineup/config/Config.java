@@ -19,6 +19,7 @@ public final class Config {
 
     private static final Integer DEFAULT_WINDOW_HEIGHT = 800;
     private static final Float DEFAULT_ASYNC_WAIT = 0f;
+    public static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
 
     private Map<String, UrlConfig> urls;
     private Browser.Type browser;
@@ -51,7 +52,7 @@ public final class Config {
             configFilePath = Paths.get(configFileName);
             searchPaths.add(configFilePath.toString());
             if (!Files.exists(configFilePath)) {
-                configFilePath = Paths.get("./lineup.json");
+                configFilePath = Paths.get(LINEUP_CONFIG_DEFAULT_PATH);
                 searchPaths.add(configFilePath.toString());
                 if (!Files.exists(configFilePath)) {
                     throw new FileNotFoundException("Config file not found. Search locations were: " + Arrays.toString(searchPaths.toArray()));
