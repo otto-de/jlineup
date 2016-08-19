@@ -34,4 +34,8 @@ public class Parameters {
     public boolean isAfter() {
         return after;
     }
+
+    public boolean isBefore() {
+        return !after;
+    }
 }

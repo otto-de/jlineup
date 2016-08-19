@@ -16,18 +16,8 @@ public class Main {
         final Parameters parameters = new Parameters();
         new JCommander(parameters, args);
 
-        try {
-            FileUtils.createDirIfNotExists(parameters.getWorkingDirectory());
-        } catch (IOException e) {
-            System.err.println("Could not create or open working directory.");
-            System.exit(1);
-        }
-
-        try {
-            FileUtils.createDirIfNotExists(parameters.getWorkingDirectory() + "/" + parameters.getScreenshotDirectory());
-        } catch (IOException e) {
-            System.err.println("Could not create or open screenshots directory.");
-            System.exit(1);
+        if (parameters.isBefore()) {
+            prepareDirectoriesForBeforeStep(parameters);
         }
 
         Config config = null;
@@ -37,7 +27,32 @@ public class Main {
             System.err.println(e.getMessage());
             System.exit(1);
         }
-        new Browser(parameters).browseAndTakeScreenshots(config, !parameters.isAfter());
+
+        final Browser browser = new Browser(parameters, config);
+        try {
+            browser.browseAndTakeScreenshots();
+        } finally {
+            browser.close();
+        }
+    }
+
+    private static void prepareDirectoriesForBeforeStep(Parameters parameters) {
+
+        try {
+            FileUtils.createDirIfNotExists(parameters.getWorkingDirectory());
+        } catch (IOException e) {
+            System.err.println("Could not create or open working directory.");
+            System.exit(1);
+        }
+
+        try {
+            final String screenshotDirectoryPath = parameters.getWorkingDirectory() + "/" + parameters.getScreenshotDirectory();
+            FileUtils.createDirIfNotExists(screenshotDirectoryPath);
+            FileUtils.clearDirectory(screenshotDirectoryPath);
+        } catch (IOException e) {
+            System.err.println("Could not create or open screenshots directory.");
+            System.exit(1);
+        }
     }
 
 
