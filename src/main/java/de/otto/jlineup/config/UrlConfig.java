@@ -17,15 +17,16 @@ public class UrlConfig {
     @SerializedName("local-storage")
     public final Map<String, String> localStorage;
 
-    public final List<Integer> resolutions;
+    @SerializedName(value = "window-widths", alternate = {"resolutions","widths"})
+    public final List<Integer> windowWidths;
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> resolutions) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths) {
         this.paths = paths;
         this.maxDiff = maxDiff;
         this.cookies = cookies;
         this.envMapping = envMapping;
         this.localStorage = localStorage;
-        this.resolutions = resolutions;
+        this.windowWidths = windowWidths;
     }
 
     @Override
@@ -36,7 +37,7 @@ public class UrlConfig {
                 ", cookies=" + cookies +
                 ", envMapping=" + envMapping +
                 ", localStorage=" + localStorage +
-                ", resolutions=" + resolutions +
+                ", windowWidths=" + windowWidths +
                 '}';
     }
 }

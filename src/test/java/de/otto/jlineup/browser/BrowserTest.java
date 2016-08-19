@@ -16,9 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static com.google.common.io.Files.equal;
-import static de.otto.jlineup.browser.Browser.Type.CHROME;
-import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
-import static de.otto.jlineup.browser.Browser.Type.PHANTOMJS;
+import static de.otto.jlineup.browser.Browser.Type.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -40,7 +38,7 @@ public class BrowserTest {
 
     @Test
     @Ignore //TODO: Find out why this doesn't work in conjunction with other tests
-    public void shouldGetFirefoxDriver() {
+    public void shouldGetFirefoxDriver() throws InterruptedException {
         final Config config = new Config(null, FIREFOX, 5f, 800);
         assertSetDriverType(config, MarionetteDriver.class);
     }
