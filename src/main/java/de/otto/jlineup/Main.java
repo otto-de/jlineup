@@ -16,16 +16,14 @@ public class Main {
         final Parameters parameters = new Parameters();
         new JCommander(parameters, args);
 
+        //Make sure the working dir exists
         if (parameters.isBefore()) {
-            prepareDirectoriesForBeforeStep(parameters);
+            createWorkingDirectoryIfNotExists(parameters);
         }
-
-        Config config = null;
-        try {
-            config = Config.readConfig(parameters.getWorkingDirectory(), parameters.getConfigFile());
-        } catch (FileNotFoundException e) {
-            System.err.println(e.getMessage());
-            System.exit(1);
+        Config config = readConfig(parameters);
+        //Only create screenshots dir if config was found
+        if (parameters.isBefore()) {
+            createScreenshotDirectoryIfNotExists(parameters);
         }
 
         final Browser browser = new Browser(parameters, config);
@@ -36,15 +34,27 @@ public class Main {
         }
     }
 
-    private static void prepareDirectoriesForBeforeStep(Parameters parameters) {
+    private static Config readConfig(Parameters parameters) {
+        Config config = null;
+        try {
+            config = Config.readConfig(parameters.getWorkingDirectory(), parameters.getConfigFile());
+        } catch (FileNotFoundException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        return config;
+    }
 
+    private static void createWorkingDirectoryIfNotExists(Parameters parameters) {
         try {
             FileUtils.createDirIfNotExists(parameters.getWorkingDirectory());
         } catch (IOException e) {
             System.err.println("Could not create or open working directory.");
             System.exit(1);
         }
+    }
 
+    private static void createScreenshotDirectoryIfNotExists(Parameters parameters) {
         try {
             final String screenshotDirectoryPath = parameters.getWorkingDirectory() + "/" + parameters.getScreenshotDirectory();
             FileUtils.createDirIfNotExists(screenshotDirectoryPath);
