@@ -1,9 +1,10 @@
 package de.otto.jlineup.browser;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
-import de.otto.jlineup.config.Config;
-import de.otto.jlineup.config.Parameters;
-import de.otto.jlineup.config.UrlConfig;
+import de.otto.jlineup.config.*;
+import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.image.ImageUtils;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.MarionetteDriverManager;
@@ -11,6 +12,7 @@ import io.github.bonigarcia.wdm.PhantomJsDriverManager;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
+import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import javax.imageio.IIOException;
@@ -40,10 +42,10 @@ public class Browser {
     final private Config config;
     final private WebDriver driver;
 
-    public Browser(Parameters parameters, Config config) {
+    public Browser(Parameters parameters, Config config, WebDriver driver) {
         this.parameters = parameters;
         this.config = config;
-        driver = getWebDriverByConfig(config);
+        this.driver = driver;
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     }
 
@@ -114,13 +116,14 @@ public class Browser {
             final List<Integer> resolutions = urlConfig.windowWidths;
             final List<String> paths = urlConfig.paths;
             for (final String path : paths) {
-                screenshotParametersList.addAll(resolutions.stream().map(windowWidth -> new ScreenshotParameters(urlConfigEntry.getKey(), path, windowWidth, before)).collect(Collectors.toList()));
+                screenshotParametersList.addAll(
+                        resolutions.stream().map(windowWidth -> new ScreenshotParameters(urlConfigEntry.getKey(), path, windowWidth, before)).collect(Collectors.toList()));
             }
         }
         return screenshotParametersList;
     }
 
-    static WebDriver getWebDriverByConfig(Config config) {
+    public static WebDriver getWebDriverByConfig(Config config) {
         WebDriver driver;
         switch (config.getBrowser()) {
             case FIREFOX:
@@ -146,9 +149,27 @@ public class Browser {
 
             driver.manage().window().setPosition(new Point(0, 0));
             driver.manage().window().setSize(new Dimension(parameter.windowWidth, config.getWindowHeight()));
+
+            UrlConfig configForCurrentUrl = config.getUrls().get(parameter.url);
+            List<Cookie> cookies = configForCurrentUrl.cookies;
+
             driver.get(buildUrl(parameter.url, parameter.path));
+            for (Cookie cookie : cookies) {
+                org.openqa.selenium.Cookie.Builder cookieBuilder = new org.openqa.selenium.Cookie.Builder(cookie.name, cookie.value);
+                if (cookie.domain != null) cookieBuilder.domain(cookie.domain);
+                if (cookie.path != null) cookieBuilder.path(cookie.path);
+                if (cookie.secure) cookieBuilder.isSecure(cookie.secure);
+                driver.manage().addCookie(cookieBuilder.build());
+            }
 
             JavascriptExecutor jse = (JavascriptExecutor) driver;
+
+            Map<String, String> localStorage = configForCurrentUrl.localStorage;
+            for (Map.Entry<String, String> localStorageEntry : localStorage.entrySet()) {
+                String jsCall = "localStorage.setItem('" + localStorageEntry.getKey() + "','" + localStorageEntry.getValue() + "')";
+                jse.executeScript(jsCall);
+            }
+
             Long pageHeight = (Long) (jse.executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);"));
             Long viewportHeight = (Long) (jse.executeScript("return document.documentElement.clientHeight"));
 

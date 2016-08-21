@@ -3,9 +3,10 @@ package de.otto.jlineup.browser;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
@@ -24,9 +25,34 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class BrowserTest {
+
+    @Mock
+    private WebDriver webDriverMock;
+    @Mock
+    private WebDriver.Options webDriverOptions;
+    @Mock
+    private WebDriver.Timeouts webDriverTimeout;
+
+    @Mock
+    private Parameters parameters;
+
+    private Browser testee;
+
+    @Before
+    public void setup() {
+        initMocks(this);
+        when(webDriverMock.manage()).thenReturn(webDriverOptions);
+        when(webDriverOptions.timeouts()).thenReturn(webDriverTimeout);
+        Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100);
+        testee = new Browser(parameters, config, webDriverMock);
+        when(parameters.getWorkingDirectory()).thenReturn("src/test/resources/");
+        when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
+    }
 
     @Test
     public void shouldGenerateFilename() throws Exception {
@@ -74,11 +100,11 @@ public class BrowserTest {
 
     @Test
     public void shouldGenerateFullPathToPngFile() {
-        Parameters parameters = Mockito.mock(Parameters.class);
+        Parameters parameters = mock(Parameters.class);
         Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100);
         when(parameters.getWorkingDirectory()).thenReturn("some/working/dir");
         when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
-        Browser browser = new Browser(parameters, config);
+        Browser browser = new Browser(parameters, config, webDriverMock);
         final String fullFileNameWithPath = browser.getFullScreenshotFileNameWithPath("testurl", "/", 1001, 2002, "step");
         assertThat(fullFileNameWithPath, is("some/working/dir/screenshots/testurl_root_1001_2002_step.png"));
         browser.close();
@@ -87,7 +113,7 @@ public class BrowserTest {
     @Test
     public void shouldGenerateScreenshotsParameters() throws FileNotFoundException {
         //given
-        Parameters parameters = Mockito.mock(Parameters.class);
+        Parameters parameters = mock(Parameters.class);
         Config config = Config.readConfig(".", "src/test/resources/lineup_test.json");
         when(parameters.getWorkingDirectory()).thenReturn("some/working/dir");
         when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
@@ -109,22 +135,23 @@ public class BrowserTest {
 
     @Test
     public void shouldGenerateDifferenceImage() throws IOException {
-        Parameters parameters = Mockito.mock(Parameters.class);
-        Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100);
-        Browser browser = new Browser(parameters, config);
-        when(parameters.getWorkingDirectory()).thenReturn("src/test/resources/");
-        when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
 
-        double difference = browser.generateDifferenceImage("url", "/", 1001, 2002, 800);
+        double difference = testee.generateDifferenceImage("url", "/", 1001, 2002, 800);
 
-        final String generatedDifferenceImagePath = browser.getFullScreenshotFileNameWithPath("url", "/", 1001, 2002, "DIFFERENCE");
-        final String referenceDifferenceImagePath = browser.getFullScreenshotFileNameWithPath("url", "/", 1001, 2002, "DIFFERENCE_reference");
+        final String generatedDifferenceImagePath = testee.getFullScreenshotFileNameWithPath("url", "/", 1001, 2002, "DIFFERENCE");
+        final String referenceDifferenceImagePath = testee.getFullScreenshotFileNameWithPath("url", "/", 1001, 2002, "DIFFERENCE_reference");
 
         assertThat(equal(new File(generatedDifferenceImagePath), new File(referenceDifferenceImagePath)), is(true));
         assertThat(difference, is(0.07005));
 
         Files.delete(Paths.get(generatedDifferenceImagePath));
-        browser.close();
+        testee.close();
     }
 
+    @Test
+    public void shouldDoAllTheScreenshotWebdriverCalls() throws Exception {
+
+
+
+    }
 }
