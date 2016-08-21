@@ -26,7 +26,7 @@ public class Main {
             createScreenshotDirectoryIfNotExists(parameters);
         }
 
-        final Browser browser = new Browser(parameters, config);
+        final Browser browser = new Browser(parameters, config, Browser.getWebDriverByConfig(config));
         try {
             browser.browseAndTakeScreenshots();
         } finally {
