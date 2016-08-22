@@ -52,7 +52,7 @@ public class FileUtilsTest {
         deleteIfExists(Paths.get(tempDirPath + "/testdirforcleardirectorylineuptest"));
     }
 
-    private static void deleteIfExists(Path path) throws IOException {
+    public static void deleteIfExists(Path path) throws IOException {
         if (Files.exists(path)) {
             FileUtils.clearDirectory(path.toString());
             Files.delete(path);

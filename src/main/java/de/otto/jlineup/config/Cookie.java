@@ -19,6 +19,15 @@ public class Cookie {
         this.secure = secure;
     }
 
+    public Cookie(String name, String value) {
+        this.name = name;
+        this.value = value;
+        this.domain = null;
+        this.path = null;
+        this.expiry = null;
+        this.secure = false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
