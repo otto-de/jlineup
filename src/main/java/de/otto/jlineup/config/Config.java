@@ -43,6 +43,18 @@ public final class Config {
         this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
     }
 
+
+    public static Config readConfig(Parameters parameters) {
+        Config config = null;
+        try {
+            config = Config.readConfig(parameters.getWorkingDirectory(), parameters.getConfigFile());
+        } catch (FileNotFoundException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+        return config;
+    }
+
     public static Config readConfig(final String workingDir, final String configFileName) throws FileNotFoundException {
 
         List<String> searchPaths = new ArrayList<>();
