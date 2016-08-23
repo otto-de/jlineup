@@ -1,6 +1,7 @@
 package de.otto.jlineup.config;
 
 import com.google.common.collect.ImmutableList;
+import de.otto.jlineup.browser.BrowserTest;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
@@ -34,6 +35,8 @@ public class ConfigTest {
         assertThat(config.getAsyncWait(), is(2f));
         assertThat(config.getUrls().get("https://www.otto.de").windowWidths, is(ImmutableList.of(600, 800, 1200)));
         assertThat(config.getUrls().get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));
+        assertThat(config.getUrls().get("https://www.otto.de"), is(BrowserTest.getExpectedUrlConfigForOttoDe()));
+        assertThat(config.getUrls().get("http://www.google.de"), is(BrowserTest.getExpectedUrlConfigForGoogleDe()));
     }
 
 }
