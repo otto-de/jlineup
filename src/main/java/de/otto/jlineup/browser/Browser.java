@@ -13,6 +13,8 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
 
 public class Browser {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Browser.class);
+    public static final int MAX_SCROLL_HEIGHT = 100000;
 
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
@@ -50,7 +54,7 @@ public class Browser {
         this.parameters = parameters;
         this.config = config;
         this.driver = driver;
-        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
     }
 
     public void browseAndTakeScreenshots() throws IOException, InterruptedException {
@@ -127,8 +131,19 @@ public class Browser {
             Long pageHeight = (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
             Long viewportHeight = (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
 
+            configForCurrentUrl.getWaitAfterPageLoad().ifPresent(waitTime -> {
+                try {
+                    Thread.sleep(waitTime * 1000);
+                } catch (InterruptedException e) {
+                    LOG.error(e.getMessage(), e);
+                }
+            });
+
+            LOG.debug("Page height before scrolling: {}", pageHeight);
+            LOG.debug("Viewport height of browser window: {}", viewportHeight);
+
             Thread.sleep(Math.round(config.getAsyncWait() * 1000));
-            for (int yPosition = 0; yPosition < pageHeight; yPosition += viewportHeight) {
+            for (int yPosition = 0; yPosition < pageHeight && yPosition <= configForCurrentUrl.getMaxScrollHeight().orElse(MAX_SCROLL_HEIGHT); yPosition += viewportHeight) {
                 File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
                 final BufferedImage image = ImageIO.read(screenshot);
                 ImageIO.write(image, "png", new File(getFullScreenshotFileNameWithPath(screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? "before" : "after")));
@@ -137,9 +152,16 @@ public class Browser {
                 }
                 //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
                 //This is subject to change because W3C standard wants viewport screenshots
-                if (config.getBrowser() == Type.PHANTOMJS) break;
+                if (config.getBrowser() == Type.PHANTOMJS) {
+                    break;
+                }
+
+                LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
+
                 scrollBy(jse, viewportHeight.intValue());
                 Thread.sleep(50);
+                //Refresh to check if page grows during scrolling
+                pageHeight = (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
             }
         }
     }
