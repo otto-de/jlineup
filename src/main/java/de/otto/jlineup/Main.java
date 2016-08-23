@@ -22,12 +22,9 @@ public class Main {
             FileUtils.createWorkingDirectoryIfNotExists(parameters);
         }
         Config config = Config.readConfig(parameters);
-        //Only create screenshots dir if config was found
+        //Only create screenshots and report dirs if config was found
         if (parameters.isBefore()) {
             FileUtils.createOrClearScreenshotsDirectory(parameters);
-        }
-        //If after step - create or clear report dir
-        if (parameters.isAfter()) {
             FileUtils.createOrClearReportDirectory(parameters);
         }
 

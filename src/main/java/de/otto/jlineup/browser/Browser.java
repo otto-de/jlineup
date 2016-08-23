@@ -75,7 +75,9 @@ public class Browser {
             setCookies(screenshotContext.urlConfig.cookies);
 
             //now get the real page
-            driver.get(buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping));
+            String url = buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping);
+            LOG.debug("Browsing to " + url);
+            driver.get(url);
 
             JavascriptExecutor jse = (JavascriptExecutor) driver;
 
