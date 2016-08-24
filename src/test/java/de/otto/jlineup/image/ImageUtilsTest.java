@@ -29,6 +29,7 @@ public class ImageUtilsTest {
         assertThat(result.getDifference(), is(0.07005));
     }
 
+    //Helper function to compare two BufferedImage instances (BufferedImage doesn't override equals())
     private boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
         if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {
             for (int x = 0; x < img1.getWidth(); x++) {

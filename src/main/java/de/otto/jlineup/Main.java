@@ -7,7 +7,6 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.files.FileUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Main {
@@ -28,11 +27,8 @@ public class Main {
             FileUtils.createOrClearReportDirectory(parameters);
         }
 
-        final Browser browser = new Browser(parameters, config, BrowserUtils.getWebDriverByConfig(config));
-        try {
-            browser.browseAndTakeScreenshots();
-        } finally {
-            browser.close();
+        try (Browser browser = new Browser(parameters, config, BrowserUtils.getWebDriverByConfig(config))) {
+            browser.justDoIt();
         }
     }
 
