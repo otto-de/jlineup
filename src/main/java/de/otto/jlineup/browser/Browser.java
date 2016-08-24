@@ -4,21 +4,24 @@ import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
-import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.image.ImageUtils;
 import org.openqa.selenium.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
+import static de.otto.jlineup.image.ImageUtils.AFTER;
+import static de.otto.jlineup.image.ImageUtils.BEFORE;
 
 public class Browser {
 
@@ -63,7 +66,8 @@ public class Browser {
         }
     }
 
-    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException {
+    List<ComparisonResult> takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException {
+        List<ComparisonResult> result = new ArrayList<ComparisonResult>();
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
 
             driver.manage().window().setPosition(new Point(0, 0));
@@ -101,10 +105,24 @@ public class Browser {
             Thread.sleep(Math.round(config.getAsyncWait() * 1000));
             for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.getMaxScrollHeight().orElse(MAX_SCROLL_HEIGHT); yPosition += viewportHeight) {
                 File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-                final BufferedImage image = ImageIO.read(screenshot);
-                ImageIO.write(image, "png", new File(BrowserUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? "before" : "after")));
+                final BufferedImage currentScreenshot = ImageIO.read(screenshot);
+                final String currentScreenshotFileNameWithPath = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
+                ImageIO.write(currentScreenshot, "png", new File(currentScreenshotFileNameWithPath));
                 if (!screenshotContext.before) {
-                    ImageUtils.BufferedImageComparisonResult bufferedImageComparisonResult = ImageUtils.generateDifferenceImage(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, viewportHeight.intValue());
+                    BufferedImage imageBefore = null;
+                    final String beforeFileName = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, url, screenshotContext.path, screenshotContext.windowWidth, yPosition, BEFORE);
+                    try {
+                        imageBefore = ImageIO.read(new File(beforeFileName));
+                    } catch (IIOException e) {
+                        if (yPosition == 0) {
+                            System.err.println("Cannot read 'before' screenshot (" + beforeFileName + "). Did you run jlineup with parameter --before before you tried to run it with --after?");
+                            throw e;
+                        } else {
+                            //There is a difference in the amount of vertical screenshots, this means the page's vertical size changed
+                            result.add(new ComparisonResult(url, screenshotContext.windowWidth, yPosition, 1d, beforeFileName, currentScreenshotFileNameWithPath, null));
+                        }
+                    }
+                    ImageUtils.BufferedImageComparisonResult bufferedImageComparisonResult = ImageUtils.generateDifferenceImage(imageBefore, currentScreenshot, viewportHeight.intValue());
                     if (bufferedImageComparisonResult.getDifference() > 0) {
                         ImageIO.write(bufferedImageComparisonResult.getDifferenceImage().orElse(null), "png", new File(BrowserUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, "DIFFERENCE")));
                     }
@@ -123,6 +141,7 @@ public class Browser {
                 pageHeight = (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
             }
         }
+        return result;
     }
 
     void scrollBy(JavascriptExecutor jse, int viewportHeight) {
