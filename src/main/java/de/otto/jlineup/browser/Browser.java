@@ -1,5 +1,7 @@
 package de.otto.jlineup.browser;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
@@ -12,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,7 @@ import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.image.ImageUtils.AFTER;
 import static de.otto.jlineup.image.ImageUtils.BEFORE;
 
-public class Browser {
+public class Browser implements AutoCloseable{
 
     private static final Logger LOG = LoggerFactory.getLogger(Browser.class);
     private static final int MAX_SCROLL_HEIGHT = 100000;
@@ -53,12 +55,22 @@ public class Browser {
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
     }
 
-    public void browseAndTakeScreenshots() throws IOException, InterruptedException {
+    public void justDoIt() throws IOException, InterruptedException {
         boolean before = !parameters.isAfter();
         List<ScreenshotContext> screenshotContextList = BrowserUtils.generateScreenshotsParametersFromConfig(config, before);
-        takeScreenshots(screenshotContextList);
+        final List<ComparisonResult> comparisonResults = takeScreenshots(screenshotContextList);
+        writeComparisonReport(comparisonResults);
     }
 
+    private void writeComparisonReport(List<ComparisonResult> comparisonResults) throws FileNotFoundException {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        final String reportJson = gson.toJson(comparisonResults);
+        try (PrintStream out = new PrintStream(new FileOutputStream("report.json"))) {
+            out.print(reportJson);
+        }
+    }
+
+    @Override
     public void close() {
         if (driver != null) {
             driver.close();
@@ -76,7 +88,12 @@ public class Browser {
             //get root page from url to be able to set cookies afterwards
             driver.get(buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping));
 
-            setCookies(screenshotContext.urlConfig.cookies);
+            if (config.getBrowser() == Type.PHANTOMJS) {
+                //current phantomjs driver has a bug that prevents selenium's normal way of setting cookies
+                setCookiesPhantomJS(screenshotContext.urlConfig.cookies);
+            } else {
+                setCookies(screenshotContext.urlConfig.cookies);
+            }
 
             //now get the real page
             String url = buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping);
@@ -110,7 +127,7 @@ public class Browser {
                 ImageIO.write(currentScreenshot, "png", new File(currentScreenshotFileNameWithPath));
                 if (!screenshotContext.before) {
                     BufferedImage imageBefore = null;
-                    final String beforeFileName = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, url, screenshotContext.path, screenshotContext.windowWidth, yPosition, BEFORE);
+                    final String beforeFileName = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, BEFORE);
                     try {
                         imageBefore = ImageIO.read(new File(beforeFileName));
                     } catch (IIOException e) {
@@ -120,12 +137,15 @@ public class Browser {
                         } else {
                             //There is a difference in the amount of vertical screenshots, this means the page's vertical size changed
                             result.add(new ComparisonResult(url, screenshotContext.windowWidth, yPosition, 1d, beforeFileName, currentScreenshotFileNameWithPath, null));
+                            continue;
                         }
                     }
+                    final String differenceImageFileName = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, "DIFFERENCE");
                     ImageUtils.BufferedImageComparisonResult bufferedImageComparisonResult = ImageUtils.generateDifferenceImage(imageBefore, currentScreenshot, viewportHeight.intValue());
                     if (bufferedImageComparisonResult.getDifference() > 0) {
-                        ImageIO.write(bufferedImageComparisonResult.getDifferenceImage().orElse(null), "png", new File(BrowserUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, "DIFFERENCE")));
+                        ImageIO.write(bufferedImageComparisonResult.getDifferenceImage().orElse(null), "png", new File(differenceImageFileName));
                     }
+                    result.add(new ComparisonResult(url, screenshotContext.windowWidth, yPosition, bufferedImageComparisonResult.getDifference(), beforeFileName, currentScreenshotFileNameWithPath, bufferedImageComparisonResult.getDifference() > 0 ? differenceImageFileName : null));
                 }
                 //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
                 //This is subject to change because W3C standard wants viewport screenshots
@@ -169,5 +189,38 @@ public class Browser {
             driver.manage().addCookie(cookieBuilder.build());
         }
     }
+
+    void setCookiesPhantomJS(List<Cookie> cookies) {
+        if (cookies == null) return;
+        for(Cookie cookie : cookies) {
+            StringBuilder cookieCallBuilder = new StringBuilder(String.format("document.cookie = '%s=%s;", cookie.name, cookie.value));
+            if (cookie.path != null) {
+                cookieCallBuilder.append("path=");
+                cookieCallBuilder.append(cookie.path);
+                cookieCallBuilder.append(";");
+            }
+            if (cookie.domain != null) {
+                cookieCallBuilder.append("domain=");
+                cookieCallBuilder.append(cookie.path);
+                cookieCallBuilder.append(";");
+            }
+            if (cookie.secure) {
+                cookieCallBuilder.append("secure;");
+            }
+            if (cookie.expiry != null) {
+                cookieCallBuilder.append("expires=");
+
+                SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+                String asGmt = df.format(cookie.expiry.getTime()) + " GMT";
+                cookieCallBuilder.append(asGmt);
+                cookieCallBuilder.append(";");
+            }
+            cookieCallBuilder.append("'");
+
+            ((JavascriptExecutor) driver).executeScript(cookieCallBuilder.toString());
+        }
+    }
+
+
 
 }
