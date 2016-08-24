@@ -1,6 +1,5 @@
-package de.otto.jlineup.files;
+package de.otto.jlineup.file;
 
-import de.otto.jlineup.Main;
 import de.otto.jlineup.config.Parameters;
 
 import java.io.IOException;
@@ -30,6 +29,18 @@ public class FileUtils {
 
     public static void createOrClearReportDirectory(Parameters parameters) {
         createOrClearDirectoryBelowWorkingDir(parameters.getWorkingDirectory(), parameters.getReportDirectory());
+    }
+
+    public static Path getWorkingDirectory(Parameters parameters) {
+        return Paths.get(parameters.getWorkingDirectory());
+    }
+
+    public static Path getScreenshotDirectory(Parameters parameters) {
+        return Paths.get(parameters.getWorkingDirectory() + "/" + parameters.getScreenshotDirectory());
+    }
+
+    public static Path getReportDirectory(Parameters parameters) {
+        return Paths.get(parameters.getWorkingDirectory() + "/" + parameters.getReportDirectory());
     }
 
     public static void createWorkingDirectoryIfNotExists(Parameters parameters) {

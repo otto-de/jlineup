@@ -2,14 +2,12 @@ package de.otto.jlineup.browser;
 
 import de.otto.jlineup.config.UrlConfig;
 
-import java.util.Objects;
-
-final class ScreenshotContext {
-    final String url;
-    final String path;
-    final int windowWidth;
-    final boolean before;
-    final UrlConfig urlConfig;
+public final class ScreenshotContext {
+    public final String url;
+    public final String path;
+    public final int windowWidth;
+    public final boolean before;
+    public final UrlConfig urlConfig;
 
     ScreenshotContext(String url, String path, int windowWidth, boolean before, UrlConfig urlConfig) {
         this.url = url;

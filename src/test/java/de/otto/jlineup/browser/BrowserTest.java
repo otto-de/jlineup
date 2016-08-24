@@ -6,7 +6,7 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
-import de.otto.jlineup.files.FileUtilsTest;
+import de.otto.jlineup.file.FileUtilsTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -160,7 +160,7 @@ public class BrowserTest {
         );
 
         //when
-        final List<ScreenshotContext> screenshotContextList = BrowserUtils.generateScreenshotsParametersFromConfig(config, true);
+        final List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(config, true);
 
         //then
         assertThat(screenshotContextList, containsInAnyOrder(expectedScreenshotContextList.toArray()));
