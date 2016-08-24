@@ -1,21 +1,14 @@
 package de.otto.jlineup.image;
 
-import de.otto.jlineup.browser.BrowserUtils;
-import de.otto.jlineup.config.Parameters;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
-import static com.google.common.io.Files.equal;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertThat;
 
 public class ImageUtilsTest {
 
@@ -23,26 +16,32 @@ public class ImageUtilsTest {
     public void shouldGenerateDifferenceImage() throws IOException {
 
         //given
-        Parameters parameters = Mockito.mock(Parameters.class);
-        when(parameters.getWorkingDirectory()).thenReturn("src/test/resources");
-        when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
-
-        final String generatedDifferenceImagePath = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, "url", "/", 1001, 2002, "DIFFERENCE");
-        final String referenceDifferenceImagePath = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, "url", "/", 1001, 2002, "DIFFERENCE_reference");
-
+        final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_2002_before.png"));
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_2002_after.png"));
+        final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_2002_DIFFERENCE_reference.png"));
+
         //when
-        ImageUtils.BufferedImageComparisonResult result = ImageUtils.generateDifferenceImage(beforeImageBuffer, afterImageBuffer, 800);
-        ImageIO.write(result.getDifferenceImage().orElse(null), "png", new File(generatedDifferenceImagePath));
+        ImageUtils.BufferedImageComparisonResult result = ImageUtils.generateDifferenceImage(beforeImageBuffer, afterImageBuffer, viewportHeight);
 
         //then
-        assertThat(equal(new File(generatedDifferenceImagePath), new File(referenceDifferenceImagePath)), is(true));
+        assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
         assertThat(result.getDifference(), is(0.07005));
-
-        Files.delete(Paths.get(generatedDifferenceImagePath));
     }
 
+    private boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
+        if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {
+            for (int x = 0; x < img1.getWidth(); x++) {
+                for (int y = 0; y < img1.getHeight(); y++) {
+                    if (img1.getRGB(x, y) != img2.getRGB(x, y))
+                        return false;
+                }
+            }
+        } else {
+            return false;
+        }
+        return true;
+    }
 
 
 }
