@@ -22,6 +22,9 @@ public class Parameters {
     @Parameter(names = {"--report-dir", "-r"}, description = "HTML report directory name - relative to working dir!")
     private String reportDirectory = "report";
 
+    @Parameter(names = {"--compare", "-j"}, description = "Just compare the existing screenshots.")
+    private boolean justCompare = false;
+
     public String getWorkingDirectory() {
         return workingDirectory;
     }
@@ -34,7 +37,7 @@ public class Parameters {
         return reportDirectory;
     }
 
-    public String getConfigFile() {
+    String getConfigFile() {
         return configFile;
     }
 
@@ -43,6 +46,10 @@ public class Parameters {
     }
 
     public boolean isBefore() {
-        return !after;
+        return !after && !justCompare;
+    }
+
+    public boolean isJustCompare() {
+        return justCompare;
     }
 }

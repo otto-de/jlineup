@@ -55,19 +55,10 @@ public class Browser implements AutoCloseable{
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
     }
 
-    public void justDoIt() throws IOException, InterruptedException {
+    public void takeScreenshots() throws IOException, InterruptedException {
         boolean before = !parameters.isAfter();
-        List<ScreenshotContext> screenshotContextList = BrowserUtils.generateScreenshotsParametersFromConfig(config, before);
-        final List<ComparisonResult> comparisonResults = takeScreenshots(screenshotContextList);
-        writeComparisonReport(comparisonResults);
-    }
-
-    private void writeComparisonReport(List<ComparisonResult> comparisonResults) throws FileNotFoundException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        final String reportJson = gson.toJson(comparisonResults);
-        try (PrintStream out = new PrintStream(new FileOutputStream("report.json"))) {
-            out.print(reportJson);
-        }
+        List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(config, before);
+        takeScreenshots(screenshotContextList);
     }
 
     @Override
@@ -78,8 +69,7 @@ public class Browser implements AutoCloseable{
         }
     }
 
-    List<ComparisonResult> takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException {
-        List<ComparisonResult> result = new ArrayList<ComparisonResult>();
+    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException {
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
 
             driver.manage().window().setPosition(new Point(0, 0));
@@ -125,28 +115,7 @@ public class Browser implements AutoCloseable{
                 final BufferedImage currentScreenshot = ImageIO.read(screenshot);
                 final String currentScreenshotFileNameWithPath = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
                 ImageIO.write(currentScreenshot, "png", new File(currentScreenshotFileNameWithPath));
-                if (!screenshotContext.before) {
-                    BufferedImage imageBefore = null;
-                    final String beforeFileName = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, BEFORE);
-                    try {
-                        imageBefore = ImageIO.read(new File(beforeFileName));
-                    } catch (IIOException e) {
-                        if (yPosition == 0) {
-                            System.err.println("Cannot read 'before' screenshot (" + beforeFileName + "). Did you run jlineup with parameter --before before you tried to run it with --after?");
-                            throw e;
-                        } else {
-                            //There is a difference in the amount of vertical screenshots, this means the page's vertical size changed
-                            result.add(new ComparisonResult(url, screenshotContext.windowWidth, yPosition, 1d, beforeFileName, currentScreenshotFileNameWithPath, null));
-                            continue;
-                        }
-                    }
-                    final String differenceImageFileName = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, "DIFFERENCE");
-                    ImageUtils.BufferedImageComparisonResult bufferedImageComparisonResult = ImageUtils.generateDifferenceImage(imageBefore, currentScreenshot, viewportHeight.intValue());
-                    if (bufferedImageComparisonResult.getDifference() > 0) {
-                        ImageIO.write(bufferedImageComparisonResult.getDifferenceImage().orElse(null), "png", new File(differenceImageFileName));
-                    }
-                    result.add(new ComparisonResult(url, screenshotContext.windowWidth, yPosition, bufferedImageComparisonResult.getDifference(), beforeFileName, currentScreenshotFileNameWithPath, bufferedImageComparisonResult.getDifference() > 0 ? differenceImageFileName : null));
-                }
+
                 //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
                 //This is subject to change because W3C standard wants viewport screenshots
                 if (config.getBrowser() == Type.PHANTOMJS) {
@@ -161,7 +130,6 @@ public class Browser implements AutoCloseable{
                 pageHeight = (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
             }
         }
-        return result;
     }
 
     void scrollBy(JavascriptExecutor jse, int viewportHeight) {

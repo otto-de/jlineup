@@ -20,6 +20,15 @@ public class BrowserUtils {
 
     public static String generateScreenshotFileName(String url, String path, int width, int yPosition, String type) {
 
+        String fileName = generateScreenshotFileNamePrefix(url, path) + width + "_" + yPosition + "_" + type;
+
+        fileName = fileName + ".png";
+
+        return fileName;
+    }
+
+    public static String generateScreenshotFileNamePrefix(String url, String path) {
+
         if (path.equals("/") || path.equals("")) {
             path = "root";
         }
@@ -27,14 +36,14 @@ public class BrowserUtils {
             url = url.substring(0, url.length() - 1);
         }
 
-        String fileName = url + "_" + path + "_" + width + "_" + yPosition + "_" + type;
+        String fileName = url + "_" + path + "_";
 
-        fileName = fileName.replace("http://", "");
-        fileName = fileName.replace("https://", "");
-        fileName = fileName.replace("/", "_");
-        fileName = fileName.replace("..", "");
-        fileName = fileName.replace(".", "_");
-        fileName = fileName + ".png";
+        fileName = fileName
+                .replace("http://", "")
+                .replace("https://", "")
+                .replace("/", "_")
+                .replace("..", "")
+                .replace(".", "_");
 
         return fileName;
     }
@@ -45,7 +54,7 @@ public class BrowserUtils {
                 + generateScreenshotFileName(url, path, width, yPosition, step);
     }
 
-    static String buildUrl(String url, String path, final Map<String, String> envMapping) {
+    public static String buildUrl(String url, String path, final Map<String, String> envMapping) {
         if (envMapping != null && !envMapping.isEmpty()) {
             for (Map.Entry<String, String> envMappingEntry : envMapping.entrySet()) {
                 final String fromEnvironment = envMappingEntry.getKey();
@@ -58,7 +67,7 @@ public class BrowserUtils {
         return buildUrl(url, path);
     }
 
-    static String buildUrl(String url, String path) {
+    public static String buildUrl(String url, String path) {
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
@@ -88,7 +97,7 @@ public class BrowserUtils {
         return driver;
     }
 
-    static List<ScreenshotContext> generateScreenshotsParametersFromConfig(Config config, boolean before) {
+    public static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(Config config, boolean before) {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
         Map<String, UrlConfig> urls = config.getUrls();
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {

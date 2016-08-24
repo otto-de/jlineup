@@ -1,4 +1,4 @@
-package de.otto.jlineup.files;
+package de.otto.jlineup.file;
 
 import org.junit.After;
 import org.junit.Before;
