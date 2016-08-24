@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,10 +26,14 @@ public class ImageUtilsTest {
         Parameters parameters = Mockito.mock(Parameters.class);
         when(parameters.getWorkingDirectory()).thenReturn("src/test/resources");
         when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
+
         final String generatedDifferenceImagePath = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, "url", "/", 1001, 2002, "DIFFERENCE");
         final String referenceDifferenceImagePath = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, "url", "/", 1001, 2002, "DIFFERENCE_reference");
+
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_2002_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_2002_after.png"));
         //when
-        ImageUtils.BufferedImageComparisonResult result = ImageUtils.generateDifferenceImage(parameters, "url", "/", 1001, 2002, 800);
+        ImageUtils.BufferedImageComparisonResult result = ImageUtils.generateDifferenceImage(beforeImageBuffer, afterImageBuffer, 800);
         ImageIO.write(result.getDifferenceImage().orElse(null), "png", new File(generatedDifferenceImagePath));
 
         //then
