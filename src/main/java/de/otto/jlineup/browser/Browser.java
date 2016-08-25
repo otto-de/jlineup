@@ -1,22 +1,18 @@
 package de.otto.jlineup.browser;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
-import de.otto.jlineup.image.ImageUtils;
 import org.openqa.selenium.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -125,7 +121,7 @@ public class Browser implements AutoCloseable{
                 LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
 
                 scrollBy(jse, viewportHeight.intValue());
-                Thread.sleep(50);
+                Thread.sleep(100);
                 //Refresh to check if page grows during scrolling
                 pageHeight = (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
             }
@@ -169,7 +165,7 @@ public class Browser implements AutoCloseable{
             }
             if (cookie.domain != null) {
                 cookieCallBuilder.append("domain=");
-                cookieCallBuilder.append(cookie.path);
+                cookieCallBuilder.append(cookie.domain);
                 cookieCallBuilder.append(";");
             }
             if (cookie.secure) {
