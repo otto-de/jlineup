@@ -54,6 +54,12 @@ public class BrowserUtils {
                 + generateScreenshotFileName(url, path, width, yPosition, step);
     }
 
+    public static String getFullScreenshotFileNameWithPath(Parameters parameters, String fileName) {
+        return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
+                + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
+                + fileName;
+    }
+
     public static String buildUrl(String url, String path, final Map<String, String> envMapping) {
         if (envMapping != null && !envMapping.isEmpty()) {
             for (Map.Entry<String, String> envMappingEntry : envMapping.entrySet()) {
