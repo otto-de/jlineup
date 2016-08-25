@@ -19,19 +19,14 @@ import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -83,18 +78,6 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldGenerateFilename() throws Exception {
-        String outputString = BrowserUtils.generateScreenshotFileName("https://www.otto.de/", "multimedia", 1000, 2000, "after");
-        assertThat(outputString, is("www_otto_de_multimedia_1000_2000_after.png"));
-    }
-
-    @Test
-    public void shouldConvertRoot() throws Exception {
-        String outputString = BrowserUtils.generateScreenshotFileName("https://www.otto.de/", "/", 1000, 2000, "before");
-        assertThat(outputString, is("www_otto_de_root_1000_2000_before.png"));
-    }
-
-    @Test
     @Ignore //TODO: Find out why this doesn't work in conjunction with other tests
     public void shouldGetFirefoxDriver() throws InterruptedException {
         final Config config = new Config(null, FIREFOX, 5f, 800);
@@ -127,46 +110,6 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldGenerateFullPathToPngFile() {
-        Parameters parameters = mock(Parameters.class);
-        Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100);
-        when(parameters.getWorkingDirectory()).thenReturn("some/working/dir");
-        when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
-        Browser browser = new Browser(parameters, config, webDriverMock);
-        final String fullFileNameWithPath = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, "testurl", "/", 1001, 2002, "step");
-        assertThat(fullFileNameWithPath, is("some/working/dir/screenshots/testurl_root_1001_2002_step.png"));
-        browser.close();
-    }
-
-    @Test
-    public void shouldGenerateScreenshotsParameters() throws FileNotFoundException {
-        //given
-        Parameters parameters = mock(Parameters.class);
-        Config config = Config.readConfig(".", "src/test/resources/lineup_test.json");
-        when(parameters.getWorkingDirectory()).thenReturn("some/working/dir");
-        when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
-
-        UrlConfig expectedUrlConfigForOttoDe = getExpectedUrlConfigForOttoDe();
-        UrlConfig expectedUrlConfigForGoogleDe = getExpectedUrlConfigForGoogleDe();
-
-        final List<ScreenshotContext> expectedScreenshotContextList = ImmutableList.of(
-                ScreenshotContext.of("https://www.otto.de", "/", 600, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "/", 800, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "/", 1200, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "multimedia", 600, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "multimedia", 800, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "multimedia", 1200, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("http://www.google.de", "/", 1200, true, expectedUrlConfigForGoogleDe)
-        );
-
-        //when
-        final List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(config, true);
-
-        //then
-        assertThat(screenshotContextList, containsInAnyOrder(expectedScreenshotContextList.toArray()));
-    }
-
-    @Test
     public void shouldSetCookies() {
         //given
         Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(0L), true);
@@ -176,6 +119,18 @@ public class BrowserTest {
         //then
         verify(webDriverOptionsMock).addCookie(new org.openqa.selenium.Cookie("someName", "someValue", "someDomain", "somePath", new Date(0L), true));
         verify(webDriverOptionsMock).addCookie(new org.openqa.selenium.Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(1L)));
+    }
+
+    @Test
+    public void shouldSetCookiesThroughJavascript() throws Exception {
+        //given
+        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true);
+        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(100000067899L), false);
+        //when
+        testee.setCookiesPhantomJS(ImmutableList.of(cookieOne, cookieTwo));
+        //then
+        verify(webDriverMock).executeScript("document.cookie = 'someName=someValue;path=somePath;domain=someDomain;secure;expires=01 Jan 1970 01:00:10 GMT;'");
+        verify(webDriverMock).executeScript("document.cookie = 'someOtherName=someOtherValue;path=someOtherPath;domain=someOtherDomain;expires=03 Mar 1973 10:47:47 GMT;'");
     }
 
     @Test
@@ -239,14 +194,6 @@ public class BrowserTest {
         verify(webDriverOptionsMock).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue"));
         verify(webDriverMock).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(4)).executeScript(String.format(JS_SCROLL_CALL, 500));
-    }
-
-    public static UrlConfig getExpectedUrlConfigForOttoDe() {
-        return new UrlConfig(ImmutableList.of("/","multimedia"), 0.05f, ImmutableList.of(new Cookie("trackingDisabled", "true"), new Cookie("survey", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("us_customerServiceWidget", "{'customerServiceWidgetNotificationHidden':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600,800,1200),null,null);
-    }
-
-    public static UrlConfig getExpectedUrlConfigForGoogleDe() {
-        return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, ImmutableList.of(1200),null,null);
     }
 
 }
