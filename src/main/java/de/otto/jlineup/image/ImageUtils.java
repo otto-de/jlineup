@@ -41,8 +41,12 @@ public class ImageUtils {
 
     private static BufferedImageComparisonResult getDifferenceImage(BufferedImage img1, BufferedImage img2, int viewportHeight) {
         // convert images to pixel arrays...
-        final int w = img1.getWidth();
+        final int w = img1.getWidth() > img2.getWidth() ? img2.getWidth() : img1.getWidth();
         final int h = img1.getHeight() > img2.getHeight() ? img2.getHeight() : img1.getHeight();
+
+        final int maxWidth = Math.max(img1.getWidth(), img2.getWidth());
+        final int maxHeight = Math.max(img1.getHeight(), img2.getHeight());
+
         final int highlight = Color.WHITE.getRGB();
         final int[] p1 = img1.getRGB(0, 0, w, h, null, 0, w);
         final int[] p2 = img2.getRGB(0, 0, w, h, null, 0, w);
