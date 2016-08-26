@@ -28,6 +28,23 @@ public class ImageUtilsTest {
         assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
     }
 
+    @Test
+    public void shouldGenerateDifferenceImageFromScreenshotsWithDifferentSizes() throws IOException {
+        //given
+        final int viewportHeight = 800;
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/ideaWide.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/ideaVertical.png"));
+        final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/ideaDifferenceReference.png"));
+
+        //when
+        ImageUtils.BufferedImageComparisonResult result = ImageUtils.generateDifferenceImage(beforeImageBuffer, afterImageBuffer, viewportHeight);
+        //new DifferenceFileWriter().writeDifferenceFile("src/test/resources/screenshots/ideaDifferenceReference.png", result);
+
+        //then
+        assertThat(result.getDifference(), is(0.8739169562370365));
+        assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
+    }
+
     //Helper function to compare two BufferedImage instances (BufferedImage doesn't override equals())
     private boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
         if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {

@@ -6,9 +6,9 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 
-public class FileWriter {
+public class DifferenceFileWriter {
 
-    protected void writeDifferenceFile(String differenceImageFileName, ImageUtils.BufferedImageComparisonResult bufferedImageComparisonResult) throws IOException {
+    public void writeDifferenceFile(String differenceImageFileName, ImageUtils.BufferedImageComparisonResult bufferedImageComparisonResult) throws IOException {
         ImageIO.write(bufferedImageComparisonResult.getDifferenceImage().orElse(null), "png", new File(differenceImageFileName));
     }
 
