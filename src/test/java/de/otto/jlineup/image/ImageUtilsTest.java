@@ -1,5 +1,6 @@
 package de.otto.jlineup.image;
 
+import de.otto.jlineup.report.DifferenceFileWriter;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -38,10 +39,10 @@ public class ImageUtilsTest {
 
         //when
         ImageUtils.BufferedImageComparisonResult result = ImageUtils.generateDifferenceImage(beforeImageBuffer, afterImageBuffer, viewportHeight);
-        //new DifferenceFileWriter().writeDifferenceFile("src/test/resources/screenshots/ideaDifferenceReference.png", result);
+        //new DifferenceFileWriter().writeDifferenceFile("src/test/resources/screenshots/ideaDifferenceReferenceNew.png", result);
 
         //then
-        assertThat(result.getDifference(), is(0.8739169562370365));
+        assertThat(result.getDifference(), is(0.5366469443663049));
         assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
     }
 

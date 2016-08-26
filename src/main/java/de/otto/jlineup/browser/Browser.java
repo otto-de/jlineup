@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
+import de.otto.jlineup.file.FileUtils;
 import org.openqa.selenium.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +19,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
-import static de.otto.jlineup.image.ImageUtils.AFTER;
-import static de.otto.jlineup.image.ImageUtils.BEFORE;
+import static de.otto.jlineup.file.FileUtils.AFTER;
+import static de.otto.jlineup.file.FileUtils.BEFORE;
 
 public class Browser implements AutoCloseable{
 
@@ -109,7 +110,7 @@ public class Browser implements AutoCloseable{
             for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.getMaxScrollHeight().orElse(MAX_SCROLL_HEIGHT); yPosition += viewportHeight) {
                 File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
                 final BufferedImage currentScreenshot = ImageIO.read(screenshot);
-                final String currentScreenshotFileNameWithPath = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
+                final String currentScreenshotFileNameWithPath = FileUtils.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
                 ImageIO.write(currentScreenshot, "png", new File(currentScreenshotFileNameWithPath));
 
                 //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
