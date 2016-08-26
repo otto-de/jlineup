@@ -6,6 +6,7 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
+import de.otto.jlineup.file.FileUtils;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
@@ -48,15 +49,6 @@ public class BrowserUtilsTest {
     }
 
     @Test
-    public void shouldGenerateFullPathToPngFile() {
-        Parameters parameters = mock(Parameters.class);
-        when(parameters.getWorkingDirectory()).thenReturn("some/working/dir");
-        when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
-        final String fullFileNameWithPath = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, "testurl", "/", 1001, 2002, "step");
-        assertThat(fullFileNameWithPath, is("some/working/dir/screenshots/testurl_root_1001_2002_step.png"));
-    }
-
-    @Test
     public void shouldGenerateScreenshotsParameters() throws FileNotFoundException {
         //given
         Parameters parameters = mock(Parameters.class);
@@ -82,18 +74,6 @@ public class BrowserUtilsTest {
 
         //then
         assertThat(screenshotContextList, containsInAnyOrder(expectedScreenshotContextList.toArray()));
-    }
-
-    @Test
-    public void shouldGenerateFilename() throws Exception {
-        String outputString = BrowserUtils.generateScreenshotFileName("https://www.otto.de/", "multimedia", 1000, 2000, "after");
-        assertThat(outputString, is("www_otto_de_multimedia_1000_2000_after.png"));
-    }
-
-    @Test
-    public void shouldConvertRoot() throws Exception {
-        String outputString = BrowserUtils.generateScreenshotFileName("https://www.otto.de/", "/", 1000, 2000, "before");
-        assertThat(outputString, is("www_otto_de_root_1000_2000_before.png"));
     }
 
     public static UrlConfig getExpectedUrlConfigForOttoDe() {

@@ -1,7 +1,6 @@
 package de.otto.jlineup.browser;
 
 import de.otto.jlineup.config.Config;
-import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.MarionetteDriverManager;
@@ -17,48 +16,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class BrowserUtils {
-
-    public static String generateScreenshotFileName(String url, String path, int width, int yPosition, String type) {
-
-        String fileName = generateScreenshotFileNamePrefix(url, path) + width + "_" + yPosition + "_" + type;
-
-        fileName = fileName + ".png";
-
-        return fileName;
-    }
-
-    public static String generateScreenshotFileNamePrefix(String url, String path) {
-
-        if (path.equals("/") || path.equals("")) {
-            path = "root";
-        }
-        if (url.endsWith("/")) {
-            url = url.substring(0, url.length() - 1);
-        }
-
-        String fileName = url + "_" + path + "_";
-
-        fileName = fileName
-                .replace("http://", "")
-                .replace("https://", "")
-                .replace("/", "_")
-                .replace("..", "")
-                .replace(".", "_");
-
-        return fileName;
-    }
-
-    public static String getFullScreenshotFileNameWithPath(Parameters parameters, String url, String path, int width, int yPosition, String step) {
-        return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
-                + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
-                + generateScreenshotFileName(url, path, width, yPosition, step);
-    }
-
-    public static String getFullScreenshotFileNameWithPath(Parameters parameters, String fileName) {
-        return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
-                + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
-                + fileName;
-    }
 
     public static String buildUrl(String url, String path, final Map<String, String> envMapping) {
         if (envMapping != null && !envMapping.isEmpty()) {

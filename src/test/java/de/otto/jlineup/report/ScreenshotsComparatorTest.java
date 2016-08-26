@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static de.otto.jlineup.image.ImageUtils.AFTER;
-import static de.otto.jlineup.image.ImageUtils.BEFORE;
+import static de.otto.jlineup.file.FileUtils.AFTER;
+import static de.otto.jlineup.file.FileUtils.BEFORE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;

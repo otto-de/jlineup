@@ -10,6 +10,11 @@ import java.nio.file.Paths;
 
 public class FileUtils {
 
+    public static final String BEFORE = "before";
+    public static final String AFTER = "after";
+    public static final String DIVIDER = "_";
+    public static final String PNG_EXTENSION = ".png";
+
     public static Path createDirIfNotExists(String dirPath) throws IOException {
         Path path = Paths.get(dirPath);
         Files.createDirectories(path);
@@ -65,5 +70,52 @@ public class FileUtils {
             System.err.println("Could not create or open " + subDirectory + " directory.");
             System.exit(1);
         }
+    }
+
+    public static String generateScreenshotFileName(String url, String path, int width, int yPosition, String type) {
+
+        String fileName = generateScreenshotFileNamePrefix(url, path)
+                + String.format("%d", width)
+                + DIVIDER
+                + String.format("%d", yPosition)
+                + DIVIDER
+                + type;
+
+        fileName = fileName + PNG_EXTENSION;
+
+        return fileName;
+    }
+
+    public static String generateScreenshotFileNamePrefix(String url, String path) {
+
+        if (path.equals("/") || path.equals("")) {
+            path = "root";
+        }
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
+        }
+
+        String fileName = url + DIVIDER + path + DIVIDER;
+
+        fileName = fileName
+                .replace("http://", "")
+                .replace("https://", "")
+                .replace("/", DIVIDER)
+                .replace("..", "")
+                .replace(".", DIVIDER);
+
+        return fileName;
+    }
+
+    public static String getFullScreenshotFileNameWithPath(Parameters parameters, String url, String path, int width, int yPosition, String step) {
+        return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
+                + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
+                + generateScreenshotFileName(url, path, width, yPosition, step);
+    }
+
+    public static String getFullScreenshotFileNameWithPath(Parameters parameters, String fileName) {
+        return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
+                + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
+                + fileName;
     }
 }
