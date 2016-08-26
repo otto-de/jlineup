@@ -14,7 +14,6 @@ public class ImageUtilsTest {
 
     @Test
     public void shouldGenerateDifferenceImage() throws IOException {
-
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_2002_before.png"));
@@ -25,8 +24,8 @@ public class ImageUtilsTest {
         ImageUtils.BufferedImageComparisonResult result = ImageUtils.generateDifferenceImage(beforeImageBuffer, afterImageBuffer, viewportHeight);
 
         //then
-        assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
         assertThat(result.getDifference(), is(0.07005));
+        assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
     }
 
     //Helper function to compare two BufferedImage instances (BufferedImage doesn't override equals())
@@ -43,6 +42,5 @@ public class ImageUtilsTest {
         }
         return true;
     }
-
 
 }
