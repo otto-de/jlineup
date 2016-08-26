@@ -24,19 +24,19 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class ScreenshotComparatorTest {
+public class ScreenshotsComparatorTest {
 
     @Test
     public void shouldFindVerticalScrollPositionInImageFileName() throws Exception {
         String fileName = "url_root_1001_2002_after.png";
-        int yPos = ScreenshotComparator.extractVerticalScrollPositionFromFileName(fileName);
+        int yPos = ScreenshotsComparator.extractVerticalScrollPositionFromFileName(fileName);
         assertThat(yPos, is(2002));
     }
 
     @Test
     public void shouldFindWindowWidthInImageFileName() throws Exception {
         String fileName = "url_root_1001_2002_after.png";
-        int yPos = ScreenshotComparator.extractWindowWidthFromFileName(fileName);
+        int yPos = ScreenshotsComparator.extractWindowWidthFromFileName(fileName);
         assertThat(yPos, is(1001));
     }
 
@@ -44,7 +44,7 @@ public class ScreenshotComparatorTest {
     public void shouldFindBeforeImagesInDirectory() throws IOException {
         Parameters parameters = new Parameters();
         new JCommander(parameters, "-d", "src/test/resources/");
-        final List<String> beforeFileNames = ScreenshotComparator.getFilenamesForStep(parameters, "/", "http://url", BEFORE);
+        final List<String> beforeFileNames = ScreenshotsComparator.getFilenamesForStep(parameters, "/", "http://url", BEFORE);
         assertThat(beforeFileNames, is(Arrays.asList("url_root_1001_2002_before.png")));
     }
 
@@ -52,14 +52,14 @@ public class ScreenshotComparatorTest {
     public void shouldFindAfterImagesInDirectory() throws IOException {
         Parameters parameters = new Parameters();
         new JCommander(parameters, "-d", "src/test/resources/");
-        final List<String> beforeFileNames = ScreenshotComparator.getFilenamesForStep(parameters, "/", "http://url", AFTER);
+        final List<String> beforeFileNames = ScreenshotsComparator.getFilenamesForStep(parameters, "/", "http://url", AFTER);
         assertThat(beforeFileNames, is(Arrays.asList("url_root_1001_2002_after.png", "url_root_1001_3003_after.png")));
     }
 
     @Test
     public void shouldReplaceAfterWithBeforeInFilename() throws Exception {
         String filename = "url_root_1001_2002_after.png";
-        String switchedFileName = ScreenshotComparator.switchAfterWithBeforeInFileName(filename);
+        String switchedFileName = ScreenshotsComparator.switchAfterWithBeforeInFileName(filename);
         assertThat(switchedFileName, is("url_root_1001_2002_before.png"));
     }
 
@@ -75,8 +75,8 @@ public class ScreenshotComparatorTest {
                 Browser.Type.CHROME,
                 0f,
                 1000);
-        FileWriter mockFileWriter = mock(FileWriter.class);
-        ScreenshotComparator testee = new ScreenshotComparator(parameters, config, mockFileWriter);
+        DifferenceFileWriter mockDifferenceFileWriter = mock(DifferenceFileWriter.class);
+        ScreenshotsComparator testee = new ScreenshotsComparator(parameters, config, mockDifferenceFileWriter);
 
         List<ComparisonResult> expectedResults = ImmutableList.of(
                 new ComparisonResult("http://url/", 1001, 2002, 0.05604, "url_root_1001_2002_before.png", "url_root_1001_2002_after.png", "url_root_1001_2002_DIFFERENCE.png"),
@@ -88,6 +88,6 @@ public class ScreenshotComparatorTest {
 
         //then
         assertThat(compare, is(expectedResults));
-        verify(mockFileWriter).writeDifferenceFile(eq("src/test/resources/screenshots/url_root_1001_2002_DIFFERENCE.png"), any(ImageUtils.BufferedImageComparisonResult.class));
+        verify(mockDifferenceFileWriter).writeDifferenceFile(eq("src/test/resources/screenshots/url_root_1001_2002_DIFFERENCE.png"), any(ImageUtils.BufferedImageComparisonResult.class));
     }
 }

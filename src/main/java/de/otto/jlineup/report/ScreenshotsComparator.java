@@ -23,26 +23,26 @@ import java.util.stream.Collectors;
 import static de.otto.jlineup.image.ImageUtils.AFTER;
 import static de.otto.jlineup.image.ImageUtils.BEFORE;
 
-public class ScreenshotComparator {
+public class ScreenshotsComparator {
 
     private static final String BEFORE_MATCHER = "_" + BEFORE + ".png";
     private static final String AFTER_MATCHER = "_" + AFTER + ".png";
 
     final private Parameters parameters;
     final private Config config;
-    final private FileWriter fileWriter;
+    final private DifferenceFileWriter differenceFileWriter;
 
-    public ScreenshotComparator(Parameters parameters, Config config) {
+    public ScreenshotsComparator(Parameters parameters, Config config) {
         this.parameters = parameters;
         this.config = config;
-        this.fileWriter = new FileWriter();
+        this.differenceFileWriter = new DifferenceFileWriter();
     }
 
     @VisibleForTesting
-    ScreenshotComparator(Parameters parameters, Config config, FileWriter fileWriter) {
+    ScreenshotsComparator(Parameters parameters, Config config, DifferenceFileWriter differenceFileWriter) {
         this.parameters = parameters;
         this.config = config;
-        this.fileWriter = fileWriter;
+        this.differenceFileWriter = differenceFileWriter;
     }
 
     public List<ComparisonResult> compare() throws IOException {
@@ -88,7 +88,7 @@ public class ScreenshotComparator {
                     final String differenceImageFileName = BrowserUtils.getFullScreenshotFileNameWithPath(parameters, url, path, windowWidth, yPosition, "DIFFERENCE");
                     ImageUtils.BufferedImageComparisonResult bufferedImageComparisonResult = ImageUtils.generateDifferenceImage(imageBefore, imageAfter, config.getWindowHeight());
                     if (bufferedImageComparisonResult.getDifference() > 0) {
-                        fileWriter.writeDifferenceFile(differenceImageFileName, bufferedImageComparisonResult);
+                        differenceFileWriter.writeDifferenceFile(differenceImageFileName, bufferedImageComparisonResult);
                     }
                     result.add(new ComparisonResult(fullUrlWithPath, windowWidth, yPosition, bufferedImageComparisonResult.getDifference(), beforeFileName, afterFileName, bufferedImageComparisonResult.getDifference() > 0 ? differenceImageFileName : null));
                 }

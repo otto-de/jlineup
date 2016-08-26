@@ -9,7 +9,7 @@ import de.otto.jlineup.browser.ComparisonResult;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.file.FileUtils;
-import de.otto.jlineup.report.ScreenshotComparator;
+import de.otto.jlineup.report.ScreenshotsComparator;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -42,8 +42,8 @@ public class Main {
         }
 
         if (parameters.isAfter() || parameters.isJustCompare()) {
-            ScreenshotComparator screenshotComparator = new ScreenshotComparator(parameters, config);
-            List<ComparisonResult> compare = screenshotComparator.compare();
+            ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(parameters, config);
+            List<ComparisonResult> compare = screenshotsComparator.compare();
             writeComparisonReport(parameters, compare);
         }
     }
