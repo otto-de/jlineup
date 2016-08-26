@@ -10,9 +10,7 @@ import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.image.ImageUtils;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -26,19 +24,19 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class ComparisonReporterTest {
+public class ScreenshotComparatorTest {
 
     @Test
     public void shouldFindVerticalScrollPositionInImageFileName() throws Exception {
         String fileName = "url_root_1001_2002_after.png";
-        int yPos = ComparisonReporter.extractVerticalScrollPositionFromFileName(fileName);
+        int yPos = ScreenshotComparator.extractVerticalScrollPositionFromFileName(fileName);
         assertThat(yPos, is(2002));
     }
 
     @Test
     public void shouldFindWindowWidthInImageFileName() throws Exception {
         String fileName = "url_root_1001_2002_after.png";
-        int yPos = ComparisonReporter.extractWindowWidthFromFileName(fileName);
+        int yPos = ScreenshotComparator.extractWindowWidthFromFileName(fileName);
         assertThat(yPos, is(1001));
     }
 
@@ -46,7 +44,7 @@ public class ComparisonReporterTest {
     public void shouldFindBeforeImagesInDirectory() throws IOException {
         Parameters parameters = new Parameters();
         new JCommander(parameters, "-d", "src/test/resources/");
-        final List<String> beforeFileNames = ComparisonReporter.getFilenamesForStep(parameters, "/", "http://url", BEFORE);
+        final List<String> beforeFileNames = ScreenshotComparator.getFilenamesForStep(parameters, "/", "http://url", BEFORE);
         assertThat(beforeFileNames, is(Arrays.asList("url_root_1001_2002_before.png")));
     }
 
@@ -54,14 +52,14 @@ public class ComparisonReporterTest {
     public void shouldFindAfterImagesInDirectory() throws IOException {
         Parameters parameters = new Parameters();
         new JCommander(parameters, "-d", "src/test/resources/");
-        final List<String> beforeFileNames = ComparisonReporter.getFilenamesForStep(parameters, "/", "http://url", AFTER);
+        final List<String> beforeFileNames = ScreenshotComparator.getFilenamesForStep(parameters, "/", "http://url", AFTER);
         assertThat(beforeFileNames, is(Arrays.asList("url_root_1001_2002_after.png", "url_root_1001_3003_after.png")));
     }
 
     @Test
     public void shouldReplaceAfterWithBeforeInFilename() throws Exception {
         String filename = "url_root_1001_2002_after.png";
-        String switchedFileName = ComparisonReporter.switchAfterWithBeforeInFileName(filename);
+        String switchedFileName = ScreenshotComparator.switchAfterWithBeforeInFileName(filename);
         assertThat(switchedFileName, is("url_root_1001_2002_before.png"));
     }
 
@@ -78,7 +76,7 @@ public class ComparisonReporterTest {
                 0f,
                 1000);
         FileWriter mockFileWriter = mock(FileWriter.class);
-        ComparisonReporter testee = new ComparisonReporter(parameters, config, mockFileWriter);
+        ScreenshotComparator testee = new ScreenshotComparator(parameters, config, mockFileWriter);
 
         List<ComparisonResult> expectedResults = ImmutableList.of(
                 new ComparisonResult("http://url/", 1001, 2002, 0.05604, "url_root_1001_2002_before.png", "url_root_1001_2002_after.png", "url_root_1001_2002_DIFFERENCE.png"),

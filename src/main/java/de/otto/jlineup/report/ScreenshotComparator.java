@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import static de.otto.jlineup.image.ImageUtils.AFTER;
 import static de.otto.jlineup.image.ImageUtils.BEFORE;
 
-public class ComparisonReporter {
+public class ScreenshotComparator {
 
     private static final String BEFORE_MATCHER = "_" + BEFORE + ".png";
     private static final String AFTER_MATCHER = "_" + AFTER + ".png";
@@ -32,14 +32,14 @@ public class ComparisonReporter {
     final private Config config;
     final private FileWriter fileWriter;
 
-    public ComparisonReporter(Parameters parameters, Config config) {
+    public ScreenshotComparator(Parameters parameters, Config config) {
         this.parameters = parameters;
         this.config = config;
         this.fileWriter = new FileWriter();
     }
 
     @VisibleForTesting
-    ComparisonReporter(Parameters parameters, Config config, FileWriter fileWriter) {
+    ScreenshotComparator(Parameters parameters, Config config, FileWriter fileWriter) {
         this.parameters = parameters;
         this.config = config;
         this.fileWriter = fileWriter;
