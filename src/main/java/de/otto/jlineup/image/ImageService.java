@@ -7,28 +7,17 @@ import java.util.Optional;
 
 import static java.lang.Math.*;
 
-public class ImageUtils {
+public class ImageService {
 
     public static final int SAME_COLOR = Color.BLACK.getRGB();
     public static final int HIGHLIGHT_COLOR = Color.WHITE.getRGB();
     public static final int DIFFERENT_SIZE_COLOR = Color.GRAY.getRGB();
 
-    /**
-     * @param viewportHeight is needed to calculate the difference level
-     * @return a double between 0 and 1 that measures the difference between the two pictures. 1 means 100% difference,
-     * 0 means, that both pictures are identical
-     * @throws IOException
-     */
-    public static ImageComparisonResult compareImages(BufferedImage imageBefore, BufferedImage imageAfter, int viewportHeight) throws IOException {
-        final ImageComparisonResult comparisonResult = getDifferenceImage(imageBefore, imageAfter, viewportHeight);
-        return comparisonResult;
-    }
-
     public static class ImageComparisonResult {
         private final BufferedImage differenceImage;
         private final double difference;
 
-        ImageComparisonResult(BufferedImage differenceImage, double difference) {
+        public ImageComparisonResult(BufferedImage differenceImage, double difference) {
             this.differenceImage = differenceImage;
             this.difference = difference;
         }
@@ -42,7 +31,13 @@ public class ImageUtils {
         }
     }
 
-    private static ImageComparisonResult getDifferenceImage(BufferedImage img1, BufferedImage img2, int viewportHeight) {
+
+    /**
+     * @param viewportHeight is needed to calculate the difference level
+     * @return A ImageComparisonResult containing a double between 0 and 1 that measures the difference between the two pictures. 1 means 100% difference,
+     * 0 means, that both pictures are identical and a difference image as BufferedImage
+     */
+    public ImageComparisonResult compareImages(BufferedImage img1, BufferedImage img2, int viewportHeight) {
 
         if (img1 == null || img2 == null) throw new NullPointerException("Can't compare null imagebuffers");
 

@@ -1,5 +1,6 @@
 package de.otto.jlineup.image;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -10,7 +11,14 @@ import java.io.IOException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ImageUtilsTest {
+public class ImageServiceTest {
+
+    ImageService testee;
+
+    @Before
+    public void setup() {
+        testee = new ImageService();
+    }
 
     @Test
     public void shouldGenerateDifferenceImage() throws IOException {
@@ -21,7 +29,7 @@ public class ImageUtilsTest {
         final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_02002_DIFFERENCE_reference.png"));
 
         //when
-        ImageUtils.ImageComparisonResult result = ImageUtils.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
 
         //then
         assertThat(result.getDifference(), is(0.07005));
@@ -37,7 +45,7 @@ public class ImageUtilsTest {
         final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/ideaDifferenceReference.png"));
 
         //when
-        ImageUtils.ImageComparisonResult result = ImageUtils.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
         //new DifferenceFileWriter().writeDifferenceFile("src/test/resources/screenshots/ideaDifferenceReferenceNew.png", result);
 
         //then
