@@ -33,7 +33,7 @@ public class Browser implements AutoCloseable{
         @SerializedName(value = "Chrome", alternate = {"chrome", "CHROME"})
         CHROME,
         @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
-        PHANTOMJS;
+        PHANTOMJS
     }
 
     static final String JS_DOCUMENT_HEIGHT_CALL = "return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);";
@@ -112,8 +112,8 @@ public class Browser implements AutoCloseable{
             for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.getMaxScrollHeight().orElse(MAX_SCROLL_HEIGHT); yPosition += viewportHeight) {
                 File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
                 final BufferedImage currentScreenshot = ImageIO.read(screenshot);
-                final String currentScreenshotFileNameWithPath = FileService.getFullScreenshotFileNameWithPath(parameters, screenshotContext.url, screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
-                fileService.writeScreenshot(currentScreenshotFileNameWithPath, currentScreenshot);
+                fileService.writeScreenshot(currentScreenshot, parameters, screenshotContext.url,
+                        screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
 
                 //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
                 //This is subject to change because W3C standard wants viewport screenshots

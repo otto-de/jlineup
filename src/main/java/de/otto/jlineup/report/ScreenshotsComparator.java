@@ -55,12 +55,12 @@ public class ScreenshotsComparator {
                 LOG.debug("Path: {}", path);
                 String fullUrlWithPath = BrowserUtils.buildUrl(url, path, urlConfig.envMapping);
 
-                final List<String> beforeFileNamesList = getFilenamesForStep(parameters, path, url, BEFORE);
+                final List<String> beforeFileNamesList = fileService.getFilenamesForStep(parameters, path, url, BEFORE);
                 final List<String> afterFileNamesList = new ArrayList<>();
                 beforeFileNamesList.forEach(filename -> afterFileNamesList.add(switchAfterWithBeforeInFileName(filename)));
 
                 final Set<String> beforeFileNamesSet = new HashSet<>(beforeFileNamesList);
-                final Set<String> afterFileNamesSet = new HashSet<>(getFilenamesForStep(parameters, path, url, AFTER));
+                final Set<String> afterFileNamesSet = new HashSet<>(fileService.getFilenamesForStep(parameters, path, url, AFTER));
 
                 //we need after files that have no before file in the final report
                 final List<String> afterFileNamesWithNoBeforeFile = new ArrayList<>();
@@ -92,12 +92,12 @@ public class ScreenshotsComparator {
                         continue;
                     }
 
-                    final String differenceImageFileName = fileService.getFullScreenshotFileNameWithPath(parameters, url, path, windowWidth, yPosition, "DIFFERENCE");
                     ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, config.getWindowHeight());
+                    String differenceImagePath = null;
                     if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
-                        fileService.writeScreenshot(differenceImageFileName, imageComparisonResult.getDifferenceImage().orElse(null));
+                        differenceImagePath = fileService.writeScreenshot(imageComparisonResult.getDifferenceImage().orElse(null), parameters, url, path, windowWidth, yPosition, "DIFFERENCE");
                     }
-                    screenshotComparisonResults.add(new ScreenshotComparisonResult(fullUrlWithPath, windowWidth, yPosition, imageComparisonResult.getDifference(), beforeFileName, afterFileName, imageComparisonResult.getDifference() > 0 ? differenceImageFileName : null));
+                    screenshotComparisonResults.add(new ScreenshotComparisonResult(fullUrlWithPath, windowWidth, yPosition, imageComparisonResult.getDifference(), beforeFileName, afterFileName, differenceImagePath));
                 }
 
                 addMissingBeforeFilesToResults(screenshotComparisonResults, fullUrlWithPath, afterFileNamesWithNoBeforeFile);
@@ -126,14 +126,6 @@ public class ScreenshotsComparator {
             return filename.replace(AFTER_MATCHER, BEFORE_MATCHER);
         }
         return filename;
-    }
-
-    @VisibleForTesting
-    List<String> getFilenamesForStep(Parameters parameters, String path, String url, String step) throws IOException {
-        final String matcherPattern = "glob:**" + FileService.generateScreenshotFileNamePrefix(url, path) + "*_*_" + step + ".png";
-        Path screenshotDirectory = FileService.getScreenshotDirectory(parameters);
-        final List<String> beforeFiles = fileService.getFileNamesMatchingPattern(screenshotDirectory, matcherPattern);
-        return beforeFiles;
     }
 
     final private static Pattern FIND_VERTICAL_SCROLL_POSITION_PATTERN = Pattern.compile("_([0-9]*?)_\\D*$");

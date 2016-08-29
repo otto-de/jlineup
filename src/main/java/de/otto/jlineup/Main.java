@@ -47,15 +47,15 @@ public class Main {
 
         if (parameters.isAfter() || parameters.isJustCompare()) {
             ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(parameters, config, fileService, imageService);
-            List<ScreenshotComparisonResult> compare = screenshotsComparator.compare();
-            writeComparisonReport(parameters, compare);
+            List<ScreenshotComparisonResult> comparisonResults = screenshotsComparator.compare();
+            writeComparisonReport(parameters, fileService, comparisonResults);
         }
     }
 
-    private static void writeComparisonReport(Parameters parameters, List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {
+    private static void writeComparisonReport(Parameters parameters, FileService fileService, List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         final String reportJson = gson.toJson(screenshotComparisonResults);
-        try (PrintStream out = new PrintStream(new FileOutputStream(FileService.getReportDirectory(parameters).toString() + "/report.json"))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(fileService.getReportDirectory(parameters).toString() + "/report.json"))) {
             out.print(reportJson);
         }
     }
