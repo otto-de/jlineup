@@ -1,27 +1,33 @@
 package de.otto.jlineup.file;
 
 import de.otto.jlineup.config.Parameters;
+import de.otto.jlineup.image.ImageUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
-public class FileUtils {
+public class FileService {
 
     public static final String BEFORE = "before";
     public static final String AFTER = "after";
     public static final String DIVIDER = "_";
     public static final String PNG_EXTENSION = ".png";
 
-    public static Path createDirIfNotExists(String dirPath) throws IOException {
+    public Path createDirIfNotExists(String dirPath) throws IOException {
         Path path = Paths.get(dirPath);
         Files.createDirectories(path);
         return path;
     }
 
-    public static void clearDirectory(String path) throws IOException {
+    public void clearDirectory(String path) throws IOException {
         Path directory = Paths.get(path);
         Files.newDirectoryStream(directory).forEach(file -> {
             try {
@@ -32,7 +38,7 @@ public class FileUtils {
         });
     }
 
-    public static void createOrClearReportDirectory(Parameters parameters) {
+    public void createOrClearReportDirectory(Parameters parameters) {
         createOrClearDirectoryBelowWorkingDir(parameters.getWorkingDirectory(), parameters.getReportDirectory());
     }
 
@@ -48,24 +54,24 @@ public class FileUtils {
         return Paths.get(parameters.getWorkingDirectory() + "/" + parameters.getReportDirectory());
     }
 
-    public static void createWorkingDirectoryIfNotExists(Parameters parameters) {
+    public void createWorkingDirectoryIfNotExists(Parameters parameters) {
         try {
-            FileUtils.createDirIfNotExists(parameters.getWorkingDirectory());
+            createDirIfNotExists(parameters.getWorkingDirectory());
         } catch (IOException e) {
             System.err.println("Could not create or open working directory.");
             System.exit(1);
         }
     }
 
-    public static void createOrClearScreenshotsDirectory(Parameters parameters) {
+    public void createOrClearScreenshotsDirectory(Parameters parameters) {
         createOrClearDirectoryBelowWorkingDir(parameters.getWorkingDirectory(), parameters.getScreenshotDirectory());
     }
 
-    private static void createOrClearDirectoryBelowWorkingDir(String workingDirectory, String subDirectory) {
+    private void createOrClearDirectoryBelowWorkingDir(String workingDirectory, String subDirectory) {
         try {
             final String subDirectoryPath = workingDirectory + "/" + subDirectory;
-            FileUtils.createDirIfNotExists(subDirectoryPath);
-            FileUtils.clearDirectory(subDirectoryPath);
+            createDirIfNotExists(subDirectoryPath);
+            clearDirectory(subDirectoryPath);
         } catch (IOException e) {
             System.err.println("Could not create or open " + subDirectory + " directory.");
             System.exit(1);
@@ -75,9 +81,9 @@ public class FileUtils {
     public static String generateScreenshotFileName(String url, String path, int width, int yPosition, String type) {
 
         String fileName = generateScreenshotFileNamePrefix(url, path)
-                + String.format("%d", width)
+                + String.format("%04d", width)
                 + DIVIDER
-                + String.format("%d", yPosition)
+                + String.format("%05d", yPosition)
                 + DIVIDER
                 + type;
 
@@ -117,5 +123,27 @@ public class FileUtils {
         return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
                 + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
                 + fileName;
+    }
+
+    public BufferedImage readScreenshot(Parameters parameters, String fileName) throws IOException {
+        return ImageIO.read(new File(getFullScreenshotFileNameWithPath(parameters, fileName)));
+    }
+
+    public void writeScreenshot(String fileName, BufferedImage image) throws IOException {
+        ImageIO.write(image, "png", new File(fileName));
+    }
+
+    public List<String> getFileNamesMatchingPattern(Path directory, String matcherPattern) throws IOException {
+        final List<String> files = new ArrayList<>();
+
+        final PathMatcher pathMatcher = FileSystems.getDefault()
+                .getPathMatcher(matcherPattern);
+
+        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(
+                directory, pathMatcher::matches)) {
+            dirStream.forEach(filePath -> files.add(filePath.getFileName().toString()));
+        }
+        Collections.sort(files, Comparator.naturalOrder());
+        return files;
     }
 }

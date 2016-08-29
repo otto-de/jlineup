@@ -2,7 +2,6 @@ package de.otto.jlineup.image;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -20,16 +19,16 @@ public class ImageUtils {
      * 0 means, that both pictures are identical
      * @throws IOException
      */
-    public static BufferedImageComparisonResult generateDifferenceImage(BufferedImage imageBefore, BufferedImage imageAfter, int viewportHeight) throws IOException {
-        final BufferedImageComparisonResult comparisonResult = getDifferenceImage(imageBefore, imageAfter, viewportHeight);
+    public static ImageComparisonResult compareImages(BufferedImage imageBefore, BufferedImage imageAfter, int viewportHeight) throws IOException {
+        final ImageComparisonResult comparisonResult = getDifferenceImage(imageBefore, imageAfter, viewportHeight);
         return comparisonResult;
     }
 
-    public static class BufferedImageComparisonResult {
+    public static class ImageComparisonResult {
         private final BufferedImage differenceImage;
         private final double difference;
 
-        BufferedImageComparisonResult(BufferedImage differenceImage, double difference) {
+        ImageComparisonResult(BufferedImage differenceImage, double difference) {
             this.differenceImage = differenceImage;
             this.difference = difference;
         }
@@ -43,7 +42,9 @@ public class ImageUtils {
         }
     }
 
-    private static BufferedImageComparisonResult getDifferenceImage(BufferedImage img1, BufferedImage img2, int viewportHeight) {
+    private static ImageComparisonResult getDifferenceImage(BufferedImage img1, BufferedImage img2, int viewportHeight) {
+
+        if (img1 == null || img2 == null) throw new NullPointerException("Can't compare null imagebuffers");
 
         // cache image widths and heights
         final int w1 = img1.getWidth();
@@ -128,6 +129,6 @@ public class ImageUtils {
         // save differenceImagePixels to a new BufferedImage
         final BufferedImage out = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
         out.setRGB(0, 0, maxWidth, maxHeight, differenceImagePixels, 0, maxWidth);
-        return new BufferedImageComparisonResult(out, difference);
+        return new ImageComparisonResult(out, difference);
     }
 }

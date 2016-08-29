@@ -6,7 +6,7 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
-import de.otto.jlineup.file.FileUtilsTest;
+import de.otto.jlineup.file.FileService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -44,6 +44,8 @@ public class BrowserTest {
 
     @Mock
     private Parameters parameters;
+    @Mock
+    private FileService fileService;
 
     private Browser testee;
 
@@ -63,15 +65,13 @@ public class BrowserTest {
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
         Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100);
-        testee = new Browser(parameters, config, webDriverMock);
+        testee = new Browser(parameters, config, webDriverMock, fileService);
         when(parameters.getWorkingDirectory()).thenReturn(tempDirPath);
         when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
     }
 
     @After
     public void cleanup() throws IOException {
-        FileUtilsTest.deleteIfExists(Paths.get(tempDirPath + "/screenshots"));
-        FileUtilsTest.deleteIfExists(Paths.get(tempDirPath));
         if (testee != null) {
             testee.close();
         }
@@ -177,13 +177,13 @@ public class BrowserTest {
                 ImmutableList.of(600), 5000, 0);
 
         Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100);
-        testee = new Browser(parameters, config, webDriverMock);
+        testee = new Browser(parameters, config, webDriverMock, fileService);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
 
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(new Long(pageHeight));
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(new Long(viewportHeight));
-        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/url_root_1001_2002_before.png"));
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/url_root_1001_02002_before.png"));
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext));
