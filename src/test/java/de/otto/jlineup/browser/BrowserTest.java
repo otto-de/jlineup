@@ -49,25 +49,15 @@ public class BrowserTest {
 
     private Browser testee;
 
-    private String tempDirPath;
-
     @Before
     public void setup() throws IOException {
         initMocks(this);
-
-        File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        tempDirPath = tempDir.getPath() + "/lineupbrowsertest";
-
-        Files.createDirectories(Paths.get(tempDirPath));
-        Files.createDirectories(Paths.get(tempDirPath + "/screenshots"));
 
         when(webDriverMock.manage()).thenReturn(webDriverOptionsMock);
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
         Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100);
         testee = new Browser(parameters, config, webDriverMock, fileService);
-        when(parameters.getWorkingDirectory()).thenReturn(tempDirPath);
-        when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
     }
 
     @After
