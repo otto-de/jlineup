@@ -1,8 +1,8 @@
-package de.otto.jlineup.browser;
+package de.otto.jlineup.report;
 
 import java.nio.file.Paths;
 
-public class ComparisonResult {
+public class ScreenshotComparisonResult {
 
     public final String url;
     public final int width;
@@ -12,7 +12,7 @@ public class ComparisonResult {
     public final String screenshotAfterFileName;
     public final String differenceImageFileName;
 
-    public ComparisonResult(String url, int width, int verticalScrollPosition, double difference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName) {
+    public ScreenshotComparisonResult(String url, int width, int verticalScrollPosition, double difference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName) {
         this.url = url;
         this.width = width;
         this.verticalScrollPosition = verticalScrollPosition;
@@ -22,12 +22,12 @@ public class ComparisonResult {
         this.differenceImageFileName = differenceImageFileName != null ? Paths.get(differenceImageFileName).getFileName().toString() : null;
     }
 
-    public static ComparisonResult noBeforeImageComparisonResult(String url, int width, int verticalScrollPosition, String screenshotAfterFileName) {
-        return new ComparisonResult(url, width, verticalScrollPosition, 1d, null, screenshotAfterFileName, null);
+    public static ScreenshotComparisonResult noBeforeImageComparisonResult(String url, int width, int verticalScrollPosition, String screenshotAfterFileName) {
+        return new ScreenshotComparisonResult(url, width, verticalScrollPosition, 1d, null, screenshotAfterFileName, null);
     }
 
-    public static ComparisonResult noAfterImageComparisonResult(String url, int width, int verticalScrollPosition, String screenshotBeforeFileName) {
-        return new ComparisonResult(url, width, verticalScrollPosition, 1d, screenshotBeforeFileName, null, null);
+    public static ScreenshotComparisonResult noAfterImageComparisonResult(String url, int width, int verticalScrollPosition, String screenshotBeforeFileName) {
+        return new ScreenshotComparisonResult(url, width, verticalScrollPosition, 1d, screenshotBeforeFileName, null, null);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class ComparisonResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ComparisonResult that = (ComparisonResult) o;
+        ScreenshotComparisonResult that = (ScreenshotComparisonResult) o;
 
         if (width != that.width) return false;
         if (verticalScrollPosition != that.verticalScrollPosition) return false;
@@ -66,7 +66,7 @@ public class ComparisonResult {
 
     @Override
     public String toString() {
-        return "ComparisonResult{" +
+        return "ScreenshotComparisonResult{" +
                 "url='" + url + '\'' +
                 ", width=" + width +
                 ", verticalScrollPosition=" + verticalScrollPosition +

@@ -6,7 +6,6 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
-import de.otto.jlineup.file.FileUtils;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;

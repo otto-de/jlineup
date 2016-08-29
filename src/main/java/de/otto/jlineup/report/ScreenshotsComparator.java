@@ -2,19 +2,16 @@ package de.otto.jlineup.report;
 
 import com.google.common.annotations.VisibleForTesting;
 import de.otto.jlineup.browser.BrowserUtils;
-import de.otto.jlineup.browser.ComparisonResult;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
-import de.otto.jlineup.file.FileUtils;
+import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.IIOException;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
@@ -22,10 +19,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static de.otto.jlineup.file.FileUtils.DIVIDER;
-import static de.otto.jlineup.file.FileUtils.PNG_EXTENSION;
-import static de.otto.jlineup.file.FileUtils.AFTER;
-import static de.otto.jlineup.file.FileUtils.BEFORE;
+import static de.otto.jlineup.file.FileService.DIVIDER;
+import static de.otto.jlineup.file.FileService.PNG_EXTENSION;
+import static de.otto.jlineup.file.FileService.AFTER;
+import static de.otto.jlineup.file.FileService.BEFORE;
 
 public class ScreenshotsComparator {
 
@@ -36,24 +33,18 @@ public class ScreenshotsComparator {
 
     final private Parameters parameters;
     final private Config config;
-    final private DifferenceFileWriter differenceFileWriter;
+    final private FileService fileService;
 
-    public ScreenshotsComparator(Parameters parameters, Config config) {
+    public ScreenshotsComparator(Parameters parameters, Config config, FileService fileService) {
         this.parameters = parameters;
         this.config = config;
-        this.differenceFileWriter = new DifferenceFileWriter();
+        this.fileService = fileService;
     }
 
-    @VisibleForTesting
-    ScreenshotsComparator(Parameters parameters, Config config, DifferenceFileWriter differenceFileWriter) {
-        this.parameters = parameters;
-        this.config = config;
-        this.differenceFileWriter = differenceFileWriter;
-    }
-
-    public List<ComparisonResult> compare() throws IOException {
+    public List<ScreenshotComparisonResult> compare() throws IOException {
         LOG.debug("Comparing images...");
-        List<ComparisonResult> result = new ArrayList<>();
+        List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
+
         for (Map.Entry<String, UrlConfig> urlConfigEntry : config.getUrls().entrySet()) {
             String url = urlConfigEntry.getKey();
             UrlConfig urlConfig = urlConfigEntry.getValue();
@@ -62,21 +53,22 @@ public class ScreenshotsComparator {
                 LOG.debug("Path: {}", path);
                 String fullUrlWithPath = BrowserUtils.buildUrl(url, path, urlConfig.envMapping);
 
-                final List<String> beforeFiles = getFilenamesForStep(parameters, path, url, BEFORE);
-                Collections.sort(beforeFiles, Comparator.naturalOrder());
-                final List<String> afterFiles = new ArrayList<>();
-                beforeFiles.forEach(filename -> afterFiles.add(switchAfterWithBeforeInFileName(filename)));
+                final List<String> beforeFileNamesList = getFilenamesForStep(parameters, path, url, BEFORE);
+                final List<String> afterFileNamesList = new ArrayList<>();
+                beforeFileNamesList.forEach(filename -> afterFileNamesList.add(switchAfterWithBeforeInFileName(filename)));
 
-                final Set<String> beforeFileNames = new HashSet<>(beforeFiles);
-                final Set<String> afterFileNames = new HashSet<>(getFilenamesForStep(parameters, path, url, AFTER));
+                final Set<String> beforeFileNamesSet = new HashSet<>(beforeFileNamesList);
+                final Set<String> afterFileNamesSet = new HashSet<>(getFilenamesForStep(parameters, path, url, AFTER));
 
+                //we need after files that have no before file in the final report
                 final List<String> afterFileNamesWithNoBeforeFile = new ArrayList<>();
-                afterFileNames.stream().filter(name -> !beforeFileNames.contains(switchAfterWithBeforeInFileName(name))).forEach(afterFileNamesWithNoBeforeFile::add);
+                afterFileNamesSet.stream()
+                        .filter(name -> !beforeFileNamesSet.contains(switchAfterWithBeforeInFileName(name)))
+                        .forEach(afterFileNamesWithNoBeforeFile::add);
 
-
-                for (int i = 0; i < beforeFiles.size(); i++) {
-                    String beforeFileName = beforeFiles.get(i);
-                    String afterFileName = afterFiles.get(i);
+                for (int i = 0; i < beforeFileNamesList.size(); i++) {
+                    String beforeFileName = beforeFileNamesList.get(i);
+                    String afterFileName = afterFileNamesList.get(i);
 
                     LOG.debug("Comparing '{}' with '{}'", beforeFileName, afterFileName);
 
@@ -85,38 +77,43 @@ public class ScreenshotsComparator {
 
                     BufferedImage imageBefore;
                     try {
-                        imageBefore = ImageIO.read(new File(FileUtils.getFullScreenshotFileNameWithPath(parameters, beforeFileName)));
+                        imageBefore = fileService.readScreenshot(parameters, beforeFileName);
                     } catch (IIOException e) {
                         System.err.println("Can't read screenshot of 'before' step. Did you run JLineup with --before parameter before trying to run --after or --compare?");
                         throw e;
                     }
                     BufferedImage imageAfter;
                     try {
-                        imageAfter = ImageIO.read(new File(FileUtils.getFullScreenshotFileNameWithPath(parameters, afterFileName)));
+                        imageAfter = fileService.readScreenshot(parameters, afterFileName);
                     } catch (IIOException e) {
-                        result.add(ComparisonResult.noAfterImageComparisonResult(fullUrlWithPath, windowWidth, yPosition, beforeFileName));
+                        screenshotComparisonResults.add(ScreenshotComparisonResult.noAfterImageComparisonResult(fullUrlWithPath, windowWidth, yPosition, beforeFileName));
                         continue;
                     }
 
-                    final String differenceImageFileName = FileUtils.getFullScreenshotFileNameWithPath(parameters, url, path, windowWidth, yPosition, "DIFFERENCE");
-                    ImageUtils.BufferedImageComparisonResult bufferedImageComparisonResult = ImageUtils.generateDifferenceImage(imageBefore, imageAfter, config.getWindowHeight());
-                    if (bufferedImageComparisonResult.getDifference() > 0) {
-                        differenceFileWriter.writeDifferenceFile(differenceImageFileName, bufferedImageComparisonResult);
+                    final String differenceImageFileName = fileService.getFullScreenshotFileNameWithPath(parameters, url, path, windowWidth, yPosition, "DIFFERENCE");
+                    ImageUtils.ImageComparisonResult imageComparisonResult = ImageUtils.compareImages(imageBefore, imageAfter, config.getWindowHeight());
+                    if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
+                        fileService.writeScreenshot(differenceImageFileName, imageComparisonResult.getDifferenceImage().orElse(null));
                     }
-                    result.add(new ComparisonResult(fullUrlWithPath, windowWidth, yPosition, bufferedImageComparisonResult.getDifference(), beforeFileName, afterFileName, bufferedImageComparisonResult.getDifference() > 0 ? differenceImageFileName : null));
+                    screenshotComparisonResults.add(new ScreenshotComparisonResult(fullUrlWithPath, windowWidth, yPosition, imageComparisonResult.getDifference(), beforeFileName, afterFileName, imageComparisonResult.getDifference() > 0 ? differenceImageFileName : null));
                 }
 
-                result.addAll(afterFileNamesWithNoBeforeFile
-                        .stream()
-                        .map(remainingFile -> ComparisonResult.noBeforeImageComparisonResult(
-                            fullUrlWithPath,
-                            extractWindowWidthFromFileName(remainingFile),
-                            extractVerticalScrollPositionFromFileName(remainingFile),
-                            remainingFile))
-                        .collect(Collectors.toList()));
+                addMissingBeforeFilesToResults(screenshotComparisonResults, fullUrlWithPath, afterFileNamesWithNoBeforeFile);
             }
         }
-        return result;
+        screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>comparing(rl -> rl.url).thenComparing(r -> r.width).thenComparing(l -> l.verticalScrollPosition));
+        return screenshotComparisonResults;
+    }
+
+    private void addMissingBeforeFilesToResults(List<ScreenshotComparisonResult> screenshotComparisonResults, String fullUrlWithPath, List<String> afterFileNamesWithNoBeforeFile) {
+        screenshotComparisonResults.addAll(afterFileNamesWithNoBeforeFile
+                .stream()
+                .map(remainingFile -> ScreenshotComparisonResult.noBeforeImageComparisonResult(
+                    fullUrlWithPath,
+                    extractWindowWidthFromFileName(remainingFile),
+                    extractVerticalScrollPositionFromFileName(remainingFile),
+                    remainingFile))
+                .collect(Collectors.toList()));
     }
 
     @VisibleForTesting
@@ -130,17 +127,10 @@ public class ScreenshotsComparator {
     }
 
     @VisibleForTesting
-    static List<String> getFilenamesForStep(Parameters parameters, String path, String url, String step) throws IOException {
-        final List<String> beforeFiles = new ArrayList<>();
-        final String matcherPattern = "glob:**" + FileUtils.generateScreenshotFileNamePrefix(url, path) + "*_*_" + step + ".png";
-
-        PathMatcher pathMatcher = FileSystems.getDefault()
-                .getPathMatcher(matcherPattern);
-
-        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(
-                FileUtils.getScreenshotDirectory(parameters), pathMatcher::matches)) {
-            dirStream.forEach(filePath -> beforeFiles.add(filePath.getFileName().toString()));
-        }
+    List<String> getFilenamesForStep(Parameters parameters, String path, String url, String step) throws IOException {
+        final String matcherPattern = "glob:**" + FileService.generateScreenshotFileNamePrefix(url, path) + "*_*_" + step + ".png";
+        Path screenshotDirectory = FileService.getScreenshotDirectory(parameters);
+        final List<String> beforeFiles = fileService.getFileNamesMatchingPattern(screenshotDirectory, matcherPattern);
         return beforeFiles;
     }
 

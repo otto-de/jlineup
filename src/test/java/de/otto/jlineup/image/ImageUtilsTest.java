@@ -1,6 +1,5 @@
 package de.otto.jlineup.image;
 
-import de.otto.jlineup.report.DifferenceFileWriter;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -17,12 +16,12 @@ public class ImageUtilsTest {
     public void shouldGenerateDifferenceImage() throws IOException {
         //given
         final int viewportHeight = 800;
-        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_2002_before.png"));
-        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_2002_after.png"));
-        final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_2002_DIFFERENCE_reference.png"));
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_02002_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_02002_after.png"));
+        final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_02002_DIFFERENCE_reference.png"));
 
         //when
-        ImageUtils.BufferedImageComparisonResult result = ImageUtils.generateDifferenceImage(beforeImageBuffer, afterImageBuffer, viewportHeight);
+        ImageUtils.ImageComparisonResult result = ImageUtils.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
 
         //then
         assertThat(result.getDifference(), is(0.07005));
@@ -38,7 +37,7 @@ public class ImageUtilsTest {
         final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/ideaDifferenceReference.png"));
 
         //when
-        ImageUtils.BufferedImageComparisonResult result = ImageUtils.generateDifferenceImage(beforeImageBuffer, afterImageBuffer, viewportHeight);
+        ImageUtils.ImageComparisonResult result = ImageUtils.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
         //new DifferenceFileWriter().writeDifferenceFile("src/test/resources/screenshots/ideaDifferenceReferenceNew.png", result);
 
         //then
