@@ -1,7 +1,6 @@
 package de.otto.jlineup.file;
 
 import de.otto.jlineup.config.Parameters;
-import de.otto.jlineup.image.ImageUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

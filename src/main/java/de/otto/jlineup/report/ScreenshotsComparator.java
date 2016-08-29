@@ -6,7 +6,7 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
-import de.otto.jlineup.image.ImageUtils;
+import de.otto.jlineup.image.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +34,13 @@ public class ScreenshotsComparator {
     final private Parameters parameters;
     final private Config config;
     final private FileService fileService;
+    final private ImageService imageService;
 
-    public ScreenshotsComparator(Parameters parameters, Config config, FileService fileService) {
+    public ScreenshotsComparator(Parameters parameters, Config config, FileService fileService, ImageService imageService) {
         this.parameters = parameters;
         this.config = config;
         this.fileService = fileService;
+        this.imageService = imageService;
     }
 
     public List<ScreenshotComparisonResult> compare() throws IOException {
@@ -91,7 +93,7 @@ public class ScreenshotsComparator {
                     }
 
                     final String differenceImageFileName = fileService.getFullScreenshotFileNameWithPath(parameters, url, path, windowWidth, yPosition, "DIFFERENCE");
-                    ImageUtils.ImageComparisonResult imageComparisonResult = ImageUtils.compareImages(imageBefore, imageAfter, config.getWindowHeight());
+                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, config.getWindowHeight());
                     if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
                         fileService.writeScreenshot(differenceImageFileName, imageComparisonResult.getDifferenceImage().orElse(null));
                     }

@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
+import de.otto.jlineup.image.ImageService;
 import de.otto.jlineup.report.ScreenshotComparisonResult;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
@@ -25,6 +26,7 @@ public class Main {
         new JCommander(parameters, args);
 
         FileService fileService = new FileService();
+        ImageService imageService = new ImageService();
 
         //Make sure the working dir exists
         if (parameters.isBefore()) {
@@ -44,7 +46,7 @@ public class Main {
         }
 
         if (parameters.isAfter() || parameters.isJustCompare()) {
-            ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(parameters, config, fileService);
+            ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(parameters, config, fileService, imageService);
             List<ScreenshotComparisonResult> compare = screenshotsComparator.compare();
             writeComparisonReport(parameters, compare);
         }
