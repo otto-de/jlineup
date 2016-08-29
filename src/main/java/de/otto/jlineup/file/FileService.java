@@ -1,5 +1,6 @@
 package de.otto.jlineup.file;
 
+import com.google.common.annotations.VisibleForTesting;
 import de.otto.jlineup.config.Parameters;
 
 import javax.imageio.ImageIO;
@@ -41,15 +42,15 @@ public class FileService {
         createOrClearDirectoryBelowWorkingDir(parameters.getWorkingDirectory(), parameters.getReportDirectory());
     }
 
-    public static Path getWorkingDirectory(Parameters parameters) {
+    public Path getWorkingDirectory(Parameters parameters) {
         return Paths.get(parameters.getWorkingDirectory());
     }
 
-    public static Path getScreenshotDirectory(Parameters parameters) {
+    public Path getScreenshotDirectory(Parameters parameters) {
         return Paths.get(parameters.getWorkingDirectory() + "/" + parameters.getScreenshotDirectory());
     }
 
-    public static Path getReportDirectory(Parameters parameters) {
+    public Path getReportDirectory(Parameters parameters) {
         return Paths.get(parameters.getWorkingDirectory() + "/" + parameters.getReportDirectory());
     }
 
@@ -77,7 +78,7 @@ public class FileService {
         }
     }
 
-    public static String generateScreenshotFileName(String url, String path, int width, int yPosition, String type) {
+    String generateScreenshotFileName(String url, String path, int width, int yPosition, String type) {
 
         String fileName = generateScreenshotFileNamePrefix(url, path)
                 + String.format("%04d", width)
@@ -91,7 +92,7 @@ public class FileService {
         return fileName;
     }
 
-    public static String generateScreenshotFileNamePrefix(String url, String path) {
+    String generateScreenshotFileNamePrefix(String url, String path) {
 
         if (path.equals("/") || path.equals("")) {
             path = "root";
@@ -112,27 +113,28 @@ public class FileService {
         return fileName;
     }
 
-    public static String getFullScreenshotFileNameWithPath(Parameters parameters, String url, String path, int width, int yPosition, String step) {
+    String getScreenshotPath(Parameters parameters, String url, String path, int width, int yPosition, String step) {
         return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
                 + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
                 + generateScreenshotFileName(url, path, width, yPosition, step);
     }
 
-    public static String getFullScreenshotFileNameWithPath(Parameters parameters, String fileName) {
+    String getScreenshotPath(Parameters parameters, String fileName) {
         return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
                 + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
                 + fileName;
     }
 
     public BufferedImage readScreenshot(Parameters parameters, String fileName) throws IOException {
-        return ImageIO.read(new File(getFullScreenshotFileNameWithPath(parameters, fileName)));
+        return ImageIO.read(new File(getScreenshotPath(parameters, fileName)));
     }
 
-    public void writeScreenshot(String fileName, BufferedImage image) throws IOException {
+    private void writeScreenshot(String fileName, BufferedImage image) throws IOException {
         ImageIO.write(image, "png", new File(fileName));
     }
 
-    public List<String> getFileNamesMatchingPattern(Path directory, String matcherPattern) throws IOException {
+    @VisibleForTesting
+    List<String> getFileNamesMatchingPattern(Path directory, String matcherPattern) throws IOException {
         final List<String> files = new ArrayList<>();
 
         final PathMatcher pathMatcher = FileSystems.getDefault()
@@ -144,5 +146,21 @@ public class FileService {
         }
         Collections.sort(files, Comparator.naturalOrder());
         return files;
+    }
+
+    public String writeScreenshot(BufferedImage image, Parameters parameters, String url,
+                                String urlPath, int windowWidth, int yPosition, String step) throws IOException {
+        final String screenshotPath =
+                getScreenshotPath(parameters, url,
+                        urlPath, windowWidth,
+                        yPosition, step);
+        writeScreenshot(screenshotPath, image);
+        return screenshotPath;
+    }
+
+    public List<String> getFilenamesForStep(Parameters parameters, String path, String url, String step) throws IOException {
+        final String matcherPattern = "glob:**" + generateScreenshotFileNamePrefix(url, path) + "*_*_" + step + ".png";
+        Path screenshotDirectory = getScreenshotDirectory(parameters);
+        return getFileNamesMatchingPattern(screenshotDirectory, matcherPattern);
     }
 }
