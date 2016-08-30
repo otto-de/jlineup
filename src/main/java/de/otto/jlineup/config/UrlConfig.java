@@ -29,9 +29,9 @@ public class UrlConfig {
     private final Integer waitAfterPageLoad;
 
     @SerializedName("wait-for-no-animation-after-scroll")
-    private final Integer waitForNoAnimationAfterScroll;
+    private final Float waitForNoAnimationAfterScroll;
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, Integer maxScrollHeight, Integer waitAfterPageLoad, Integer waitForNoAnimationAfterScroll) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, Integer maxScrollHeight, Integer waitAfterPageLoad, Float waitForNoAnimationAfterScroll) {
         this.paths = paths;
         this.maxDiff = maxDiff;
         this.cookies = cookies;
@@ -87,7 +87,7 @@ public class UrlConfig {
         return Optional.ofNullable(waitAfterPageLoad);
     }
 
-    public Optional<Integer> getWaitForNoAnimationAfterScroll() {
+    public Optional<Float> getWaitForNoAnimationAfterScroll() {
         return Optional.ofNullable(waitForNoAnimationAfterScroll);
     }
 }

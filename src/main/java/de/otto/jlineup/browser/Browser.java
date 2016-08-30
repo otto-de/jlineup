@@ -5,6 +5,7 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.image.ImageService;
 import org.openqa.selenium.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,11 +112,19 @@ public class Browser implements AutoCloseable{
             Thread.sleep(Math.round(config.getAsyncWait() * 1000));
             for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.getMaxScrollHeight().orElse(MAX_SCROLL_HEIGHT); yPosition += viewportHeight) {
                 File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-
                 BufferedImage currentScreenshot = ImageIO.read(screenshot);
-                int waitForNoAnimation = screenshotContext.urlConfig.getWaitForNoAnimationAfterScroll().orElse(0);
-                if (waitForNoAnimation > 0) {
-                    //TODO implement!
+                float waitForNoAnimation = screenshotContext.urlConfig.getWaitForNoAnimationAfterScroll().orElse(0f);
+                if (waitForNoAnimation > 0f) {
+                    final long beginTime = System.currentTimeMillis();
+                    int sameCounter = 0;
+                    while (sameCounter < 10 && !timeIsOver(beginTime, waitForNoAnimation)) {
+                        screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                        BufferedImage newScreenshot = ImageIO.read(screenshot);
+                        if (ImageService.bufferedImagesEqualQuick(newScreenshot, currentScreenshot)) {
+                            sameCounter++;
+                        }
+                        currentScreenshot = newScreenshot;
+                    }
                 }
                 fileService.writeScreenshot(currentScreenshot, parameters, screenshotContext.url,
                         screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
@@ -134,6 +143,12 @@ public class Browser implements AutoCloseable{
                 pageHeight = (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
             }
         }
+    }
+
+    private boolean timeIsOver(long beginTime, float waitForNoAnimation) {
+        boolean over = beginTime + (long) (waitForNoAnimation * 1000L) < System.currentTimeMillis();
+        if (over) LOG.debug("Time is over");
+        return over;
     }
 
     void scrollBy(JavascriptExecutor jse, int viewportHeight) {
