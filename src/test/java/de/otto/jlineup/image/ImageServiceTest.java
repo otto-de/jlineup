@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import static de.otto.jlineup.image.ImageService.bufferedImagesEqual;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -51,21 +52,6 @@ public class ImageServiceTest {
         //then
         assertThat(result.getDifference(), is(0.5366469443663049));
         assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
-    }
-
-    //Helper function to compare two BufferedImage instances (BufferedImage doesn't override equals())
-    private boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
-        if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {
-            for (int x = 0; x < img1.getWidth(); x++) {
-                for (int y = 0; y < img1.getHeight(); y++) {
-                    if (img1.getRGB(x, y) != img2.getRGB(x, y))
-                        return false;
-                }
-            }
-        } else {
-            return false;
-        }
-        return true;
     }
 
 }

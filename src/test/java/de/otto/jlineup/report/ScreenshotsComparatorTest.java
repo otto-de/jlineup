@@ -16,16 +16,10 @@ import org.mockito.Mock;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.List;
 
-import static de.otto.jlineup.file.FileService.BEFORE;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -54,7 +48,7 @@ public class ScreenshotsComparatorTest {
         config = new Config(
                 ImmutableMap.of(
                         "http://url",
-                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, ImmutableList.of(1001), 10000, 2)),
+                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, ImmutableList.of(1001), 10000, 2, null)),
                 Browser.Type.CHROME,
                 0f,
                 WINDOW_HEIGHT);
