@@ -2,16 +2,17 @@ package de.otto.jlineup.image;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.Optional;
 
-import static java.lang.Math.*;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class ImageService {
 
     public static final int SAME_COLOR = Color.BLACK.getRGB();
     public static final int HIGHLIGHT_COLOR = Color.WHITE.getRGB();
     public static final int DIFFERENT_SIZE_COLOR = Color.GRAY.getRGB();
+    public static final int PIXEL_DIFFERENCE_THRESHOLD = 0;
 
     public static class ImageComparisonResult {
         private final BufferedImage differenceImage;
@@ -72,8 +73,12 @@ public class ImageService {
         for (int i1=0, i2=0, iD=0; iD < maxPixelCount;) {
             //mark same pixels with same_color and different pixels in highlight_color
             if (p1[i1] != p2[i2]) {
-                differenceImagePixels[iD] = HIGHLIGHT_COLOR;
-                diffPixelCounter++;
+                if (getPixelDifference(p1[i1], p2[i2]) > PIXEL_DIFFERENCE_THRESHOLD) {
+                    differenceImagePixels[iD] = HIGHLIGHT_COLOR;
+                    diffPixelCounter++;
+                } else {
+                    differenceImagePixels[iD] = SAME_COLOR;
+                }
             } else {
                 differenceImagePixels[iD] = SAME_COLOR;
             }
@@ -125,5 +130,28 @@ public class ImageService {
         final BufferedImage out = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
         out.setRGB(0, 0, maxWidth, maxHeight, differenceImagePixels, 0, maxWidth);
         return new ImageComparisonResult(out, difference);
+    }
+
+    private int getPixelDifference(int pixelA, int pixelB) {
+        final int[] argbA = getARGB(pixelA);
+        final int[] argbB = getARGB(pixelB);
+
+        int diff = 0;
+        for (int i=0; i<argbA.length; i++) {
+            diff += Math.abs(argbA[i] - argbB[i]);
+        }
+        return diff;
+    }
+
+    private int[] getARGB(int pixel) {
+
+        int rgb = pixel;
+
+        int alpha = (rgb >> 24) & 0xFF;
+        int red =   (rgb >> 16) & 0xFF;
+        int green = (rgb >>  8) & 0xFF;
+        int blue =  (rgb      ) & 0xFF;
+
+        return new int[] {alpha, red, green, blue };
     }
 }
