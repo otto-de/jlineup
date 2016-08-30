@@ -2,6 +2,10 @@ package de.otto.jlineup.image;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static java.lang.Math.max;
@@ -41,6 +45,10 @@ public class ImageService {
     public ImageComparisonResult compareImages(BufferedImage img1, BufferedImage img2, int viewportHeight) {
 
         if (img1 == null || img2 == null) throw new NullPointerException("Can't compare null imagebuffers");
+
+        if (bufferedImagesEqualQuick(img1, img2)) {
+            return new ImageComparisonResult(null, 0);
+        }
 
         // cache image widths and heights
         final int w1 = img1.getWidth();
@@ -166,6 +174,24 @@ public class ImageService {
             }
         } else {
             return false;
+        }
+        return true;
+    }
+
+    public static boolean bufferedImagesEqualQuick(BufferedImage img1, BufferedImage img2) {
+        DataBuffer dbActual = img1.getRaster().getDataBuffer();
+        DataBuffer dbExpected = img2.getRaster().getDataBuffer();
+
+        DataBufferByte actualDBAsDBInt = (DataBufferByte) dbActual ;
+        DataBufferByte expectedDBAsDBInt = (DataBufferByte) dbExpected ;
+
+        for (int bank = 0; bank < actualDBAsDBInt.getNumBanks(); bank++) {
+            byte[] actual = actualDBAsDBInt.getData(bank);
+            byte[] expected = expectedDBAsDBInt.getData(bank);
+
+            if(!Arrays.equals(actual, expected)) {
+                return false;
+            }
         }
         return true;
     }
