@@ -19,7 +19,7 @@ public final class Config {
 
     private static final Integer DEFAULT_WINDOW_HEIGHT = 800;
     private static final Float DEFAULT_ASYNC_WAIT = 0f;
-    public static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
+    private static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
 
     private Map<String, UrlConfig> urls;
     private Browser.Type browser;

@@ -111,7 +111,12 @@ public class Browser implements AutoCloseable{
             Thread.sleep(Math.round(config.getAsyncWait() * 1000));
             for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.getMaxScrollHeight().orElse(MAX_SCROLL_HEIGHT); yPosition += viewportHeight) {
                 File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-                final BufferedImage currentScreenshot = ImageIO.read(screenshot);
+
+                BufferedImage currentScreenshot = ImageIO.read(screenshot);
+                int waitForNoAnimation = screenshotContext.urlConfig.getWaitForNoAnimationAfterScroll().orElse(0);
+                if (waitForNoAnimation > 0) {
+                    //TODO implement!
+                }
                 fileService.writeScreenshot(currentScreenshot, parameters, screenshotContext.url,
                         screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
 

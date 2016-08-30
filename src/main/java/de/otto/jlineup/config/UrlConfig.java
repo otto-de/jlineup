@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class UrlConfig {
@@ -27,7 +28,10 @@ public class UrlConfig {
     @SerializedName("wait-after-page-load")
     private final Integer waitAfterPageLoad;
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, Integer maxScrollHeight, Integer waitAfterPageLoad) {
+    @SerializedName("wait-for-no-animation-after-scroll")
+    private final Integer waitForNoAnimationAfterScroll;
+
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, Integer maxScrollHeight, Integer waitAfterPageLoad, Integer waitForNoAnimationAfterScroll) {
         this.paths = paths;
         this.maxDiff = maxDiff;
         this.cookies = cookies;
@@ -36,6 +40,7 @@ public class UrlConfig {
         this.windowWidths = windowWidths;
         this.maxScrollHeight = maxScrollHeight;
         this.waitAfterPageLoad = waitAfterPageLoad;
+        this.waitForNoAnimationAfterScroll = waitForNoAnimationAfterScroll;
     }
 
     @Override
@@ -49,6 +54,7 @@ public class UrlConfig {
                 ", windowWidths=" + windowWidths +
                 ", maxScrollHeight=" + maxScrollHeight +
                 ", waitAfterPageLoad=" + waitAfterPageLoad +
+                ", waitForNoAnimationAfterScroll=" + waitForNoAnimationAfterScroll +
                 '}';
     }
 
@@ -56,34 +62,21 @@ public class UrlConfig {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         UrlConfig urlConfig = (UrlConfig) o;
-
-        if (Float.compare(urlConfig.maxDiff, maxDiff) != 0) return false;
-        if (paths != null ? !paths.equals(urlConfig.paths) : urlConfig.paths != null) return false;
-        if (cookies != null ? !cookies.equals(urlConfig.cookies) : urlConfig.cookies != null) return false;
-        if (envMapping != null ? !envMapping.equals(urlConfig.envMapping) : urlConfig.envMapping != null) return false;
-        if (localStorage != null ? !localStorage.equals(urlConfig.localStorage) : urlConfig.localStorage != null)
-            return false;
-        if (windowWidths != null ? !windowWidths.equals(urlConfig.windowWidths) : urlConfig.windowWidths != null)
-            return false;
-        if (maxScrollHeight != null ? !maxScrollHeight.equals(urlConfig.maxScrollHeight) : urlConfig.maxScrollHeight != null)
-            return false;
-        return waitAfterPageLoad != null ? waitAfterPageLoad.equals(urlConfig.waitAfterPageLoad) : urlConfig.waitAfterPageLoad == null;
-
+        return Float.compare(urlConfig.maxDiff, maxDiff) == 0 &&
+                Objects.equals(paths, urlConfig.paths) &&
+                Objects.equals(cookies, urlConfig.cookies) &&
+                Objects.equals(envMapping, urlConfig.envMapping) &&
+                Objects.equals(localStorage, urlConfig.localStorage) &&
+                Objects.equals(windowWidths, urlConfig.windowWidths) &&
+                Objects.equals(maxScrollHeight, urlConfig.maxScrollHeight) &&
+                Objects.equals(waitAfterPageLoad, urlConfig.waitAfterPageLoad) &&
+                Objects.equals(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll);
     }
 
     @Override
     public int hashCode() {
-        int result = paths != null ? paths.hashCode() : 0;
-        result = 31 * result + (maxDiff != +0.0f ? Float.floatToIntBits(maxDiff) : 0);
-        result = 31 * result + (cookies != null ? cookies.hashCode() : 0);
-        result = 31 * result + (envMapping != null ? envMapping.hashCode() : 0);
-        result = 31 * result + (localStorage != null ? localStorage.hashCode() : 0);
-        result = 31 * result + (windowWidths != null ? windowWidths.hashCode() : 0);
-        result = 31 * result + (maxScrollHeight != null ? maxScrollHeight.hashCode() : 0);
-        result = 31 * result + (waitAfterPageLoad != null ? waitAfterPageLoad.hashCode() : 0);
-        return result;
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitForNoAnimationAfterScroll);
     }
 
     public Optional<Integer> getMaxScrollHeight() {
@@ -92,5 +85,9 @@ public class UrlConfig {
 
     public Optional<Integer> getWaitAfterPageLoad() {
         return Optional.ofNullable(waitAfterPageLoad);
+    }
+
+    public Optional<Integer> getWaitForNoAnimationAfterScroll() {
+        return Optional.ofNullable(waitForNoAnimationAfterScroll);
     }
 }

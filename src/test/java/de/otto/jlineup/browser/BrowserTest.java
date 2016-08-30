@@ -20,8 +20,6 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Map;
 
@@ -164,7 +162,7 @@ public class BrowserTest {
                 0f,
                 ImmutableList.of(new Cookie("testcookiename", "testcookievalue")),
                 ImmutableMap.of(), ImmutableMap.of("key", "value"),
-                ImmutableList.of(600), 5000, 0);
+                ImmutableList.of(600), 5000, 0, null);
 
         Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100);
         testee = new Browser(parameters, config, webDriverMock, fileService);
