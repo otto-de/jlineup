@@ -1,17 +1,14 @@
 package de.otto.jlineup.file;
 
-import com.beust.jcommander.JCommander;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.config.Parameters;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,35 +18,37 @@ import java.util.List;
 
 import static de.otto.jlineup.file.FileService.AFTER;
 import static de.otto.jlineup.file.FileService.BEFORE;
-import static java.util.Collections.emptyList;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FileServiceTest {
 
-    private String tempDirPath;
-    private String writeScreenshotTestPath;
     private FileService testee;
 
+    @Mock
     private Parameters parameters;
+
+    private String tempDirPath;
+    private String writeScreenshotTestPath;
 
     @Before
     public void setup() throws IOException {
+        initMocks(this);
 
-        //given
-        parameters = new Parameters();
-        new JCommander(parameters, "-d", "src/test/resources");
+        when(parameters.getWorkingDirectory()).thenReturn("src/test/resources");
+        when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
+        when(parameters.getReportDirectory()).thenReturn("report");
 
-        testee = new FileService();
+        testee = new FileService(parameters);
 
         File tempDir = new File(System.getProperty("java.io.tmpdir"));
         tempDirPath = tempDir.getPath();
         writeScreenshotTestPath = tempDirPath + "/testdirforlineupwritetest";
         testee.createDirIfNotExists(writeScreenshotTestPath);
         testee.createDirIfNotExists(writeScreenshotTestPath + "/screenshots");
+        testee.createDirIfNotExists(writeScreenshotTestPath + "/report");
 
     }
 
@@ -58,6 +57,7 @@ public class FileServiceTest {
         deleteIfExists(Paths.get(tempDirPath + "/testdirforlineuptest"));
         deleteIfExists(Paths.get(tempDirPath + "/testdirforcleardirectorylineuptest"));
         deleteIfExists(Paths.get(writeScreenshotTestPath + "/screenshots"));
+        deleteIfExists(Paths.get(writeScreenshotTestPath + "/report"));
         deleteIfExists(Paths.get(writeScreenshotTestPath));
     }
 
@@ -71,15 +71,25 @@ public class FileServiceTest {
 
     @Test
     public void shouldWriteScreenshot() throws IOException {
-        Parameters myParameters = new Parameters();
-        new JCommander(myParameters, "-d", writeScreenshotTestPath);
+        when(parameters.getWorkingDirectory()).thenReturn(writeScreenshotTestPath);
         BufferedImage bufferedImage = new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB);
         bufferedImage.setRGB(0, 0, 200);
 
-        String fileName = testee.writeScreenshot(bufferedImage, myParameters, "http://someurl", "somePath", 999, 777, "someStep");
+        String fileName = testee.writeScreenshot(bufferedImage, "http://someurl", "somePath", 999, 777, "someStep");
 
         assertThat(Files.exists(Paths.get(fileName)), is(true));
+    }
 
+    @Test
+    public void shouldWriteJsonReport() throws Exception {
+        when(parameters.getWorkingDirectory()).thenReturn(writeScreenshotTestPath);
+
+        testee.writeReportStringIntoFile("[{\"toll\":\"mega\"}]");
+
+        Path reportFilePath = Paths.get(writeScreenshotTestPath + "/report/report.json");
+        assertThat(Files.exists(reportFilePath), is(true));
+        List<String> reportFileContents = Files.readAllLines(reportFilePath);
+        assertThat(reportFileContents.get(0), is("[{\"toll\":\"mega\"}]"));
     }
 
     @Test
@@ -99,25 +109,24 @@ public class FileServiceTest {
 
     @Test
     public void shouldGenerateFullPathToPngFile() {
+        when(parameters.getWorkingDirectory()).thenReturn("some/working/dir");
+        when(parameters.getScreenshotDirectory()).thenReturn("someScreenshotDir");
 
-        Parameters myParameters =  mock(Parameters.class);
-        when(myParameters.getWorkingDirectory()).thenReturn("some/working/dir");
-        when(myParameters.getScreenshotDirectory()).thenReturn("someScreenshotDir");
+        final String fullFileNameWithPath = testee.getScreenshotPath("testurl", "/", 1001, 2002, "step");
 
-        final String fullFileNameWithPath = testee.getScreenshotPath(myParameters, "testurl", "/", 1001, 2002, "step");
-        Assert.assertThat(fullFileNameWithPath, CoreMatchers.is("some/working/dir/someScreenshotDir/testurl_root_1001_02002_step.png"));
+        assertThat(fullFileNameWithPath, is("some/working/dir/someScreenshotDir/testurl_root_1001_02002_step.png"));
     }
 
     @Test
     public void shouldGenerateFilename() throws Exception {
         String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "multimedia", 1000, 2000, "after");
-        Assert.assertThat(outputString, CoreMatchers.is("www_otto_de_multimedia_1000_02000_after.png"));
+        assertThat(outputString, is("www_otto_de_multimedia_1000_02000_after.png"));
     }
 
     @Test
     public void shouldConvertRoot() throws Exception {
         String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "/", 1000, 2000, "before");
-        Assert.assertThat(outputString, CoreMatchers.is("www_otto_de_root_1000_02000_before.png"));
+        assertThat(outputString, is("www_otto_de_root_1000_02000_before.png"));
     }
 
     @Test
@@ -129,7 +138,7 @@ public class FileServiceTest {
     @Test
     public void shouldFindBeforeImages() throws IOException {
         //when
-        List<String> beforeFiles = testee.getFilenamesForStep(parameters, "/", "http://url", BEFORE);
+        List<String> beforeFiles = testee.getFilenamesForStep("/", "http://url", BEFORE);
         //then
         assertThat(beforeFiles, is(ImmutableList.of("url_root_1001_02002_before.png")));
     }
@@ -137,7 +146,7 @@ public class FileServiceTest {
     @Test
     public void shouldFindAfterImages() throws IOException {
         //when
-        List<String> beforeFiles = testee.getFilenamesForStep(parameters, "/", "http://url", AFTER);
+        List<String> beforeFiles = testee.getFilenamesForStep("/", "http://url", AFTER);
         //then
         assertThat(beforeFiles, is(ImmutableList.of("url_root_1001_02002_after.png", "url_root_1001_03003_after.png")));
     }

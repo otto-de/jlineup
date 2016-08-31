@@ -1,21 +1,17 @@
 package de.otto.jlineup;
 
 import com.beust.jcommander.JCommander;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.image.ImageService;
+import de.otto.jlineup.report.ReportGenerator;
 import de.otto.jlineup.report.ScreenshotComparisonResult;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.report.ScreenshotsComparator;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.List;
 
 public class Main {
@@ -25,18 +21,18 @@ public class Main {
         final Parameters parameters = new Parameters();
         new JCommander(parameters, args);
 
-        FileService fileService = new FileService();
+        FileService fileService = new FileService(parameters);
         ImageService imageService = new ImageService();
 
         //Make sure the working dir exists
         if (parameters.isBefore()) {
-            fileService.createWorkingDirectoryIfNotExists(parameters);
+            fileService.createWorkingDirectoryIfNotExists();
         }
         Config config = Config.readConfig(parameters);
         //Only create screenshots and report dirs if config was found
         if (parameters.isBefore()) {
-            fileService.createOrClearScreenshotsDirectory(parameters);
-            fileService.createOrClearReportDirectory(parameters);
+            fileService.createOrClearScreenshotsDirectory();
+            fileService.createOrClearReportDirectory();
         }
 
         if (!parameters.isJustCompare()) {
@@ -48,15 +44,8 @@ public class Main {
         if (parameters.isAfter() || parameters.isJustCompare()) {
             ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(parameters, config, fileService, imageService);
             List<ScreenshotComparisonResult> comparisonResults = screenshotsComparator.compare();
-            writeComparisonReport(parameters, fileService, comparisonResults);
-        }
-    }
-
-    private static void writeComparisonReport(Parameters parameters, FileService fileService, List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        final String reportJson = gson.toJson(screenshotComparisonResults);
-        try (PrintStream out = new PrintStream(new FileOutputStream(fileService.getReportDirectory(parameters).toString() + "/report.json"))) {
-            out.print(reportJson);
+            ReportGenerator reportGenerator = new ReportGenerator(fileService);
+            reportGenerator.writeComparisonReportAsJson(comparisonResults);
         }
     }
 
