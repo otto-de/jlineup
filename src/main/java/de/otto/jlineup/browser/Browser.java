@@ -126,7 +126,7 @@ public class Browser implements AutoCloseable{
                         currentScreenshot = newScreenshot;
                     }
                 }
-                fileService.writeScreenshot(currentScreenshot, parameters, screenshotContext.url,
+                fileService.writeScreenshot(currentScreenshot, screenshotContext.url,
                         screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
 
                 //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting

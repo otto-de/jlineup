@@ -5,9 +5,7 @@ import de.otto.jlineup.config.Parameters;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,13 +19,21 @@ public class FileService {
     public static final String DIVIDER = "_";
     public static final String PNG_EXTENSION = ".png";
 
-    public Path createDirIfNotExists(String dirPath) throws IOException {
+    private final Parameters parameters;
+
+    public FileService(Parameters parameters) {
+        this.parameters = parameters;
+    }
+
+    @VisibleForTesting
+    Path createDirIfNotExists(String dirPath) throws IOException {
         Path path = Paths.get(dirPath);
         Files.createDirectories(path);
         return path;
     }
 
-    public void clearDirectory(String path) throws IOException {
+    @VisibleForTesting
+    void clearDirectory(String path) throws IOException {
         Path directory = Paths.get(path);
         Files.newDirectoryStream(directory).forEach(file -> {
             try {
@@ -38,23 +44,19 @@ public class FileService {
         });
     }
 
-    public void createOrClearReportDirectory(Parameters parameters) {
+    public void createOrClearReportDirectory() {
         createOrClearDirectoryBelowWorkingDir(parameters.getWorkingDirectory(), parameters.getReportDirectory());
     }
 
-    public Path getWorkingDirectory(Parameters parameters) {
-        return Paths.get(parameters.getWorkingDirectory());
-    }
-
-    public Path getScreenshotDirectory(Parameters parameters) {
+    private Path getScreenshotDirectory() {
         return Paths.get(parameters.getWorkingDirectory() + "/" + parameters.getScreenshotDirectory());
     }
 
-    public Path getReportDirectory(Parameters parameters) {
+    private Path getReportDirectory() {
         return Paths.get(parameters.getWorkingDirectory() + "/" + parameters.getReportDirectory());
     }
 
-    public void createWorkingDirectoryIfNotExists(Parameters parameters) {
+    public void createWorkingDirectoryIfNotExists() {
         try {
             createDirIfNotExists(parameters.getWorkingDirectory());
         } catch (IOException e) {
@@ -63,7 +65,7 @@ public class FileService {
         }
     }
 
-    public void createOrClearScreenshotsDirectory(Parameters parameters) {
+    public void createOrClearScreenshotsDirectory() {
         createOrClearDirectoryBelowWorkingDir(parameters.getWorkingDirectory(), parameters.getScreenshotDirectory());
     }
 
@@ -78,6 +80,7 @@ public class FileService {
         }
     }
 
+    @VisibleForTesting
     String generateScreenshotFileName(String url, String path, int width, int yPosition, String type) {
 
         String fileName = generateScreenshotFileNamePrefix(url, path)
@@ -92,7 +95,7 @@ public class FileService {
         return fileName;
     }
 
-    String generateScreenshotFileNamePrefix(String url, String path) {
+    private String generateScreenshotFileNamePrefix(String url, String path) {
 
         if (path.equals("/") || path.equals("")) {
             path = "root";
@@ -113,20 +116,21 @@ public class FileService {
         return fileName;
     }
 
-    String getScreenshotPath(Parameters parameters, String url, String path, int width, int yPosition, String step) {
+    @VisibleForTesting
+    String getScreenshotPath(String url, String path, int width, int yPosition, String step) {
         return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
                 + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
                 + generateScreenshotFileName(url, path, width, yPosition, step);
     }
 
-    String getScreenshotPath(Parameters parameters, String fileName) {
+    private String getScreenshotPath(String fileName) {
         return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
                 + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
                 + fileName;
     }
 
-    public BufferedImage readScreenshot(Parameters parameters, String fileName) throws IOException {
-        return ImageIO.read(new File(getScreenshotPath(parameters, fileName)));
+    public BufferedImage readScreenshot(String fileName) throws IOException {
+        return ImageIO.read(new File(getScreenshotPath(fileName)));
     }
 
     private void writeScreenshot(String fileName, BufferedImage image) throws IOException {
@@ -148,19 +152,26 @@ public class FileService {
         return files;
     }
 
-    public String writeScreenshot(BufferedImage image, Parameters parameters, String url,
-                                String urlPath, int windowWidth, int yPosition, String step) throws IOException {
+    public String writeScreenshot(BufferedImage image, String url,
+                                  String urlPath, int windowWidth, int yPosition, String step) throws IOException {
         final String screenshotPath =
-                getScreenshotPath(parameters, url,
+                getScreenshotPath(url,
                         urlPath, windowWidth,
                         yPosition, step);
         writeScreenshot(screenshotPath, image);
         return screenshotPath;
     }
 
-    public List<String> getFilenamesForStep(Parameters parameters, String path, String url, String step) throws IOException {
+    public List<String> getFilenamesForStep(String path, String url, String step) throws IOException {
         final String matcherPattern = "glob:**" + generateScreenshotFileNamePrefix(url, path) + "*_*_" + step + ".png";
-        Path screenshotDirectory = getScreenshotDirectory(parameters);
+        Path screenshotDirectory = getScreenshotDirectory();
         return getFileNamesMatchingPattern(screenshotDirectory, matcherPattern);
     }
+
+    public void writeReportStringIntoFile(String reportJson) throws FileNotFoundException {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + "/report.json"))) {
+            out.print(reportJson);
+        }
+    }
 }
+

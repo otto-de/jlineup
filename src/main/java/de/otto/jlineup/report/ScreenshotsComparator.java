@@ -13,16 +13,12 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.IIOException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.file.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static de.otto.jlineup.file.FileService.DIVIDER;
-import static de.otto.jlineup.file.FileService.PNG_EXTENSION;
-import static de.otto.jlineup.file.FileService.AFTER;
-import static de.otto.jlineup.file.FileService.BEFORE;
+import static de.otto.jlineup.file.FileService.*;
 
 public class ScreenshotsComparator {
 
@@ -55,12 +51,12 @@ public class ScreenshotsComparator {
                 LOG.debug("Path: {}", path);
                 String fullUrlWithPath = BrowserUtils.buildUrl(url, path, urlConfig.envMapping);
 
-                final List<String> beforeFileNamesList = fileService.getFilenamesForStep(parameters, path, url, BEFORE);
+                final List<String> beforeFileNamesList = fileService.getFilenamesForStep(path, url, BEFORE);
                 final List<String> afterFileNamesList = new ArrayList<>();
                 beforeFileNamesList.forEach(filename -> afterFileNamesList.add(switchAfterWithBeforeInFileName(filename)));
 
                 final Set<String> beforeFileNamesSet = new HashSet<>(beforeFileNamesList);
-                final Set<String> afterFileNamesSet = new HashSet<>(fileService.getFilenamesForStep(parameters, path, url, AFTER));
+                final Set<String> afterFileNamesSet = new HashSet<>(fileService.getFilenamesForStep(path, url, AFTER));
 
                 //we need after files that have no before file in the final report
                 final List<String> afterFileNamesWithNoBeforeFile = new ArrayList<>();
@@ -79,14 +75,14 @@ public class ScreenshotsComparator {
 
                     BufferedImage imageBefore;
                     try {
-                        imageBefore = fileService.readScreenshot(parameters, beforeFileName);
+                        imageBefore = fileService.readScreenshot(beforeFileName);
                     } catch (IIOException e) {
                         System.err.println("Can't read screenshot of 'before' step. Did you run JLineup with --before parameter before trying to run --after or --compare?");
                         throw e;
                     }
                     BufferedImage imageAfter;
                     try {
-                        imageAfter = fileService.readScreenshot(parameters, afterFileName);
+                        imageAfter = fileService.readScreenshot(afterFileName);
                     } catch (IIOException e) {
                         screenshotComparisonResults.add(ScreenshotComparisonResult.noAfterImageComparisonResult(fullUrlWithPath, windowWidth, yPosition, beforeFileName));
                         continue;
@@ -95,7 +91,7 @@ public class ScreenshotsComparator {
                     ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, config.getWindowHeight());
                     String differenceImagePath = null;
                     if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
-                        differenceImagePath = fileService.writeScreenshot(imageComparisonResult.getDifferenceImage().orElse(null), parameters, url, path, windowWidth, yPosition, "DIFFERENCE");
+                        differenceImagePath = fileService.writeScreenshot(imageComparisonResult.getDifferenceImage().orElse(null), url, path, windowWidth, yPosition, "DIFFERENCE");
                     }
                     screenshotComparisonResults.add(new ScreenshotComparisonResult(fullUrlWithPath, windowWidth, yPosition, imageComparisonResult.getDifference(), beforeFileName, afterFileName, differenceImagePath));
                 }
@@ -103,7 +99,7 @@ public class ScreenshotsComparator {
                 addMissingBeforeFilesToResults(screenshotComparisonResults, fullUrlWithPath, afterFileNamesWithNoBeforeFile);
             }
         }
-        screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>comparing(rl -> rl.url).thenComparing(r -> r.width).thenComparing(l -> l.verticalScrollPosition));
+        screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>comparing(r -> r.url).thenComparing(r -> r.width).thenComparing(r -> r.verticalScrollPosition));
         return screenshotComparisonResults;
     }
 
