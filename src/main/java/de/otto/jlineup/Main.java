@@ -19,7 +19,12 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
 
         final Parameters parameters = new Parameters();
-        new JCommander(parameters, args);
+        final JCommander jCommander = new JCommander(parameters, args);
+        jCommander.setProgramName("JCommanderExample");
+        if (parameters.isHelp()) {
+            jCommander.usage();
+            return;
+        }
 
         FileService fileService = new FileService(parameters);
         ImageService imageService = new ImageService();
