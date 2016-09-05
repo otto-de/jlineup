@@ -90,13 +90,11 @@ public class Browser implements AutoCloseable{
             LOG.debug("Browsing to " + url);
             driver.get(url);
 
-            JavascriptExecutor jse = (JavascriptExecutor) driver;
-
             Map<String, String> localStorage = screenshotContext.urlConfig.localStorage;
-            setLocalStorage(jse, localStorage);
+            setLocalStorage(localStorage);
 
-            Long pageHeight = (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
-            Long viewportHeight = (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
+            Long pageHeight = getPageHeight();
+            Long viewportHeight = getViewportHeight();
 
             screenshotContext.urlConfig.getWaitAfterPageLoad().ifPresent(waitTime -> {
                 try {
@@ -113,19 +111,7 @@ public class Browser implements AutoCloseable{
             for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.getMaxScrollHeight().orElse(MAX_SCROLL_HEIGHT); yPosition += viewportHeight) {
                 File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
                 BufferedImage currentScreenshot = ImageIO.read(screenshot);
-                float waitForNoAnimation = screenshotContext.urlConfig.getWaitForNoAnimationAfterScroll().orElse(0f);
-                if (waitForNoAnimation > 0f) {
-                    final long beginTime = System.currentTimeMillis();
-                    int sameCounter = 0;
-                    while (sameCounter < 10 && !timeIsOver(beginTime, waitForNoAnimation)) {
-                        screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-                        BufferedImage newScreenshot = ImageIO.read(screenshot);
-                        if (ImageService.bufferedImagesEqualQuick(newScreenshot, currentScreenshot)) {
-                            sameCounter++;
-                        }
-                        currentScreenshot = newScreenshot;
-                    }
-                }
+                currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
                 fileService.writeScreenshot(currentScreenshot, screenshotContext.url,
                         screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
 
@@ -137,12 +123,40 @@ public class Browser implements AutoCloseable{
 
                 LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
 
-                scrollBy(jse, viewportHeight.intValue());
+                scrollBy(viewportHeight.intValue());
                 Thread.sleep(100);
                 //Refresh to check if page grows during scrolling
-                pageHeight = (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
+                pageHeight = getPageHeight();
             }
         }
+    }
+
+    private Long getViewportHeight() {
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        return (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
+    }
+
+    private Long getPageHeight() {
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        return (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
+    }
+
+    private BufferedImage waitForNoAnimation(ScreenshotContext screenshotContext, BufferedImage currentScreenshot) throws IOException {
+        File screenshot;
+        float waitForNoAnimation = screenshotContext.urlConfig.getWaitForNoAnimationAfterScroll().orElse(0f);
+        if (waitForNoAnimation > 0f) {
+            final long beginTime = System.currentTimeMillis();
+            int sameCounter = 0;
+            while (sameCounter < 10 && !timeIsOver(beginTime, waitForNoAnimation)) {
+                screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                BufferedImage newScreenshot = ImageIO.read(screenshot);
+                if (ImageService.bufferedImagesEqualQuick(newScreenshot, currentScreenshot)) {
+                    sameCounter++;
+                }
+                currentScreenshot = newScreenshot;
+            }
+        }
+        return currentScreenshot;
     }
 
     private boolean timeIsOver(long beginTime, float waitForNoAnimation) {
@@ -151,12 +165,15 @@ public class Browser implements AutoCloseable{
         return over;
     }
 
-    void scrollBy(JavascriptExecutor jse, int viewportHeight) {
+    void scrollBy(int viewportHeight) {
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
         jse.executeScript(String.format(JS_SCROLL_CALL, viewportHeight));
     }
 
-    void setLocalStorage(JavascriptExecutor jse, Map<String, String> localStorage) {
+    void setLocalStorage(Map<String, String> localStorage) {
         if (localStorage == null) return;
+
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
         for (Map.Entry<String, String> localStorageEntry : localStorage.entrySet()) {
 
             final String entry = localStorageEntry.getValue().replace("'", "\"");
