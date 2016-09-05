@@ -126,7 +126,7 @@ public class BrowserTest {
         //given
         Map<String, String> localStorage = ImmutableMap.of("key", "value");
         //when
-        testee.setLocalStorage(webDriverMock, localStorage);
+        testee.setLocalStorage(localStorage);
         //then
         final String localStorageCall = String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value");
         verify(webDriverMock).executeScript(localStorageCall);
@@ -137,7 +137,7 @@ public class BrowserTest {
         //given
         Map<String, String> localStorage = ImmutableMap.of("key", "{'customerServiceWidgetNotificationHidden':{'value':true,'timestamp':9467812242358}}");
         //when
-        testee.setLocalStorage(webDriverMock, localStorage);
+        testee.setLocalStorage(localStorage);
         //then
         final String localStorageCall = String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "{\"customerServiceWidgetNotificationHidden\":{\"value\":true,\"timestamp\":9467812242358}}");
         verify(webDriverMock).executeScript(localStorageCall);
@@ -146,7 +146,7 @@ public class BrowserTest {
     @Test
     public void shouldScroll() {
         //when
-        testee.scrollBy(webDriverMock, 1337);
+        testee.scrollBy(1337);
         //then
         verify(webDriverMock).executeScript(String.format(JS_SCROLL_CALL, 1337L));
     }
