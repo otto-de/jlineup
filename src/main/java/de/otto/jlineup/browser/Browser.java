@@ -76,6 +76,7 @@ public class Browser implements AutoCloseable{
             driver.manage().window().setSize(new Dimension(screenshotContext.windowWidth, config.getWindowHeight()));
 
             //get root page from url to be able to set cookies afterwards
+            //if you set cookies before getting the page once, it will fail
             driver.get(buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping));
 
             if (config.getBrowser() == Type.PHANTOMJS) {
@@ -85,19 +86,19 @@ public class Browser implements AutoCloseable{
                 setCookies(screenshotContext.urlConfig.cookies);
             }
 
+            setLocalStorage(screenshotContext.urlConfig.localStorage);
+
             //now get the real page
             String url = buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping);
             LOG.debug("Browsing to " + url);
             driver.get(url);
-
-            Map<String, String> localStorage = screenshotContext.urlConfig.localStorage;
-            setLocalStorage(localStorage);
 
             Long pageHeight = getPageHeight();
             Long viewportHeight = getViewportHeight();
 
             screenshotContext.urlConfig.getWaitAfterPageLoad().ifPresent(waitTime -> {
                 try {
+                    LOG.debug("Waiting for " + waitTime + " + seconds (wait-after-page-load");
                     Thread.sleep(waitTime * 1000);
                 } catch (InterruptedException e) {
                     LOG.error(e.getMessage(), e);
@@ -107,38 +108,36 @@ public class Browser implements AutoCloseable{
             LOG.debug("Page height before scrolling: {}", pageHeight);
             LOG.debug("Viewport height of browser window: {}", viewportHeight);
 
-            Thread.sleep(Math.round(config.getAsyncWait() * 1000));
+            if (config.getAsyncWait() > 0) {
+                LOG.debug("Waiting for " + config.getAsyncWait() + " seconds (async-wait)");
+                Thread.sleep(Math.round(config.getAsyncWait() * 1000));
+            }
+
             for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.getMaxScrollHeight().orElse(MAX_SCROLL_HEIGHT); yPosition += viewportHeight) {
-                File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-                BufferedImage currentScreenshot = ImageIO.read(screenshot);
+                BufferedImage currentScreenshot = takeScreenshot();
                 currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
                 fileService.writeScreenshot(currentScreenshot, screenshotContext.url,
                         screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
-
                 //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
                 //This is subject to change because W3C standard wants viewport screenshots
                 if (config.getBrowser() == Type.PHANTOMJS) {
                     break;
                 }
-
                 LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
-
                 scrollBy(viewportHeight.intValue());
-                Thread.sleep(100);
+
+                //Sleep some milliseconds to give scrolling time before the next screenshot happens
+                Thread.sleep(50);
+
                 //Refresh to check if page grows during scrolling
                 pageHeight = getPageHeight();
             }
         }
     }
 
-    private Long getViewportHeight() {
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
-        return (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
-    }
-
-    private Long getPageHeight() {
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
-        return (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
+    private BufferedImage takeScreenshot() throws IOException {
+        File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        return ImageIO.read(screenshot);
     }
 
     private BufferedImage waitForNoAnimation(ScreenshotContext screenshotContext, BufferedImage currentScreenshot) throws IOException {
@@ -163,6 +162,16 @@ public class Browser implements AutoCloseable{
         boolean over = beginTime + (long) (waitForNoAnimation * 1000L) < System.currentTimeMillis();
         if (over) LOG.debug("Time is over");
         return over;
+    }
+
+    private Long getPageHeight() {
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        return (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
+    }
+
+    private Long getViewportHeight() {
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        return (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
     }
 
     void scrollBy(int viewportHeight) {

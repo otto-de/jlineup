@@ -45,7 +45,9 @@ public class BrowserUtils {
         switch (config.getBrowser()) {
             case FIREFOX:
                 MarionetteDriverManager.getInstance().setup();
-                driver = new MarionetteDriver();
+                GeckoDriverService.Builder builder = new GeckoDriverService.Builder();
+                builder.usingPort(0);
+                driver = new MarionetteDriver(builder.build());
                 break;
             case CHROME:
                 ChromeDriverManager.getInstance().setup();
