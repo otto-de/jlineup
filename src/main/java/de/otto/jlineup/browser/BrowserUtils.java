@@ -45,7 +45,7 @@ public class BrowserUtils {
         switch (config.getBrowser()) {
             case FIREFOX:
                 MarionetteDriverManager.getInstance().setup();
-                GeckoDriverService.Builder builder = new GeckoDriverService.Builder();
+                JLineupGeckoDriverService.Builder builder = new JLineupGeckoDriverService.Builder();
                 builder.usingPort(0);
                 driver = new MarionetteDriver(builder.build());
                 break;
