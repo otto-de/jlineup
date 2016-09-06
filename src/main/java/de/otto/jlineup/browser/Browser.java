@@ -37,7 +37,7 @@ public class Browser implements AutoCloseable{
         PHANTOMJS
     }
 
-    static final String JS_DOCUMENT_HEIGHT_CALL = "return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);";
+    static final String JS_DOCUMENT_HEIGHT_CALL = "return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );";
     static final String JS_CLIENT_VIEWPORT_HEIGHT_CALL = "return document.documentElement.clientHeight";
     static final String JS_SET_LOCAL_STORAGE_CALL = "localStorage.setItem('%s','%s')";
     static final String JS_SCROLL_CALL = "window.scrollBy(0,%d)";
