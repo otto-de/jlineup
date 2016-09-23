@@ -7,6 +7,7 @@ import io.github.bonigarcia.wdm.MarionetteDriverManager;
 import io.github.bonigarcia.wdm.PhantomJsDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
@@ -46,12 +47,16 @@ public class BrowserUtils {
             case FIREFOX:
                 MarionetteDriverManager.getInstance().setup();
                 JLineupGeckoDriverService.Builder builder = new JLineupGeckoDriverService.Builder();
+                //0 means default
                 builder.usingPort(0);
                 driver = new MarionetteDriver(builder.build());
                 break;
             case CHROME:
                 ChromeDriverManager.getInstance().setup();
-                driver = new ChromeDriver();
+                ChromeOptions options = new ChromeOptions();
+                //To work in a headless env, this is needed
+                options.addArguments("--no-sandbox");
+                driver = new ChromeDriver(options);
                 break;
             case PHANTOMJS:
             default:
