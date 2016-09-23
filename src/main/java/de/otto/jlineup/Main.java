@@ -42,6 +42,10 @@ public class Main {
 
         System.out.println("Running JLineup with step '" + parameters.getStep() + "'.");
 
+        if (config.getBrowser() == Browser.Type.FIREFOX) {
+            System.out.println("You're running JLineup with Firefox - Firefox is currently not supported and the run may fail.");
+        }
+
         if (!parameters.isJustCompare()) {
             try (Browser browser = new Browser(parameters, config, BrowserUtils.getWebDriverByConfig(config), fileService)) {
                 browser.takeScreenshots();
