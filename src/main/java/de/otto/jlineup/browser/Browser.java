@@ -75,22 +75,26 @@ public class Browser implements AutoCloseable{
             driver.manage().window().setPosition(new Point(0, 0));
             driver.manage().window().setSize(new Dimension(screenshotContext.windowWidth, config.getWindowHeight()));
 
+            final String url = buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping);
+            final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
+
             //get root page from url to be able to set cookies afterwards
             //if you set cookies before getting the page once, it will fail
-            driver.get(buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping));
+            LOG.debug("Getting root url: " + rootUrl);
+            driver.get(rootUrl);
 
             if (config.getBrowser() == Type.PHANTOMJS) {
                 //current phantomjs driver has a bug that prevents selenium's normal way of setting cookies
+                LOG.debug("Setting cookies for PhantomJS");
                 setCookiesPhantomJS(screenshotContext.urlConfig.cookies);
             } else {
+                LOG.debug("Setting cookies");
                 setCookies(screenshotContext.urlConfig.cookies);
             }
-
             setLocalStorage(screenshotContext.urlConfig.localStorage);
 
-            //now get the real page
-            String url = buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping);
             LOG.debug("Browsing to " + url);
+            //now get the real page
             driver.get(url);
 
             Long pageHeight = getPageHeight();

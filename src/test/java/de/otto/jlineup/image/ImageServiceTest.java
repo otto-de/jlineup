@@ -47,11 +47,26 @@ public class ImageServiceTest {
 
         //when
         ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
-        //new DifferenceFileWriter().writeDifferenceFile("src/test/resources/screenshots/ideaDifferenceReferenceNew.png", result);
+        //ImageIO.write(result.getDifferenceImage().orElse(null), "png", new File("src/test/resources/screenshots/ideaDifferenceReferenceNew.png"));
 
         //then
         assertThat(result.getDifference(), is(0.5366469443663049));
         assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
     }
+
+    @Test
+    public void shouldNotCrashBecauseOfDifferentHeights() throws IOException {
+        //given
+        final int viewportHeight = 800;
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/less_height.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/more_height.png"));
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
+
+        //then
+        assertThat(result.getDifference(), is(0.475));
+    }
+
 
 }
