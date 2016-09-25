@@ -42,6 +42,6 @@ public class ReportGeneratorTest {
 
         testee.writeComparisonReportAsJson(singletonList(screenshotComparisonResult));
 
-        Mockito.verify(fileServiceMock).writeReportStringIntoFile(expectedString);
+        Mockito.verify(fileServiceMock).writeJsonReport(expectedString);
     }
 }

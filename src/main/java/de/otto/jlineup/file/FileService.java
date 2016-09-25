@@ -168,9 +168,15 @@ public class FileService {
         return getFileNamesMatchingPattern(screenshotDirectory, matcherPattern);
     }
 
-    public void writeReportStringIntoFile(String reportJson) throws FileNotFoundException {
+    public void writeJsonReport(String reportJson) throws FileNotFoundException {
         try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + "/report.json"))) {
             out.print(reportJson);
+        }
+    }
+
+    public void writeHtmlReport(String htmlReport) throws FileNotFoundException {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getScreenshotDirectory().toString() + "/report.html"))) {
+            out.print(htmlReport);
         }
     }
 }
