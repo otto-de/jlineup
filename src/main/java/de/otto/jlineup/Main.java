@@ -57,6 +57,7 @@ public class Main {
             List<ScreenshotComparisonResult> comparisonResults = screenshotsComparator.compare();
             ReportGenerator reportGenerator = new ReportGenerator(fileService);
             reportGenerator.writeComparisonReportAsJson(comparisonResults);
+            reportGenerator.writeComparisonReportAsHtml(comparisonResults);
 
             System.out.println("Sum of screenshot differences:\n" + comparisonResults.stream().mapToDouble(scr -> scr.difference).sum());
         }

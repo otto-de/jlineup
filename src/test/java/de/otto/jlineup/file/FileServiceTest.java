@@ -84,7 +84,7 @@ public class FileServiceTest {
     public void shouldWriteJsonReport() throws Exception {
         when(parameters.getWorkingDirectory()).thenReturn(writeScreenshotTestPath);
 
-        testee.writeReportStringIntoFile("[{\"toll\":\"mega\"}]");
+        testee.writeJsonReport("[{\"toll\":\"mega\"}]");
 
         Path reportFilePath = Paths.get(writeScreenshotTestPath + "/report/report.json");
         assertThat(Files.exists(reportFilePath), is(true));
