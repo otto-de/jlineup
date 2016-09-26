@@ -31,8 +31,8 @@ public class ReportGenerator {
         sb.append("body {" +
                 "    background-color : white;\n" +
                 "    font-family : Arial, Helvetica, sans-serif;\n" +
-                "    margin-left : 0;\n" +
-                "    margin-top : 0;\n" +
+                "    margin-left : 10px;\n" +
+                "    margin-top : 10px;\n" +
                 "}\n" +
                 "table tr:nth-child(even) {\n" +
                 "    background-color: #eee;\n" +
@@ -48,9 +48,13 @@ public class ReportGenerator {
                 "    padding: 0 0 0 0;\n" +
                 "    border: 1px solid;\n" +
                 "    border-collapse: collapse;\n" +
+                "    vertical-align: top;\n" +
                 "}\n" +
                 "table {\n" +
                 "    padding: 0 0 15px 0;\n" +
+                "}\n" +
+                "p {\n" +
+                "    padding: 5px;\n" +
                 "}\n" +
                 "");
         sb.append("</style>");
@@ -64,9 +68,9 @@ public class ReportGenerator {
             boolean firstOfContext = false;
             if (!context.equals(lastContext)) {
                 if (lastContext != null) {
-                    firstOfContext = true;
                     sb.append("</table>");
                 }
+                firstOfContext = true;
                 lastContext = context;
                 sb.append("<h3>");
                 sb.append(screenshotComparisonResult.url);
@@ -97,7 +101,7 @@ public class ReportGenerator {
             if (screenshotComparisonResult.differenceImageFileName != null) {
                 writeImageLink(sb, screenshotComparisonResult.differenceImageFileName);
             } else {
-                sb.append("<p>No difference</p>");
+                sb.append("<p>No difference image</p>");
             }
             sb.append("</td>");
             sb.append("</tr>\n");
@@ -113,16 +117,30 @@ public class ReportGenerator {
     private void writeLinkInfo(StringBuilder sb, ScreenshotComparisonResult screenshotComparisonResult) {
         sb.append("<p><a href=\"");
         sb.append(screenshotComparisonResult.url);
-        sb.append("\" target=\"_blank\">");
+        sb.append("\" target=\"_blank\" title=\"");
         sb.append(screenshotComparisonResult.url);
+        sb.append("\">");
+        sb.append(shortenUrl(screenshotComparisonResult.url));
         sb.append("</a>");
-        sb.append("<br /> at width ");
+        sb.append("<br />Width: ");
         sb.append(screenshotComparisonResult.width);
-        sb.append("<br /> at scroll position ");
+        sb.append("<br />Scroll pos: ");
         sb.append(screenshotComparisonResult.verticalScrollPosition);
-        sb.append("<br /> difference: ");
-        sb.append(screenshotComparisonResult.difference);
+        sb.append("<br />Difference: ");
+        sb.append(formatDifference(screenshotComparisonResult.difference));
         sb.append("</p>");
+    }
+
+    private String formatDifference(double difference) {
+        return String.format("%1$,.2f", difference * 100) + "%";
+    }
+
+    private String shortenUrl(final String url) {
+        String retval = url;
+        if (url.length() > 25) {
+            retval = "..." + retval.substring(retval.lastIndexOf("/"), retval.length());
+        }
+        return retval;
     }
 
     private void writeImageLink(StringBuilder sb, String differenceImageFileName) {
