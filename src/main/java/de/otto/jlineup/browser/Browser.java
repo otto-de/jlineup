@@ -80,7 +80,7 @@ public class Browser implements AutoCloseable{
 
             //get root page from url to be able to set cookies afterwards
             //if you set cookies before getting the page once, it will fail
-            LOG.debug("Getting root url: " + rootUrl);
+            LOG.debug(String.format("Getting root url: %s", rootUrl));
             driver.get(rootUrl);
 
             if (config.getBrowser() == Type.PHANTOMJS) {
@@ -102,7 +102,7 @@ public class Browser implements AutoCloseable{
 
             screenshotContext.urlConfig.getWaitAfterPageLoad().ifPresent(waitTime -> {
                 try {
-                    LOG.debug("Waiting for " + waitTime + " + seconds (wait-after-page-load");
+                    LOG.debug(String.format("Waiting for %d seconds (wait-after-page-load)", waitTime));
                     Thread.sleep(waitTime * 1000);
                 } catch (InterruptedException e) {
                     LOG.error(e.getMessage(), e);
@@ -113,7 +113,7 @@ public class Browser implements AutoCloseable{
             LOG.debug("Viewport height of browser window: {}", viewportHeight);
 
             if (config.getAsyncWait() > 0) {
-                LOG.debug("Waiting for " + config.getAsyncWait() + " seconds (async-wait)");
+                LOG.debug(String.format("Waiting for %s seconds (async-wait)", config.getAsyncWait()));
                 Thread.sleep(Math.round(config.getAsyncWait() * 1000));
             }
 

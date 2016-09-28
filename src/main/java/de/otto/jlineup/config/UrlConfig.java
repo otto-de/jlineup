@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import static de.otto.jlineup.config.Config.DEFAULT_PATHS;
+import static de.otto.jlineup.config.Config.DEFAULT_WINDOW_WIDTHS;
+
 public class UrlConfig {
 
     public final List<String> paths;
@@ -31,13 +34,26 @@ public class UrlConfig {
     @SerializedName("wait-for-no-animation-after-scroll")
     private final Float waitForNoAnimationAfterScroll;
 
+    //Default constructor for GSON
+    public UrlConfig() {
+        this.paths = DEFAULT_PATHS;
+        this.windowWidths = DEFAULT_WINDOW_WIDTHS;
+        this.maxDiff = 0;
+        this.cookies = null;
+        this.localStorage = null;
+        this.maxScrollHeight = null;
+        this.waitAfterPageLoad = null;
+        this.waitForNoAnimationAfterScroll = null;
+        this.envMapping = null;
+    }
+
     public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, Integer maxScrollHeight, Integer waitAfterPageLoad, Float waitForNoAnimationAfterScroll) {
-        this.paths = paths;
+        this.paths = paths != null ? paths : DEFAULT_PATHS;
+        this.windowWidths = windowWidths != null ? windowWidths : DEFAULT_WINDOW_WIDTHS;
         this.maxDiff = maxDiff;
         this.cookies = cookies;
         this.envMapping = envMapping;
         this.localStorage = localStorage;
-        this.windowWidths = windowWidths;
         this.maxScrollHeight = maxScrollHeight;
         this.waitAfterPageLoad = waitAfterPageLoad;
         this.waitForNoAnimationAfterScroll = waitForNoAnimationAfterScroll;

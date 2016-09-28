@@ -1,5 +1,6 @@
 package de.otto.jlineup.config;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.browser.Browser;
@@ -17,29 +18,36 @@ import java.util.Map;
 
 public final class Config {
 
-    private static final Integer DEFAULT_WINDOW_HEIGHT = 800;
-    private static final Float DEFAULT_ASYNC_WAIT = 0f;
-    private static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
+    public static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
 
-    private Map<String, UrlConfig> urls;
-    private Browser.Type browser;
+    public static final Browser.Type DEFAULT_BROWSER = Browser.Type.PHANTOMJS;
+    public static final Integer DEFAULT_WINDOW_HEIGHT = 800;
+    public static final Float DEFAULT_ASYNC_WAIT = 0f;
+    public static final List<Integer> DEFAULT_WINDOW_WIDTHS = ImmutableList.of(800);
+    public static final List<String> DEFAULT_PATHS = ImmutableList.of("/");
+
+    private final Map<String, UrlConfig> urls;
+    private final Browser.Type browser;
     @SerializedName("async-wait")
-    private Float asyncWait = DEFAULT_ASYNC_WAIT;
+    private final Float asyncWait;
     @SerializedName("window-height")
-    private Integer windowHeight = DEFAULT_WINDOW_HEIGHT;
+    private final Integer windowHeight;
 
     private final static Gson gson = new Gson();
 
     /* Used by GSON to set default values */
     public Config() {
+        urls = null;
+        browser = DEFAULT_BROWSER;
         asyncWait = DEFAULT_ASYNC_WAIT;
         windowHeight = DEFAULT_WINDOW_HEIGHT;
+
     }
 
     public Config(Map<String, UrlConfig> urls, Browser.Type browser, Float asyncWait, Integer windowHeight) {
         this.urls = urls;
-        this.browser = browser;
-        this.asyncWait = asyncWait != null ? asyncWait : 0;
+        this.browser = browser != null ? browser : DEFAULT_BROWSER;
+        this.asyncWait = asyncWait != null ? asyncWait : DEFAULT_ASYNC_WAIT;
         this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
     }
 

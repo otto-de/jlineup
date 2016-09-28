@@ -1,7 +1,7 @@
 package de.otto.jlineup.config;
 
 import com.google.common.collect.ImmutableList;
-import de.otto.jlineup.browser.BrowserTest;
+import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtilsTest;
 import org.junit.Test;
 
@@ -29,6 +29,16 @@ public class ConfigTest {
     public void shouldThrowFileNotFoundExceptionWhenConfigFileIsNotFound() throws FileNotFoundException {
         Config.readConfig("someWorkingDir", "nonexisting.json");
         //assert that filenotfoundexception is thrown (see expected above)
+    }
+
+    @Test
+    public void shouldReadMinimalConfigAndInsertDefaults() throws FileNotFoundException {
+        Config config = Config.readConfig("src/test/resources/", "lineup_minimal_test.json");
+        assertThat(config.getBrowser(), is(Browser.Type.PHANTOMJS));
+        assertThat(config.getWindowHeight(), is(800));
+        assertThat(config.getUrls().get("https://www.otto.de").windowWidths, is(ImmutableList.of(800)));
+        assertThat(config.getUrls().get("https://www.otto.de").paths, is(ImmutableList.of("/")));
+        assertThat(config.getAsyncWait(), is(0F));
     }
 
     private void assertThatConfigContentsAreCorrect(Config config) {
