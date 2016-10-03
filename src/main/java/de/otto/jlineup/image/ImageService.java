@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferInt;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -165,11 +166,11 @@ public class ImageService {
     }
 
     //Helper function to compare two BufferedImage instances (BufferedImage doesn't override equals())
-    public static boolean bufferedImagesEqual(BufferedImage img1, BufferedImage img2) {
-        if (img1.getWidth() == img2.getWidth() && img1.getHeight() == img2.getHeight()) {
-            for (int x = 0; x < img1.getWidth(); x++) {
-                for (int y = 0; y < img1.getHeight(); y++) {
-                    if (img1.getRGB(x, y) != img2.getRGB(x, y))
+    public static boolean bufferedImagesEqual(BufferedImage image1, BufferedImage image2) {
+        if (image1.getWidth() == image2.getWidth() && image1.getHeight() == image2.getHeight()) {
+            for (int xPosition = 0; xPosition < image1.getWidth(); xPosition++) {
+                for (int yPosition = 0; yPosition < image1.getHeight(); yPosition++) {
+                    if (image1.getRGB(xPosition, yPosition) != image2.getRGB(xPosition, yPosition))
                         return false;
                 }
             }
@@ -179,20 +180,33 @@ public class ImageService {
         return true;
     }
 
-    public static boolean bufferedImagesEqualQuick(BufferedImage img1, BufferedImage img2) {
-        DataBuffer dbActual = img1.getRaster().getDataBuffer();
-        DataBuffer dbExpected = img2.getRaster().getDataBuffer();
-
-        DataBufferByte actualDBAsDBInt = (DataBufferByte) dbActual ;
-        DataBufferByte expectedDBAsDBInt = (DataBufferByte) dbExpected ;
-
-        for (int bank = 0; bank < actualDBAsDBInt.getNumBanks(); bank++) {
-            byte[] actual = actualDBAsDBInt.getData(bank);
-            byte[] expected = expectedDBAsDBInt.getData(bank);
-
-            if(!Arrays.equals(actual, expected)) {
-                return false;
+    //A very fast byte buffer based image comparison for images containing INT or BYTE type representations
+    public static boolean bufferedImagesEqualQuick(BufferedImage image1, BufferedImage image2) {
+        DataBuffer dataBuffer1 = image1.getRaster().getDataBuffer();
+        DataBuffer dataBuffer2 = image2.getRaster().getDataBuffer();
+        if (dataBuffer1 instanceof DataBufferByte && dataBuffer2 instanceof DataBufferByte) {
+            DataBufferByte dataBufferBytes1 = (DataBufferByte) dataBuffer1;
+            DataBufferByte dataBufferBytes2 = (DataBufferByte) dataBuffer2;
+            for (int bank = 0; bank < dataBufferBytes1.getNumBanks(); bank++) {
+                byte[] bytes1 = dataBufferBytes1.getData(bank);
+                byte[] bytes2 = dataBufferBytes2.getData(bank);
+                if (!Arrays.equals(bytes1, bytes2)) {
+                    return false;
+                }
             }
+        } else if (dataBuffer1 instanceof DataBufferInt && dataBuffer2 instanceof DataBufferInt) {
+            DataBufferInt dataBufferInt1 = (DataBufferInt) dataBuffer1;
+            DataBufferInt dataBufferInt2 = (DataBufferInt) dataBuffer2;
+            for (int bank = 0; bank < dataBufferInt1.getNumBanks(); bank++) {
+                int[] ints1 = dataBufferInt1.getData(bank);
+                int[] ints2 = dataBufferInt2.getData(bank);
+                if (!Arrays.equals(ints1, ints2)) {
+                    return false;
+                }
+            }
+        }
+        else {
+            return false;
         }
         return true;
     }

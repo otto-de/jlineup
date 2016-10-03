@@ -54,6 +54,7 @@ public class BrowserUtilsTest {
         Config config = Config.readConfig(".", "src/test/resources/lineup_test.json");
         when(parameters.getWorkingDirectory()).thenReturn("some/working/dir");
         when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
+        when(parameters.getUrlReplacements()).thenReturn(ImmutableMap.of("google","doodle"));
 
         UrlConfig expectedUrlConfigForOttoDe = getExpectedUrlConfigForOttoDe();
         UrlConfig expectedUrlConfigForGoogleDe = getExpectedUrlConfigForGoogleDe();
@@ -65,14 +66,25 @@ public class BrowserUtilsTest {
                 ScreenshotContext.of("https://www.otto.de", "multimedia", 600, true, expectedUrlConfigForOttoDe),
                 ScreenshotContext.of("https://www.otto.de", "multimedia", 800, true, expectedUrlConfigForOttoDe),
                 ScreenshotContext.of("https://www.otto.de", "multimedia", 1200, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("http://www.google.de", "/", 1200, true, expectedUrlConfigForGoogleDe)
+                ScreenshotContext.of("http://www.doodle.de", "/", 1200, true, expectedUrlConfigForGoogleDe)
         );
 
         //when
-        final List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(config, true);
+        final List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(parameters, config, true);
 
         //then
         assertThat(screenshotContextList, containsInAnyOrder(expectedScreenshotContextList.toArray()));
+    }
+
+    @Test
+    public void shouldPrepareDomain() {
+        //given
+        Parameters parameters = mock(Parameters.class);
+        when(parameters.getUrlReplacements()).thenReturn(ImmutableMap.of(".otto.", ".bonprix."));
+        //when
+        String result = BrowserUtils.prepareDomain(parameters, "www.otto.de");
+        //then
+        assertThat(result, is("www.bonprix.de"));
     }
 
     public static UrlConfig getExpectedUrlConfigForOttoDe() {

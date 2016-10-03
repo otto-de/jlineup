@@ -57,7 +57,7 @@ public class Browser implements AutoCloseable{
 
     public void takeScreenshots() throws IOException, InterruptedException {
         boolean before = !parameters.isAfter();
-        List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(config, before);
+        List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(parameters, config, before);
         takeScreenshots(screenshotContextList);
     }
 

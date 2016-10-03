@@ -1,6 +1,7 @@
 package de.otto.jlineup.image;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -66,6 +67,36 @@ public class ImageServiceTest {
 
         //then
         assertThat(result.getDifference(), is(0.475));
+    }
+
+    @Test
+    public void shouldSeeIdenticalByteImageBuffersAsEqualWithQuickCompare() {
+        final BufferedImage image1 = new BufferedImage(100, 100, BufferedImage.TYPE_BYTE_INDEXED);
+        final BufferedImage image2 = new BufferedImage(100, 100, BufferedImage.TYPE_BYTE_INDEXED);
+
+        boolean result = ImageService.bufferedImagesEqualQuick(image1, image2);
+
+        assertThat(result, is(true));
+    }
+
+    @Test
+    public void shouldSeeIdenticalIntImageBuffersAsEqualWithQuickCompare() {
+        final BufferedImage image1 = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+        final BufferedImage image2 = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+
+        boolean result = ImageService.bufferedImagesEqualQuick(image1, image2);
+
+        assertThat(result, is(true));
+    }
+
+    @Test
+    public void shouldSeeDifferentImageBuffersAsDifferentWithQuickCompare() {
+        final BufferedImage image1 = new BufferedImage(100, 100, BufferedImage.TYPE_BYTE_INDEXED);
+        final BufferedImage image2 = new BufferedImage(100, 101, BufferedImage.TYPE_BYTE_INDEXED);
+
+        boolean result = ImageService.bufferedImagesEqualQuick(image1, image2);
+
+        assertThat(result, is(false));
     }
 
 
