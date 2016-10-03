@@ -1,6 +1,10 @@
 package de.otto.jlineup.config;
 
+import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.Parameter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static de.otto.jlineup.config.Step.*;
 
@@ -23,6 +27,9 @@ public class Parameters {
 
     @Parameter(names = {"--report-dir", "-rd"}, description = "HTML report directory name - relative to working directory")
     private String reportDirectory = "report";
+
+    @DynamicParameter(names = {"--replace-in-url", "-R"}, description = "The given keys are replaced with the corresponding values in all urls that are tested.")
+    private Map<String, String> urlReplacements = new HashMap<>();
 
     public String getWorkingDirectory() {
         return workingDirectory;
@@ -58,5 +65,9 @@ public class Parameters {
 
     public Step getStep() {
         return step;
+    }
+
+    public Map<String, String> getUrlReplacements() {
+        return urlReplacements;
     }
 }

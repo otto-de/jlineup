@@ -1,6 +1,7 @@
 package de.otto.jlineup.browser;
 
 import de.otto.jlineup.config.Config;
+import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.MarionetteDriverManager;
@@ -67,7 +68,7 @@ public class BrowserUtils {
         return driver;
     }
 
-    public static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(Config config, boolean before) {
+    public static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(Parameters parameters, Config config, boolean before) {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
         Map<String, UrlConfig> urls = config.getUrls();
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
@@ -78,11 +79,19 @@ public class BrowserUtils {
                 screenshotContextList.addAll(
                         resolutions.stream()
                                 .map(windowWidth ->
-                                        new ScreenshotContext(urlConfigEntry.getKey(), path, windowWidth,
+                                        new ScreenshotContext(prepareDomain(parameters, urlConfigEntry.getKey()), path, windowWidth,
                                                 before, urlConfigEntry.getValue()))
                                 .collect(Collectors.toList()));
             }
         }
         return screenshotContextList;
+    }
+
+    public static String prepareDomain(final Parameters parameters, final String url) {
+        String processedUrl = url;
+        for (Map.Entry<String, String> replacement : parameters.getUrlReplacements().entrySet()) {
+             processedUrl = processedUrl.replace(replacement.getKey(), replacement.getValue());
+        }
+        return processedUrl;
     }
 }

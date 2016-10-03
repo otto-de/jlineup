@@ -44,7 +44,7 @@ public class ScreenshotsComparator {
         List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
 
         for (Map.Entry<String, UrlConfig> urlConfigEntry : config.getUrls().entrySet()) {
-            String url = urlConfigEntry.getKey();
+            String url = BrowserUtils.prepareDomain(parameters, urlConfigEntry.getKey());
             UrlConfig urlConfig = urlConfigEntry.getValue();
             LOG.debug("Url: {}", url);
             for (String path : urlConfig.paths) {
@@ -77,7 +77,7 @@ public class ScreenshotsComparator {
                     try {
                         imageBefore = fileService.readScreenshot(beforeFileName);
                     } catch (IIOException e) {
-                        System.err.println("Can't read screenshot of 'before' step. Did you run JLineup with --before parameter before trying to run --after or --compare?");
+                        System.err.println("Can't read screenshot of 'before' step. Did you run JLineup with '--step before' parameter before trying to run '--step after' or --compare?");
                         throw e;
                     }
                     BufferedImage imageAfter;
