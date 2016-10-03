@@ -55,7 +55,7 @@ public class Main {
         if (parameters.isAfter() || parameters.isJustCompare()) {
             ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(parameters, config, fileService, imageService);
             List<ScreenshotComparisonResult> comparisonResults = screenshotsComparator.compare();
-            ReportGenerator reportGenerator = new ReportGenerator(fileService);
+            ReportGenerator reportGenerator = new ReportGenerator(fileService, parameters);
             reportGenerator.writeComparisonReportAsJson(comparisonResults);
             reportGenerator.writeComparisonReportAsHtml(comparisonResults);
 
