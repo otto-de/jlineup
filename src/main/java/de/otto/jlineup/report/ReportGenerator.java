@@ -2,6 +2,7 @@ package de.otto.jlineup.report;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.file.FileService;
 
 import java.io.FileNotFoundException;
@@ -10,11 +11,13 @@ import java.util.List;
 public class ReportGenerator {
 
     private final FileService fileService;
+    private final Parameters parameters;
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public ReportGenerator(FileService fileService) {
+    public ReportGenerator(FileService fileService, Parameters parameters) {
         this.fileService = fileService;
+        this.parameters = parameters;
     }
 
     public void writeComparisonReportAsJson(List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {
@@ -85,21 +88,21 @@ public class ReportGenerator {
             writeLinkInfo(sb, screenshotComparisonResult);
             sb.append("</td><td>");
             if (screenshotComparisonResult.screenshotBeforeFileName != null) {
-                writeImageLink(sb, screenshotComparisonResult.screenshotBeforeFileName);
+                writeImageLink(sb, screenshotComparisonResult.screenshotBeforeFileName, parameters);
             } else {
                 sb.append("<p>No before image</p>");
             }
             sb.append("</td>");
             sb.append("<td>");
             if (screenshotComparisonResult.screenshotAfterFileName != null) {
-                writeImageLink(sb, screenshotComparisonResult.screenshotAfterFileName);
+                writeImageLink(sb, screenshotComparisonResult.screenshotAfterFileName, parameters);
             } else {
                 sb.append("<p>No after image</p>");
             }
             sb.append("</td>");
             sb.append("<td>");
             if (screenshotComparisonResult.differenceImageFileName != null) {
-                writeImageLink(sb, screenshotComparisonResult.differenceImageFileName);
+                writeImageLink(sb, screenshotComparisonResult.differenceImageFileName, parameters);
             } else {
                 sb.append("<p>No difference image</p>");
             }
@@ -143,7 +146,7 @@ public class ReportGenerator {
         return retval;
     }
 
-    private void writeImageLink(StringBuilder sb, String differenceImageFileName) {
+    private void writeImageLink(StringBuilder sb, String differenceImageFileName, Parameters parameters) {
         sb.append("<a href=\"");
         sb.append(differenceImageFileName);
         sb.append("\" target=\"_blank\">");
