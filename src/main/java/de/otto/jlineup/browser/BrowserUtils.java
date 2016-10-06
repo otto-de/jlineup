@@ -44,7 +44,7 @@ public class BrowserUtils {
 
     public static WebDriver getWebDriverByConfig(Config config) {
         WebDriver driver;
-        switch (config.getBrowser()) {
+        switch (config.browser) {
             case FIREFOX:
                 MarionetteDriverManager.getInstance().setup();
                 JLineupGeckoDriverService.Builder builder = new JLineupGeckoDriverService.Builder();
@@ -70,7 +70,7 @@ public class BrowserUtils {
 
     public static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(Parameters parameters, Config config, boolean before) {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
-        Map<String, UrlConfig> urls = config.getUrls();
+        Map<String, UrlConfig> urls = config.urls;
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
             final UrlConfig urlConfig = urlConfigEntry.getValue();
             final List<Integer> resolutions = urlConfig.windowWidths;

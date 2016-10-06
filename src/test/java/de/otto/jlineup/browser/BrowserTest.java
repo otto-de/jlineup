@@ -154,34 +154,36 @@ public class BrowserTest {
     @Test
     public void shouldDoAllTheScreenshotWebdriverCalls() throws Exception {
         //given
-        final int viewportHeight = 500;
-        final int pageHeight = 2000;
+        final Long viewportHeight = 500L;
+        final Long pageHeight = 2000L;
 
         UrlConfig urlConfig = new UrlConfig(
                 ImmutableList.of("/"),
                 0f,
                 ImmutableList.of(new Cookie("testcookiename", "testcookievalue")),
                 ImmutableMap.of(), ImmutableMap.of("key", "value"),
-                ImmutableList.of(600), 5000, 0, null);
+                ImmutableList.of(600), 5000, 0, 0, 3);
 
         Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100);
         testee = new Browser(parameters, config, webDriverMock, fileService);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
+        ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", 800, true, urlConfig);
 
-        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(new Long(pageHeight));
-        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(new Long(viewportHeight));
+        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
+        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/url_root_1001_02002_before.png"));
 
         //when
-        testee.takeScreenshots(ImmutableList.of(screenshotContext));
+        testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
 
         //then
-        verify(webDriverMock, times(5)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
-        verify(webDriverMock).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
-        verify(webDriverOptionsMock).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue"));
-        verify(webDriverMock).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
-        verify(webDriverMock, times(4)).executeScript(String.format(JS_SCROLL_CALL, 500));
+        verify(webDriverMock, times(10)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
+        verify(webDriverMock, times(5)).get("testurl/");
+        verify(webDriverMock, times(2)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
+        verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue"));
+        verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
+        verify(webDriverMock, times(8)).executeScript(String.format(JS_SCROLL_CALL, 500));
     }
 
 }

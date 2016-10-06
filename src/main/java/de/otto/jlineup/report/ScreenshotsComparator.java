@@ -43,7 +43,7 @@ public class ScreenshotsComparator {
         LOG.debug("Comparing images...");
         List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
 
-        for (Map.Entry<String, UrlConfig> urlConfigEntry : config.getUrls().entrySet()) {
+        for (Map.Entry<String, UrlConfig> urlConfigEntry : config.urls.entrySet()) {
             String url = BrowserUtils.prepareDomain(parameters, urlConfigEntry.getKey());
             UrlConfig urlConfig = urlConfigEntry.getValue();
             LOG.debug("Url: {}", url);
@@ -88,7 +88,7 @@ public class ScreenshotsComparator {
                         continue;
                     }
 
-                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, config.getWindowHeight());
+                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, config.windowHeight);
                     String differenceImagePath = null;
                     if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
                         differenceImagePath = fileService.writeScreenshot(imageComparisonResult.getDifferenceImage().orElse(null), url, path, windowWidth, yPosition, "DIFFERENCE");
