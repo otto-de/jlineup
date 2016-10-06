@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -178,6 +179,8 @@ public class BrowserTest {
         testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
 
         //then
+        verify(webDriverWindowMock, times(1)).setSize(new Dimension(600, 100));
+        verify(webDriverWindowMock, times(1)).setSize(new Dimension(800, 100));
         verify(webDriverMock, times(10)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         verify(webDriverMock, times(5)).get("testurl/");
         verify(webDriverMock, times(2)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
