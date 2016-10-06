@@ -13,9 +13,12 @@ import static de.otto.jlineup.config.Config.DEFAULT_WINDOW_WIDTHS;
 public class UrlConfig {
 
     public final List<String> paths;
+
     @SerializedName("max-diff")
     public final float maxDiff;
+
     public final List<Cookie> cookies;
+
     @SerializedName("env-mapping")
     public final Map<String, String> envMapping;
 

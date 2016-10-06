@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import java.io.FileNotFoundException;
 
-import static de.otto.jlineup.browser.Browser.Type.CHROME;
+import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -28,7 +28,7 @@ public class ConfigTest {
     @Test(expected = FileNotFoundException.class)
     public void shouldThrowFileNotFoundExceptionWhenConfigFileIsNotFound() throws FileNotFoundException {
         Config.readConfig("someWorkingDir", "nonexisting.json");
-        //assert that filenotfoundexception is thrown (see expected above)
+        //assert that FileNotFoundException is thrown (see expected above)
     }
 
     @Test
@@ -42,8 +42,8 @@ public class ConfigTest {
     }
 
     private void assertThatConfigContentsAreCorrect(Config config) {
-        assertThat(config.getBrowser(), is(CHROME));
-        assertThat(config.getAsyncWait(), is(2f));
+        assertThat(config.getBrowser(), is(FIREFOX));
+        assertThat(config.getAsyncWait(), is(1f));
         assertThat(config.getUrls().get("https://www.otto.de").windowWidths, is(ImmutableList.of(600, 800, 1200)));
         assertThat(config.getUrls().get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));
         assertThat(config.getUrls().get("https://www.otto.de"), is(BrowserUtilsTest.getExpectedUrlConfigForOttoDe()));
