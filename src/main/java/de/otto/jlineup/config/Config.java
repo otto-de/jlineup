@@ -21,17 +21,21 @@ public final class Config {
     public static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
 
     public static final Browser.Type DEFAULT_BROWSER = Browser.Type.PHANTOMJS;
-    public static final Integer DEFAULT_WINDOW_HEIGHT = 800;
-    public static final Float DEFAULT_ASYNC_WAIT = 0f;
+    public static final float DEFAULT_MAX_DIFF = 0;
+    public static final int DEFAULT_WINDOW_HEIGHT = 800;
+    public static final float DEFAULT_ASYNC_WAIT = 0f;
     public static final List<Integer> DEFAULT_WINDOW_WIDTHS = ImmutableList.of(800);
     public static final List<String> DEFAULT_PATHS = ImmutableList.of("/");
+    public static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
+    public static final int DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
+    public static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
 
-    private final Map<String, UrlConfig> urls;
-    private final Browser.Type browser;
+    public final Map<String, UrlConfig> urls;
+    public final Browser.Type browser;
     @SerializedName("async-wait")
-    private final Float asyncWait;
+    public final Float asyncWait;
     @SerializedName("window-height")
-    private final Integer windowHeight;
+    public final Integer windowHeight;
 
     private final static Gson gson = new Gson();
 
@@ -44,7 +48,7 @@ public final class Config {
 
     }
 
-    public Config(Map<String, UrlConfig> urls, Browser.Type browser, Float asyncWait, Integer windowHeight) {
+    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float asyncWait, final Integer windowHeight) {
         this.urls = urls;
         this.browser = browser != null ? browser : DEFAULT_BROWSER;
         this.asyncWait = asyncWait != null ? asyncWait : DEFAULT_ASYNC_WAIT;
@@ -52,7 +56,7 @@ public final class Config {
     }
 
 
-    public static Config readConfig(Parameters parameters) {
+    public static Config readConfig(final Parameters parameters) {
         Config config = null;
         try {
             config = Config.readConfig(parameters.getWorkingDirectory(), parameters.getConfigFile());
@@ -83,21 +87,5 @@ public final class Config {
         BufferedReader br = new BufferedReader(new FileReader(configFilePath.toString()));
         return gson.fromJson(br, Config.class);
 
-    }
-
-    public Browser.Type getBrowser() {
-        return browser;
-    }
-
-    public Float getAsyncWait() {
-        return asyncWait;
-    }
-
-    public Map<String, UrlConfig> getUrls() {
-        return urls;
-    }
-
-    public Integer getWindowHeight() {
-        return windowHeight;
     }
 }

@@ -34,20 +34,20 @@ public class ConfigTest {
     @Test
     public void shouldReadMinimalConfigAndInsertDefaults() throws FileNotFoundException {
         Config config = Config.readConfig("src/test/resources/", "lineup_minimal_test.json");
-        assertThat(config.getBrowser(), is(Browser.Type.PHANTOMJS));
-        assertThat(config.getWindowHeight(), is(800));
-        assertThat(config.getUrls().get("https://www.otto.de").windowWidths, is(ImmutableList.of(800)));
-        assertThat(config.getUrls().get("https://www.otto.de").paths, is(ImmutableList.of("/")));
-        assertThat(config.getAsyncWait(), is(0F));
+        assertThat(config.browser, is(Browser.Type.PHANTOMJS));
+        assertThat(config.windowHeight, is(800));
+        assertThat(config.urls.get("https://www.otto.de").windowWidths, is(ImmutableList.of(800)));
+        assertThat(config.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/")));
+        assertThat(config.asyncWait, is(0F));
     }
 
     private void assertThatConfigContentsAreCorrect(Config config) {
-        assertThat(config.getBrowser(), is(FIREFOX));
-        assertThat(config.getAsyncWait(), is(1f));
-        assertThat(config.getUrls().get("https://www.otto.de").windowWidths, is(ImmutableList.of(600, 800, 1200)));
-        assertThat(config.getUrls().get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));
-        assertThat(config.getUrls().get("https://www.otto.de"), is(BrowserUtilsTest.getExpectedUrlConfigForOttoDe()));
-        assertThat(config.getUrls().get("http://www.google.de"), is(BrowserUtilsTest.getExpectedUrlConfigForGoogleDe()));
+        assertThat(config.browser, is(FIREFOX));
+        assertThat(config.asyncWait, is(1f));
+        assertThat(config.urls.get("https://www.otto.de").windowWidths, is(ImmutableList.of(600, 800, 1200)));
+        assertThat(config.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));
+        assertThat(config.urls.get("https://www.otto.de"), is(BrowserUtilsTest.getExpectedUrlConfigForOttoDe()));
+        assertThat(config.urls.get("http://www.google.de"), is(BrowserUtilsTest.getExpectedUrlConfigForGoogleDe()));
     }
 
 }

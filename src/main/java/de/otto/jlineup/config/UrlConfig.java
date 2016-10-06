@@ -7,8 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static de.otto.jlineup.config.Config.DEFAULT_PATHS;
-import static de.otto.jlineup.config.Config.DEFAULT_WINDOW_WIDTHS;
+import static de.otto.jlineup.config.Config.*;
 
 public class UrlConfig {
 
@@ -29,28 +28,32 @@ public class UrlConfig {
     public final List<Integer> windowWidths;
 
     @SerializedName("max-scroll-height")
-    private final Integer maxScrollHeight;
+    public final int maxScrollHeight;
 
     @SerializedName("wait-after-page-load")
-    private final Integer waitAfterPageLoad;
+    public final int waitAfterPageLoad;
 
     @SerializedName("wait-for-no-animation-after-scroll")
-    private final Float waitForNoAnimationAfterScroll;
+    public final float waitForNoAnimationAfterScroll;
+
+    @SerializedName("warmup-browser-cache-time")
+    private final Integer warmupBrowserCacheTime;
 
     //Default constructor for GSON
     public UrlConfig() {
         this.paths = DEFAULT_PATHS;
         this.windowWidths = DEFAULT_WINDOW_WIDTHS;
-        this.maxDiff = 0;
+        this.maxDiff = DEFAULT_MAX_DIFF;
         this.cookies = null;
         this.localStorage = null;
-        this.maxScrollHeight = null;
-        this.waitAfterPageLoad = null;
-        this.waitForNoAnimationAfterScroll = null;
+        this.maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
+        this.waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
+        this.waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
         this.envMapping = null;
+        this.warmupBrowserCacheTime = null;
     }
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, Integer maxScrollHeight, Integer waitAfterPageLoad, Float waitForNoAnimationAfterScroll) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, float waitForNoAnimationAfterScroll, Integer warmupBrowserCacheTime) {
         this.paths = paths != null ? paths : DEFAULT_PATHS;
         this.windowWidths = windowWidths != null ? windowWidths : DEFAULT_WINDOW_WIDTHS;
         this.maxDiff = maxDiff;
@@ -60,6 +63,7 @@ public class UrlConfig {
         this.maxScrollHeight = maxScrollHeight;
         this.waitAfterPageLoad = waitAfterPageLoad;
         this.waitForNoAnimationAfterScroll = waitForNoAnimationAfterScroll;
+        this.warmupBrowserCacheTime = warmupBrowserCacheTime;
     }
 
     @Override
@@ -74,6 +78,7 @@ public class UrlConfig {
                 ", maxScrollHeight=" + maxScrollHeight +
                 ", waitAfterPageLoad=" + waitAfterPageLoad +
                 ", waitForNoAnimationAfterScroll=" + waitForNoAnimationAfterScroll +
+                ", warmupBrowserCacheTime=" + warmupBrowserCacheTime +
                 '}';
     }
 
@@ -90,23 +95,16 @@ public class UrlConfig {
                 Objects.equals(windowWidths, urlConfig.windowWidths) &&
                 Objects.equals(maxScrollHeight, urlConfig.maxScrollHeight) &&
                 Objects.equals(waitAfterPageLoad, urlConfig.waitAfterPageLoad) &&
-                Objects.equals(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll);
+                Objects.equals(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) &&
+                Objects.equals(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitForNoAnimationAfterScroll);
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitForNoAnimationAfterScroll, warmupBrowserCacheTime);
     }
 
-    public Optional<Integer> getMaxScrollHeight() {
-        return Optional.ofNullable(maxScrollHeight);
-    }
-
-    public Optional<Integer> getWaitAfterPageLoad() {
-        return Optional.ofNullable(waitAfterPageLoad);
-    }
-
-    public Optional<Float> getWaitForNoAnimationAfterScroll() {
-        return Optional.ofNullable(waitForNoAnimationAfterScroll);
+    public Optional<Integer> getWarmupBrowserCacheTime() {
+        return Optional.ofNullable(warmupBrowserCacheTime);
     }
 }
