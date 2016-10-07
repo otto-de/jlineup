@@ -5,6 +5,7 @@ import com.beust.jcommander.Parameter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static de.otto.jlineup.config.Step.*;
 
@@ -27,6 +28,9 @@ public class Parameters {
 
     @Parameter(names = {"--report-dir", "-rd"}, description = "HTML report directory name - relative to working directory")
     private String reportDirectory = "report";
+
+    @Parameter(names = {"--url", "-u"}, description = "If you run JLineup without config file, this is the one url that is tested with the default config.")
+    private String url = null;
 
     @DynamicParameter(names = {"--replace-in-url", "-R"}, description = "The given keys are replaced with the corresponding values in all urls that are tested.")
     private Map<String, String> urlReplacements = new HashMap<>();
@@ -69,5 +73,43 @@ public class Parameters {
 
     public Map<String, String> getUrlReplacements() {
         return urlReplacements;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Parameters that = (Parameters) o;
+        return help == that.help &&
+                step == that.step &&
+                Objects.equals(configFile, that.configFile) &&
+                Objects.equals(workingDirectory, that.workingDirectory) &&
+                Objects.equals(screenshotDirectory, that.screenshotDirectory) &&
+                Objects.equals(reportDirectory, that.reportDirectory) &&
+                Objects.equals(url, that.url) &&
+                Objects.equals(urlReplacements, that.urlReplacements);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(help, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, url, urlReplacements);
+    }
+
+    @Override
+    public String toString() {
+        return "Parameters{" +
+                "help=" + help +
+                ", step=" + step +
+                ", configFile='" + configFile + '\'' +
+                ", workingDirectory='" + workingDirectory + '\'' +
+                ", screenshotDirectory='" + screenshotDirectory + '\'' +
+                ", reportDirectory='" + reportDirectory + '\'' +
+                ", url='" + url + '\'' +
+                ", urlReplacements=" + urlReplacements +
+                '}';
     }
 }
