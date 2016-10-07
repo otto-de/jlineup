@@ -1,5 +1,6 @@
-**JLineup**
+# JLineup
 
+#### About
 JLineup is a command line tool which is useful for visual acceptance tests in continuous
 delivery pipelines. It can make and compare screenshots from before and after a deployment
 of a web page. Through comparison of the screenshots it detects every changed pixel.
@@ -14,7 +15,7 @@ a Ruby tool. We did a rewrite in Java, because we can
 leverage some quicker image comparison here and we can
 get rid of Ruby in our JVM-based pipelines.
 
-**Browser compatibility**
+#### Browser compatibility
 
 JLineup 1.0.6 was tested successfully with
 

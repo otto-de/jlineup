@@ -88,4 +88,14 @@ public final class Config {
         return gson.fromJson(br, Config.class);
 
     }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "urls=" + urls +
+                ", browser=" + browser +
+                ", asyncWait=" + asyncWait +
+                ", windowHeight=" + windowHeight +
+                '}';
+    }
 }

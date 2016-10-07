@@ -94,4 +94,12 @@ public class BrowserUtils {
         }
         return processedUrl;
     }
+
+    public static String prependHTTPIfNotThereAndToLowerCase(String url) {
+        String ret = url.toLowerCase();
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            ret = "http://" + ret;
+        }
+        return ret;
+    }
 }
