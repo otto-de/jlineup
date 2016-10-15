@@ -18,12 +18,12 @@ public class ReportGeneratorTest {
     private FileService fileServiceMock;
 
     @Mock
-    private Parameters parameters;
+    private Parameters parametersMock;
 
     @Before
     public void setup() {
         initMocks(this);
-        testee = new ReportGenerator(fileServiceMock, parameters);
+        testee = new ReportGenerator(fileServiceMock, parametersMock);
     }
 
     @Test
