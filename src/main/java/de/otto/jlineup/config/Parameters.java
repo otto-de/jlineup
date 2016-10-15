@@ -5,7 +5,6 @@ import com.beust.jcommander.Parameter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static de.otto.jlineup.config.Step.*;
 
@@ -31,6 +30,9 @@ public class Parameters {
 
     @Parameter(names = {"--url", "-u"}, description = "If you run JLineup without config file, this is the one url that is tested with the default config.")
     private String url = null;
+
+    @Parameter(names = {"--print-config"}, description = "Prints a default config file to standard out. Useful as quick start.")
+    private boolean printConfig = false;
 
     @DynamicParameter(names = {"--replace-in-url", "-R"}, description = "The given keys are replaced with the corresponding values in all urls that are tested.")
     private Map<String, String> urlReplacements = new HashMap<>();
@@ -79,24 +81,9 @@ public class Parameters {
         return url;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Parameters that = (Parameters) o;
-        return help == that.help &&
-                step == that.step &&
-                Objects.equals(configFile, that.configFile) &&
-                Objects.equals(workingDirectory, that.workingDirectory) &&
-                Objects.equals(screenshotDirectory, that.screenshotDirectory) &&
-                Objects.equals(reportDirectory, that.reportDirectory) &&
-                Objects.equals(url, that.url) &&
-                Objects.equals(urlReplacements, that.urlReplacements);
-    }
+    public boolean isPrintConfig() {
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(help, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, url, urlReplacements);
+        return printConfig;
     }
 
     @Override
@@ -109,7 +96,45 @@ public class Parameters {
                 ", screenshotDirectory='" + screenshotDirectory + '\'' +
                 ", reportDirectory='" + reportDirectory + '\'' +
                 ", url='" + url + '\'' +
+                ", printConfig=" + printConfig +
                 ", urlReplacements=" + urlReplacements +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Parameters that = (Parameters) o;
+
+        if (help != that.help) return false;
+        if (printConfig != that.printConfig) return false;
+        if (step != that.step) return false;
+        if (configFile != null ? !configFile.equals(that.configFile) : that.configFile != null) return false;
+        if (workingDirectory != null ? !workingDirectory.equals(that.workingDirectory) : that.workingDirectory != null)
+            return false;
+        if (screenshotDirectory != null ? !screenshotDirectory.equals(that.screenshotDirectory) : that.screenshotDirectory != null)
+            return false;
+        if (reportDirectory != null ? !reportDirectory.equals(that.reportDirectory) : that.reportDirectory != null)
+            return false;
+        if (url != null ? !url.equals(that.url) : that.url != null) return false;
+        return urlReplacements != null ? urlReplacements.equals(that.urlReplacements) : that.urlReplacements == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (help ? 1 : 0);
+        result = 31 * result + (step != null ? step.hashCode() : 0);
+        result = 31 * result + (configFile != null ? configFile.hashCode() : 0);
+        result = 31 * result + (workingDirectory != null ? workingDirectory.hashCode() : 0);
+        result = 31 * result + (screenshotDirectory != null ? screenshotDirectory.hashCode() : 0);
+        result = 31 * result + (reportDirectory != null ? reportDirectory.hashCode() : 0);
+        result = 31 * result + (url != null ? url.hashCode() : 0);
+        result = 31 * result + (printConfig ? 1 : 0);
+        result = 31 * result + (urlReplacements != null ? urlReplacements.hashCode() : 0);
+        return result;
+    }
+
 }
