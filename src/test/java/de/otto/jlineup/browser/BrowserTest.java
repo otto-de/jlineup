@@ -145,7 +145,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldScroll() {
+    public void shouldScroll() throws InterruptedException {
         //when
         testee.scrollBy(1337);
         //then
@@ -181,6 +181,7 @@ public class BrowserTest {
         //then
         verify(webDriverWindowMock, times(1)).setSize(new Dimension(600, 100));
         verify(webDriverWindowMock, times(1)).setSize(new Dimension(800, 100));
+        verify(webDriverMock, times(2)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(10)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         verify(webDriverMock, times(5)).get("testurl/");
         verify(webDriverMock, times(2)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
