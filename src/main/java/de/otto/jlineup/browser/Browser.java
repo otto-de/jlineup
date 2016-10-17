@@ -42,6 +42,7 @@ public class Browser implements AutoCloseable{
     static final String JS_CLIENT_VIEWPORT_HEIGHT_CALL = "return document.documentElement.clientHeight";
     static final String JS_SET_LOCAL_STORAGE_CALL = "localStorage.setItem('%s','%s')";
     static final String JS_SCROLL_CALL = "window.scrollBy(0,%d)";
+    static final String JS_SCROLL_TO_TOP_CALL = "window.scrollTo(0, 0);";
 
     final private Parameters parameters;
     final private Config config;
@@ -117,6 +118,8 @@ public class Browser implements AutoCloseable{
             LOG.debug("Page height before scrolling: {}", pageHeight);
             LOG.debug("Viewport height of browser window: {}", viewportHeight);
 
+            scrollToTop();
+
             for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += viewportHeight) {
                 BufferedImage currentScreenshot = takeScreenshot();
                 currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
@@ -129,9 +132,6 @@ public class Browser implements AutoCloseable{
                 }
                 LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
                 scrollBy(viewportHeight.intValue());
-
-                //Sleep some milliseconds to give scrolling time before the next screenshot happens
-                Thread.sleep(50);
 
                 //Refresh to check if page grows during scrolling
                 pageHeight = getPageHeight();
@@ -207,9 +207,18 @@ public class Browser implements AutoCloseable{
         return (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
     }
 
-    void scrollBy(int viewportHeight) {
+    void scrollBy(int viewportHeight) throws InterruptedException {
         JavascriptExecutor jse = (JavascriptExecutor) driver;
         jse.executeScript(String.format(JS_SCROLL_CALL, viewportHeight));
+        //Sleep some milliseconds to give scrolling time before the next screenshot happens
+        Thread.sleep(50);
+    }
+
+    void scrollToTop() throws InterruptedException {
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        jse.executeScript(JS_SCROLL_TO_TOP_CALL);
+        //Sleep some milliseconds to give scrolling time before the next screenshot happens
+        Thread.sleep(50);
     }
 
     private void setLocalStorage(ScreenshotContext screenshotContext) {
