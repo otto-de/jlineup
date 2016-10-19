@@ -142,7 +142,8 @@ public class Browser implements AutoCloseable{
     }
 
     private boolean areThereCookiesOrLocalStorage(ScreenshotContext screenshotContext) {
-        return screenshotContext.urlConfig.cookies.size() > 0 || screenshotContext.urlConfig.localStorage.size() > 0;
+        return (screenshotContext.urlConfig.cookies != null && screenshotContext.urlConfig.cookies.size() > 0)
+                || (screenshotContext.urlConfig.localStorage != null && screenshotContext.urlConfig.localStorage.size() > 0);
     }
 
     private void setCookies(ScreenshotContext screenshotContext) {
