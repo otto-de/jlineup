@@ -1,5 +1,6 @@
 package de.otto.jlineup;
 
+import ch.qos.logback.classic.Level;
 import com.beust.jcommander.JCommander;
 import com.google.gson.GsonBuilder;
 import de.otto.jlineup.browser.Browser;
@@ -26,6 +27,11 @@ public class Main {
         if (parameters.isHelp()) {
             jCommander.usage();
             return;
+        }
+
+        if (parameters.isDebug()) {
+            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+            root.setLevel(Level.DEBUG);
         }
 
         FileService fileService = new FileService(parameters);

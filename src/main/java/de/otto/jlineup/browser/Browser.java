@@ -83,17 +83,19 @@ public class Browser implements AutoCloseable{
             final String url = buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping);
             final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
 
-            //get root page from url to be able to set cookies afterwards
-            //if you set cookies before getting the page once, it will fail
-            LOG.debug(String.format("Getting root url: %s", rootUrl));
-            driver.get(rootUrl);
+            if (areThereCookiesOrLocalStorage(screenshotContext)) {
+                //get root page from url to be able to set cookies afterwards
+                //if you set cookies before getting the page once, it will fail
+                LOG.info(String.format("Getting root url: %s to set cookies and local storage", rootUrl));
+                driver.get(rootUrl);
 
-            //set cookies and local storage
-            setCookies(screenshotContext);
-            setLocalStorage(screenshotContext);
+                //set cookies and local storage
+                setCookies(screenshotContext);
+                setLocalStorage(screenshotContext);
+            }
 
             //now get the real page
-            LOG.debug("Browsing to " + url);
+            LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.windowWidth, config.windowHeight));
             driver.get(url);
 
             checkBrowserCacheWarmup(browserCacheWarmupMarks, screenshotContext, url, driver);
@@ -137,6 +139,10 @@ public class Browser implements AutoCloseable{
                 pageHeight = getPageHeight();
             }
         }
+    }
+
+    private boolean areThereCookiesOrLocalStorage(ScreenshotContext screenshotContext) {
+        return screenshotContext.urlConfig.cookies.size() > 0 || screenshotContext.urlConfig.localStorage.size() > 0;
     }
 
     private void setCookies(ScreenshotContext screenshotContext) {
