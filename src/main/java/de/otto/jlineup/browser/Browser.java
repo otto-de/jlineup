@@ -15,10 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
@@ -276,7 +273,7 @@ public class Browser implements AutoCloseable{
             if (cookie.expiry != null) {
                 cookieCallBuilder.append("expires=");
 
-                SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+                SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.US);
                 String asGmt = df.format(cookie.expiry.getTime()) + " GMT";
                 cookieCallBuilder.append(asGmt);
                 cookieCallBuilder.append(";");
