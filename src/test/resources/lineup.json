@@ -1,0 +1,16 @@
+{
+  "urls": {
+    "http://www.clocktab.com": {
+      "paths": [
+        "/"
+      ],
+      "max-diff": 0.05,
+      "resolutions": [
+        1200
+      ],
+      "max-scroll-height":50000
+    }
+  },
+  "browser": "chrome",
+  "async-wait": 1
+}
