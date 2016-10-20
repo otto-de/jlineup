@@ -88,7 +88,7 @@ public class BrowserUtilsTest {
     }
 
     public static UrlConfig getExpectedUrlConfigForOttoDe() {
-        return new UrlConfig(ImmutableList.of("/","multimedia"), 0.05f, ImmutableList.of(new Cookie("trackingDisabled", "true"), new Cookie("survey", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("us_customerServiceWidget", "{'customerServiceWidgetNotificationHidden':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600,800,1200),50000,2,0,3);
+        return new UrlConfig(ImmutableList.of("/","multimedia"), 0.05f, ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600,800,1200),50000,2,0,3);
     }
 
     public static UrlConfig getExpectedUrlConfigForGoogleDe() {

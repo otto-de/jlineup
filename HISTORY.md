@@ -4,7 +4,8 @@
 * Document snapshot changes here
 
 ## Release 1.0.8
-* First public release
+* Switch to Selenium 3
+* New --debug option to be more verbose
 
 ## Release 1.0.7
 * Scroll to top via JavaScript after initial page load
