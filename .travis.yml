@@ -12,3 +12,10 @@ script:
 cache:
   directories:
   - $HOME/.m2
+addons:
+  firefox: "49.0"
+  apt:
+    sources:
+    - google-chrome
+    packages:
+    - google-chrome-stable
