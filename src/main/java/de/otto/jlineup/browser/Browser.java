@@ -273,7 +273,8 @@ public class Browser implements AutoCloseable{
             if (cookie.expiry != null) {
                 cookieCallBuilder.append("expires=");
 
-                SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.US);
+                SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+                df.setTimeZone(TimeZone.getTimeZone("GMT"));
                 String asGmt = df.format(cookie.expiry.getTime()) + " GMT";
                 cookieCallBuilder.append(asGmt);
                 cookieCallBuilder.append(";");
