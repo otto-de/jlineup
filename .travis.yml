@@ -8,3 +8,6 @@ jdk:
 script:
   - gradle assemble
   - gradle check --debug
+cache:
+  directories:
+  - $HOME/.m2
