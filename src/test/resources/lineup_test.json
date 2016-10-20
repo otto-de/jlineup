@@ -1,0 +1,46 @@
+{
+  "urls": {
+    "https://www.otto.de": {
+      "paths": [
+        "/",
+        "multimedia"
+      ],
+      "max-diff": 0.05,
+      "cookies": [
+        {
+          "name": "testcookie1",
+          "value": "true"
+        },
+        {
+          "name": "testcookie2",
+          "value": "1"
+        }
+      ],
+      "local-storage" : {
+        "teststorage" : "{'testkey':{'value':true,'timestamp':9467812242358}}"
+      },
+      "env-mapping": {
+        "live": "www"
+      },
+      "resolutions": [
+        600,
+        800,
+        1200
+      ],
+      "wait-after-page-load": 2,
+      "max-scroll-height": 50000,
+      "warmup-browser-cache-time": 3
+    },
+    "http://www.google.de": {
+      "paths": [
+        "/"
+      ],
+      "max-diff": 0.05,
+      "resolutions": [
+        1200
+      ]
+    }
+  },
+  "browser": "firefox",
+  "async-wait": 1
+}
