@@ -1,6 +1,10 @@
 # JLineup
 
-#### About
+## Status
+
+[![Travis CI](https://travis-ci.org/otto-de/jlineup.svg?branch=master)](https://travis-ci.org/otto-de/jlineup)
+
+## About
 JLineup is a command line tool which is useful for visual acceptance tests in continuous
 delivery pipelines. It can make and compare screenshots from before and after a deployment
 of a web page. Through comparison of the screenshots it detects every changed pixel.
@@ -15,7 +19,7 @@ a Ruby tool. We did a rewrite in Java, because we can
 leverage some quicker image comparison here and we can
 get rid of Ruby in our JVM-based pipelines.
 
-#### Howto
+## Howto
 
 JLineup comes as executable Java Archive.
 You need a working Java 8 Runtime Environment on your system.
@@ -25,7 +29,7 @@ Open a terminal, navigate to the place where your jlineup.jar lives and type
   
 to get some idea how to use it.  
 
-#### Browser compatibility
+## Browser compatibility
 
 JLineup 1.0.8 was tested successfully with
 
@@ -35,7 +39,7 @@ JLineup 1.0.8 was tested successfully with
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
 
-#### Third party libraries
+## Third party libraries
 
 JLineup uses some third party tools and libraries
 
