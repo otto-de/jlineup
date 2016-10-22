@@ -2,13 +2,13 @@ package de.otto.jlineup.file;
 
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.config.Parameters;
-import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.Mock;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,7 +18,7 @@ import java.util.List;
 
 import static de.otto.jlineup.file.FileService.AFTER;
 import static de.otto.jlineup.file.FileService.BEFORE;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -29,6 +29,9 @@ public class FileServiceTest {
 
     @Mock
     private Parameters parameters;
+
+    @Rule
+    public TemporaryFolder tempDir = new TemporaryFolder();
 
     private String tempDirPath;
     private String writeScreenshotTestPath;
@@ -43,22 +46,12 @@ public class FileServiceTest {
 
         testee = new FileService(parameters);
 
-        File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        tempDirPath = tempDir.getPath();
+        tempDirPath = tempDir.getRoot().getPath();
+
         writeScreenshotTestPath = tempDirPath + "/testdirforlineupwritetest";
         testee.createDirIfNotExists(writeScreenshotTestPath);
         testee.createDirIfNotExists(writeScreenshotTestPath + "/screenshots");
         testee.createDirIfNotExists(writeScreenshotTestPath + "/report");
-
-    }
-
-    @After
-    public void cleanup() throws IOException {
-        deleteIfExists(Paths.get(tempDirPath + "/testdirforlineuptest"));
-        deleteIfExists(Paths.get(tempDirPath + "/testdirforcleardirectorylineuptest"));
-        deleteIfExists(Paths.get(writeScreenshotTestPath + "/screenshots"));
-        deleteIfExists(Paths.get(writeScreenshotTestPath + "/report"));
-        deleteIfExists(Paths.get(writeScreenshotTestPath));
     }
 
     @Test
@@ -150,12 +143,4 @@ public class FileServiceTest {
         //then
         assertThat(beforeFiles, is(ImmutableList.of("url_root_1001_02002_after.png", "url_root_1001_03003_after.png")));
     }
-
-    private void deleteIfExists(Path path) throws IOException {
-        if (Files.exists(path)) {
-            testee.clearDirectory(path.toString());
-            Files.delete(path);
-        }
-    }
-
 }
