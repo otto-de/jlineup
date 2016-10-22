@@ -248,6 +248,7 @@ public class Browser implements AutoCloseable{
             org.openqa.selenium.Cookie.Builder cookieBuilder = new org.openqa.selenium.Cookie.Builder(cookie.name, cookie.value);
             if (cookie.domain != null) cookieBuilder.domain(cookie.domain);
             if (cookie.path != null) cookieBuilder.path(cookie.path);
+            if (cookie.expiry != null) cookieBuilder.expiresOn(cookie.expiry);
             cookieBuilder.isSecure(cookie.secure);
             driver.manage().addCookie(cookieBuilder.build());
         }
@@ -273,7 +274,7 @@ public class Browser implements AutoCloseable{
             if (cookie.expiry != null) {
                 cookieCallBuilder.append("expires=");
 
-                SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
+                SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.US);
                 df.setTimeZone(TimeZone.getTimeZone("GMT"));
                 String asGmt = df.format(cookie.expiry.getTime()) + " GMT";
                 cookieCallBuilder.append(asGmt);

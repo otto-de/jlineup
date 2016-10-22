@@ -7,10 +7,8 @@ import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
@@ -22,6 +20,7 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static de.otto.jlineup.browser.Browser.*;
@@ -101,13 +100,29 @@ public class BrowserTest {
     @Test
     public void shouldSetCookies() {
         //given
-        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(0L), true);
-        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(1L), false);
+        ArgumentCaptor<org.openqa.selenium.Cookie> cookieCaptor = ArgumentCaptor.forClass(org.openqa.selenium.Cookie.class);
+
+        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true);
+        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(10000000000L), false);
         //when
         testee.setCookies(ImmutableList.of(cookieOne, cookieTwo));
         //then
-        verify(webDriverOptionsMock).addCookie(new org.openqa.selenium.Cookie("someName", "someValue", "someDomain", "somePath", new Date(0L), true));
-        verify(webDriverOptionsMock).addCookie(new org.openqa.selenium.Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(1L)));
+        verify(webDriverOptionsMock, times(2)).addCookie(cookieCaptor.capture());
+        List<org.openqa.selenium.Cookie> capturedCookies = cookieCaptor.getAllValues();
+
+        Assert.assertEquals("someName", capturedCookies.get(0).getName());
+        Assert.assertEquals("someValue", capturedCookies.get(0).getValue());
+        Assert.assertEquals("someDomain", capturedCookies.get(0).getDomain());
+        Assert.assertEquals("somePath", capturedCookies.get(0).getPath());
+        Assert.assertEquals(new Date(10000L), capturedCookies.get(0).getExpiry());
+        Assert.assertTrue(capturedCookies.get(0).isSecure());
+
+        Assert.assertEquals("someOtherName", capturedCookies.get(1).getName());
+        Assert.assertEquals("someOtherValue", capturedCookies.get(1).getValue());
+        Assert.assertEquals("someOtherDomain", capturedCookies.get(1).getDomain());
+        Assert.assertEquals("someOtherPath", capturedCookies.get(1).getPath());
+        Assert.assertEquals(new Date(10000000000L), capturedCookies.get(1).getExpiry());
+        Assert.assertFalse(capturedCookies.get(1).isSecure());
     }
 
     @Test
