@@ -7,6 +7,7 @@ import de.otto.jlineup.file.FileService;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Locale;
 
 public class ReportGenerator {
 
@@ -135,7 +136,7 @@ public class ReportGenerator {
     }
 
     private String formatDifference(double difference) {
-        return String.format("%1$,.2f", difference * 100) + "%";
+        return String.format(Locale.US, "%1$,.2f", difference * 100) + "%";
     }
 
     private String shortenUrl(final String url) {
