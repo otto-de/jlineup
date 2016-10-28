@@ -3,6 +3,7 @@
 ## Status
 
 [![Travis CI](https://travis-ci.org/otto-de/jlineup.svg?branch=master)](https://travis-ci.org/otto-de/jlineup)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup)
 
 ## About
 JLineup is a command line tool which is useful for visual acceptance tests in continuous
