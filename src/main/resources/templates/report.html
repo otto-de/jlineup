@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>JLineup Comparison Report</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache"/>
+    <META HTTP-EQUIV="Expires" CONTENT="-1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <style>
+
+        body {
+            background-color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            margin-left: 10px;
+            margin-top: 10px;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #eee;
+        }
+
+        table tr:nth-child(odd) {
+            background-color: #fff;
+        }
+
+        table th {
+            color: white;
+            background-color: black;
+        }
+
+        td {
+            padding: 0 0 0 0;
+            border: 1px solid;
+            border-collapse: collapse;
+            vertical-align: top;
+        }
+
+        table {
+            padding: 0 0 15px 0;
+        }
+
+        p {
+            padding: 5px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="report">
+    <div class="context" th:each="resultContext,iterationStatus : ${resultContexts}">
+        <h3>[[${resultContext.url}]] (Browser window width: [[${resultContext.width}]])</h3>
+        <table>
+            <tr>
+                <th>Info</th>
+                <th>Before</th>
+                <th>After</th>
+                <th>Difference</th>
+            </tr>
+            <tr th:each="result,iterationStatus : ${resultContext.results}">
+                <td>
+                    <p><a th:href="${result.url}" target="_blank" th:title="${result.url}">[[${resultContext.getShortenedUrl()}]]</a><br/>
+                        Width: [[${result.width}]]<br/>
+                        Scroll pos: [[${result.verticalScrollPosition}]]<br/>
+                        Difference: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%
+                    </p>
+                </td>
+                <td th:switch="${result.screenshotBeforeFileName!=null}">
+                    <a th:case="${true}" th:href="${result.screenshotBeforeFileName}" target="_blank">
+                        <img width="350" th:src="${result.screenshotBeforeFileName}" />
+                    </a>
+                    <p th:case="${false}">No before image</p>
+                </td>
+                <td th:switch="${result.screenshotAfterFileName!=null}">
+                    <a th:case="${true}" th:href="${result.screenshotAfterFileName}" target="_blank">
+                        <img width="350" th:src="${result.screenshotAfterFileName}" />
+                    </a>
+                    <p th:case="${false}">No after image</p>
+                </td>
+                <td th:switch="${result.differenceImageFileName!=null}">
+                    <a th:case="${true}" th:href="${result.differenceImageFileName}" target="_blank">
+                        <img width="350" th:src="${result.differenceImageFileName}" />
+                    </a>
+                    <p th:case="${false}">No difference image</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

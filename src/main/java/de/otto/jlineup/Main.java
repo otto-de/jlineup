@@ -9,7 +9,8 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
-import de.otto.jlineup.report.ReportGenerator;
+import de.otto.jlineup.report.HTMLReportGenerator;
+import de.otto.jlineup.report.JSONReportGenerator;
 import de.otto.jlineup.report.ScreenshotComparisonResult;
 import de.otto.jlineup.report.ScreenshotsComparator;
 
@@ -96,9 +97,12 @@ public class Main {
         if (parameters.isAfter() || parameters.isJustCompare()) {
             ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(parameters, config, fileService, imageService);
             List<ScreenshotComparisonResult> comparisonResults = screenshotsComparator.compare();
-            ReportGenerator reportGenerator = new ReportGenerator(fileService, parameters);
-            reportGenerator.writeComparisonReportAsJson(comparisonResults);
-            reportGenerator.writeComparisonReportAsHtml(comparisonResults);
+
+            final JSONReportGenerator jsonReportGenerator = new JSONReportGenerator(fileService);
+            jsonReportGenerator.writeComparisonReportAsJson(comparisonResults);
+
+            final HTMLReportGenerator htmlReportGenerator = new HTMLReportGenerator(fileService);
+            htmlReportGenerator.renderReport("report", comparisonResults);
 
             System.out.println("Sum of screenshot differences:\n" + comparisonResults.stream().mapToDouble(scr -> scr.difference).sum());
         }
