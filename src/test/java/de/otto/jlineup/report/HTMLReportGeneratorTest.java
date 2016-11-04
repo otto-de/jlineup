@@ -1,12 +1,18 @@
 package de.otto.jlineup.report;
 
+import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.file.FileService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import static java.util.Collections.singletonList;
+import java.io.FileNotFoundException;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class HTMLReportGeneratorTest {
@@ -16,6 +22,9 @@ public class HTMLReportGeneratorTest {
     @Mock
     private FileService fileServiceMock;
 
+    List<ScreenshotComparisonResult> screenshotComparisonResultList =
+            ImmutableList.of(new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "difference"));
+
     @Before
     public void setup() {
         initMocks(this);
@@ -23,9 +32,7 @@ public class HTMLReportGeneratorTest {
     }
 
     @Test
-    public void shouldWriteHTMLReport() throws Exception {
-        ScreenshotComparisonResult screenshotComparisonResult =
-                new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "difference");
+    public void shouldRenderHTMLReport() throws Exception {
 
         String expectedHtml = "<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -99,19 +106,19 @@ public class HTMLReportGeneratorTest {
                 "                </td>\n" +
                 "                <td>\n" +
                 "                    <a href=\"before\" target=\"_blank\">\n" +
-                "                        <img width=\"350\" src=\"before\" />\n" +
+                "                        <img src=\"before\" style=\"max-width: 350px;\" />\n" +
                 "                    </a>\n" +
                 "                    \n" +
                 "                </td>\n" +
                 "                <td>\n" +
                 "                    <a href=\"after\" target=\"_blank\">\n" +
-                "                        <img width=\"350\" src=\"after\" />\n" +
+                "                        <img src=\"after\" style=\"max-width: 350px;\" />\n" +
                 "                    </a>\n" +
                 "                    \n" +
                 "                </td>\n" +
                 "                <td>\n" +
                 "                    <a href=\"difference\" target=\"_blank\">\n" +
-                "                        <img width=\"350\" src=\"difference\" />\n" +
+                "                        <img src=\"difference\" style=\"max-width: 350px;\" />\n" +
                 "                    </a>\n" +
                 "                    \n" +
                 "                </td>\n" +
@@ -123,9 +130,17 @@ public class HTMLReportGeneratorTest {
                 "</body>\n" +
                 "</html>";
 
-        testee.renderReport("report", singletonList(screenshotComparisonResult));
+        final String report = testee.renderReport("report", screenshotComparisonResultList);
 
-        Mockito.verify(fileServiceMock).writeHtmlReport(expectedHtml);
+        assertThat(report, is(expectedHtml));
     }
 
+    @Test
+    public void shouldWriteReport() throws FileNotFoundException {
+
+        testee.writeReport(screenshotComparisonResultList);
+
+        Mockito.verify(fileServiceMock).writeHtmlReport(anyString());
+
+    }
 }

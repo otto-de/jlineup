@@ -102,7 +102,7 @@ public class Main {
             jsonReportGenerator.writeComparisonReportAsJson(comparisonResults);
 
             final HTMLReportGenerator htmlReportGenerator = new HTMLReportGenerator(fileService);
-            htmlReportGenerator.renderReport("report", comparisonResults);
+            htmlReportGenerator.writeReport(comparisonResults);
 
             System.out.println("Sum of screenshot differences:\n" + comparisonResults.stream().mapToDouble(scr -> scr.difference).sum());
         }

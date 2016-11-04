@@ -3,7 +3,7 @@ package de.otto.jlineup.report;
 import de.otto.jlineup.file.FileService;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.FileTemplateResolver;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -16,18 +16,22 @@ public class HTMLReportGenerator {
         this.fileService = fileService;
     }
 
-    public void renderReport(String template, List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {
+    public void writeReport(List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {
+        fileService.writeHtmlReport(renderReport("report", screenshotComparisonResults));
+    }
 
-        FileTemplateResolver templateResolver = new FileTemplateResolver();
+    String renderReport(String template, List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {
+
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setTemplateMode("HTML");
-        templateResolver.setPrefix("src/main/resources/templates/");
+        templateResolver.setPrefix("templates/");
         templateResolver.setSuffix(".html");
         TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
 
         Map<String, Object> variables = prepareVariablesForReportTemplate(screenshotComparisonResults);
 
-        fileService.writeHtmlReport(templateEngine.process(template, new Context(Locale.US, variables)));
+        return templateEngine.process(template, new Context(Locale.US, variables));
     }
 
     private Map<String, Object> prepareVariablesForReportTemplate(List<ScreenshotComparisonResult> screenshotComparisonResults) {
