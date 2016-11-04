@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import static de.otto.jlineup.config.Config.*;
 
@@ -37,7 +36,7 @@ public class UrlConfig {
     public final float waitForNoAnimationAfterScroll;
 
     @SerializedName("warmup-browser-cache-time")
-    private final Integer warmupBrowserCacheTime;
+    public final int warmupBrowserCacheTime;
 
     //Default constructor for GSON
     public UrlConfig() {
@@ -50,10 +49,10 @@ public class UrlConfig {
         this.waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
         this.waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
         this.envMapping = null;
-        this.warmupBrowserCacheTime = null;
+        this.warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
     }
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, float waitForNoAnimationAfterScroll, Integer warmupBrowserCacheTime) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime) {
         this.paths = paths != null ? paths : DEFAULT_PATHS;
         this.windowWidths = windowWidths != null ? windowWidths : DEFAULT_WINDOW_WIDTHS;
         this.maxDiff = maxDiff;
@@ -88,23 +87,19 @@ public class UrlConfig {
         if (o == null || getClass() != o.getClass()) return false;
         UrlConfig urlConfig = (UrlConfig) o;
         return Float.compare(urlConfig.maxDiff, maxDiff) == 0 &&
+                maxScrollHeight == urlConfig.maxScrollHeight &&
+                waitAfterPageLoad == urlConfig.waitAfterPageLoad &&
+                Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 &&
+                warmupBrowserCacheTime == urlConfig.warmupBrowserCacheTime &&
                 Objects.equals(paths, urlConfig.paths) &&
                 Objects.equals(cookies, urlConfig.cookies) &&
                 Objects.equals(envMapping, urlConfig.envMapping) &&
                 Objects.equals(localStorage, urlConfig.localStorage) &&
-                Objects.equals(windowWidths, urlConfig.windowWidths) &&
-                Objects.equals(maxScrollHeight, urlConfig.maxScrollHeight) &&
-                Objects.equals(waitAfterPageLoad, urlConfig.waitAfterPageLoad) &&
-                Objects.equals(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) &&
-                Objects.equals(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime);
+                Objects.equals(windowWidths, urlConfig.windowWidths);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitForNoAnimationAfterScroll, warmupBrowserCacheTime);
-    }
-
-    public Optional<Integer> getWarmupBrowserCacheTime() {
-        return Optional.ofNullable(warmupBrowserCacheTime);
     }
 }

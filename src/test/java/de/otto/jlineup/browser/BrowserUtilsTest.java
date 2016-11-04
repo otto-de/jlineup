@@ -92,7 +92,7 @@ public class BrowserUtilsTest {
     }
 
     public static UrlConfig getExpectedUrlConfigForGoogleDe() {
-        return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, ImmutableList.of(1200), 100000, 0, 0, null);
+        return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, ImmutableList.of(1200), 100000, 0, 0, 0);
     }
 
 }

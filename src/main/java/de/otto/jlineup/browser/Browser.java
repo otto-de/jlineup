@@ -155,21 +155,20 @@ public class Browser implements AutoCloseable{
     }
 
     private void checkBrowserCacheWarmup(Set<String> cacheWarmupMarks, ScreenshotContext screenshotContext, String url, WebDriver driver) {
-        screenshotContext.urlConfig.getWarmupBrowserCacheTime().ifPresent(
-                warmupTime -> {
-                    if (!cacheWarmupMarks.contains(url)) {
-                        LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
-                        cacheWarmupMarks.add(url);
-                        try {
-                            Thread.sleep(warmupTime * 1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        LOG.debug("Cache warmup time is over. Getting " + url + " again.");
-                        driver.get(url);
-                    }
+        int warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
+        if (warmupTime > Config.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
+            if (!cacheWarmupMarks.contains(url)) {
+                LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
+                cacheWarmupMarks.add(url);
+                try {
+                    Thread.sleep(warmupTime * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-        );
+                LOG.debug("Cache warmup time is over. Getting " + url + " again.");
+                driver.get(url);
+            }
+        }
     }
 
     private BufferedImage takeScreenshot() throws IOException {

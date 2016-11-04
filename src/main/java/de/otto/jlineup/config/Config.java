@@ -32,6 +32,7 @@ public final class Config {
     public static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
     public static final int DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
     public static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
+    public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;

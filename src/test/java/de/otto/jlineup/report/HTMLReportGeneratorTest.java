@@ -1,6 +1,5 @@
 package de.otto.jlineup.report;
 
-import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.file.FileService;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,8 +22,8 @@ public class HTMLReportGeneratorTest {
     @Mock
     private FileService fileServiceMock;
 
-    List<ScreenshotComparisonResult> screenshotComparisonResultList =
-            ImmutableList.of(new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "difference"));
+    private final List<ScreenshotComparisonResult> screenshotComparisonResultList =
+            Collections.singletonList(new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "difference"));
 
     @Before
     public void setup() {
@@ -141,6 +141,5 @@ public class HTMLReportGeneratorTest {
         testee.writeReport(screenshotComparisonResultList);
 
         Mockito.verify(fileServiceMock).writeHtmlReport(anyString());
-
     }
 }
