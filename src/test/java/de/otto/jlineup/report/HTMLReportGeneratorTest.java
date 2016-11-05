@@ -76,11 +76,64 @@ public class HTMLReportGeneratorTest {
                 "        }" + n +
                 "" + n +
                 "        table {" + n +
-                "            padding: 0 0 15px 0;" + n +
+                "            padding: 0 0 15px 20px;" + n +
+                "            display: none;" + n +
                 "        }" + n +
                 "" + n +
                 "        p {" + n +
                 "            padding: 5px;" + n +
+                "        }" + n +
+                "" + n +
+                "        label {" + n +
+                "            cursor: pointer;" + n +
+                "            font-weight: bold;" + n +
+                "            font-size: 18px;" + n +
+                "        }" + n +
+                "" + n +
+                "        .context input[type=checkbox] {" + n +
+                "            display: none;" + n +
+                "        }" + n +
+                "" + n +
+                "        .context input[type=checkbox]:checked ~ table {" + n +
+                "            display: block;" + n +
+                "        }" + n +
+                "" + n +
+                "        .context input[type=checkbox]:checked ~ label .arrow-down {" + n +
+                "            display: none;" + n +
+                "        }" + n +
+                "" + n +
+                "        .context input[type=checkbox]:checked ~ label .arrow-right {" + n +
+                "            display: block;" + n +
+                "        }" + n +
+                "" + n +
+                "        .arrow-right {" + n +
+                "            display: none;" + n +
+                "            float: left;" + n +
+                "            width: 0;" + n +
+                "            height: 0;" + n +
+                "            margin: 5px 10px 0px 6px;" + n +
+                "            border-top: 6px solid transparent;" + n +
+                "            border-bottom: 6px solid transparent;" + n +
+                "            border-left: 6px solid gray;" + n +
+                "        }" + n +
+                "" + n +
+                "        .arrow-down {" + n +
+                "            display: block;" + n +
+                "            float: left;" + n +
+                "            width: 0;" + n +
+                "            height: 0;" + n +
+                "            margin: 9px 7px 0px 3px;" + n +
+                "            border-top: 6px solid gray;" + n +
+                "            border-right: 6px solid transparent;" + n +
+                "            border-left: 6px solid transparent;" + n +
+                "        }" + n +
+                "" + n +
+                "        .success {" + n +
+                "            color: green;" + n +
+                "        }" + n +
+                "" + n +
+                "        .failure {" + n +
+                "            color: red;" + n +
                 "        }" + n +
                 "" + n +
                 "    </style>" + n +
@@ -89,8 +142,14 @@ public class HTMLReportGeneratorTest {
                 "<body>" + n +
                 "" + n +
                 "<div class=\"report\">" + n +
+                "    <h2>JLineup Comparison Report</h2>" + n +
                 "    <div class=\"context\">" + n +
-                "        <h3>url (Browser window width: 1337)</h3>" + n +
+                "        <input type=\"checkbox\" id=\"url|||1337\" />" + n +
+                "        <label for=\"url|||1337\" class=\"success\">" + n +
+                "            <div class=\"arrow-down\"></div>" + n +
+                "            <div class=\"arrow-right\"></div>" + n +
+                "            url (Browser window width: 1337)" + n +
+                "        </label>" + n +
                 "        <table>" + n +
                 "            <tr>" + n +
                 "                <th>Info</th>" + n +

@@ -89,6 +89,16 @@ public class HTMLReportGenerator {
             }
             return shortenedUrl;
         }
+
+        public boolean isSuccess()
+        {
+            for(ScreenshotComparisonResult result : results) {
+                if(result.difference > 0)
+                    return false;
+            }
+
+            return true;
+        }
     }
 
 }
