@@ -99,15 +99,15 @@ public class HTMLReportGeneratorTest {
                 "        }" + n +
                 "" + n +
                 "        .context input[type=checkbox]:checked ~ label .arrow-down {" + n +
-                "            display: none;" + n +
-                "        }" + n +
-                "" + n +
-                "        .context input[type=checkbox]:checked ~ label .arrow-right {" + n +
                 "            display: block;" + n +
                 "        }" + n +
                 "" + n +
-                "        .arrow-right {" + n +
+                "        .context input[type=checkbox]:checked ~ label .arrow-right {" + n +
                 "            display: none;" + n +
+                "        }" + n +
+                "" + n +
+                "        .arrow-right {" + n +
+                "            display: block;" + n +
                 "            float: left;" + n +
                 "            width: 0;" + n +
                 "            height: 0;" + n +
@@ -118,7 +118,7 @@ public class HTMLReportGeneratorTest {
                 "        }" + n +
                 "" + n +
                 "        .arrow-down {" + n +
-                "            display: block;" + n +
+                "            display: none;" + n +
                 "            float: left;" + n +
                 "            width: 0;" + n +
                 "            height: 0;" + n +
@@ -146,8 +146,8 @@ public class HTMLReportGeneratorTest {
                 "    <div class=\"context\">" + n +
                 "        <input type=\"checkbox\" id=\"url|||1337\" />" + n +
                 "        <label for=\"url|||1337\" class=\"success\">" + n +
-                "            <div class=\"arrow-down\"></div>" + n +
                 "            <div class=\"arrow-right\"></div>" + n +
+                "            <div class=\"arrow-down\"></div>" + n +
                 "            url (Browser window width: 1337)" + n +
                 "        </label>" + n +
                 "        <table>" + n +
