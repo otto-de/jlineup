@@ -69,3 +69,7 @@ JLineup uses some third party tools and libraries
 ##### PhantomJS
 
 * [PhantomJS](http://phantomjs.org/) is licensed under the [BSD-3-Clause](https://github.com/ariya/phantomjs/blob/master/LICENSE.BSD)
+
+##### Thymeleaf
+
+* [Thymeleaf](http://www.thymeleaf.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0) 
