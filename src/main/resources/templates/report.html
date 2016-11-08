@@ -61,15 +61,15 @@
         }
 
         .context input[type=checkbox]:checked ~ label .arrow-down {
-            display: none;
-        }
-
-        .context input[type=checkbox]:checked ~ label .arrow-right {
             display: block;
         }
 
-        .arrow-right {
+        .context input[type=checkbox]:checked ~ label .arrow-right {
             display: none;
+        }
+
+        .arrow-right {
+            display: block;
             float: left;
             width: 0;
             height: 0;
@@ -80,7 +80,7 @@
         }
 
         .arrow-down {
-            display: block;
+            display: none;
             float: left;
             width: 0;
             height: 0;
@@ -108,8 +108,8 @@
     <div class="context" th:each="resultContext,iterationStatus : ${resultContexts}">
         <input type="checkbox" th:attr="id=${resultContext.url} + '|||' + ${resultContext.width}" />
         <label th:attr="for=${resultContext.url} + '|||' + ${resultContext.width}" th:classappend="${resultContext.isSuccess()} ? success : failure">
-            <div class="arrow-down"></div>
             <div class="arrow-right"></div>
+            <div class="arrow-down"></div>
             [[${resultContext.url}]] (Browser window width: [[${resultContext.width}]])
         </label>
         <table>
