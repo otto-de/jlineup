@@ -36,12 +36,6 @@ public class ImageService {
         }
     }
 
-
-    /**
-     * @param viewportHeight is needed to calculate the difference level
-     * @return A ImageComparisonResult containing a double between 0 and 1 that measures the difference between the two pictures. 1 means 100% difference,
-     * 0 means, that both pictures are identical and a difference image as BufferedImage
-     */
     public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight) {
 
         if (image1 == null || image2 == null) throw new NullPointerException("Can't compare null imagebuffers");

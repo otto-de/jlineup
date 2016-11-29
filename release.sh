@@ -25,4 +25,4 @@ check_configuration() {
 
 check_configuration
 
-${SCRIPT_DIR}/gradlew uploadShadow
+${SCRIPT_DIR}/gradlew uploadArchives
