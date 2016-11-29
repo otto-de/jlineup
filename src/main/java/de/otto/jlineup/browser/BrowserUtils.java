@@ -6,11 +6,14 @@ import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.MarionetteDriverManager;
 import io.github.bonigarcia.wdm.PhantomJsDriverManager;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +53,7 @@ public class BrowserUtils {
                 JLineupGeckoDriverService.Builder builder = new JLineupGeckoDriverService.Builder();
                 //0 means default
                 builder.usingPort(0);
-                driver = new MarionetteDriver(builder.build());
+                driver = new FirefoxDriver(builder.build(), null, null);
                 break;
             case CHROME:
                 ChromeDriverManager.getInstance().setup();

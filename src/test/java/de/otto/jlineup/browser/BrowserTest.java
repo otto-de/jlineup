@@ -14,6 +14,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
@@ -66,10 +67,9 @@ public class BrowserTest {
     }
 
     @Test
-    @Ignore //TODO: Find out why this doesn't work in conjunction with other tests
     public void shouldGetFirefoxDriver() throws InterruptedException {
         final Config config = new Config(null, FIREFOX, 5f, 800);
-        assertSetDriverType(config, MarionetteDriver.class);
+        assertSetDriverType(config, FirefoxDriver.class);
     }
 
     @Test
