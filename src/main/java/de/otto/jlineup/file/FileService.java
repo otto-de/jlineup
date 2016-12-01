@@ -111,7 +111,8 @@ public class FileService {
                 .replace("https://", "")
                 .replace("/", DIVIDER)
                 .replace("..", "")
-                .replace(".", DIVIDER);
+                .replace(".", DIVIDER)
+                .replace("#", DIVIDER);
 
         return fileName;
     }
