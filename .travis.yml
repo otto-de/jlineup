@@ -11,7 +11,7 @@ before_script:
   - sleep 3 # give xvfb some time to start
 language: java
 jdk:
-  - oraclejdk8
+  - openjdk8
 script:
   - gradle assemble
   - gradle check
@@ -19,7 +19,4 @@ cache:
   directories:
   - $HOME/.m2
 addons:
-  firefox: "49.0"
-  apt:
-      packages:
-        - oracle-java8-installer
+  firefox: "50.0"
