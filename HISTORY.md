@@ -3,6 +3,9 @@
 ## Current snapshot
 * Document snapshot changes here
 
+## Release 1.0.11
+* Report image links work if url contains ? and/or =
+
 ## Release 1.0.10
 * Report image links work if url contains hash (#) characters
 
