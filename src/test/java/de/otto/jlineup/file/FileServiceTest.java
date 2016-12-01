@@ -112,8 +112,8 @@ public class FileServiceTest {
 
     @Test
     public void shouldGenerateFilename() throws Exception {
-        String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "multimedia#anchor", 1000, 2000, "after");
-        assertThat(outputString, is("www_otto_de_multimedia_anchor_1000_02000_after.png"));
+        String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "multimedia#anchor?one=two", 1000, 2000, "after");
+        assertThat(outputString, is("www_otto_de_multimedia_anchor_one_two_1000_02000_after.png"));
     }
 
     @Test

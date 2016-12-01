@@ -89,6 +89,10 @@ signing {
     sign configurations.archives
 }
 
+processResources {
+    expand(project.properties)
+}
+
 uploadArchives {
     configuration = configurations.archives
     repositories {

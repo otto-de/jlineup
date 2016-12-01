@@ -112,6 +112,8 @@ public class FileService {
                 .replace("/", DIVIDER)
                 .replace("..", "")
                 .replace(".", DIVIDER)
+                .replace("?", DIVIDER)
+                .replace("=", DIVIDER)
                 .replace("#", DIVIDER);
 
         return fileName;
