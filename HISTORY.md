@@ -3,6 +3,11 @@
 ## Current snapshot
 * Document snapshot changes here
 
+## 1.1.0-SNAPSHOT
+* You can specify custom JavaScript that is executed before page screenshots start
+  (I.e. useful to take parts that change dynamically through third party
+  - like ads - off the page)
+
 ## Release 1.0.12
 * Don't strip http or https from image filenames
 * Sanitize filenames properly
