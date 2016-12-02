@@ -1,6 +1,8 @@
 package de.otto.jlineup.file;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 import de.otto.jlineup.config.Parameters;
 
 import javax.imageio.ImageIO;
@@ -97,6 +99,8 @@ public class FileService {
 
     private String generateScreenshotFileNamePrefix(String url, String path) {
 
+        String hash = Hashing.sha1().hashString(url + path, Charsets.UTF_8).toString().substring(0, 7);
+
         if (path.equals("/") || path.equals("")) {
             path = "root";
         }
@@ -104,11 +108,12 @@ public class FileService {
             url = url.substring(0, url.length() - 1);
         }
 
-        String fileName = url + DIVIDER + path + DIVIDER;
-        fileName = fileName.replace("://", DIVIDER);
-        fileName = fileName.replaceAll("[^A-Za-z0-9\\-_]", DIVIDER);
+        String fileNamePrefix = url + DIVIDER + path + DIVIDER;
+        fileNamePrefix = fileNamePrefix.replace("://", DIVIDER);
+        fileNamePrefix = fileNamePrefix.replaceAll("[^A-Za-z0-9\\-_]", DIVIDER);
+        fileNamePrefix = fileNamePrefix + hash + DIVIDER;
 
-        return fileName;
+        return fileNamePrefix;
     }
 
     @VisibleForTesting

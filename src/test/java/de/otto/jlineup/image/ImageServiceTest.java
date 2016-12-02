@@ -25,9 +25,9 @@ public class ImageServiceTest {
     public void shouldGenerateDifferenceImage() throws IOException {
         //given
         final int viewportHeight = 800;
-        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_1001_02002_before.png"));
-        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_1001_02002_after.png"));
-        final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_1001_02002_DIFFERENCE_reference.png"));
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_after.png"));
+        final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
 
         //when
         ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
