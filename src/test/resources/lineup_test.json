@@ -29,7 +29,8 @@
       ],
       "wait-after-page-load": 2,
       "max-scroll-height": 50000,
-      "warmup-browser-cache-time": 3
+      "warmup-browser-cache-time": 3,
+      "javascript": "console.log('Moin!');"
     },
     "http://www.google.de": {
       "paths": [

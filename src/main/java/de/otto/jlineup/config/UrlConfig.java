@@ -38,6 +38,9 @@ public class UrlConfig {
     @SerializedName("warmup-browser-cache-time")
     public final int warmupBrowserCacheTime;
 
+    @SerializedName("javascript")
+    public final String javaScript;
+
     //Default constructor for GSON
     public UrlConfig() {
         this.paths = DEFAULT_PATHS;
@@ -50,9 +53,10 @@ public class UrlConfig {
         this.waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
         this.envMapping = null;
         this.warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
+        this.javaScript = null;
     }
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript) {
         this.paths = paths != null ? paths : DEFAULT_PATHS;
         this.windowWidths = windowWidths != null ? windowWidths : DEFAULT_WINDOW_WIDTHS;
         this.maxDiff = maxDiff;
@@ -63,6 +67,7 @@ public class UrlConfig {
         this.waitAfterPageLoad = waitAfterPageLoad;
         this.waitForNoAnimationAfterScroll = waitForNoAnimationAfterScroll;
         this.warmupBrowserCacheTime = warmupBrowserCacheTime;
+        this.javaScript = javaScript;
     }
 
     @Override
@@ -78,6 +83,7 @@ public class UrlConfig {
                 ", waitAfterPageLoad=" + waitAfterPageLoad +
                 ", waitForNoAnimationAfterScroll=" + waitForNoAnimationAfterScroll +
                 ", warmupBrowserCacheTime=" + warmupBrowserCacheTime +
+                ", javaScript='" + javaScript + '\'' +
                 '}';
     }
 
@@ -95,11 +101,13 @@ public class UrlConfig {
                 Objects.equals(cookies, urlConfig.cookies) &&
                 Objects.equals(envMapping, urlConfig.envMapping) &&
                 Objects.equals(localStorage, urlConfig.localStorage) &&
-                Objects.equals(windowWidths, urlConfig.windowWidths);
+                Objects.equals(windowWidths, urlConfig.windowWidths) &&
+                Objects.equals(javaScript, urlConfig.javaScript);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitForNoAnimationAfterScroll, warmupBrowserCacheTime);
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, javaScript);
     }
+
 }

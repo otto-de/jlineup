@@ -119,6 +119,9 @@ public class Browser implements AutoCloseable{
 
             scrollToTop();
 
+            //Execute custom javascript if existing
+            executeJavaScript(screenshotContext.urlConfig.javaScript);
+
             for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += viewportHeight) {
                 BufferedImage currentScreenshot = takeScreenshot();
                 currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
@@ -208,6 +211,15 @@ public class Browser implements AutoCloseable{
     private Long getViewportHeight() {
         JavascriptExecutor jse = (JavascriptExecutor) driver;
         return (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
+    }
+
+    void executeJavaScript(String javaScript) throws InterruptedException {
+        if (javaScript == null) {
+            return;
+        }
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        jse.executeScript(javaScript);
+        Thread.sleep(50);
     }
 
     void scrollBy(int viewportHeight) throws InterruptedException {
