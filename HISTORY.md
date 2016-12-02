@@ -3,6 +3,10 @@
 ## Current snapshot
 * Document snapshot changes here
 
+## Release 1.0.12
+* Don't strip http or https from image filenames
+* Sanitize filenames properly
+
 ## Release 1.0.11
 * Report image links work if url contains ? and/or =
 
