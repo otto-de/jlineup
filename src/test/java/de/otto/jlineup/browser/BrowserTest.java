@@ -7,7 +7,10 @@ import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openqa.selenium.Dimension;
@@ -15,7 +18,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.io.File;
@@ -188,7 +190,7 @@ public class BrowserTest {
 
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
-        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/url_root_1001_02002_before.png"));
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/http_url_root_1001_02002_before.png"));
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
