@@ -180,7 +180,7 @@ public class BrowserTest {
                 0f,
                 ImmutableList.of(new Cookie("testcookiename", "testcookievalue")),
                 ImmutableMap.of(), ImmutableMap.of("key", "value"),
-                ImmutableList.of(600), 5000, 0, 0, 3, null);
+                ImmutableList.of(600), 5000, 0, 0, 3, "testJS();");
 
         Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100);
         testee = new Browser(parameters, config, webDriverMock, fileService);
@@ -199,6 +199,7 @@ public class BrowserTest {
         verify(webDriverWindowMock, times(1)).setSize(new Dimension(600, 100));
         verify(webDriverWindowMock, times(1)).setSize(new Dimension(800, 100));
         verify(webDriverMock, times(2)).executeScript(JS_SCROLL_TO_TOP_CALL);
+        verify(webDriverMock, times(2)).executeScript("testJS();");
         verify(webDriverMock, times(10)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         verify(webDriverMock, times(5)).get("testurl/");
         verify(webDriverMock, times(2)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
