@@ -112,20 +112,20 @@ public class FileServiceTest {
 
     @Test
     public void shouldGenerateFilename() throws Exception {
-        String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "multimedia#anchor?one=two", 1000, 2000, "after");
-        assertThat(outputString, is("www_otto_de_multimedia_anchor_one_two_1000_02000_after.png"));
+        String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "multimedia#anchor?one=two&three=four", 1000, 2000, "after");
+        assertThat(outputString, is("https_www_otto_de_multimedia_anchor_one_two_three_four_1000_02000_after.png"));
     }
 
     @Test
     public void shouldConvertRoot() throws Exception {
         String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "/", 1000, 2000, "before");
-        assertThat(outputString, is("www_otto_de_root_1000_02000_before.png"));
+        assertThat(outputString, is("https_www_otto_de_root_1000_02000_before.png"));
     }
 
     @Test
     public void shouldFindAfterImagesInDirectoryWithPattern() throws IOException {
-        List<String> fileNamesMatchingPattern = testee.getFileNamesMatchingPattern(Paths.get("src/test/resources/screenshots"), "glob:**url_root_*_*_after.png");
-        assertThat(fileNamesMatchingPattern, is(Arrays.asList("url_root_1001_02002_after.png", "url_root_1001_03003_after.png")));
+        List<String> fileNamesMatchingPattern = testee.getFileNamesMatchingPattern(Paths.get("src/test/resources/screenshots"), "glob:**http_url_root_*_*_after.png");
+        assertThat(fileNamesMatchingPattern, is(Arrays.asList("http_url_root_1001_02002_after.png", "http_url_root_1001_03003_after.png")));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class FileServiceTest {
         //when
         List<String> beforeFiles = testee.getFilenamesForStep("/", "http://url", BEFORE);
         //then
-        assertThat(beforeFiles, is(ImmutableList.of("url_root_1001_02002_before.png")));
+        assertThat(beforeFiles, is(ImmutableList.of("http_url_root_1001_02002_before.png")));
     }
 
     @Test
@@ -141,6 +141,6 @@ public class FileServiceTest {
         //when
         List<String> beforeFiles = testee.getFilenamesForStep("/", "http://url", AFTER);
         //then
-        assertThat(beforeFiles, is(ImmutableList.of("url_root_1001_02002_after.png", "url_root_1001_03003_after.png")));
+        assertThat(beforeFiles, is(ImmutableList.of("http_url_root_1001_02002_after.png", "http_url_root_1001_03003_after.png")));
     }
 }

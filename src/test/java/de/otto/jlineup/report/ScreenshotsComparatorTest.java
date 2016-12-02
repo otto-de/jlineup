@@ -81,22 +81,22 @@ public class ScreenshotsComparatorTest {
     public void shouldBuildComparisonResults() throws Exception {
         //given
         List<ScreenshotComparisonResult> expectedResults = ImmutableList.of(
-                new ScreenshotComparisonResult("http://url/", 1001, 2002, 0.1337, "url_root_1001_02002_before.png", "url_root_1001_02002_after.png", "url_root_1001_02002_DIFFERENCE.png"),
-                ScreenshotComparisonResult.noBeforeImageComparisonResult("http://url/", 1001, 3003, "url_root_1001_03003_after.png")
+                new ScreenshotComparisonResult("http://url/", 1001, 2002, 0.1337, "http_url_root_1001_02002_before.png", "http_url_root_1001_02002_after.png", "http_url_root_1001_02002_DIFFERENCE.png"),
+                ScreenshotComparisonResult.noBeforeImageComparisonResult("http://url/", 1001, 3003, "http_url_root_1001_03003_after.png")
         );
-        when(fileService.getFilenamesForStep("/", "http://url", "before")).thenReturn(ImmutableList.of("url_root_1001_02002_before.png"));
-        when(fileService.getFilenamesForStep("/", "http://url", "after")).thenReturn(ImmutableList.of("url_root_1001_02002_after.png", "url_root_1001_03003_after.png"));
-        BufferedImage beforeBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_02002_before.png"));
-        when(fileService.readScreenshot("url_root_1001_02002_before.png")).thenReturn(
+        when(fileService.getFilenamesForStep("/", "http://url", "before")).thenReturn(ImmutableList.of("http_url_root_1001_02002_before.png"));
+        when(fileService.getFilenamesForStep("/", "http://url", "after")).thenReturn(ImmutableList.of("http_url_root_1001_02002_after.png", "http_url_root_1001_03003_after.png"));
+        BufferedImage beforeBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_1001_02002_before.png"));
+        when(fileService.readScreenshot("http_url_root_1001_02002_before.png")).thenReturn(
                 beforeBuffer);
-        BufferedImage afterBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_02002_after.png"));
-        when(fileService.readScreenshot("url_root_1001_02002_after.png")).thenReturn(
+        BufferedImage afterBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_1001_02002_after.png"));
+        when(fileService.readScreenshot("http_url_root_1001_02002_after.png")).thenReturn(
                 afterBuffer);
 
-        BufferedImage differenceBuffer = ImageIO.read(new File("src/test/resources/screenshots/url_root_1001_02002_DIFFERENCE_reference.png"));
+        BufferedImage differenceBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_1001_02002_DIFFERENCE_reference.png"));
         when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d));
 
-        when(fileService.writeScreenshot(differenceBuffer, "http://url", "/", 1001, 2002, "DIFFERENCE")).thenReturn("url_root_1001_02002_DIFFERENCE.png");
+        when(fileService.writeScreenshot(differenceBuffer, "http://url", "/", 1001, 2002, "DIFFERENCE")).thenReturn("http_url_root_1001_02002_DIFFERENCE.png");
 
         //when
         List<ScreenshotComparisonResult> comparisonResults = testee.compare();

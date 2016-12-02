@@ -105,16 +105,8 @@ public class FileService {
         }
 
         String fileName = url + DIVIDER + path + DIVIDER;
-
-        fileName = fileName
-                .replace("http://", "")
-                .replace("https://", "")
-                .replace("/", DIVIDER)
-                .replace("..", "")
-                .replace(".", DIVIDER)
-                .replace("?", DIVIDER)
-                .replace("=", DIVIDER)
-                .replace("#", DIVIDER);
+        fileName = fileName.replace("://", DIVIDER);
+        fileName = fileName.replaceAll("[^A-Za-z0-9]", DIVIDER);
 
         return fileName;
     }
