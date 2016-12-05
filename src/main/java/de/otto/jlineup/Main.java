@@ -27,8 +27,12 @@ public class Main {
         jCommander.setProgramName("JLineup");
         if (parameters.isHelp()) {
             jCommander.usage();
-            System.out.println("Version: " + Util.readVersion());
-            System.out.println("Commit: " + Util.readCommit());
+            System.out.printf("Version: %s%n", getVersion());
+            return;
+        }
+
+        if (parameters.isVersion()) {
+            System.out.printf("JLineup version %s", getVersion());
             return;
         }
 
@@ -108,6 +112,10 @@ public class Main {
 
             System.out.println("Sum of screenshot differences:\n" + comparisonResults.stream().mapToDouble(scr -> scr.difference).sum());
         }
+    }
+
+    private static String getVersion() {
+        return String.format("%s [%s]%n", Util.readVersion(), Util.readCommit());
     }
 
     private static String createPrettyConfigJson(Config config) {

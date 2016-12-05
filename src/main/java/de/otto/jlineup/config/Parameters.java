@@ -38,6 +38,9 @@ public class Parameters {
     @Parameter(names = {"--debug"}, description = "Sets the log level to DEBUG, produces verbose information about the current task.")
     private boolean debug = false;
 
+    @Parameter(names = {"--version", "-v"}, description = "Prints version information.")
+    private boolean version = false;
+
     @DynamicParameter(names = {"--replace-in-url", "-R"}, description = "The given keys are replaced with the corresponding values in all urls that are tested.")
     private Map<String, String> urlReplacements = new HashMap<>();
 
@@ -105,19 +108,20 @@ public class Parameters {
                 ", url='" + url + '\'' +
                 ", printConfig=" + printConfig +
                 ", debug=" + debug +
+                ", version=" + version +
                 ", urlReplacements=" + urlReplacements +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
-
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Parameters that = (Parameters) o;
         return help == that.help &&
                 printConfig == that.printConfig &&
                 debug == that.debug &&
+                version == that.version &&
                 step == that.step &&
                 Objects.equals(configFile, that.configFile) &&
                 Objects.equals(workingDirectory, that.workingDirectory) &&
@@ -129,7 +133,10 @@ public class Parameters {
 
     @Override
     public int hashCode() {
-        return Objects.hash(help, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, url, printConfig, debug, urlReplacements);
+        return Objects.hash(help, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, url, printConfig, debug, version, urlReplacements);
     }
 
+    public boolean isVersion() {
+        return version;
+    }
 }
