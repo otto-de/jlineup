@@ -5,7 +5,7 @@
 
 ## 1.1.0-SNAPSHOT
 * You can specify custom JavaScript that is executed before page screenshots start
-  (I.e. useful to remove parts that change dynamically through third party
+  (i.e. useful to remove parts that change dynamically through third party
   - like ads - from the page)
 
 ## Release 1.0.12

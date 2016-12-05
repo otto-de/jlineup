@@ -12,7 +12,7 @@ apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'signing'
 
 def version() {
-    return '1.1.0-SNAPSHOT'
+    return '1.1.0'
 }
 
 def isReleaseBuild() {
