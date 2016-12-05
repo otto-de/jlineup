@@ -3,7 +3,10 @@
 ## Current snapshot
 * Document snapshot changes here
 
-## 1.1.0-SNAPSHOT
+## 1.1.1
+* The report contains the JLineup version at the bottom
+
+## 1.1.0
 * You can specify custom JavaScript that is executed before page screenshots start
   (i.e. useful to remove parts that change dynamically through third party
   - like ads - from the page)
