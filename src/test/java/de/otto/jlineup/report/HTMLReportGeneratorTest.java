@@ -11,7 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -36,7 +37,7 @@ public class HTMLReportGeneratorTest {
 
         String n = System.getProperty("line.separator");
 
-        String expectedHtml = "<!DOCTYPE html>" + n +
+        String expectedHtmlStart = "<!DOCTYPE html>" + n +
                 "<html>" + n +
                 "<head>" + n +
                 "    <title>JLineup Comparison Report</title>" + n +
@@ -53,6 +54,12 @@ public class HTMLReportGeneratorTest {
                 "            font-family: Arial, Helvetica, sans-serif;" + n +
                 "            margin-left: 10px;" + n +
                 "            margin-top: 10px;" + n +
+                "        }" + n +
+                "" + n +
+                "        .footer {" + n +
+                "            margin-top: 20px;" + n +
+                "            font-size: 7px;" + n +
+                "            color: grey;" + n +
                 "        }" + n +
                 "" + n +
                 "        table tr:nth-child(even) {" + n +
@@ -188,12 +195,17 @@ public class HTMLReportGeneratorTest {
                 "    </div>" + n +
                 "</div>" + n +
                 "" + n +
+                "<p class=\"footer\">Generated with Jlineup";
+
+        String expectedHtmlEnd = "</p>" + n +
+                "" + n +
                 "</body>" + n +
                 "</html>";
 
         final String report = testee.renderReport("report", screenshotComparisonResultList);
 
-        assertThat(report, is(expectedHtml));
+        assertThat(report, startsWith(expectedHtmlStart));
+        assertThat(report, endsWith(expectedHtmlEnd));
     }
 
     @Test

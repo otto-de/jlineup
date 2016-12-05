@@ -5,7 +5,7 @@ import java.util.Properties;
 
 public class Util {
 
-    public static final String readVersion() {
+    public static String readVersion() {
         Properties prop = new Properties();
         try {
             prop.load(Main.class.getClassLoader().getResourceAsStream("version.properties"));
@@ -16,7 +16,7 @@ public class Util {
         return prop.getProperty("jlineup.version");
     }
 
-    public static final String readCommit() {
+    public static String readCommit() {
         Properties prop = new Properties();
         try {
             prop.load(Main.class.getClassLoader().getResourceAsStream("version.properties"));
