@@ -57,8 +57,8 @@ public class HTMLReportGeneratorTest {
                 "        }" + n +
                 "" + n +
                 "        .footer {" + n +
-                "            margin-top: 20px;" + n +
-                "            font-size: 7px;" + n +
+                "            margin-top: 25px;" + n +
+                "            font-size: 8px;" + n +
                 "            color: grey;" + n +
                 "        }" + n +
                 "" + n +
