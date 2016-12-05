@@ -36,8 +36,8 @@ public final class Config {
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
-    @SerializedName("async-wait")
-    public final Float asyncWait;
+    @SerializedName(value = "wait-after-page-load", alternate = "async-wait")
+    public final Float globalWaitAfterPageLoad;
     @SerializedName("window-height")
     public final Integer windowHeight;
 
@@ -47,15 +47,15 @@ public final class Config {
     public Config() {
         urls = null;
         browser = DEFAULT_BROWSER;
-        asyncWait = DEFAULT_ASYNC_WAIT;
+        globalWaitAfterPageLoad = DEFAULT_ASYNC_WAIT;
         windowHeight = DEFAULT_WINDOW_HEIGHT;
 
     }
 
-    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float asyncWait, final Integer windowHeight) {
+    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer windowHeight) {
         this.urls = urls;
         this.browser = browser != null ? browser : DEFAULT_BROWSER;
-        this.asyncWait = asyncWait != null ? asyncWait : DEFAULT_ASYNC_WAIT;
+        this.globalWaitAfterPageLoad = globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad : DEFAULT_ASYNC_WAIT;
         this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
     }
 
@@ -102,7 +102,7 @@ public final class Config {
 
         if (urls != null ? !urls.equals(config.urls) : config.urls != null) return false;
         if (browser != config.browser) return false;
-        if (asyncWait != null ? !asyncWait.equals(config.asyncWait) : config.asyncWait != null) return false;
+        if (globalWaitAfterPageLoad != null ? !globalWaitAfterPageLoad.equals(config.globalWaitAfterPageLoad) : config.globalWaitAfterPageLoad != null) return false;
         return windowHeight != null ? windowHeight.equals(config.windowHeight) : config.windowHeight == null;
 
     }
@@ -111,7 +111,7 @@ public final class Config {
     public int hashCode() {
         int result = urls != null ? urls.hashCode() : 0;
         result = 31 * result + (browser != null ? browser.hashCode() : 0);
-        result = 31 * result + (asyncWait != null ? asyncWait.hashCode() : 0);
+        result = 31 * result + (globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad.hashCode() : 0);
         result = 31 * result + (windowHeight != null ? windowHeight.hashCode() : 0);
         return result;
     }
@@ -121,7 +121,7 @@ public final class Config {
         return "Config{" +
                 "urls=" + urls +
                 ", browser=" + browser +
-                ", asyncWait=" + asyncWait +
+                ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
                 ", windowHeight=" + windowHeight +
                 '}';
     }

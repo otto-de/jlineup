@@ -109,9 +109,9 @@ public class Browser implements AutoCloseable{
                 }
             }
 
-            if (config.asyncWait > 0) {
-                LOG.debug(String.format("Waiting for %s seconds (async-wait)", config.asyncWait));
-                Thread.sleep(Math.round(config.asyncWait * 1000));
+            if (config.globalWaitAfterPageLoad > 0) {
+                LOG.debug(String.format("Waiting for %s seconds (global wait-after-page-load)", config.globalWaitAfterPageLoad));
+                Thread.sleep(Math.round(config.globalWaitAfterPageLoad * 1000));
             }
 
             LOG.debug("Page height before scrolling: {}", pageHeight);

@@ -12,5 +12,5 @@
     }
   },
   "browser": "chrome",
-  "async-wait": 1
+  "wait-after-page-load": 1
 }

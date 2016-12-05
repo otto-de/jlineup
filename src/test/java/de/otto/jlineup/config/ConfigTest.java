@@ -38,12 +38,12 @@ public class ConfigTest {
         assertThat(config.windowHeight, is(800));
         assertThat(config.urls.get("https://www.otto.de").windowWidths, is(ImmutableList.of(800)));
         assertThat(config.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/")));
-        assertThat(config.asyncWait, is(0F));
+        assertThat(config.globalWaitAfterPageLoad, is(0F));
     }
 
     private void assertThatConfigContentsAreCorrect(Config config) {
         assertThat(config.browser, is(FIREFOX));
-        assertThat(config.asyncWait, is(1f));
+        assertThat(config.globalWaitAfterPageLoad, is(1f));
         assertThat(config.urls.get("https://www.otto.de").windowWidths, is(ImmutableList.of(600, 800, 1200)));
         assertThat(config.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));
         assertThat(config.urls.get("https://www.otto.de"), is(BrowserUtilsTest.getExpectedUrlConfigForOttoDe()));
