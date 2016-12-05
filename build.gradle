@@ -49,6 +49,12 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-library:1.3"
 }
 
+/*
+    manifest {
+        attributes 'Implementation-Title': 'JLineup', 'Implementation-Version': version()
+    }
+*/
+
 shadowJar {
     baseName = 'jlineup'
     classifier = null
@@ -87,6 +93,18 @@ artifacts {
 signing {
     required { isReleaseBuild() && gradle.taskGraph.hasTask('uploadArchives') }
     sign configurations.archives
+}
+
+tasks.processResources << {
+    def resourcesDir = project.sourceSets.main.output.resourcesDir
+    resourcesDir.mkdirs()
+
+    def versionProperties = new File(resourcesDir, "version.properties")
+    if (versionProperties) {
+        def gitVersion = runCommand("git log -n1 --format=format:%H")
+        def fullVersion = version()
+        versionProperties.text = "\njlineup.commit = ${gitVersion}" + "\njlineup.version = ${fullVersion}"
+    }
 }
 
 uploadArchives {
@@ -138,4 +156,17 @@ uploadArchives {
             }
         }
     }
+}
+
+def String runCommand(def command) {
+    Process proc = command.execute()
+    def out = new StringBuffer()
+    proc.consumeProcessOutputStream(out)
+    proc.consumeProcessErrorStream(out)
+    proc.waitFor()
+    def errorlevel = proc.exitValue()
+    if (errorlevel != 0) {
+        throw new RuntimeException("exec failed on command: '${command}' with errorlevel ${errorlevel}".toString())
+    }
+    out.toString().trim()
 }

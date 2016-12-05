@@ -27,6 +27,8 @@ public class Main {
         jCommander.setProgramName("JLineup");
         if (parameters.isHelp()) {
             jCommander.usage();
+            System.out.println("Version: " + Util.readVersion());
+            System.out.println("Commit: " + Util.readCommit());
             return;
         }
 
