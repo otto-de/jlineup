@@ -12,10 +12,7 @@ import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class Config {
 
@@ -26,7 +23,7 @@ public final class Config {
     public static final Browser.Type DEFAULT_BROWSER = Browser.Type.PHANTOMJS;
     public static final float DEFAULT_MAX_DIFF = 0;
     public static final int DEFAULT_WINDOW_HEIGHT = 800;
-    public static final float DEFAULT_ASYNC_WAIT = 0f;
+    public static final float DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD = 0f;
     public static final List<Integer> DEFAULT_WINDOW_WIDTHS = ImmutableList.of(800);
     public static final List<String> DEFAULT_PATHS = ImmutableList.of("/");
     public static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
@@ -47,7 +44,7 @@ public final class Config {
     public Config() {
         urls = null;
         browser = DEFAULT_BROWSER;
-        globalWaitAfterPageLoad = DEFAULT_ASYNC_WAIT;
+        globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         windowHeight = DEFAULT_WINDOW_HEIGHT;
 
     }
@@ -55,7 +52,7 @@ public final class Config {
     public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer windowHeight) {
         this.urls = urls;
         this.browser = browser != null ? browser : DEFAULT_BROWSER;
-        this.globalWaitAfterPageLoad = globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad : DEFAULT_ASYNC_WAIT;
+        this.globalWaitAfterPageLoad = globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad : DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
     }
 
@@ -65,6 +62,29 @@ public final class Config {
 
     public static Config defaultConfig(String url) {
         return new Config(ImmutableMap.of(url, new UrlConfig()), null, null, null);
+    }
+
+    public static Config exampleConfig() {
+        return new Config(ImmutableMap.of("http://www.example.com",
+                new UrlConfig(
+                        ImmutableList.of("/","someOtherPath"),
+                        DEFAULT_MAX_DIFF,
+                        ImmutableList.of(
+                                new Cookie("exampleCookieName", "exampleValue", "http://www.example.com", "/", new Date(1000L), true)
+                        ),
+                        ImmutableMap.of("live", "www"),
+                        ImmutableMap.of("exampleLocalStorageKey", "value"),
+                        ImmutableList.of(600,800,1000),
+                        DEFAULT_MAX_SCROLL_HEIGHT,
+                        DEFAULT_WAIT_AFTER_PAGE_LOAD,
+                        DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL,
+                        DEFAULT_WARMUP_BROWSER_CACHE_TIME,
+                        "console.log('This is JavaScript!')"
+                )),
+                Browser.Type.PHANTOMJS,
+                DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD,
+                DEFAULT_WINDOW_HEIGHT
+        );
     }
 
     public static Config readConfig(final Parameters parameters) throws FileNotFoundException {

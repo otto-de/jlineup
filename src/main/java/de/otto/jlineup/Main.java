@@ -57,7 +57,7 @@ public class Main {
                 System.out.printf("You specified an explicit URL parameter (%s), any given config file is ignored! This should only be done for testing purpose.%n", url);
                 System.out.printf("Using generated config:%n%s%n", createPrettyConfigJson(config));
                 System.out.println("You can take this generated config as base and save it as a text file named 'lineup.json'.");
-                System.out.println("Just add --print-config parameter to let JLineup print this config");
+                System.out.println("Just add --print-config parameter to let JLineup print an example config");
             }
         } else {
             try {
@@ -67,7 +67,7 @@ public class Main {
                     System.err.println(e.getMessage());
                     System.err.println("Use --help to see the JLineup quick help.");
                 }
-                config = Config.defaultConfig();
+                config = Config.exampleConfig();
             }
         }
 
