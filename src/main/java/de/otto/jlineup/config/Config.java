@@ -117,23 +117,16 @@ public final class Config {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Config config = (Config) o;
-
-        if (urls != null ? !urls.equals(config.urls) : config.urls != null) return false;
-        if (browser != config.browser) return false;
-        if (globalWaitAfterPageLoad != null ? !globalWaitAfterPageLoad.equals(config.globalWaitAfterPageLoad) : config.globalWaitAfterPageLoad != null) return false;
-        return windowHeight != null ? windowHeight.equals(config.windowHeight) : config.windowHeight == null;
-
+        return Objects.equals(urls, config.urls) &&
+                browser == config.browser &&
+                Objects.equals(globalWaitAfterPageLoad, config.globalWaitAfterPageLoad) &&
+                Objects.equals(windowHeight, config.windowHeight);
     }
 
     @Override
     public int hashCode() {
-        int result = urls != null ? urls.hashCode() : 0;
-        result = 31 * result + (browser != null ? browser.hashCode() : 0);
-        result = 31 * result + (globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad.hashCode() : 0);
-        result = 31 * result + (windowHeight != null ? windowHeight.hashCode() : 0);
-        return result;
+        return Objects.hash(urls, browser, globalWaitAfterPageLoad, windowHeight);
     }
 
     @Override
