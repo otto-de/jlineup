@@ -16,20 +16,22 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class HTMLReportGeneratorTest {
+public class HTMLReportWriterTest {
 
-    private HTMLReportGenerator testee;
+    private HTMLReportWriter testee;
 
     @Mock
     private FileService fileServiceMock;
 
     private final List<ScreenshotComparisonResult> screenshotComparisonResultList =
             Collections.singletonList(new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "difference"));
+    private Summary summary = new Summary(true, 1d);
+    private Report report = new Report(summary, screenshotComparisonResultList);
 
     @Before
     public void setup() {
         initMocks(this);
-        testee = new HTMLReportGenerator(fileServiceMock);
+        testee = new HTMLReportWriter(fileServiceMock);
     }
 
     @Test
@@ -211,7 +213,7 @@ public class HTMLReportGeneratorTest {
     @Test
     public void shouldWriteReport() throws FileNotFoundException {
 
-        testee.writeReport(screenshotComparisonResultList);
+        testee.writeReport(report);
 
         Mockito.verify(fileServiceMock).writeHtmlReport(anyString());
     }

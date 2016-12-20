@@ -9,9 +9,9 @@ import org.mockito.Mockito;
 import static java.util.Collections.singletonList;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class JSONReportGeneratorTest {
+public class JSONReportWriterTest {
 
-    private JSONReportGenerator testee;
+    private JSONReportWriter testee;
 
     @Mock
     private FileService fileServiceMock;
@@ -19,7 +19,7 @@ public class JSONReportGeneratorTest {
     @Before
     public void setup() {
         initMocks(this);
-        testee = new JSONReportGenerator(fileServiceMock);
+        testee = new JSONReportWriter(fileServiceMock);
     }
 
     @Test
@@ -27,6 +27,7 @@ public class JSONReportGeneratorTest {
 
         ScreenshotComparisonResult screenshotComparisonResult =
                 new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "difference");
+        Report report = new Report(new Summary(false, 0d), singletonList(screenshotComparisonResult));
 
         String expectedString = "[\n" +
                 "  {\n" +
@@ -40,7 +41,7 @@ public class JSONReportGeneratorTest {
                 "  }\n" +
                 "]";
 
-        testee.writeComparisonReportAsJson(singletonList(screenshotComparisonResult));
+        testee.writeComparisonReportAsJson(report);
 
         Mockito.verify(fileServiceMock).writeJsonReport(expectedString);
     }

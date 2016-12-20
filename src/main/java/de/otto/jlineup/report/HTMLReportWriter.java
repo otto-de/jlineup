@@ -9,16 +9,16 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class HTMLReportGenerator {
+public class HTMLReportWriter {
 
     private FileService fileService;
 
-    public HTMLReportGenerator(FileService fileService) {
+    public HTMLReportWriter(FileService fileService) {
         this.fileService = fileService;
     }
 
-    public void writeReport(List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {
-        fileService.writeHtmlReport(renderReport("report", screenshotComparisonResults));
+    public void writeReport(Report report) throws FileNotFoundException {
+        fileService.writeHtmlReport(renderReport("report", report.screenshotComparisons));
     }
 
     String renderReport(String template, List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {

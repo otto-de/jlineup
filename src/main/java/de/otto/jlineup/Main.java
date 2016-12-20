@@ -9,10 +9,7 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
-import de.otto.jlineup.report.HTMLReportGenerator;
-import de.otto.jlineup.report.JSONReportGenerator;
-import de.otto.jlineup.report.ScreenshotComparisonResult;
-import de.otto.jlineup.report.ScreenshotsComparator;
+import de.otto.jlineup.report.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -104,13 +101,16 @@ public class Main {
             ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(parameters, config, fileService, imageService);
             List<ScreenshotComparisonResult> comparisonResults = screenshotsComparator.compare();
 
-            final JSONReportGenerator jsonReportGenerator = new JSONReportGenerator(fileService);
-            jsonReportGenerator.writeComparisonReportAsJson(comparisonResults);
+            final ReportGenerator reportGenerator = new ReportGenerator();
+            final Report report = reportGenerator.generateReport(comparisonResults);
 
-            final HTMLReportGenerator htmlReportGenerator = new HTMLReportGenerator(fileService);
-            htmlReportGenerator.writeReport(comparisonResults);
+            final JSONReportWriter jsonReportWriter = new JSONReportWriter(fileService);
+            jsonReportWriter.writeComparisonReportAsJson(report);
 
-            System.out.println("Sum of screenshot differences:\n" + comparisonResults.stream().mapToDouble(scr -> scr.difference).sum());
+            final HTMLReportWriter htmlReportWriter = new HTMLReportWriter(fileService);
+            htmlReportWriter.writeReport(report);
+
+            System.out.println("Sum of screenshot differences:\n" + report.summary.difference);
         }
     }
 
