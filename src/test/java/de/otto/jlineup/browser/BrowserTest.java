@@ -42,6 +42,8 @@ public class BrowserTest {
     private WebDriver.Timeouts webDriverTimeoutMock;
     @Mock
     private WebDriver.Window webDriverWindowMock;
+    @Mock
+    private BrowserUtils browserUtilsMock;
 
     @Mock
     private Parameters parameters;
@@ -57,8 +59,9 @@ public class BrowserTest {
         when(webDriverMock.manage()).thenReturn(webDriverOptionsMock);
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
+        when(browserUtilsMock.getWebDriverByConfig(any(Config.class))).thenReturn(webDriverMock);
         Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100, 1);
-        testee = new Browser(parameters, config, fileService);
+        testee = new Browser(parameters, config, fileService, browserUtilsMock);
     }
 
     @After
@@ -88,8 +91,9 @@ public class BrowserTest {
 
     private void assertSetDriverType(Config config, Class<? extends WebDriver> driverClass) {
         WebDriver driver = null;
+        BrowserUtils realBrowserUtils = new BrowserUtils();
         try {
-            driver = BrowserUtils.getWebDriverByConfig(config);
+            driver = realBrowserUtils.getWebDriverByConfig(config);
             assertTrue(driverClass.isInstance(driver));
         } finally {
             if (driver != null) {
@@ -183,7 +187,7 @@ public class BrowserTest {
                 ImmutableList.of(600), 5000, 0, 0, 3, "testJS();");
 
         Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100, 1);
-        testee = new Browser(parameters, config, fileService);
+        testee = new Browser(parameters, config, fileService, browserUtilsMock);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
         ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", 800, true, urlConfig);

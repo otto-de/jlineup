@@ -91,7 +91,8 @@ public class Main {
         */
 
         if (!parameters.isJustCompare()) {
-            try (Browser browser = new Browser(parameters, config, fileService)) {
+            BrowserUtils browserUtils = new BrowserUtils();
+            try (Browser browser = new Browser(parameters, config, fileService, browserUtils)) {
                 browser.takeScreenshots();
             }
         }

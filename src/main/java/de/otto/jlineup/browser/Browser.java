@@ -52,15 +52,17 @@ public class Browser implements AutoCloseable {
     final private Parameters parameters;
     final private Config config;
     final private FileService fileService;
+    final private BrowserUtils browserUtils;
 
     private ExecutorService threadPool;
     private ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Set<String>> cacheWarmupMarksMap = new ConcurrentHashMap<>();
 
-    public Browser(Parameters parameters, Config config, FileService fileService) {
+    public Browser(Parameters parameters, Config config, FileService fileService, BrowserUtils browserUtils) {
         this.parameters = parameters;
         this.config = config;
         this.fileService = fileService;
+        this.browserUtils = browserUtils;
         this.threadPool = Executors.newFixedThreadPool(config.threads);
     }
 
@@ -160,7 +162,7 @@ public class Browser implements AutoCloseable {
     }
 
     private WebDriver initializeWebDriver() {
-        final WebDriver driver = BrowserUtils.getWebDriverByConfig(config);
+        final WebDriver driver = browserUtils.getWebDriverByConfig(config);
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
         return driver;
     }
