@@ -11,12 +11,12 @@ apply plugin: 'project-report'
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'signing'
 
-def version() {
+static version() {
     return '1.1.2-SNAPSHOT'
 }
 
-def isReleaseBuild() {
-    return version().contains("SNAPSHOT") == false
+static isReleaseBuild() {
+    return !version().contains("SNAPSHOT")
 }
 
 ext.pomVersion = version()
@@ -158,7 +158,7 @@ uploadArchives {
     }
 }
 
-def String runCommand(def command) {
+static String runCommand(command) {
     Process proc = command.execute()
     def out = new StringBuffer()
     proc.consumeProcessOutputStream(out)
