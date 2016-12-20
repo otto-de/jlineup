@@ -16,15 +16,23 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
 import static de.otto.jlineup.file.FileService.BEFORE;
 
-public class Browser implements AutoCloseable{
+public class Browser implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Browser.class);
+
+    @Override
+    public void close() throws Exception {
+
+    }
 
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
@@ -43,15 +51,17 @@ public class Browser implements AutoCloseable{
 
     final private Parameters parameters;
     final private Config config;
-    final private WebDriver driver;
     final private FileService fileService;
 
-    public Browser(Parameters parameters, Config config, WebDriver driver, FileService fileService) {
+    private ExecutorService threadPool;
+    private ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Set<String>> cacheWarmupMarksMap = new ConcurrentHashMap<>();
+
+    public Browser(Parameters parameters, Config config, FileService fileService) {
         this.parameters = parameters;
         this.config = config;
-        this.driver = driver;
         this.fileService = fileService;
-        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+        this.threadPool = Executors.newFixedThreadPool(config.threads);
     }
 
     public void takeScreenshots() throws IOException, InterruptedException {
@@ -60,85 +70,103 @@ public class Browser implements AutoCloseable{
         takeScreenshots(screenshotContextList);
     }
 
-    @Override
-    public void close() {
-        if (driver != null) {
-            driver.close();
-            driver.quit();
+    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException {
+
+        for (final ScreenshotContext screenshotContext : screenshotContextList) {
+            threadPool.submit(() -> {
+                try {
+                    takeScreenshotsForContext(screenshotContext);
+                } catch (InterruptedException | IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+        threadPool.shutdown();
+        threadPool.awaitTermination(15, TimeUnit.MINUTES);
+
+        webDrivers.values().forEach(WebDriver::quit);
+
+    }
+
+    private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException {
+
+        final WebDriver localDriver = getWebDriver();
+
+        localDriver.manage().window().setPosition(new Point(0, 0));
+        localDriver.manage().window().setSize(new Dimension(screenshotContext.windowWidth, config.windowHeight));
+
+        final String url = buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping);
+        final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
+
+        if (areThereCookiesOrLocalStorage(screenshotContext)) {
+            //get root page from url to be able to set cookies afterwards
+            //if you set cookies before getting the page once, it will fail
+            LOG.info(String.format("Getting root url: %s to set cookies and local storage", rootUrl));
+            localDriver.get(rootUrl);
+
+            //set cookies and local storage
+            setCookies(screenshotContext);
+            setLocalStorage(screenshotContext);
+        }
+
+        //now get the real page
+        LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.windowWidth, config.windowHeight));
+        localDriver.get(url);
+
+        checkBrowserCacheWarmup(screenshotContext, url, localDriver);
+
+        Long pageHeight = getPageHeight();
+        final Long viewportHeight = getViewportHeight();
+
+        if (screenshotContext.urlConfig.waitAfterPageLoad > 0) {
+            try {
+                LOG.debug(String.format("Waiting for %d seconds (wait-after-page-load)", screenshotContext.urlConfig.waitAfterPageLoad));
+                Thread.sleep(screenshotContext.urlConfig.waitAfterPageLoad * 1000);
+            } catch (InterruptedException e) {
+                LOG.error(e.getMessage(), e);
+            }
+        }
+
+        if (config.globalWaitAfterPageLoad > 0) {
+            LOG.debug(String.format("Waiting for %s seconds (global wait-after-page-load)", config.globalWaitAfterPageLoad));
+            Thread.sleep(Math.round(config.globalWaitAfterPageLoad * 1000));
+        }
+
+        LOG.debug("Page height before scrolling: {}", pageHeight);
+        LOG.debug("Viewport height of browser window: {}", viewportHeight);
+
+        scrollToTop();
+
+        //Execute custom javascript if existing
+        executeJavaScript(screenshotContext.urlConfig.javaScript);
+
+        for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += viewportHeight) {
+            BufferedImage currentScreenshot = takeScreenshot();
+            currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
+            fileService.writeScreenshot(currentScreenshot, screenshotContext.url,
+                    screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
+            //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
+            //This is subject to change because W3C standard wants viewport screenshots
+            if (config.browser == Type.PHANTOMJS) {
+                break;
+            }
+            LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
+            scrollBy(viewportHeight.intValue());
+
+            //Refresh to check if page grows during scrolling
+            pageHeight = getPageHeight();
         }
     }
 
-    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException {
+    private WebDriver initializeWebDriver() {
+        final WebDriver driver = BrowserUtils.getWebDriverByConfig(config);
+        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+        return driver;
+    }
 
-        final Set<String> browserCacheWarmupMarks = new HashSet<>();
-
-        for (final ScreenshotContext screenshotContext : screenshotContextList) {
-
-            driver.manage().window().setPosition(new Point(0, 0));
-            driver.manage().window().setSize(new Dimension(screenshotContext.windowWidth, config.windowHeight));
-
-            final String url = buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping);
-            final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
-
-            if (areThereCookiesOrLocalStorage(screenshotContext)) {
-                //get root page from url to be able to set cookies afterwards
-                //if you set cookies before getting the page once, it will fail
-                LOG.info(String.format("Getting root url: %s to set cookies and local storage", rootUrl));
-                driver.get(rootUrl);
-
-                //set cookies and local storage
-                setCookies(screenshotContext);
-                setLocalStorage(screenshotContext);
-            }
-
-            //now get the real page
-            LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.windowWidth, config.windowHeight));
-            driver.get(url);
-
-            checkBrowserCacheWarmup(browserCacheWarmupMarks, screenshotContext, url, driver);
-
-            Long pageHeight = getPageHeight();
-            final Long viewportHeight = getViewportHeight();
-
-            if (screenshotContext.urlConfig.waitAfterPageLoad > 0) {
-                try {
-                    LOG.debug(String.format("Waiting for %d seconds (wait-after-page-load)", screenshotContext.urlConfig.waitAfterPageLoad));
-                    Thread.sleep(screenshotContext.urlConfig.waitAfterPageLoad * 1000);
-                } catch (InterruptedException e) {
-                    LOG.error(e.getMessage(), e);
-                }
-            }
-
-            if (config.globalWaitAfterPageLoad > 0) {
-                LOG.debug(String.format("Waiting for %s seconds (global wait-after-page-load)", config.globalWaitAfterPageLoad));
-                Thread.sleep(Math.round(config.globalWaitAfterPageLoad * 1000));
-            }
-
-            LOG.debug("Page height before scrolling: {}", pageHeight);
-            LOG.debug("Viewport height of browser window: {}", viewportHeight);
-
-            scrollToTop();
-
-            //Execute custom javascript if existing
-            executeJavaScript(screenshotContext.urlConfig.javaScript);
-
-            for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += viewportHeight) {
-                BufferedImage currentScreenshot = takeScreenshot();
-                currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
-                fileService.writeScreenshot(currentScreenshot, screenshotContext.url,
-                        screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
-                //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
-                //This is subject to change because W3C standard wants viewport screenshots
-                if (config.browser == Type.PHANTOMJS) {
-                    break;
-                }
-                LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
-                scrollBy(viewportHeight.intValue());
-
-                //Refresh to check if page grows during scrolling
-                pageHeight = getPageHeight();
-            }
-        }
+    private Set<String> initializeCacheWarmupMarks() {
+        return new HashSet<>();
     }
 
     private boolean areThereCookiesOrLocalStorage(ScreenshotContext screenshotContext) {
@@ -157,12 +185,15 @@ public class Browser implements AutoCloseable{
         }
     }
 
-    private void checkBrowserCacheWarmup(Set<String> cacheWarmupMarks, ScreenshotContext screenshotContext, String url, WebDriver driver) {
+    private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) {
         int warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > Config.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
-            if (!cacheWarmupMarks.contains(url)) {
+
+            final Set<String> browserCacheWarmupMarks = cacheWarmupMarksMap.computeIfAbsent(Thread.currentThread().getName(), k -> initializeCacheWarmupMarks());
+
+            if (!browserCacheWarmupMarks.contains(url)) {
                 LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
-                cacheWarmupMarks.add(url);
+                    browserCacheWarmupMarks.add(url);
                 try {
                     Thread.sleep(warmupTime * 1000);
                 } catch (InterruptedException e) {
@@ -175,7 +206,7 @@ public class Browser implements AutoCloseable{
     }
 
     private BufferedImage takeScreenshot() throws IOException {
-        File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        File screenshot = ((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.FILE);
         return ImageIO.read(screenshot);
     }
 
@@ -186,7 +217,7 @@ public class Browser implements AutoCloseable{
             final long beginTime = System.currentTimeMillis();
             int sameCounter = 0;
             while (sameCounter < 10 && !timeIsOver(beginTime, waitForNoAnimation)) {
-                screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                screenshot = ((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.FILE);
                 BufferedImage newScreenshot = ImageIO.read(screenshot);
                 if (ImageService.bufferedImagesEqualQuick(newScreenshot, currentScreenshot)) {
                     sameCounter++;
@@ -204,12 +235,12 @@ public class Browser implements AutoCloseable{
     }
 
     private Long getPageHeight() {
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         return (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
     }
 
     private Long getViewportHeight() {
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         return (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
     }
 
@@ -217,20 +248,20 @@ public class Browser implements AutoCloseable{
         if (javaScript == null) {
             return;
         }
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(javaScript);
         Thread.sleep(50);
     }
 
     void scrollBy(int viewportHeight) throws InterruptedException {
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(String.format(JS_SCROLL_CALL, viewportHeight));
         //Sleep some milliseconds to give scrolling time before the next screenshot happens
         Thread.sleep(50);
     }
 
     void scrollToTop() throws InterruptedException {
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(JS_SCROLL_TO_TOP_CALL);
         //Sleep some milliseconds to give scrolling time before the next screenshot happens
         Thread.sleep(50);
@@ -243,7 +274,7 @@ public class Browser implements AutoCloseable{
     void setLocalStorage(Map<String, String> localStorage) {
         if (localStorage == null) return;
 
-        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         for (Map.Entry<String, String> localStorageEntry : localStorage.entrySet()) {
 
             final String entry = localStorageEntry.getValue().replace("'", "\"");
@@ -261,13 +292,13 @@ public class Browser implements AutoCloseable{
             if (cookie.path != null) cookieBuilder.path(cookie.path);
             if (cookie.expiry != null) cookieBuilder.expiresOn(cookie.expiry);
             cookieBuilder.isSecure(cookie.secure);
-            driver.manage().addCookie(cookieBuilder.build());
+            getWebDriver().manage().addCookie(cookieBuilder.build());
         }
     }
 
     void setCookiesPhantomJS(List<Cookie> cookies) {
         if (cookies == null) return;
-        for(Cookie cookie : cookies) {
+        for (Cookie cookie : cookies) {
             StringBuilder cookieCallBuilder = new StringBuilder(String.format("document.cookie = '%s=%s;", cookie.name, cookie.value));
             if (cookie.path != null) {
                 cookieCallBuilder.append("path=");
@@ -293,7 +324,11 @@ public class Browser implements AutoCloseable{
             }
             cookieCallBuilder.append("'");
 
-            ((JavascriptExecutor) driver).executeScript(cookieCallBuilder.toString());
+            ((JavascriptExecutor) getWebDriver()).executeScript(cookieCallBuilder.toString());
         }
+    }
+
+    private WebDriver getWebDriver() {
+        return webDrivers.computeIfAbsent(Thread.currentThread().getName(), k -> initializeWebDriver());
     }
 }

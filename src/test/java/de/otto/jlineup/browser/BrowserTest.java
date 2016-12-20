@@ -57,12 +57,12 @@ public class BrowserTest {
         when(webDriverMock.manage()).thenReturn(webDriverOptionsMock);
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
-        Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100);
-        testee = new Browser(parameters, config, webDriverMock, fileService);
+        Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100, 1);
+        testee = new Browser(parameters, config, fileService);
     }
 
     @After
-    public void cleanup() throws IOException {
+    public void cleanup() throws Exception {
         if (testee != null) {
             testee.close();
         }
@@ -70,19 +70,19 @@ public class BrowserTest {
 
     @Test
     public void shouldGetFirefoxDriver() throws InterruptedException {
-        final Config config = new Config(null, FIREFOX, 5f, 800);
+        final Config config = new Config(null, FIREFOX, 5f, 800, 1);
         assertSetDriverType(config, FirefoxDriver.class);
     }
 
     @Test
     public void shouldGetChromeDriver() throws InterruptedException {
-        final Config config = new Config(null, CHROME, 5f, 800);
+        final Config config = new Config(null, CHROME, 5f, 800, 1);
         assertSetDriverType(config, ChromeDriver.class);
     }
 
     @Test
     public void shouldGetPhantomJSDriver() throws InterruptedException {
-        final Config config = new Config(null, PHANTOMJS, 5f, 800);
+        final Config config = new Config(null, PHANTOMJS, 5f, 800, 1);
         assertSetDriverType(config, PhantomJSDriver.class);
     }
 
@@ -182,8 +182,8 @@ public class BrowserTest {
                 ImmutableMap.of(), ImmutableMap.of("key", "value"),
                 ImmutableList.of(600), 5000, 0, 0, 3, "testJS();");
 
-        Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100);
-        testee = new Browser(parameters, config, webDriverMock, fileService);
+        Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100, 1);
+        testee = new Browser(parameters, config, fileService);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
         ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", 800, true, urlConfig);

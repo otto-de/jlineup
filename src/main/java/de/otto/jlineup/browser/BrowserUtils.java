@@ -6,14 +6,11 @@ import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.MarionetteDriverManager;
 import io.github.bonigarcia.wdm.PhantomJsDriverManager;
-import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.MarionetteDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +32,7 @@ public class BrowserUtils {
         return buildUrl(url, path);
     }
 
-    public static String buildUrl(String url, String path) {
+    static String buildUrl(String url, String path) {
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
@@ -45,7 +42,7 @@ public class BrowserUtils {
         return url + path;
     }
 
-    public static WebDriver getWebDriverByConfig(Config config) {
+    static WebDriver getWebDriverByConfig(Config config) {
         WebDriver driver;
         switch (config.browser) {
             case FIREFOX:
@@ -71,7 +68,7 @@ public class BrowserUtils {
         return driver;
     }
 
-    public static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(Parameters parameters, Config config, boolean before) {
+    static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(Parameters parameters, Config config, boolean before) {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
         Map<String, UrlConfig> urls = config.urls;
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {

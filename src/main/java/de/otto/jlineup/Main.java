@@ -12,12 +12,11 @@ import de.otto.jlineup.image.ImageService;
 import de.otto.jlineup.report.*;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws Exception {
 
         final Parameters parameters = new Parameters();
         final JCommander jCommander = new JCommander(parameters, args);
@@ -92,7 +91,7 @@ public class Main {
         */
 
         if (!parameters.isJustCompare()) {
-            try (Browser browser = new Browser(parameters, config, BrowserUtils.getWebDriverByConfig(config), fileService)) {
+            try (Browser browser = new Browser(parameters, config, fileService)) {
                 browser.takeScreenshots();
             }
         }

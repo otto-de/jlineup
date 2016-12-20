@@ -51,7 +51,8 @@ public class ScreenshotsComparatorTest {
                         new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, null)),
                 Browser.Type.CHROME,
                 0f,
-                WINDOW_HEIGHT);
+                WINDOW_HEIGHT,
+                1);
 
         testee = new ScreenshotsComparator(parameters, config, fileService, imageService);
     }

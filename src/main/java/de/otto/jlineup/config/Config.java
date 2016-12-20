@@ -30,6 +30,7 @@ public final class Config {
     public static final int DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
     public static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
     public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
+    public static final int DEFAULT_THREADS = 1;
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
@@ -39,6 +40,7 @@ public final class Config {
     public final Integer windowHeight;
 
     private final static Gson gson = new Gson();
+    public int threads;
 
     /* Used by GSON to set default values */
     public Config() {
@@ -46,14 +48,15 @@ public final class Config {
         browser = DEFAULT_BROWSER;
         globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         windowHeight = DEFAULT_WINDOW_HEIGHT;
-
+        threads = DEFAULT_THREADS;
     }
 
-    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer windowHeight) {
+    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer windowHeight, final Integer threads) {
         this.urls = urls;
         this.browser = browser != null ? browser : DEFAULT_BROWSER;
         this.globalWaitAfterPageLoad = globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad : DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
+        this.threads = threads != null ? threads : DEFAULT_THREADS;
     }
 
     public static Config defaultConfig() {
@@ -61,7 +64,7 @@ public final class Config {
     }
 
     public static Config defaultConfig(String url) {
-        return new Config(ImmutableMap.of(url, new UrlConfig()), null, null, null);
+        return new Config(ImmutableMap.of(url, new UrlConfig()), null, null, null, null);
     }
 
     public static Config exampleConfig() {
@@ -83,7 +86,8 @@ public final class Config {
                 )),
                 Browser.Type.PHANTOMJS,
                 DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD,
-                DEFAULT_WINDOW_HEIGHT
+                DEFAULT_WINDOW_HEIGHT,
+                DEFAULT_THREADS
         );
     }
 
