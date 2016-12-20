@@ -31,7 +31,8 @@ public class Browser implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-
+        webDrivers.values().forEach(WebDriver::quit);
+        webDrivers.clear();
     }
 
     public enum Type {
@@ -54,6 +55,7 @@ public class Browser implements AutoCloseable {
     final private FileService fileService;
     final private BrowserUtils browserUtils;
 
+    /* Every thread has it's own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
     private ExecutorService threadPool;
     private ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Set<String>> cacheWarmupMarksMap = new ConcurrentHashMap<>();
@@ -73,22 +75,18 @@ public class Browser implements AutoCloseable {
     }
 
     void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException {
-
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             threadPool.submit(() -> {
                 try {
                     takeScreenshotsForContext(screenshotContext);
                 } catch (InterruptedException | IOException e) {
                     e.printStackTrace();
+                    System.exit(1);
                 }
             });
         }
-
         threadPool.shutdown();
         threadPool.awaitTermination(15, TimeUnit.MINUTES);
-
-        webDrivers.values().forEach(WebDriver::quit);
-
     }
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException {

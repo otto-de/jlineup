@@ -46,6 +46,7 @@ public class Main {
         }
 
         Config config;
+        boolean exit = false;
         if (parameters.getUrl() != null) {
             String url = BrowserUtils.prependHTTPIfNotThereAndToLowerCase(parameters.getUrl());
             config = Config.defaultConfig(url);
@@ -64,6 +65,7 @@ public class Main {
                     System.err.println("Use --help to see the JLineup quick help.");
                 }
                 config = Config.exampleConfig();
+                exit = true;
             }
         }
 
@@ -72,7 +74,7 @@ public class Main {
             System.exit(0);
         }
 
-        if (Config.defaultConfig().equals(config)) {
+        if (exit) {
             System.exit(1);
         }
 
