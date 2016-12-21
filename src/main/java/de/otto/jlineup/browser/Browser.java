@@ -30,11 +30,7 @@ public class Browser implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(Browser.class);
     public static final int THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
 
-    @Override
-    public void close() throws Exception {
-        webDrivers.values().forEach(WebDriver::quit);
-        webDrivers.clear();
-    }
+
 
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
@@ -42,31 +38,37 @@ public class Browser implements AutoCloseable {
         @SerializedName(value = "Chrome", alternate = {"chrome", "CHROME"})
         CHROME,
         @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
-        PHANTOMJS
+        PHANTOMJS;
     }
-
     static final String JS_DOCUMENT_HEIGHT_CALL = "return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );";
+
     static final String JS_CLIENT_VIEWPORT_HEIGHT_CALL = "return document.documentElement.clientHeight";
     static final String JS_SET_LOCAL_STORAGE_CALL = "localStorage.setItem('%s','%s')";
     static final String JS_SCROLL_CALL = "window.scrollBy(0,%d)";
     static final String JS_SCROLL_TO_TOP_CALL = "window.scrollTo(0, 0);";
-
     final private Parameters parameters;
+
     final private Config config;
     final private FileService fileService;
     final private BrowserUtils browserUtils;
-
     /* Every thread has it's own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
     private ExecutorService threadPool;
+
     private ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Set<String>> cacheWarmupMarksMap = new ConcurrentHashMap<>();
-
     public Browser(Parameters parameters, Config config, FileService fileService, BrowserUtils browserUtils) {
         this.parameters = parameters;
         this.config = config;
         this.fileService = fileService;
         this.browserUtils = browserUtils;
         this.threadPool = Executors.newFixedThreadPool(config.threads);
+    }
+
+    @Override
+    public void close() throws Exception {
+        webDrivers.values().forEach(WebDriver::close);
+        webDrivers.values().forEach(WebDriver::quit);
+        webDrivers.clear();
     }
 
     public void takeScreenshots() throws IOException, InterruptedException {
