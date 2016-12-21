@@ -29,14 +29,14 @@ Open a terminal, navigate to the place where your jlineup.jar lives and type
 
     java -jar jlineup.jar --help
   
-to get some idea how to use it.  
+to get some idea how to use it.
 
 ## Browser compatibility
 
-JLineup 1.1.1 was tested successfully with
+JLineup 1.2.0 was tested successfully with
 
-* Chrome 54.0.x
-* Firefox 50.0
+* Chrome 55.0.x
+* Firefox 50.1.0
 * PhantomJS 2.1.1 (auto-downloaded by JLineup if not installed)
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.

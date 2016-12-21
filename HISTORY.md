@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 1.2.0
+* It's possible to use multiple threads and browser instances to speed up
+
 ## Release 1.1.2
 * --print-config now shows full example configuration
 
