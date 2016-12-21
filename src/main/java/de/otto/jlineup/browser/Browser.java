@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
@@ -75,9 +76,11 @@ public class Browser implements AutoCloseable {
     }
 
     void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException {
+        final AtomicInteger counter = new AtomicInteger();
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             threadPool.submit(() -> {
                 try {
+                    Thread.sleep(counter.getAndAdd(300));
                     takeScreenshotsForContext(screenshotContext);
                 } catch (InterruptedException | IOException e) {
                     e.printStackTrace();
