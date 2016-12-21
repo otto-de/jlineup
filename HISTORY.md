@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 1.2.2
+* Use close before quitting webdrivers
+
 ## Release 1.2.1
 * Fix for browser startup shuffle time
 
