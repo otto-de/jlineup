@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
@@ -29,6 +28,7 @@ import static de.otto.jlineup.file.FileService.BEFORE;
 public class Browser implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Browser.class);
+    public static final int THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
 
     @Override
     public void close() throws Exception {
@@ -76,17 +76,17 @@ public class Browser implements AutoCloseable {
     }
 
     void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException {
-        final AtomicInteger counter = new AtomicInteger();
+        int counter = 0;
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             threadPool.submit(() -> {
                 try {
-                    Thread.sleep(counter.getAndAdd(300));
                     takeScreenshotsForContext(screenshotContext);
                 } catch (InterruptedException | IOException e) {
                     e.printStackTrace();
                     System.exit(1);
                 }
             });
+            Thread.sleep(counter += THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS);
         }
         threadPool.shutdown();
         threadPool.awaitTermination(15, TimeUnit.MINUTES);
