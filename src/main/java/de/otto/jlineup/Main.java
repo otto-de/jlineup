@@ -84,7 +84,7 @@ public class Main {
             fileService.createOrClearReportDirectory();
         }
 
-        System.out.println("Running JLineup with step '" + parameters.getStep() + "'.");
+        System.out.printf("Running JLineup [%s] with step '%s'.%n", getVersion(), parameters.getStep());
 
         /* Currently - firefox 49.0 is running fine
         if (config.browser == Browser.Type.FIREFOX) {
