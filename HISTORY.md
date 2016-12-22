@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 1.2.3
+* Move mouse pointer to 0,0 before making screenshots -
+ some mouseover effects could affect the screenshots otherwise
+
 ## Release 1.2.2
 * Use close before quitting webdrivers
 
