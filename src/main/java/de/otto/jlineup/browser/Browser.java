@@ -7,15 +7,19 @@ import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import org.openqa.selenium.*;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -97,6 +101,8 @@ public class Browser implements AutoCloseable {
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException {
 
         final WebDriver localDriver = getWebDriver();
+
+        moveMouseToZeroZero();
 
         localDriver.manage().window().setPosition(new Point(0, 0));
         localDriver.manage().window().setSize(new Dimension(screenshotContext.windowWidth, config.windowHeight));
@@ -335,5 +341,15 @@ public class Browser implements AutoCloseable {
 
     private WebDriver getWebDriver() {
         return webDrivers.computeIfAbsent(Thread.currentThread().getName(), k -> initializeWebDriver());
+    }
+
+    private void moveMouseToZeroZero() {
+        Robot robot = null;
+        try {
+            robot = new Robot();
+            robot.mouseMove(0,0);
+        } catch (AWTException e) {
+            LOG.error("Can't move mouse to 0,0", e);
+        }
     }
 }
