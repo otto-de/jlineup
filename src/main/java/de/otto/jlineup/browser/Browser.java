@@ -165,7 +165,7 @@ public class Browser implements AutoCloseable {
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
             scrollBy(viewportHeight.intValue());
             if (screenshotContext.urlConfig.waitAfterScroll > 0) {
-                Thread.sleep(screenshotContext.urlConfig.waitAfterScroll);
+                TimeUnit.SECONDS.sleep(screenshotContext.urlConfig.waitAfterScroll);
             }
 
             //Refresh to check if page grows during scrolling
