@@ -60,7 +60,7 @@ public class HTMLReportWriterTest {
                 "" + n +
                 "        .footer {" + n +
                 "            margin-top: 25px;" + n +
-                "            font-size: 8px;" + n +
+                "            font-size: 10px;" + n +
                 "            color: grey;" + n +
                 "        }" + n +
                 "" + n +

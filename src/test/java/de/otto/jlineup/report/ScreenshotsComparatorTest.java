@@ -48,7 +48,7 @@ public class ScreenshotsComparatorTest {
         config = new Config(
                 ImmutableMap.of(
                         "http://url",
-                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, null)),
+                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null)),
                 Browser.Type.CHROME,
                 0f,
                 WINDOW_HEIGHT,

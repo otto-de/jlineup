@@ -61,7 +61,7 @@ public class BrowserUtils {
                 break;
             case PHANTOMJS:
             default:
-                PhantomJsDriverManager.getInstance().setup();
+                PhantomJsDriverManager.getInstance().setup("2.1.1");
                 driver = new PhantomJSDriver();
                 break;
         }

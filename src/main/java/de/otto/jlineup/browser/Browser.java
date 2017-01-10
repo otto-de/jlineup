@@ -33,7 +33,7 @@ public class Browser implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Browser.class);
     public static final int THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
-
+    public static final int DEFAULT_SLEEP_AFTER_SCROLL_MILLIS = 50;
 
 
     public enum Type {
@@ -164,6 +164,9 @@ public class Browser implements AutoCloseable {
             }
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
             scrollBy(viewportHeight.intValue());
+            if (screenshotContext.urlConfig.waitAfterScroll > 0) {
+                Thread.sleep(screenshotContext.urlConfig.waitAfterScroll);
+            }
 
             //Refresh to check if page grows during scrolling
             pageHeight = getPageHeight();
@@ -268,7 +271,7 @@ public class Browser implements AutoCloseable {
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(String.format(JS_SCROLL_CALL, viewportHeight));
         //Sleep some milliseconds to give scrolling time before the next screenshot happens
-        Thread.sleep(50);
+        Thread.sleep(DEFAULT_SLEEP_AFTER_SCROLL_MILLIS);
     }
 
     void scrollToTop() throws InterruptedException {

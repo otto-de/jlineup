@@ -32,6 +32,9 @@ public class UrlConfig {
     @SerializedName("wait-after-page-load")
     public final int waitAfterPageLoad;
 
+    @SerializedName("wait-after-scroll")
+    public final int waitAfterScroll;
+
     @SerializedName("wait-for-no-animation-after-scroll")
     public final float waitForNoAnimationAfterScroll;
 
@@ -50,13 +53,14 @@ public class UrlConfig {
         this.localStorage = null;
         this.maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
         this.waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
+        this.waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
         this.waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
         this.envMapping = null;
         this.warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
         this.javaScript = null;
     }
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript) {
         this.paths = paths != null ? paths : DEFAULT_PATHS;
         this.windowWidths = windowWidths != null ? windowWidths : DEFAULT_WINDOW_WIDTHS;
         this.maxDiff = maxDiff;
@@ -65,6 +69,7 @@ public class UrlConfig {
         this.localStorage = localStorage;
         this.maxScrollHeight = maxScrollHeight;
         this.waitAfterPageLoad = waitAfterPageLoad;
+        this.waitAfterScroll = waitAfterScroll;
         this.waitForNoAnimationAfterScroll = waitForNoAnimationAfterScroll;
         this.warmupBrowserCacheTime = warmupBrowserCacheTime;
         this.javaScript = javaScript;
@@ -81,6 +86,7 @@ public class UrlConfig {
                 ", windowWidths=" + windowWidths +
                 ", maxScrollHeight=" + maxScrollHeight +
                 ", waitAfterPageLoad=" + waitAfterPageLoad +
+                ", waitAfterScroll=" + waitAfterScroll +
                 ", waitForNoAnimationAfterScroll=" + waitForNoAnimationAfterScroll +
                 ", warmupBrowserCacheTime=" + warmupBrowserCacheTime +
                 ", javaScript='" + javaScript + '\'' +
@@ -95,6 +101,7 @@ public class UrlConfig {
         return Float.compare(urlConfig.maxDiff, maxDiff) == 0 &&
                 maxScrollHeight == urlConfig.maxScrollHeight &&
                 waitAfterPageLoad == urlConfig.waitAfterPageLoad &&
+                waitAfterScroll == urlConfig.waitAfterScroll &&
                 Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 &&
                 warmupBrowserCacheTime == urlConfig.warmupBrowserCacheTime &&
                 Objects.equals(paths, urlConfig.paths) &&
@@ -107,7 +114,7 @@ public class UrlConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, javaScript);
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, javaScript);
     }
 
 }

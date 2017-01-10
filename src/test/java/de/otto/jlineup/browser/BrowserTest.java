@@ -184,7 +184,7 @@ public class BrowserTest {
                 0f,
                 ImmutableList.of(new Cookie("testcookiename", "testcookievalue")),
                 ImmutableMap.of(), ImmutableMap.of("key", "value"),
-                ImmutableList.of(600), 5000, 0, 0, 3, "testJS();");
+                ImmutableList.of(600), 5000, 0, 0, 0, 3, "testJS();");
 
         Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100, 1);
         testee = new Browser(parameters, config, fileService, browserUtilsMock);

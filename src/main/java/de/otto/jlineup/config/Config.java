@@ -28,6 +28,7 @@ public final class Config {
     public static final List<String> DEFAULT_PATHS = ImmutableList.of("/");
     public static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
     public static final int DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
+    public static final int DEFAULT_WAIT_AFTER_SCROLL = 0;
     public static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
     public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
     public static final int DEFAULT_THREADS = 1;
@@ -80,6 +81,7 @@ public final class Config {
                         ImmutableList.of(600,800,1000),
                         DEFAULT_MAX_SCROLL_HEIGHT,
                         DEFAULT_WAIT_AFTER_PAGE_LOAD,
+                        DEFAULT_WAIT_AFTER_SCROLL,
                         DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL,
                         DEFAULT_WARMUP_BROWSER_CACHE_TIME,
                         "console.log('This is JavaScript!')"
