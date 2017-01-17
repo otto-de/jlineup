@@ -12,7 +12,7 @@ apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'signing'
 
 static version() {
-    return '1.2.4-SNAPSHOT'
+    return '1.2.4'
 }
 
 static isReleaseBuild() {
