@@ -1,13 +1,14 @@
 package de.otto.jlineup.browser;
 
 import com.google.gson.annotations.SerializedName;
+import de.otto.jlineup.Util;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
-import org.openqa.selenium.*;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.*;
 import org.openqa.selenium.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,6 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
@@ -65,7 +65,7 @@ public class Browser implements AutoCloseable {
         this.config = config;
         this.fileService = fileService;
         this.browserUtils = browserUtils;
-        this.threadPool = Executors.newFixedThreadPool(config.threads);
+        this.threadPool = Util.createThreadPool(config.threads);
     }
 
     @Override
