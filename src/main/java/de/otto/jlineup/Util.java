@@ -38,7 +38,7 @@ public class Util {
     public static ExecutorService createThreadPool(int threads) {
         final ThreadFactory factory = target -> {
             final Thread thread = new Thread(target);
-            LOG.debug("Creating new worker thread");
+            LOG.debug("Create new worker thread");
             thread.setUncaughtExceptionHandler((t, e) -> LOG.error("Uncaught Exception", e));
             return thread;
         };
