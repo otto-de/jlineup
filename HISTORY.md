@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 1.2.5
+* Log uncaught Exceptions in Threadpool
+
 ## Release 1.2.4
 * New wait after scroll option
 
