@@ -77,14 +77,17 @@ public class HTMLReportWriter {
             return url;
         }
 
+        @UsedInTemplate
         public int getWidth() {
             return width;
         }
 
+        @UsedInTemplate
         public List<ScreenshotComparisonResult> getResults() {
             return results;
         }
 
+        @UsedInTemplate
         public String getShortenedUrl() {
             String shortenedUrl = url;
             if (url.length() > 25) {
@@ -93,6 +96,7 @@ public class HTMLReportWriter {
             return shortenedUrl;
         }
 
+        @UsedInTemplate
         public boolean isSuccess()
         {
             for(ScreenshotComparisonResult result : results) {

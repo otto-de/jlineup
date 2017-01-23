@@ -65,7 +65,7 @@ public class Browser implements AutoCloseable {
         this.config = config;
         this.fileService = fileService;
         this.browserUtils = browserUtils;
-        this.threadPool = Util.createThreadPool(config.threads);
+        this.threadPool = Util.createThreadPool(config.threads, "BrowserThread");
     }
 
     @Override
