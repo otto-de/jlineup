@@ -26,8 +26,8 @@ public class JSONReportWriterV1Test {
     public void shouldWriteComparisonReportAsJson() throws Exception {
 
         ScreenshotComparisonResult screenshotComparisonResult =
-                new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "difference");
-        Report report = new Report(new Summary(false, 0d), singletonList(screenshotComparisonResult));
+                new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum");
+        Report report = new Report(new Summary(false, 0d, 0d), singletonList(screenshotComparisonResult));
 
         String expectedString = "[\n" +
                 "  {\n" +
@@ -37,7 +37,7 @@ public class JSONReportWriterV1Test {
                 "    \"difference\": 0.0,\n" +
                 "    \"screenshotBeforeFileName\": \"before\",\n" +
                 "    \"screenshotAfterFileName\": \"after\",\n" +
-                "    \"differenceImageFileName\": \"difference\"\n" +
+                "    \"differenceImageFileName\": \"differenceSum\"\n" +
                 "  }\n" +
                 "]";
 

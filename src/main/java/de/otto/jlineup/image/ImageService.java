@@ -69,11 +69,11 @@ public class ImageService {
         final int maxPixelCount = maxWidth * maxHeight;
         final int minPixelCount = min(pixelCount1, pixelCount2);
 
-        // compare img1 to img2, pixel by pixel. If different, highlight difference image pixel
+        // compare img1 to img2, pixel by pixel. If different, highlight differenceSum image pixel
         int diffPixelCounter = 0;
         final int[] differenceImagePixels = new int[maxPixelCount];
         //i1 and i2 are the indices in the image pixel arrays of image1pixels and image2pixels
-        //iD is the index of the difference image
+        //iD is the index of the differenceSum image
         for (int i1=0, i2=0, iD=0; iD < maxPixelCount;) {
             //mark same pixels with same_color and different pixels in highlight_color
             if (image1Pixels[i1] != image2Pixels[i2]) {

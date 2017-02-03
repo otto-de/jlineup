@@ -70,7 +70,7 @@ public class ScreenshotComparisonResult {
                 "url='" + url + '\'' +
                 ", width=" + width +
                 ", verticalScrollPosition=" + verticalScrollPosition +
-                ", difference=" + difference +
+                ", differenceSum=" + difference +
                 ", screenshotBeforeFileName='" + screenshotBeforeFileName + '\'' +
                 ", screenshotAfterFileName='" + screenshotAfterFileName + '\'' +
                 ", differenceImageFileName='" + differenceImageFileName + '\'' +

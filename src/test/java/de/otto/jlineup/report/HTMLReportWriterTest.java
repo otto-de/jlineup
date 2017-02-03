@@ -24,8 +24,8 @@ public class HTMLReportWriterTest {
     private FileService fileServiceMock;
 
     private final List<ScreenshotComparisonResult> screenshotComparisonResultList =
-            Collections.singletonList(new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "difference"));
-    private Summary summary = new Summary(true, 1d);
+            Collections.singletonList(new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum"));
+    private Summary summary = new Summary(true, 1d, 0.5d);
     private Report report = new Report(summary, screenshotComparisonResultList);
 
     @Before
@@ -187,8 +187,8 @@ public class HTMLReportWriterTest {
                 "                    " + n +
                 "                </td>" + n +
                 "                <td>" + n +
-                "                    <a href=\"difference\" target=\"_blank\">" + n +
-                "                        <img src=\"difference\" style=\"max-width: 350px;\" />" + n +
+                "                    <a href=\"differenceSum\" target=\"_blank\">" + n +
+                "                        <img src=\"differenceSum\" style=\"max-width: 350px;\" />" + n +
                 "                    </a>" + n +
                 "                    " + n +
                 "                </td>" + n +

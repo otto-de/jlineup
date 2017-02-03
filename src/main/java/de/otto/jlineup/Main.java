@@ -116,10 +116,11 @@ public class Main {
             final HTMLReportWriter htmlReportWriter = new HTMLReportWriter(fileService);
             htmlReportWriter.writeReport(report);
 
-            System.out.println("Sum of screenshot differences:\n" + report.summary.difference);
+            System.out.println("Sum of screenshot differences:\n" + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
+            System.out.println("Max difference of a single screenshot:\n" + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
 
             if (!useLegacyReportFormat(config)) {
-                if (report.summary.difference > 0) {
+                if (report.summary.differenceSum > 0) {
                     System.exit(1);
                 }
             }
