@@ -52,7 +52,8 @@ public class ScreenshotsComparatorTest {
                 Browser.Type.CHROME,
                 0f,
                 WINDOW_HEIGHT,
-                1);
+                1,
+                Config.DEFAULT_REPORT_FORMAT);
 
         testee = new ScreenshotsComparator(parameters, config, fileService, imageService);
     }

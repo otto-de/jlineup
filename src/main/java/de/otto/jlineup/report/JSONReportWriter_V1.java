@@ -6,13 +6,13 @@ import de.otto.jlineup.file.FileService;
 
 import java.io.FileNotFoundException;
 
-public class DefaultJSONReportWriter implements JSONReportWriter {
+public class JSONReportWriter_V1 implements JSONReportWriter {
 
     private final FileService fileService;
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public DefaultJSONReportWriter(FileService fileService) {
+    public JSONReportWriter_V1(FileService fileService) {
         this.fileService = fileService;
     }
 

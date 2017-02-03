@@ -106,14 +106,28 @@ public class Main {
             final ReportGenerator reportGenerator = new ReportGenerator();
             final Report report = reportGenerator.generateReport(comparisonResults);
 
-            final JSONReportWriter jsonReportWriter = new JSONReportWriter(fileService);
+            JSONReportWriter jsonReportWriter;
+            if (useLegacyReportFormat(config)) {
+                jsonReportWriter = new JSONReportWriter_V1(fileService);
+            } else {
+                jsonReportWriter = new JSONReportWriter_V2(fileService);
+            }
             jsonReportWriter.writeComparisonReportAsJson(report);
-
             final HTMLReportWriter htmlReportWriter = new HTMLReportWriter(fileService);
             htmlReportWriter.writeReport(report);
 
             System.out.println("Sum of screenshot differences:\n" + report.summary.difference);
+
+            if (!useLegacyReportFormat(config)) {
+                if (report.summary.difference > 0) {
+                    System.exit(1);
+                }
+            }
         }
+    }
+
+    private static boolean useLegacyReportFormat(Config config) {
+        return config.reportFormat != null && config.reportFormat == 1;
     }
 
     private static String getVersion() {

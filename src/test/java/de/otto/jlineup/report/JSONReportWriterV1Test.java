@@ -9,9 +9,9 @@ import org.mockito.Mockito;
 import static java.util.Collections.singletonList;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class DefaultJSONReportWriterTest {
+public class JSONReportWriterV1Test {
 
-    private DefaultJSONReportWriter testee;
+    private JSONReportWriter_V1 testee;
 
     @Mock
     private FileService fileServiceMock;
@@ -19,7 +19,7 @@ public class DefaultJSONReportWriterTest {
     @Before
     public void setup() {
         initMocks(this);
-        testee = new DefaultJSONReportWriter(fileServiceMock);
+        testee = new JSONReportWriter_V1(fileServiceMock);
     }
 
     @Test
