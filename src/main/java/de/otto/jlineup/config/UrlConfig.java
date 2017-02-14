@@ -41,6 +41,9 @@ public class UrlConfig {
     @SerializedName("warmup-browser-cache-time")
     public final int warmupBrowserCacheTime;
 
+    @SerializedName("wait-for-fonts-time")
+    public final int waitForFontsTime;
+
     @SerializedName("javascript")
     public final String javaScript;
 
@@ -58,9 +61,10 @@ public class UrlConfig {
         this.envMapping = null;
         this.warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
         this.javaScript = null;
+        this.waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
     }
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime) {
         this.paths = paths != null ? paths : DEFAULT_PATHS;
         this.windowWidths = windowWidths != null ? windowWidths : DEFAULT_WINDOW_WIDTHS;
         this.maxDiff = maxDiff;
@@ -73,6 +77,7 @@ public class UrlConfig {
         this.waitForNoAnimationAfterScroll = waitForNoAnimationAfterScroll;
         this.warmupBrowserCacheTime = warmupBrowserCacheTime;
         this.javaScript = javaScript;
+        this.waitForFontsTime = waitForFontsTime;
     }
 
     @Override
@@ -89,6 +94,7 @@ public class UrlConfig {
                 ", waitAfterScroll=" + waitAfterScroll +
                 ", waitForNoAnimationAfterScroll=" + waitForNoAnimationAfterScroll +
                 ", warmupBrowserCacheTime=" + warmupBrowserCacheTime +
+                ", waitForFontsTime=" + waitForFontsTime +
                 ", javaScript='" + javaScript + '\'' +
                 '}';
     }
@@ -104,6 +110,7 @@ public class UrlConfig {
                 waitAfterScroll == urlConfig.waitAfterScroll &&
                 Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 &&
                 warmupBrowserCacheTime == urlConfig.warmupBrowserCacheTime &&
+                waitForFontsTime == urlConfig.waitForFontsTime &&
                 Objects.equals(paths, urlConfig.paths) &&
                 Objects.equals(cookies, urlConfig.cookies) &&
                 Objects.equals(envMapping, urlConfig.envMapping) &&
@@ -114,7 +121,7 @@ public class UrlConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, javaScript);
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript);
     }
 
 }

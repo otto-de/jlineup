@@ -31,6 +31,7 @@ public final class Config {
     public static final int DEFAULT_WAIT_AFTER_SCROLL = 0;
     public static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
     public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
+    public static final int DEFAULT_WAIT_FOR_FONTS_TIME = 5;
     public static final int DEFAULT_THREADS = 1;
     public static final int DEFAULT_REPORT_FORMAT = 2;
 
@@ -89,7 +90,8 @@ public final class Config {
                         DEFAULT_WAIT_AFTER_SCROLL,
                         DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL,
                         DEFAULT_WARMUP_BROWSER_CACHE_TIME,
-                        "console.log('This is JavaScript!')"
+                        "console.log('This is JavaScript!')",
+                        DEFAULT_WAIT_FOR_FONTS_TIME
                 )),
                 Browser.Type.PHANTOMJS,
                 DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD,

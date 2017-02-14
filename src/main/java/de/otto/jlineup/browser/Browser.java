@@ -10,6 +10,8 @@ import de.otto.jlineup.image.ImageService;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +36,8 @@ public class Browser implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(Browser.class);
     public static final int THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
     public static final int DEFAULT_SLEEP_AFTER_SCROLL_MILLIS = 50;
+    public static final String JS_RETURN_DOCUMENT_FONTS_SIZE_CALL = "return document.fonts.size;";
+    public static final String JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL = "return document.fonts.status === 'loaded';";
 
 
     public enum Type {
@@ -44,6 +48,7 @@ public class Browser implements AutoCloseable {
         @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
         PHANTOMJS;
     }
+
     static final String JS_DOCUMENT_HEIGHT_CALL = "return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );";
 
     static final String JS_CLIENT_VIEWPORT_HEIGHT_CALL = "return document.documentElement.clientHeight";
@@ -60,6 +65,7 @@ public class Browser implements AutoCloseable {
 
     private ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Set<String>> cacheWarmupMarksMap = new ConcurrentHashMap<>();
+
     public Browser(Parameters parameters, Config config, FileService fileService, BrowserUtils browserUtils) {
         this.parameters = parameters;
         this.config = config;
@@ -152,6 +158,12 @@ public class Browser implements AutoCloseable {
         //Execute custom javascript if existing
         executeJavaScript(screenshotContext.urlConfig.javaScript);
 
+        //Wait for fonts
+        if (screenshotContext.urlConfig.waitForFontsTime > 0) {
+            WebDriverWait wait = new WebDriverWait(getWebDriver(), screenshotContext.urlConfig.waitForFontsTime);
+            wait.until(fontsLoaded);
+        }
+
         for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += viewportHeight) {
             BufferedImage currentScreenshot = takeScreenshot();
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
@@ -207,7 +219,7 @@ public class Browser implements AutoCloseable {
 
             if (!browserCacheWarmupMarks.contains(url)) {
                 LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
-                    browserCacheWarmupMarks.add(url);
+                browserCacheWarmupMarks.add(url);
                 try {
                     Thread.sleep(warmupTime * 1000);
                 } catch (InterruptedException e) {
@@ -350,9 +362,22 @@ public class Browser implements AutoCloseable {
         Robot robot = null;
         try {
             robot = new Robot();
-            robot.mouseMove(0,0);
+            robot.mouseMove(0, 0);
         } catch (AWTException e) {
             LOG.error("Can't move mouse to 0,0", e);
         }
     }
+
+    // wait for fonts to load
+    private ExpectedCondition<Boolean> fontsLoaded = new ExpectedCondition<Boolean>() {
+        @Override
+        public Boolean apply(WebDriver driver) {
+            final JavascriptExecutor javascriptExecutor = (JavascriptExecutor) getWebDriver();
+            final Integer fontsLoadedCount = (Integer) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL);
+            final Boolean fontsLoaded = (Boolean) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL);
+            LOG.debug("Amount of fonts in document: {}", fontsLoadedCount);
+            LOG.debug("Fonts loaded: {} ", fontsLoaded);
+            return fontsLoaded;
+        }
+    };
 }

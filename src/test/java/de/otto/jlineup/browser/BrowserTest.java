@@ -184,7 +184,7 @@ public class BrowserTest {
                 0f,
                 ImmutableList.of(new Cookie("testcookiename", "testcookievalue")),
                 ImmutableMap.of(), ImmutableMap.of("key", "value"),
-                ImmutableList.of(600), 5000, 0, 0, 0, 3, "testJS();");
+                ImmutableList.of(600), 5000, 0, 0, 0, 3, "testJS();", 5);
 
         Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100, 1, Config.DEFAULT_REPORT_FORMAT);
         testee = new Browser(parameters, config, fileService, browserUtilsMock);
@@ -195,6 +195,8 @@ public class BrowserTest {
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
+        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3);
+        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
