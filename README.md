@@ -33,10 +33,10 @@ to get some idea how to use it.
 
 ## Browser compatibility
 
-JLineup 1.2.5 was tested successfully with
+JLineup 1.3.0 was tested successfully with
 
 * Chrome 55.0.x
-* Firefox 50.1.0
+* Firefox 51.0.x
 * PhantomJS 2.1.1 (auto-downloaded by JLineup if not installed)
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.

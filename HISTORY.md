@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 1.3.0
+* Ability to wait for webfonts to be loaded before making screenshots
+
 ## Release 1.2.5
 * Log uncaught Exceptions in Threadpool
 
