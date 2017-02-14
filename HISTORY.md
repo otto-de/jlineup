@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 1.3.1
+* Bugfix: Use legacy report format as default (will change with 2.0.0)
+
 ## Release 1.3.0
 * Ability to wait for webfonts to be loaded before making screenshots
 

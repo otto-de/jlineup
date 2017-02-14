@@ -128,7 +128,7 @@ public class Main {
     }
 
     private static boolean useLegacyReportFormat(Config config) {
-        return config.reportFormat != null && config.reportFormat == 1;
+        return (config.reportFormat != null && config.reportFormat == 1) || (config.reportFormat == null && Config.DEFAULT_REPORT_FORMAT == 1);
     }
 
     private static String getVersion() {
