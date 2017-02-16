@@ -373,7 +373,7 @@ public class Browser implements AutoCloseable {
         @Override
         public Boolean apply(WebDriver driver) {
             final JavascriptExecutor javascriptExecutor = (JavascriptExecutor) getWebDriver();
-            final Integer fontsLoadedCount = (Integer) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL);
+            final Long fontsLoadedCount = (Long) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL);
             final Boolean fontsLoaded = (Boolean) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL);
             LOG.debug("Amount of fonts in document: {}", fontsLoadedCount);
             LOG.debug("Fonts loaded: {} ", fontsLoaded);

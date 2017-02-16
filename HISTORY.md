@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 1.3.2
+* Bugfix: JLineup 1.3.1 was not making any screenshots when wait-for-fonts-time was not 0
+
 ## Release 1.3.1
 * Bugfix: Use legacy report format as default (will change with 2.0.0)
 
