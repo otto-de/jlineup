@@ -43,6 +43,8 @@ public final class Config {
     public final Integer windowHeight;
     @SerializedName("report-format")
     public final Integer reportFormat;
+    @SerializedName("debug")
+    public final boolean debug;
 
     private final static Gson gson = new Gson();
     public int threads;
@@ -54,16 +56,18 @@ public final class Config {
         globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         windowHeight = DEFAULT_WINDOW_HEIGHT;
         threads = DEFAULT_THREADS;
+        debug = false;
         reportFormat = null;
     }
 
-    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer windowHeight, final Integer threads, final Integer reportFormat) {
+    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer windowHeight, final Integer threads, final Integer reportFormat, final boolean debug) {
         this.urls = urls;
         this.browser = browser != null ? browser : DEFAULT_BROWSER;
         this.globalWaitAfterPageLoad = globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad : DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
         this.threads = threads != null ? threads : DEFAULT_THREADS;
         this.reportFormat = reportFormat.equals(DEFAULT_REPORT_FORMAT) ? null : reportFormat;
+        this.debug = debug;
     }
 
     public static Config defaultConfig() {
@@ -71,7 +75,39 @@ public final class Config {
     }
 
     public static Config defaultConfig(String url) {
-        return new Config(ImmutableMap.of(url, new UrlConfig()), null, null, null, null, null);
+        return new Config(ImmutableMap.of(url, new UrlConfig()), null, null, null, null, null, false);
+    }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "urls=" + urls +
+                ", browser=" + browser +
+                ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
+                ", windowHeight=" + windowHeight +
+                ", reportFormat=" + reportFormat +
+                ", debug=" + debug +
+                ", threads=" + threads +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Config config = (Config) o;
+        return debug == config.debug &&
+                threads == config.threads &&
+                Objects.equals(urls, config.urls) &&
+                browser == config.browser &&
+                Objects.equals(globalWaitAfterPageLoad, config.globalWaitAfterPageLoad) &&
+                Objects.equals(windowHeight, config.windowHeight) &&
+                Objects.equals(reportFormat, config.reportFormat);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(urls, browser, globalWaitAfterPageLoad, windowHeight, reportFormat, debug, threads);
     }
 
     public static Config exampleConfig() {
@@ -97,7 +133,8 @@ public final class Config {
                 DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD,
                 DEFAULT_WINDOW_HEIGHT,
                 DEFAULT_THREADS,
-                DEFAULT_REPORT_FORMAT
+                DEFAULT_REPORT_FORMAT,
+                false
         );
     }
 
@@ -127,29 +164,4 @@ public final class Config {
 
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Config config = (Config) o;
-        return Objects.equals(urls, config.urls) &&
-                browser == config.browser &&
-                Objects.equals(globalWaitAfterPageLoad, config.globalWaitAfterPageLoad) &&
-                Objects.equals(windowHeight, config.windowHeight);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(urls, browser, globalWaitAfterPageLoad, windowHeight);
-    }
-
-    @Override
-    public String toString() {
-        return "Config{" +
-                "urls=" + urls +
-                ", browser=" + browser +
-                ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
-                ", windowHeight=" + windowHeight +
-                '}';
-    }
 }

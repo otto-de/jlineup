@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 1.3.3
+* It's possible to specify debug mode in config now ("debug":true), additionally to command line param
+
 ## Release 1.3.2
 * Bugfix: JLineup 1.3.1 was not making any screenshots when wait-for-fonts-time was not 0
 

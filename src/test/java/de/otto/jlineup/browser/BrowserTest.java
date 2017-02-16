@@ -60,7 +60,7 @@ public class BrowserTest {
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
         when(browserUtilsMock.getWebDriverByConfig(any(Config.class))).thenReturn(webDriverMock);
-        Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100, 1, Config.DEFAULT_REPORT_FORMAT);
+        Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, 100, 1, Config.DEFAULT_REPORT_FORMAT, false);
         testee = new Browser(parameters, config, fileService, browserUtilsMock);
     }
 
@@ -73,19 +73,19 @@ public class BrowserTest {
 
     @Test
     public void shouldGetFirefoxDriver() throws InterruptedException {
-        final Config config = new Config(null, FIREFOX, 5f, 800, 1, Config.DEFAULT_REPORT_FORMAT);
+        final Config config = new Config(null, FIREFOX, 5f, 800, 1, Config.DEFAULT_REPORT_FORMAT, false);
         assertSetDriverType(config, FirefoxDriver.class);
     }
 
     @Test
     public void shouldGetChromeDriver() throws InterruptedException {
-        final Config config = new Config(null, CHROME, 5f, 800, 1, Config.DEFAULT_REPORT_FORMAT);
+        final Config config = new Config(null, CHROME, 5f, 800, 1, Config.DEFAULT_REPORT_FORMAT, false);
         assertSetDriverType(config, ChromeDriver.class);
     }
 
     @Test
     public void shouldGetPhantomJSDriver() throws InterruptedException {
-        final Config config = new Config(null, PHANTOMJS, 5f, 800, 1, Config.DEFAULT_REPORT_FORMAT);
+        final Config config = new Config(null, PHANTOMJS, 5f, 800, 1, Config.DEFAULT_REPORT_FORMAT, false);
         assertSetDriverType(config, PhantomJSDriver.class);
     }
 
@@ -186,7 +186,7 @@ public class BrowserTest {
                 ImmutableMap.of(), ImmutableMap.of("key", "value"),
                 ImmutableList.of(600), 5000, 0, 0, 0, 3, "testJS();", 5);
 
-        Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100, 1, Config.DEFAULT_REPORT_FORMAT);
+        Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100, 1, Config.DEFAULT_REPORT_FORMAT, false);
         testee = new Browser(parameters, config, fileService, browserUtilsMock);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);

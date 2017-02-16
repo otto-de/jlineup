@@ -23,9 +23,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
@@ -81,19 +79,19 @@ public class Browser implements AutoCloseable {
         webDrivers.clear();
     }
 
-    public void takeScreenshots() throws IOException, InterruptedException {
+    public void takeScreenshots() throws IOException, InterruptedException, ExecutionException {
         boolean before = !parameters.isAfter();
         List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(parameters, config, before);
         takeScreenshots(screenshotContextList);
     }
 
-    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException {
+    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException, ExecutionException {
         int counter = 0;
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
-            threadPool.submit(() -> {
+            final Future<?> takeScreenshotsResult = threadPool.submit(() -> {
                 try {
                     takeScreenshotsForContext(screenshotContext);
-                } catch (InterruptedException | IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     System.exit(1);
                 }

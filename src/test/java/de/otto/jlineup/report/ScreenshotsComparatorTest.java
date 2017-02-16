@@ -53,7 +53,8 @@ public class ScreenshotsComparatorTest {
                 0f,
                 WINDOW_HEIGHT,
                 1,
-                Config.DEFAULT_REPORT_FORMAT);
+                Config.DEFAULT_REPORT_FORMAT,
+                false);
 
         testee = new ScreenshotsComparator(parameters, config, fileService, imageService);
     }

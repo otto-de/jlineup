@@ -33,7 +33,7 @@ to get some idea how to use it.
 
 ## Browser compatibility
 
-JLineup 1.3.2 was tested successfully with
+JLineup 1.3.3 was tested successfully with
 
 * Chrome 55.0.x
 * Firefox 51.0.x

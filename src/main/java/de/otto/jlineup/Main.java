@@ -33,8 +33,7 @@ public class Main {
         }
 
         if (parameters.isDebug()) {
-            ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-            root.setLevel(Level.DEBUG);
+            setLogLevelToDebug();
         }
 
         FileService fileService = new FileService(parameters);
@@ -76,6 +75,10 @@ public class Main {
 
         if (exit) {
             System.exit(1);
+        }
+
+        if (config.debug) {
+            setLogLevelToDebug();
         }
 
         //Only create screenshots and report dirs if config was found
@@ -125,6 +128,11 @@ public class Main {
                 }
             }
         }
+    }
+
+    private static void setLogLevelToDebug() {
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.DEBUG);
     }
 
     private static boolean useLegacyReportFormat(Config config) {
