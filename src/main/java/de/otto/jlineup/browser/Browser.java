@@ -89,7 +89,6 @@ public class Browser implements AutoCloseable {
     }
 
     void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException, ExecutionException {
-        int counter = 0;
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             final Future<?> takeScreenshotsResult = threadPool.submit(() -> {
                 try {
@@ -99,7 +98,8 @@ public class Browser implements AutoCloseable {
                     System.exit(1);
                 }
             });
-            Thread.sleep(counter += THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS);
+            //submit screenshots to the browser with a slight delay, so not all instances open up in complete sync
+            Thread.sleep(THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS);
         }
         threadPool.shutdown();
         threadPool.awaitTermination(15, TimeUnit.MINUTES);
