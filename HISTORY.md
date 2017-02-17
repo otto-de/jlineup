@@ -1,5 +1,10 @@
 # JLineup Release History
 
+## Release 1.4.0
+* Cache warmup is always done with the greatest horizontal resolution of an url config
+* It's possible to specify session storage, similar to local storage
+* Increasing waiting time bug fixed (long sleep phases when using multiple threads and many paths/urls)
+
 ## Release 1.3.3
 * It's possible to specify debug mode in config now ("debug":true), additionally to command line param
 
