@@ -120,6 +120,7 @@ public final class Config {
                         ),
                         ImmutableMap.of("live", "www"),
                         ImmutableMap.of("exampleLocalStorageKey", "value"),
+                        ImmutableMap.of("exampleSessionStorageKey", "value"),
                         ImmutableList.of(600,800,1000),
                         DEFAULT_MAX_SCROLL_HEIGHT,
                         DEFAULT_WAIT_AFTER_PAGE_LOAD,

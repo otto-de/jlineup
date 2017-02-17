@@ -19,6 +19,9 @@
       "local-storage" : {
         "teststorage" : "{'testkey':{'value':true,'timestamp':9467812242358}}"
       },
+      "session-storage" : {
+        "testsession" : "{'testkey':{'value':true,'timestamp':9467812242358}}"
+      },
       "env-mapping": {
         "live": "www"
       },

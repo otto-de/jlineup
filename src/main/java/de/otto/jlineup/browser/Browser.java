@@ -51,6 +51,7 @@ public class Browser implements AutoCloseable {
 
     static final String JS_CLIENT_VIEWPORT_HEIGHT_CALL = "return document.documentElement.clientHeight";
     static final String JS_SET_LOCAL_STORAGE_CALL = "localStorage.setItem('%s','%s')";
+    static final String JS_SET_SESSION_STORAGE_CALL = "sessionStorage.setItem('%s','%s')";
     static final String JS_SCROLL_CALL = "window.scrollBy(0,%d)";
     static final String JS_SCROLL_TO_TOP_CALL = "window.scrollTo(0, 0);";
     final private Parameters parameters;
@@ -82,7 +83,9 @@ public class Browser implements AutoCloseable {
     public void takeScreenshots() throws IOException, InterruptedException, ExecutionException {
         boolean before = !parameters.isAfter();
         List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(parameters, config, before);
-        takeScreenshots(screenshotContextList);
+        if (screenshotContextList.size() > 0) {
+            takeScreenshots(screenshotContextList);
+        }
     }
 
     void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException, ExecutionException {
@@ -109,27 +112,29 @@ public class Browser implements AutoCloseable {
         moveMouseToZeroZero();
 
         localDriver.manage().window().setPosition(new Point(0, 0));
-        localDriver.manage().window().setSize(new Dimension(screenshotContext.windowWidth, config.windowHeight));
+        resizeBrowser(localDriver, screenshotContext.windowWidth, config.windowHeight);
 
         final String url = buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping);
         final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
 
-        if (areThereCookiesOrLocalStorage(screenshotContext)) {
+        if (areThereCookiesOrStorage(screenshotContext)) {
             //get root page from url to be able to set cookies afterwards
             //if you set cookies before getting the page once, it will fail
-            LOG.info(String.format("Getting root url: %s to set cookies and local storage", rootUrl));
+            LOG.info(String.format("Getting root url: %s to set cookies, local and session storage", rootUrl));
             localDriver.get(rootUrl);
 
             //set cookies and local storage
             setCookies(screenshotContext);
             setLocalStorage(screenshotContext);
+            setSessionStorage(screenshotContext);
         }
+
+        checkBrowserCacheWarmup(screenshotContext, url, localDriver);
 
         //now get the real page
         LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.windowWidth, config.windowHeight));
         localDriver.get(url);
 
-        checkBrowserCacheWarmup(screenshotContext, url, localDriver);
 
         Long pageHeight = getPageHeight();
         final Long viewportHeight = getViewportHeight();
@@ -183,6 +188,10 @@ public class Browser implements AutoCloseable {
         }
     }
 
+    private void resizeBrowser(WebDriver localDriver, int width, int height) {
+        localDriver.manage().window().setSize(new Dimension(width, height));
+    }
+
     private WebDriver initializeWebDriver() {
         final WebDriver driver = browserUtils.getWebDriverByConfig(config);
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
@@ -193,9 +202,10 @@ public class Browser implements AutoCloseable {
         return new HashSet<>();
     }
 
-    private boolean areThereCookiesOrLocalStorage(ScreenshotContext screenshotContext) {
+    private boolean areThereCookiesOrStorage(ScreenshotContext screenshotContext) {
         return (screenshotContext.urlConfig.cookies != null && screenshotContext.urlConfig.cookies.size() > 0)
-                || (screenshotContext.urlConfig.localStorage != null && screenshotContext.urlConfig.localStorage.size() > 0);
+                || (screenshotContext.urlConfig.localStorage != null && screenshotContext.urlConfig.localStorage.size() > 0)
+                || (screenshotContext.urlConfig.sessionStorage != null && screenshotContext.urlConfig.sessionStorage.size() > 0);
     }
 
     private void setCookies(ScreenshotContext screenshotContext) {
@@ -212,10 +222,12 @@ public class Browser implements AutoCloseable {
     private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) {
         int warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > Config.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
-
             final Set<String> browserCacheWarmupMarks = cacheWarmupMarksMap.computeIfAbsent(Thread.currentThread().getName(), k -> initializeCacheWarmupMarks());
-
             if (!browserCacheWarmupMarks.contains(url)) {
+                final Integer maxWidth = screenshotContext.urlConfig.windowWidths.stream().max(Integer::compareTo).get();
+                LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, maxWidth, config.windowHeight));
+                resizeBrowser(driver, maxWidth, config.windowHeight);
+                driver.get(url);
                 LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
                 browserCacheWarmupMarks.add(url);
                 try {
@@ -223,8 +235,8 @@ public class Browser implements AutoCloseable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                resizeBrowser(driver, screenshotContext.windowWidth, config.windowHeight);
                 LOG.debug("Cache warmup time is over. Getting " + url + " again.");
-                driver.get(url);
             }
         }
     }
@@ -295,6 +307,10 @@ public class Browser implements AutoCloseable {
         setLocalStorage(screenshotContext.urlConfig.localStorage);
     }
 
+    private void setSessionStorage(ScreenshotContext screenshotContext) {
+        setSessionStorage(screenshotContext.urlConfig.sessionStorage);
+    }
+
     void setLocalStorage(Map<String, String> localStorage) {
         if (localStorage == null) return;
 
@@ -305,6 +321,21 @@ public class Browser implements AutoCloseable {
 
             String jsCall = String.format(JS_SET_LOCAL_STORAGE_CALL, localStorageEntry.getKey(), entry);
             jse.executeScript(jsCall);
+            LOG.debug("LocalStorage call: {}", jsCall);
+        }
+    }
+
+    void setSessionStorage(Map<String, String> sessionStorage) {
+        if (sessionStorage == null) return;
+
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
+        for (Map.Entry<String, String> sessionStorageEntry : sessionStorage.entrySet()) {
+
+            final String entry = sessionStorageEntry.getValue().replace("'", "\"");
+
+            String jsCall = String.format(JS_SET_SESSION_STORAGE_CALL, sessionStorageEntry.getKey(), entry);
+            jse.executeScript(jsCall);
+            LOG.debug("SessionStorage call: {}", jsCall);
         }
     }
 

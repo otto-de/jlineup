@@ -166,6 +166,17 @@ public class BrowserTest {
     }
 
     @Test
+    public void shouldFillSessionStorage() {
+        //given
+        Map<String, String> sessionStorage = ImmutableMap.of("key", "value");
+        //when
+        testee.setSessionStorage(sessionStorage);
+        //then
+        final String sessionStorageCall = String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value");
+        verify(webDriverMock).executeScript(sessionStorageCall);
+    }
+
+    @Test
     public void shouldScroll() throws InterruptedException {
         //when
         testee.scrollBy(1337);
@@ -183,8 +194,17 @@ public class BrowserTest {
                 ImmutableList.of("/"),
                 0f,
                 ImmutableList.of(new Cookie("testcookiename", "testcookievalue")),
-                ImmutableMap.of(), ImmutableMap.of("key", "value"),
-                ImmutableList.of(600), 5000, 0, 0, 0, 3, "testJS();", 5);
+                ImmutableMap.of(),
+                ImmutableMap.of("key", "value"),
+                ImmutableMap.of("key", "value"),
+                ImmutableList.of(600, 800),
+                5000,
+                0,
+                0,
+                0,
+                3,
+                "testJS();",
+                5);
 
         Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, 100, 1, Config.DEFAULT_REPORT_FORMAT, false);
         testee = new Browser(parameters, config, fileService, browserUtilsMock);
@@ -202,8 +222,8 @@ public class BrowserTest {
         testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
 
         //then
-        verify(webDriverWindowMock, times(1)).setSize(new Dimension(600, 100));
-        verify(webDriverWindowMock, times(1)).setSize(new Dimension(800, 100));
+        verify(webDriverWindowMock, times(2)).setSize(new Dimension(600, 100));
+        verify(webDriverWindowMock, times(2)).setSize(new Dimension(800, 100));
         verify(webDriverMock, times(2)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(2)).executeScript("testJS();");
         verify(webDriverMock, times(10)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
@@ -211,6 +231,7 @@ public class BrowserTest {
         verify(webDriverMock, times(2)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
         verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
+        verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(8)).executeScript(String.format(JS_SCROLL_CALL, 500));
     }
 

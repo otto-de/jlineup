@@ -23,6 +23,9 @@ public class UrlConfig {
     @SerializedName("local-storage")
     public final Map<String, String> localStorage;
 
+    @SerializedName("session-storage")
+    public final Map<String, String> sessionStorage;
+
     @SerializedName(value = "window-widths", alternate = {"resolutions","widths"})
     public final List<Integer> windowWidths;
 
@@ -54,6 +57,7 @@ public class UrlConfig {
         this.maxDiff = DEFAULT_MAX_DIFF;
         this.cookies = null;
         this.localStorage = null;
+        this.sessionStorage = null;
         this.maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
         this.waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
         this.waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
@@ -64,13 +68,14 @@ public class UrlConfig {
         this.waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
     }
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime) {
         this.paths = paths != null ? paths : DEFAULT_PATHS;
         this.windowWidths = windowWidths != null ? windowWidths : DEFAULT_WINDOW_WIDTHS;
         this.maxDiff = maxDiff;
         this.cookies = cookies;
         this.envMapping = envMapping;
         this.localStorage = localStorage;
+        this.sessionStorage = sessionStorage;
         this.maxScrollHeight = maxScrollHeight;
         this.waitAfterPageLoad = waitAfterPageLoad;
         this.waitAfterScroll = waitAfterScroll;
@@ -88,6 +93,7 @@ public class UrlConfig {
                 ", cookies=" + cookies +
                 ", envMapping=" + envMapping +
                 ", localStorage=" + localStorage +
+                ", sessionStorage=" + sessionStorage +
                 ", windowWidths=" + windowWidths +
                 ", maxScrollHeight=" + maxScrollHeight +
                 ", waitAfterPageLoad=" + waitAfterPageLoad +
@@ -115,13 +121,13 @@ public class UrlConfig {
                 Objects.equals(cookies, urlConfig.cookies) &&
                 Objects.equals(envMapping, urlConfig.envMapping) &&
                 Objects.equals(localStorage, urlConfig.localStorage) &&
+                Objects.equals(sessionStorage, urlConfig.sessionStorage) &&
                 Objects.equals(windowWidths, urlConfig.windowWidths) &&
                 Objects.equals(javaScript, urlConfig.javaScript);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript);
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript);
     }
-
 }
