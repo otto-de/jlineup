@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class JSONReportWriterV1Test {
@@ -27,7 +28,7 @@ public class JSONReportWriterV1Test {
 
         ScreenshotComparisonResult screenshotComparisonResult =
                 new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum");
-        Report report = new Report(new Summary(false, 0d, 0d), singletonList(screenshotComparisonResult));
+        Report report = new Report(new Summary(false, 0d, 0d), singletonMap("test", singletonList(screenshotComparisonResult)));
 
         String expectedString = "[\n" +
                 "  {\n" +

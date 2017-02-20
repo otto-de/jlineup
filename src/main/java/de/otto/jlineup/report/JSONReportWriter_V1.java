@@ -17,7 +17,7 @@ public class JSONReportWriter_V1 implements JSONReportWriter {
     }
 
     public void writeComparisonReportAsJson(Report report) throws FileNotFoundException {
-        final String reportJson = gson.toJson(report.screenshotComparisons);
+        final String reportJson = gson.toJson(report.getFlatResultList());
         fileService.writeJsonReport(reportJson);
     }
 }

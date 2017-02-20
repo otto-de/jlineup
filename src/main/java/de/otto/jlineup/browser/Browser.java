@@ -133,8 +133,10 @@ public class Browser implements AutoCloseable {
 
         //now get the real page
         LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.windowWidth, config.windowHeight));
-        localDriver.get(url);
 
+        //Selenium's get() method blocks until the browser/page fires an onload event (files and images referenced in the html have been loaded,
+        //but there might be JS calls that load more stuff dynamically afterwards).
+        localDriver.get(url);
 
         Long pageHeight = getPageHeight();
         final Long viewportHeight = getViewportHeight();

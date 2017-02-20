@@ -31,7 +31,7 @@ public final class Config {
     public static final int DEFAULT_WAIT_AFTER_SCROLL = 0;
     public static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
     public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
-    public static final int DEFAULT_WAIT_FOR_FONTS_TIME = 5;
+    public static final int DEFAULT_WAIT_FOR_FONTS_TIME = 0;
     public static final int DEFAULT_THREADS = 1;
     public static final int DEFAULT_REPORT_FORMAT = 1;
 
@@ -66,7 +66,7 @@ public final class Config {
         this.globalWaitAfterPageLoad = globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad : DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
         this.threads = threads != null ? threads : DEFAULT_THREADS;
-        this.reportFormat = reportFormat.equals(DEFAULT_REPORT_FORMAT) ? null : reportFormat;
+        this.reportFormat = Objects.isNull(reportFormat) ? null : reportFormat.equals(DEFAULT_REPORT_FORMAT) ? null : reportFormat;
         this.debug = debug;
     }
 

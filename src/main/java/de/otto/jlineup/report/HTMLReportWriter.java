@@ -18,7 +18,7 @@ public class HTMLReportWriter {
     }
 
     public void writeReport(Report report) throws FileNotFoundException {
-        fileService.writeHtmlReport(renderReport("report", report.screenshotComparisons));
+        fileService.writeHtmlReport(renderReport("report", report.getFlatResultList()));
     }
 
     String renderReport(String template, List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {
