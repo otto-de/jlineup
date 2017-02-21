@@ -71,6 +71,12 @@ public class BrowserUtils {
     static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(Parameters parameters, Config config, boolean before) {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
         Map<String, UrlConfig> urls = config.urls;
+
+        if (urls==null) {
+            System.err.println("No urls are configured in the config.");
+            System.exit(1);
+        }
+
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
             final UrlConfig urlConfig = urlConfigEntry.getValue();
             final List<Integer> resolutions = urlConfig.windowWidths;
@@ -97,7 +103,7 @@ public class BrowserUtils {
 
     public static String prependHTTPIfNotThereAndToLowerCase(String url) {
         String ret = url.toLowerCase();
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("file://") && !url.startsWith("ftp://")) {
             ret = "http://" + ret;
         }
         return ret;
