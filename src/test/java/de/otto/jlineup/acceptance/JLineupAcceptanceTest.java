@@ -26,6 +26,9 @@ public class JLineupAcceptanceTest {
     private final ByteArrayOutputStream sysErr = new ByteArrayOutputStream();
     public static final String CWD = Paths.get(".").toAbsolutePath().normalize().toString();
 
+    PrintStream stdout = System.out;
+    PrintStream stderr = System.err;
+
     @Before
     public void setUpStreams() {
         System.setOut(new PrintStream(sysOut));
@@ -34,8 +37,8 @@ public class JLineupAcceptanceTest {
 
     @After
     public void cleanUpStreams() {
-        System.setOut(null);
-        System.setErr(null);
+        System.setOut(stdout);
+        System.setErr(stderr);
     }
 
     @Test
