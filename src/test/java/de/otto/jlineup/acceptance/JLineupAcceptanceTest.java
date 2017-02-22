@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -44,7 +45,7 @@ public class JLineupAcceptanceTest {
     @Test
     public void shouldExitWithExitStatus1IfConfigHasNoUrls() throws Exception {
         exit.expectSystemExitWithStatus(1);
-        exit.checkAssertionAfterwards(() -> assertThat(sysErr.toString(), is("No urls are configured in the config.\n")));
+        exit.checkAssertionAfterwards(() -> assertThat(sysErr.toString(), containsString("No urls are configured in the config.")));
         final Path tempDirectory = Files.createTempDirectory("jlineup-acceptance-test");
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_no_urls.lineup.json"});
     }
@@ -103,9 +104,9 @@ public class JLineupAcceptanceTest {
                 "  \"window-height\": 800,\n" +
                 "  \"debug\": false,\n" +
                 "  \"threads\": 1\n" +
-                "}\n";
+                "}";
         exit.expectSystemExitWithStatus(0);
-        exit.checkAssertionAfterwards(() -> assertThat(sysOut.toString(), is(expectedConfig)));
+        exit.checkAssertionAfterwards(() -> assertThat(sysOut.toString(), containsString(expectedConfig)));
         final Path tempDirectory = Files.createTempDirectory("jlineup-acceptance-test");
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--print-config"});
     }
