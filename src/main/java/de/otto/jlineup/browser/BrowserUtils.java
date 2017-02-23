@@ -56,7 +56,7 @@ public class BrowserUtils {
                 ChromeDriverManager.getInstance().setup();
                 ChromeOptions options = new ChromeOptions();
                 //To work in a headless env, this is needed
-                options.addArguments("--disable-setuid-sandbox");
+                options.addArguments("--no-sandbox");
                 driver = new ChromeDriver(options);
                 break;
             case PHANTOMJS:
