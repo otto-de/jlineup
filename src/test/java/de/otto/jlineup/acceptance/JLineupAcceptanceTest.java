@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 
 
 public class JLineupAcceptanceTest {
@@ -27,8 +26,8 @@ public class JLineupAcceptanceTest {
     private final ByteArrayOutputStream sysErr = new ByteArrayOutputStream();
     public static final String CWD = Paths.get(".").toAbsolutePath().normalize().toString();
 
-    PrintStream stdout = System.out;
-    PrintStream stderr = System.err;
+    private PrintStream stdout = System.out;
+    private PrintStream stderr = System.err;
 
     @Before
     public void setUpStreams() {
@@ -58,6 +57,7 @@ public class JLineupAcceptanceTest {
 
     @Test
     public void shouldPrintConfig() throws Exception {
+
         String expectedConfig = "{\n" +
                 "  \"urls\": {\n" +
                 "    \"http://www.example.com\": {\n" +
