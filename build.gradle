@@ -50,6 +50,12 @@ dependencies {
     testCompile "com.github.stefanbirkner:system-rules:1.16.0"
 }
 
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
 /*
     manifest {
         attributes 'Implementation-Title': 'JLineup', 'Implementation-Version': version()
