@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.text.IsEqualIgnoringWhiteSpace.equalToIgnoringWhiteSpace;
 
 
 public class JLineupAcceptanceTest {
@@ -106,7 +107,7 @@ public class JLineupAcceptanceTest {
                 "  \"threads\": 1\n" +
                 "}";
         exit.expectSystemExitWithStatus(0);
-        exit.checkAssertionAfterwards(() -> assertThat(sysOut.toString(), containsString(expectedConfig)));
+        exit.checkAssertionAfterwards(() -> assertThat(sysOut.toString(), equalToIgnoringWhiteSpace(expectedConfig)));
         final Path tempDirectory = Files.createTempDirectory("jlineup-acceptance-test");
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--print-config"});
     }
