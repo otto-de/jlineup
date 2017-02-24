@@ -109,7 +109,10 @@ public class Browser implements AutoCloseable {
 
         final WebDriver localDriver = getWebDriver();
 
-        moveMouseToZeroZero();
+        //No need to move the mouse out of the way for phantomjs, but this avoids hovering links in other browsers
+        if (config.browser != Type.PHANTOMJS) {
+            moveMouseToZeroZero();
+        }
 
         localDriver.manage().window().setPosition(new Point(0, 0));
         resizeBrowser(localDriver, screenshotContext.windowWidth, config.windowHeight);
