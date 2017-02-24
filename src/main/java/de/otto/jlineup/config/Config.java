@@ -57,7 +57,7 @@ public final class Config {
         windowHeight = DEFAULT_WINDOW_HEIGHT;
         threads = DEFAULT_THREADS;
         debug = false;
-        reportFormat = null;
+        reportFormat = DEFAULT_REPORT_FORMAT;
     }
 
     public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer windowHeight, final Integer threads, final Integer reportFormat, final boolean debug) {

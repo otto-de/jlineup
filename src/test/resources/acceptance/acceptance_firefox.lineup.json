@@ -5,5 +5,7 @@
         "test.html"
       ]
     }
-  }
+  },
+  "report-format" : 2,
+  "browser" : "firefox"
 }
