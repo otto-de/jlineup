@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 1.4.1
+* Bugfix: Version pinning of webdriver didn't work because of a change in webdrivermanager
+  (https://github.com/bonigarcia/webdrivermanager/commit/29c531266c78399f3999b246da479163d734bee8)
+
 ## Release 1.4.0
 * Cache warmup is always done with the greatest horizontal resolution of an url config
 * It's possible to specify session storage, similar to local storage
