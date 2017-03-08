@@ -4,7 +4,7 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
-import io.github.bonigarcia.wdm.MarionetteDriverManager;
+import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import io.github.bonigarcia.wdm.PhantomJsDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -46,11 +46,11 @@ public class BrowserUtils {
         WebDriver driver;
         switch (config.browser) {
             case FIREFOX:
-                MarionetteDriverManager.getInstance().setup();
-                JLineupGeckoDriverService.Builder builder = new JLineupGeckoDriverService.Builder();
+                FirefoxDriverManager.getInstance().setup();
+                //JLineupGeckoDriverService.Builder builder = new JLineupGeckoDriverService.Builder();
                 //0 means default
-                builder.usingPort(0);
-                driver = new FirefoxDriver(builder.build(), null, null);
+                //builder.usingPort(0);
+                driver = new FirefoxDriver();
                 break;
             case CHROME:
                 ChromeDriverManager.getInstance().setup();
@@ -61,7 +61,7 @@ public class BrowserUtils {
                 break;
             case PHANTOMJS:
             default:
-                PhantomJsDriverManager.getInstance().setup("2.1.1");
+                PhantomJsDriverManager.getInstance().setup();
                 driver = new PhantomJSDriver();
                 break;
         }
