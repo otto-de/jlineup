@@ -47,9 +47,6 @@ public class BrowserUtils {
         switch (config.browser) {
             case FIREFOX:
                 FirefoxDriverManager.getInstance().setup();
-                //JLineupGeckoDriverService.Builder builder = new JLineupGeckoDriverService.Builder();
-                //0 means default
-                //builder.usingPort(0);
                 driver = new FirefoxDriver();
                 break;
             case CHROME:
