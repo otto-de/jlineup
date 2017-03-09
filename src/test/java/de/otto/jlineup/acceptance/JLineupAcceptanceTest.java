@@ -163,6 +163,9 @@ public class JLineupAcceptanceTest {
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"file__"));
+
+        assertThat(sysOut.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/:\n0.0 (0 %)"));
+        assertThat(sysOut.toString(), containsString("Sum of overall screenshot differences:\n0.0 (0 %)"));
     }
 
     private String getTextFileContentAsString(Path reportJson) throws IOException {

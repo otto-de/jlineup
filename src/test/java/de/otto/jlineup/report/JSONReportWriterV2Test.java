@@ -29,7 +29,9 @@ public class JSONReportWriterV2Test {
 
         ScreenshotComparisonResult screenshotComparisonResult =
                 new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum");
-        Report report = new Report(new Summary(false, 0d, 0d), Collections.singletonMap("test", singletonList(screenshotComparisonResult)));
+        final Summary globalSummary = new Summary(false, 0d, 0d);
+        final Summary localSummary = new Summary(false, 0d, 0d);
+        Report report = new Report(globalSummary, Collections.singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)));
 
         String expectedString = "{\n" +
                 "  \"summary\": {\n" +
@@ -38,17 +40,24 @@ public class JSONReportWriterV2Test {
                 "    \"differenceMax\": 0.0\n" +
                 "  },\n" +
                 "  \"screenshotComparisonsForUrl\": {\n" +
-                "    \"test\": [\n" +
-                "      {\n" +
-                "        \"url\": \"url\",\n" +
-                "        \"width\": 1337,\n" +
-                "        \"verticalScrollPosition\": 1338,\n" +
-                "        \"difference\": 0.0,\n" +
-                "        \"screenshotBeforeFileName\": \"before\",\n" +
-                "        \"screenshotAfterFileName\": \"after\",\n" +
-                "        \"differenceImageFileName\": \"differenceSum\"\n" +
+                "    \"test\": {\n" +
+                "      \"comparisonResults\": [\n" +
+                "        {\n" +
+                "          \"url\": \"url\",\n" +
+                "          \"width\": 1337,\n" +
+                "          \"verticalScrollPosition\": 1338,\n" +
+                "          \"difference\": 0.0,\n" +
+                "          \"screenshotBeforeFileName\": \"before\",\n" +
+                "          \"screenshotAfterFileName\": \"after\",\n" +
+                "          \"differenceImageFileName\": \"differenceSum\"\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"summary\": {\n" +
+                "        \"error\": false,\n" +
+                "        \"differenceSum\": 0.0,\n" +
+                "        \"differenceMax\": 0.0\n" +
                 "      }\n" +
-                "    ]\n" +
+                "    }\n" +
                 "  }\n" +
                 "}";
 

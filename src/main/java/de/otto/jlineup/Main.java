@@ -14,6 +14,7 @@ import de.otto.jlineup.report.*;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Main {
 
@@ -88,7 +89,7 @@ public class Main {
             fileService.createOrClearReportDirectory();
         }
 
-        System.out.printf("Running JLineup [%s] with step '%s'.%n", getVersion(), parameters.getStep());
+        System.out.printf("Running JLineup [%s] with step '%s'.%n%n", getVersion(), parameters.getStep());
 
         /* Currently - firefox 49.0 is running fine
         if (config.browser == Browser.Type.FIREFOX) {
@@ -120,7 +121,14 @@ public class Main {
             final HTMLReportWriter htmlReportWriter = new HTMLReportWriter(fileService);
             htmlReportWriter.writeReport(report);
 
-            System.out.println("Sum of screenshot differences:\n" + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
+            final Set<Map.Entry<String, UrlReport>> entries = report.screenshotComparisonsForUrl.entrySet();
+            for (Map.Entry<String, UrlReport> entry : entries) {
+                System.out.println("Sum of screenshot differences for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
+                System.out.println("Max difference of a single screenshot for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
+                System.out.println("");
+            }
+
+            System.out.println("Sum of overall screenshot differences:\n" + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
             System.out.println("Max difference of a single screenshot:\n" + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
 
             if (!useLegacyReportFormat(config)) {

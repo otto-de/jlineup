@@ -28,7 +28,9 @@ public class JSONReportWriterV1Test {
 
         ScreenshotComparisonResult screenshotComparisonResult =
                 new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum");
-        Report report = new Report(new Summary(false, 0d, 0d), singletonMap("test", singletonList(screenshotComparisonResult)));
+        final Summary localSummary = new Summary(false, 0d, 0d);
+        final Summary globalSummary = new Summary(false, 0d, 0d);
+        Report report = new Report(globalSummary, singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)));
 
         String expectedString = "[\n" +
                 "  {\n" +

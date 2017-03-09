@@ -7,14 +7,14 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.FileNotFoundException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.*;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.hamcrest.core.StringEndsWith.endsWith;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -26,9 +26,10 @@ public class HTMLReportWriterTest {
     private FileService fileServiceMock;
 
     private final List<ScreenshotComparisonResult> screenshotComparisonResults = singletonList(new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum"));
-    private final Map<String, List<ScreenshotComparisonResult>> screenshotComparisonResultList =
-            singletonMap("test", screenshotComparisonResults);
     private Summary summary = new Summary(true, 1d, 0.5d);
+    private Summary localSummary = new Summary(true, 2d, 0.3d);
+    private final Map<String, UrlReport> screenshotComparisonResultList =
+            singletonMap("test", new UrlReport(screenshotComparisonResults, localSummary));
     private Report report = new Report(summary, screenshotComparisonResultList);
 
     @Before
