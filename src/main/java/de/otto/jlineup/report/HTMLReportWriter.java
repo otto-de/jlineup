@@ -42,7 +42,7 @@ public class HTMLReportWriter {
         String lastContextKey = null;
         ScreenshotComparisonResultContext currentContext = null;
         for (ScreenshotComparisonResult screenshotComparisonResult : screenshotComparisonResults) {
-            String context = screenshotComparisonResult.url + "|||" + screenshotComparisonResult.width;
+            String context = getContextKey(screenshotComparisonResult);
             if (!context.equals(lastContextKey)) {
                 lastContextKey = context;
                 currentContext = new ScreenshotComparisonResultContext(screenshotComparisonResult.url, screenshotComparisonResult.width);
@@ -55,6 +55,10 @@ public class HTMLReportWriter {
         variables.put("jlineup_version", Util.readVersion());
         variables.put("jlineup_commit", Util.readCommit());
         return variables;
+    }
+
+    private String getContextKey(ScreenshotComparisonResult screenshotComparisonResult) {
+        return screenshotComparisonResult.url + "|||" + screenshotComparisonResult.width;
     }
 
     private class ScreenshotComparisonResultContext {

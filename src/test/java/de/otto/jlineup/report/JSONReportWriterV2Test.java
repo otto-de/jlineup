@@ -2,7 +2,6 @@ package de.otto.jlineup.report;
 
 import de.otto.jlineup.file.FileService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -26,7 +25,6 @@ public class JSONReportWriterV2Test {
     }
 
     @Test
-    @Ignore
     public void shouldWriteComparisonReportAsJson() throws Exception {
 
         ScreenshotComparisonResult screenshotComparisonResult =
@@ -39,17 +37,19 @@ public class JSONReportWriterV2Test {
                 "    \"differenceSum\": 0.0,\n" +
                 "    \"differenceMax\": 0.0\n" +
                 "  },\n" +
-                "  \"screenshotComparisons\": [\n" +
-                "    {\n" +
-                "      \"url\": \"url\",\n" +
-                "      \"width\": 1337,\n" +
-                "      \"verticalScrollPosition\": 1338,\n" +
-                "      \"difference\": 0.0,\n" +
-                "      \"screenshotBeforeFileName\": \"before\",\n" +
-                "      \"screenshotAfterFileName\": \"after\",\n" +
-                "      \"differenceImageFileName\": \"differenceSum\"\n" +
-                "    }\n" +
-                "  ]\n" +
+                "  \"screenshotComparisonsForUrl\": {\n" +
+                "    \"test\": [\n" +
+                "      {\n" +
+                "        \"url\": \"url\",\n" +
+                "        \"width\": 1337,\n" +
+                "        \"verticalScrollPosition\": 1338,\n" +
+                "        \"difference\": 0.0,\n" +
+                "        \"screenshotBeforeFileName\": \"before\",\n" +
+                "        \"screenshotAfterFileName\": \"after\",\n" +
+                "        \"differenceImageFileName\": \"differenceSum\"\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
                 "}";
 
         testee.writeComparisonReportAsJson(report);

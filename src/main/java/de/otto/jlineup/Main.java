@@ -13,6 +13,7 @@ import de.otto.jlineup.report.*;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Map;
 
 public class Main {
 
@@ -104,7 +105,7 @@ public class Main {
 
         if (parameters.isAfter() || parameters.isJustCompare()) {
             ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(parameters, config, fileService, imageService);
-            List<ScreenshotComparisonResult> comparisonResults = screenshotsComparator.compare();
+            final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
 
             final ReportGenerator reportGenerator = new ReportGenerator();
             final Report report = reportGenerator.generateReport(comparisonResults);

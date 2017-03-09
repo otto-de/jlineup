@@ -39,11 +39,15 @@ public class ScreenshotsComparator {
         this.imageService = imageService;
     }
 
-    public List<ScreenshotComparisonResult> compare() throws IOException {
+    public Map<String, List<ScreenshotComparisonResult>> compare() throws IOException {
         LOG.debug("Comparing images...");
-        List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
-
+        if (config.urls == null) {
+            LOG.debug("No urls configured, so no comparison.");
+            return null;
+        }
+        Map<String, List<ScreenshotComparisonResult>> results = new HashMap<>();
         for (Map.Entry<String, UrlConfig> urlConfigEntry : config.urls.entrySet()) {
+            List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
             String url = BrowserUtils.prepareDomain(parameters, urlConfigEntry.getKey());
             UrlConfig urlConfig = urlConfigEntry.getValue();
             LOG.debug("Url: {}", url);
@@ -80,6 +84,7 @@ public class ScreenshotsComparator {
                         System.err.println("Can't read screenshot of 'before' step. Did you run JLineup with '--step before' parameter before trying to run '--step after' or --compare?");
                         throw e;
                     }
+
                     BufferedImage imageAfter;
                     try {
                         imageAfter = fileService.readScreenshot(afterFileName);
@@ -98,19 +103,20 @@ public class ScreenshotsComparator {
 
                 addMissingBeforeFilesToResults(screenshotComparisonResults, fullUrlWithPath, afterFileNamesWithNoBeforeFile);
             }
+            screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>comparing(r -> r.url).thenComparing(r -> r.width).thenComparing(r -> r.verticalScrollPosition));
+            results.put(urlConfigEntry.getKey(), screenshotComparisonResults);
         }
-        screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>comparing(r -> r.url).thenComparing(r -> r.width).thenComparing(r -> r.verticalScrollPosition));
-        return screenshotComparisonResults;
+        return results;
     }
 
     private void addMissingBeforeFilesToResults(List<ScreenshotComparisonResult> screenshotComparisonResults, String fullUrlWithPath, List<String> afterFileNamesWithNoBeforeFile) {
         screenshotComparisonResults.addAll(afterFileNamesWithNoBeforeFile
                 .stream()
                 .map(remainingFile -> ScreenshotComparisonResult.noBeforeImageComparisonResult(
-                    fullUrlWithPath,
-                    extractWindowWidthFromFileName(remainingFile),
-                    extractVerticalScrollPositionFromFileName(remainingFile),
-                    remainingFile))
+                        fullUrlWithPath,
+                        extractWindowWidthFromFileName(remainingFile),
+                        extractVerticalScrollPositionFromFileName(remainingFile),
+                        remainingFile))
                 .collect(Collectors.toList()));
     }
 

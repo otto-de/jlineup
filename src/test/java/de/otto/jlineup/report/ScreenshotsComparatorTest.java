@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -83,10 +84,10 @@ public class ScreenshotsComparatorTest {
     @Test
     public void shouldBuildComparisonResults() throws Exception {
         //given
-        List<ScreenshotComparisonResult> expectedResults = ImmutableList.of(
+        final ImmutableMap<String, ImmutableList<ScreenshotComparisonResult>> expectedResults = ImmutableMap.of("http://url", ImmutableList.of(
                 new ScreenshotComparisonResult("http://url/", 1001, 2002, 0.1337, "http_url_root_ff3c40c_1001_02002_before.png", "http_url_root_ff3c40c_1001_02002_after.png", "http_url_root_ff3c40c_1001_02002_DIFFERENCE.png"),
                 ScreenshotComparisonResult.noBeforeImageComparisonResult("http://url/", 1001, 3003, "http_url_root_ff3c40c_1001_03003_after.png")
-        );
+        ));
         when(fileService.getFilenamesForStep("/", "http://url", "before")).thenReturn(ImmutableList.of("http_url_root_ff3c40c_1001_02002_before.png"));
         when(fileService.getFilenamesForStep("/", "http://url", "after")).thenReturn(ImmutableList.of("http_url_root_ff3c40c_1001_02002_after.png", "http_url_root_ff3c40c_1001_03003_after.png"));
         BufferedImage beforeBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
@@ -102,7 +103,7 @@ public class ScreenshotsComparatorTest {
         when(fileService.writeScreenshot(differenceBuffer, "http://url", "/", 1001, 2002, "DIFFERENCE")).thenReturn("http_url_root_ff3c40c_1001_02002_DIFFERENCE.png");
 
         //when
-        List<ScreenshotComparisonResult> comparisonResults = testee.compare();
+        Map<String, List<ScreenshotComparisonResult>> comparisonResults = testee.compare();
 
         //then
         assertThat(comparisonResults, is(expectedResults));
