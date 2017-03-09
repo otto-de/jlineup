@@ -132,8 +132,11 @@ public class Main {
             System.out.println("Max difference of a single screenshot:\n" + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
 
             if (!useLegacyReportFormat(config)) {
-                if (report.summary.differenceSum > 0) {
-                    System.exit(1);
+                for (Map.Entry<String, UrlReport> entry : entries) {
+                    //Exit with exit code 1 if at least one url report has a bigger difference than configured
+                    if (config.urls != null && entry.getValue().summary.differenceMax > config.urls.get(entry.getKey()).maxDiff) {
+                        System.exit(1);
+                    }
                 }
             }
         }
