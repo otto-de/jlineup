@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 1.5.0
+* Update Geckodriver for Firefox to 0.15.0
+* Update Chromedriver for Chrome to 2.28
+
 ## Release 1.4.1
 * Bugfix: Version pinning of webdriver didn't work because of a change in webdrivermanager
   (https://github.com/bonigarcia/webdrivermanager/commit/29c531266c78399f3999b246da479163d734bee8)
