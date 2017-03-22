@@ -42,7 +42,7 @@ public class BrowserUtils {
         return url + path;
     }
 
-    WebDriver getWebDriverByConfig(Config config) {
+    synchronized WebDriver getWebDriverByConfig(Config config) {
         WebDriver driver;
         switch (config.browser) {
             case FIREFOX:

@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 1.5.1
+* Bugfix: Don't start multiple webdriver downloads when running in multiple threads
+
 ## Release 1.5.0
 * Update Geckodriver for Firefox to 0.15.0
 * Update Chromedriver for Chrome to 2.28
