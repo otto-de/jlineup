@@ -88,24 +88,36 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws IOException, InterruptedException, ExecutionException {
+    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws InterruptedException, ExecutionException {
+
+        List<Future> screenshotResults = new ArrayList<>();
+
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             final Future<?> takeScreenshotsResult = threadPool.submit(() -> {
                 try {
                     takeScreenshotsForContext(screenshotContext);
-                } catch (Exception e) {
+                } catch (InterruptedException | IOException e) {
                     e.printStackTrace();
-                    System.exit(1);
+                    throw new WebDriverException("Exception in Browser thread", e);
+                } catch (Exception other) {
+                    //There was an error, prevent pool from taking more tasks and let run fail
+                    threadPool.shutdownNow();
                 }
             });
+            screenshotResults.add(takeScreenshotsResult);
             //submit screenshots to the browser with a slight delay, so not all instances open up in complete sync
             Thread.sleep(THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS);
         }
         threadPool.shutdown();
         threadPool.awaitTermination(15, TimeUnit.MINUTES);
+
+        //Get and propagate possible exceptions
+        for (Future screenshotResult : screenshotResults) {
+            screenshotResult.get();
+        }
     }
 
-    private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException {
+    private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException, WebDriverException {
 
         final WebDriver localDriver = getWebDriver();
 

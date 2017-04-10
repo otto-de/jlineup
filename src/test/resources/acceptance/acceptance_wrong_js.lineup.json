@@ -1,0 +1,17 @@
+{
+  "urls": {
+    "https://www.otto.de": {
+      "paths": [
+        "/"
+      ],
+      "max-diff": 0.05,
+      "resolutions": [
+        600,800,1000,1200
+      ],
+      "javascript": "console.thisfunctiondoesnotexist('Moin!');"
+    }
+  },
+  "browser": "firefox",
+  "wait-after-page-load": 1,
+  "threads": 4
+}

@@ -71,6 +71,14 @@ public class JLineupAcceptanceTest {
     }
 
     @Test
+    public void shouldExitWithExitStatus1IfThereIsAJSException() throws Exception {
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertThat(sysErr.toString(), containsString("JavascriptException")));
+
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_wrong_js.lineup.json"});
+    }
+
+    @Test
     public void shouldOpenTestPage() throws Exception {
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--url","file://"+ CWD +"/src/test/resources/acceptance/webpage/test.html"});
     }

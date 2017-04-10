@@ -101,6 +101,9 @@ public class Main {
             BrowserUtils browserUtils = new BrowserUtils();
             try (Browser browser = new Browser(parameters, config, fileService, browserUtils)) {
                 browser.takeScreenshots();
+            } catch (Exception e) {
+                System.err.println("JLineup Exception: " + e);
+                System.exit(1);
             }
         }
 
