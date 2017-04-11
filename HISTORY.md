@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 1.5.2
+* Bugfix: Close open browsers and webdrivers when some Selenium Exception is throwing
+
 ## Release 1.5.1
 * Bugfix: Don't start multiple webdriver downloads when running in multiple threads
 
