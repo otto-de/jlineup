@@ -89,7 +89,7 @@ public class ScreenshotsComparator {
                     try {
                         imageAfter = fileService.readScreenshot(afterFileName);
                     } catch (IIOException e) {
-                        screenshotComparisonResults.add(ScreenshotComparisonResult.noAfterImageComparisonResult(fullUrlWithPath, windowWidth, yPosition, beforeFileName));
+                        screenshotComparisonResults.add(ScreenshotComparisonResult.noAfterImageComparisonResult(fullUrlWithPath, windowWidth, yPosition, buildRelativePathFromReportDir(beforeFileName)));
                         continue;
                     }
 
@@ -98,7 +98,10 @@ public class ScreenshotsComparator {
                     if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
                         differenceImagePath = fileService.writeScreenshot(imageComparisonResult.getDifferenceImage().orElse(null), url, path, windowWidth, yPosition, "DIFFERENCE");
                     }
-                    screenshotComparisonResults.add(new ScreenshotComparisonResult(fullUrlWithPath, windowWidth, yPosition, imageComparisonResult.getDifference(), beforeFileName, afterFileName, differenceImagePath));
+                    screenshotComparisonResults.add(new ScreenshotComparisonResult(fullUrlWithPath, windowWidth, yPosition, imageComparisonResult.getDifference(),
+                            buildRelativePathFromReportDir(beforeFileName),
+                            buildRelativePathFromReportDir(afterFileName),
+                            buildRelativePathFromReportDir(differenceImagePath)));
                 }
 
                 addMissingBeforeFilesToResults(screenshotComparisonResults, fullUrlWithPath, afterFileNamesWithNoBeforeFile);
@@ -109,6 +112,10 @@ public class ScreenshotsComparator {
         return results;
     }
 
+    private String buildRelativePathFromReportDir(String imageFileName) {
+        return imageFileName != null ? fileService.getRelativePathFromReportDirToScreenshotsDir() + imageFileName : null;
+    }
+
     private void addMissingBeforeFilesToResults(List<ScreenshotComparisonResult> screenshotComparisonResults, String fullUrlWithPath, List<String> afterFileNamesWithNoBeforeFile) {
         screenshotComparisonResults.addAll(afterFileNamesWithNoBeforeFile
                 .stream()
@@ -116,7 +123,7 @@ public class ScreenshotsComparator {
                         fullUrlWithPath,
                         extractWindowWidthFromFileName(remainingFile),
                         extractVerticalScrollPositionFromFileName(remainingFile),
-                        remainingFile))
+                        buildRelativePathFromReportDir(remainingFile)))
                 .collect(Collectors.toList()));
     }
 

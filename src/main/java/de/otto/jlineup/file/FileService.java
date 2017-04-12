@@ -39,6 +39,11 @@ public class FileService {
         Path directory = Paths.get(path);
         Files.newDirectoryStream(directory).forEach(file -> {
             try {
+
+                if (Files.isDirectory(file)) {
+                    clearDirectory(file.toAbsolutePath().toString());
+                }
+
                 Files.delete(file);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
@@ -83,9 +88,9 @@ public class FileService {
     }
 
     @VisibleForTesting
-    String generateScreenshotFileName(String url, String path, int width, int yPosition, String type) {
+    String generateScreenshotFileName(String url, String urlSubPath, int width, int yPosition, String type) {
 
-        String fileName = generateScreenshotFileNamePrefix(url, path)
+        String fileName = generateScreenshotFileNamePrefix(url, urlSubPath)
                 + String.format("%04d", width)
                 + DIVIDER
                 + String.format("%05d", yPosition)
@@ -97,18 +102,18 @@ public class FileService {
         return fileName;
     }
 
-    private String generateScreenshotFileNamePrefix(String url, String path) {
+    private String generateScreenshotFileNamePrefix(String url, String urlSubPath) {
 
-        String hash = Hashing.sha1().hashString(url + path, Charsets.UTF_8).toString().substring(0, 7);
+        String hash = Hashing.sha1().hashString(url + urlSubPath, Charsets.UTF_8).toString().substring(0, 7);
 
-        if (path.equals("/") || path.equals("")) {
-            path = "root";
+        if (urlSubPath.equals("/") || urlSubPath.equals("")) {
+            urlSubPath = "root";
         }
         if (url.endsWith("/")) {
             url = url.substring(0, url.length() - 1);
         }
 
-        String fileNamePrefix = url + DIVIDER + path + DIVIDER;
+        String fileNamePrefix = url + DIVIDER + urlSubPath + DIVIDER;
         fileNamePrefix = fileNamePrefix.replace("://", DIVIDER);
         fileNamePrefix = fileNamePrefix.replaceAll("[^A-Za-z0-9\\-_]", DIVIDER);
         fileNamePrefix = fileNamePrefix + hash + DIVIDER;
@@ -117,10 +122,10 @@ public class FileService {
     }
 
     @VisibleForTesting
-    String getScreenshotPath(String url, String path, int width, int yPosition, String step) {
+    String getScreenshotPath(String url, String urlSubPath, int width, int yPosition, String step) {
         return parameters.getWorkingDirectory() + (parameters.getWorkingDirectory().endsWith("/") ? "" : "/")
                 + parameters.getScreenshotDirectory() + (parameters.getScreenshotDirectory().endsWith("/") ? "" : "/")
-                + generateScreenshotFileName(url, path, width, yPosition, step);
+                + generateScreenshotFileName(url, urlSubPath, width, yPosition, step);
     }
 
     private String getScreenshotPath(String fileName) {
@@ -153,10 +158,10 @@ public class FileService {
     }
 
     public String writeScreenshot(BufferedImage image, String url,
-                                  String urlPath, int windowWidth, int yPosition, String step) throws IOException {
+                                  String urlSubPath, int windowWidth, int yPosition, String step) throws IOException {
         final String screenshotPath =
                 getScreenshotPath(url,
-                        urlPath, windowWidth,
+                        urlSubPath, windowWidth,
                         yPosition, step);
         writeScreenshot(screenshotPath, image);
         return screenshotPath;
@@ -168,6 +173,13 @@ public class FileService {
         return getFileNamesMatchingPattern(screenshotDirectory, matcherPattern);
     }
 
+    public String getRelativePathFromReportDirToScreenshotsDir() {
+        Path screenshotDirectory = getScreenshotDirectory().toAbsolutePath();
+        Path reportDirectory = getReportDirectory().toAbsolutePath();
+        Path relative = reportDirectory.relativize(screenshotDirectory);
+        return relative.toString() + "/";
+    }
+
     public void writeJsonReport(String reportJson) throws FileNotFoundException {
         try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + "/report.json"))) {
             out.print(reportJson);
@@ -175,7 +187,7 @@ public class FileService {
     }
 
     public void writeHtmlReport(String htmlReport) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getScreenshotDirectory().toString() + "/report.html"))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + "/report.html"))) {
             out.print(htmlReport);
         }
     }

@@ -133,7 +133,7 @@ public class Browser implements AutoCloseable {
         localDriver.manage().window().setPosition(new Point(0, 0));
         resizeBrowser(localDriver, screenshotContext.windowWidth, config.windowHeight);
 
-        final String url = buildUrl(screenshotContext.url, screenshotContext.path, screenshotContext.urlConfig.envMapping);
+        final String url = buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
         final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
 
         if (areThereCookiesOrStorage(screenshotContext)) {
@@ -192,7 +192,7 @@ public class Browser implements AutoCloseable {
             BufferedImage currentScreenshot = takeScreenshot();
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
             fileService.writeScreenshot(currentScreenshot, screenshotContext.url,
-                    screenshotContext.path, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
+                    screenshotContext.urlSubPath, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
             //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
             //This is subject to change because W3C standard wants viewport screenshots
             if (config.browser == Type.PHANTOMJS) {

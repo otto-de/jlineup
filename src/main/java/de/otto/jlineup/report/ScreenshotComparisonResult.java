@@ -1,7 +1,5 @@
 package de.otto.jlineup.report;
 
-import java.nio.file.Paths;
-
 public class ScreenshotComparisonResult {
 
     public final String url;
@@ -17,9 +15,9 @@ public class ScreenshotComparisonResult {
         this.width = width;
         this.verticalScrollPosition = verticalScrollPosition;
         this.difference = difference;
-        this.screenshotBeforeFileName = screenshotBeforeFileName != null ? Paths.get(screenshotBeforeFileName).getFileName().toString() : null;
-        this.screenshotAfterFileName = screenshotAfterFileName != null ? Paths.get(screenshotAfterFileName).getFileName().toString() : null;
-        this.differenceImageFileName = differenceImageFileName != null ? Paths.get(differenceImageFileName).getFileName().toString() : null;
+        this.screenshotBeforeFileName = screenshotBeforeFileName;
+        this.screenshotAfterFileName = screenshotAfterFileName;
+        this.differenceImageFileName = differenceImageFileName;
     }
 
     public static ScreenshotComparisonResult noBeforeImageComparisonResult(String url, int width, int verticalScrollPosition, String screenshotAfterFileName) {

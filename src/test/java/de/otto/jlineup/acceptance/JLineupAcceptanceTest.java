@@ -90,7 +90,7 @@ public class JLineupAcceptanceTest {
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
-        final Path reportHtml = Paths.get(tempDirectory.toString(), "screenshots", "report.html");
+        final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
@@ -98,7 +98,7 @@ public class JLineupAcceptanceTest {
         assertThat(report.summary.differenceSum, is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class JLineupAcceptanceTest {
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
-        final Path reportHtml = Paths.get(tempDirectory.toString(), "screenshots", "report.html");
+        final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
@@ -116,7 +116,7 @@ public class JLineupAcceptanceTest {
         assertThat(report.summary.differenceSum, is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class JLineupAcceptanceTest {
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
-        final Path reportHtml = Paths.get(tempDirectory.toString(), "screenshots", "report.html");
+        final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
@@ -134,7 +134,7 @@ public class JLineupAcceptanceTest {
         assertThat(report.summary.differenceSum, is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
     }
 
     @Test
@@ -144,7 +144,7 @@ public class JLineupAcceptanceTest {
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
-        final Path reportHtml = Paths.get(tempDirectory.toString(), "screenshots", "report.html");
+        final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
@@ -152,7 +152,7 @@ public class JLineupAcceptanceTest {
         assertThat(report.get(0).get("difference"), is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
     }
 
     @Test
@@ -162,7 +162,7 @@ public class JLineupAcceptanceTest {
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
-        final Path reportHtml = Paths.get(tempDirectory.toString(), "screenshots", "report.html");
+        final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
@@ -170,7 +170,7 @@ public class JLineupAcceptanceTest {
         assertThat(report.get(0).get("difference"), is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
 
         assertThat(sysOut.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/:\n0.0 (0 %)"));
         assertThat(sysOut.toString(), containsString("Sum of overall screenshot differences:\n0.0 (0 %)"));

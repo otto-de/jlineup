@@ -85,17 +85,11 @@ public class Main {
 
         //Only create screenshots and report dirs if config was found
         if (parameters.isBefore()) {
-            fileService.createOrClearScreenshotsDirectory();
             fileService.createOrClearReportDirectory();
+            fileService.createOrClearScreenshotsDirectory();
         }
 
         System.out.printf("Running JLineup [%s] with step '%s'.%n%n", getVersion(), parameters.getStep());
-
-        /* Currently - firefox 49.0 is running fine
-        if (config.browser == Browser.Type.FIREFOX) {
-            System.out.println("You're running JLineup with Firefox - Firefox is currently not supported and the run may fail.");
-        }
-        */
 
         if (!parameters.isJustCompare()) {
             BrowserUtils browserUtils = new BrowserUtils();

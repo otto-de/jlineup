@@ -24,7 +24,7 @@ public class Parameters {
     private String workingDirectory = ".";
 
     @Parameter(names = {"--screenshot-dir", "-sd"}, description = "Screenshots directory name - relative to working directory")
-    private String screenshotDirectory = "screenshots";
+    private String screenshotDirectory = "report/screenshots";
 
     @Parameter(names = {"--report-dir", "-rd"}, description = "HTML report directory name - relative to working directory")
     private String reportDirectory = "report";
