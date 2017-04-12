@@ -1,7 +1,10 @@
 # JLineup Release History
 
+## Release 1.5.3
+* Some exceptions lead to stalling browser sessions, now every exception is thrown
+
 ## Release 1.5.2
-* Bugfix: Close open browsers and webdrivers when some Selenium Exception is throwing
+* Bugfix: Close open browsers and webdrivers when some Selenium exception is throwing
 
 ## Release 1.5.1
 * Bugfix: Don't start multiple webdriver downloads when running in multiple threads
