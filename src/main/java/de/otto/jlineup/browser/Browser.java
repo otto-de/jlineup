@@ -97,11 +97,15 @@ public class Browser implements AutoCloseable {
                 try {
                     takeScreenshotsForContext(screenshotContext);
                 } catch (InterruptedException | IOException e) {
+                    //There was an error, prevent pool from taking more tasks and let run fail
                     e.printStackTrace();
+                    threadPool.shutdownNow();
                     throw new WebDriverException("Exception in Browser thread", e);
                 } catch (Exception other) {
                     //There was an error, prevent pool from taking more tasks and let run fail
+                    other.printStackTrace();
                     threadPool.shutdownNow();
+                    throw other;
                 }
             });
             screenshotResults.add(takeScreenshotsResult);
