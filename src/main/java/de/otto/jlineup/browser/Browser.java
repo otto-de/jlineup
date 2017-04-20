@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
@@ -34,9 +35,6 @@ public class Browser implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(Browser.class);
     public static final int THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
     public static final int DEFAULT_SLEEP_AFTER_SCROLL_MILLIS = 50;
-    public static final String JS_RETURN_DOCUMENT_FONTS_SIZE_CALL = "return document.fonts.size;";
-    public static final String JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL = "return document.fonts.status === 'loaded';";
-
 
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
@@ -54,6 +52,29 @@ public class Browser implements AutoCloseable {
     static final String JS_SET_SESSION_STORAGE_CALL = "sessionStorage.setItem('%s','%s')";
     static final String JS_SCROLL_CALL = "window.scrollBy(0,%d)";
     static final String JS_SCROLL_TO_TOP_CALL = "window.scrollTo(0, 0);";
+    static final String JS_RETURN_DOCUMENT_FONTS_SIZE_CALL = "return document.fonts.size;";
+    static final String JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL = "return document.fonts.status === 'loaded';";
+    static final String JS_GET_BROWSER_AND_VERSION_CALL = "function get_browser() {\n" +
+            "    var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\\/))\\/?\\s*(\\d+)/i) || []; \n" +
+            "    if(/trident/i.test(M[1])){\n" +
+            "        tem=/\\brv[ :]+(\\d+)/g.exec(ua) || []; \n" +
+            "        return {name:'IE',version:(tem[1]||'')};\n" +
+            "        }   \n" +
+            "    if(M[1]==='Chrome'){\n" +
+            "        tem=ua.match(/\\bOPR|Edge\\/(\\d+)/)\n" +
+            "        if(tem!=null)   {return {name:'Opera', version:tem[1]};}\n" +
+            "        }   \n" +
+            "    M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];\n" +
+            "    if((tem=ua.match(/version\\/(\\d+)/i))!=null) {M.splice(1,1,tem[1]);}\n" +
+            "    return {\n" +
+            "      name: M[0],\n" +
+            "      version: M[1]\n" +
+            "    };\n" +
+            " }\n" +
+            "\n" +
+            "return get_browser();\n";
+
+
     final private Parameters parameters;
 
     final private Config config;
@@ -121,9 +142,20 @@ public class Browser implements AutoCloseable {
         }
     }
 
+    private AtomicBoolean printVersion = new AtomicBoolean(true);
+
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException, WebDriverException {
 
         final WebDriver localDriver = getWebDriver();
+
+        if(printVersion.getAndSet(false)) {
+            System.out.println(
+                    "\n\n" +
+                    "====================================================\n" +
+                    "Using Browser: " + getBrowserAndVersion() + "\n" +
+                    "====================================================\n" +
+                    "\n");
+        }
 
         //No need to move the mouse out of the way for phantomjs, but this avoids hovering links in other browsers
         if (config.browser != Type.PHANTOMJS) {
@@ -305,13 +337,20 @@ public class Browser implements AutoCloseable {
         return (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
     }
 
-    void executeJavaScript(String javaScript) throws InterruptedException {
+    private void executeJavaScript(String javaScript) throws InterruptedException {
         if (javaScript == null) {
             return;
         }
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(javaScript);
         Thread.sleep(50);
+    }
+
+    @SuppressWarnings("unchecked")
+    private String getBrowserAndVersion() {
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
+        Map<String,Object> result = (Map<String, Object>)jse.executeScript(JS_GET_BROWSER_AND_VERSION_CALL);
+        return result.get("name") + " " + result.get("version");
     }
 
     void scrollBy(int viewportHeight) throws InterruptedException {
@@ -321,7 +360,7 @@ public class Browser implements AutoCloseable {
         Thread.sleep(DEFAULT_SLEEP_AFTER_SCROLL_MILLIS);
     }
 
-    void scrollToTop() throws InterruptedException {
+    private void scrollToTop() throws InterruptedException {
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(JS_SCROLL_TO_TOP_CALL);
         //Sleep some milliseconds to give scrolling time before the next screenshot happens
@@ -413,7 +452,7 @@ public class Browser implements AutoCloseable {
     }
 
     private void moveMouseToZeroZero() {
-        Robot robot = null;
+        Robot robot;
         try {
             robot = new Robot();
             robot.mouseMove(0, 0);
@@ -423,15 +462,12 @@ public class Browser implements AutoCloseable {
     }
 
     // wait for fonts to load
-    private ExpectedCondition<Boolean> fontsLoaded = new ExpectedCondition<Boolean>() {
-        @Override
-        public Boolean apply(WebDriver driver) {
-            final JavascriptExecutor javascriptExecutor = (JavascriptExecutor) getWebDriver();
-            final Long fontsLoadedCount = (Long) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL);
-            final Boolean fontsLoaded = (Boolean) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL);
-            LOG.debug("Amount of fonts in document: {}", fontsLoadedCount);
-            LOG.debug("Fonts loaded: {} ", fontsLoaded);
-            return fontsLoaded;
-        }
+    private ExpectedCondition<Boolean> fontsLoaded = driver -> {
+        final JavascriptExecutor javascriptExecutor = (JavascriptExecutor) getWebDriver();
+        final Long fontsLoadedCount = (Long) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL);
+        final Boolean fontsLoaded = (Boolean) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL);
+        LOG.debug("Amount of fonts in document: {}", fontsLoadedCount);
+        LOG.debug("Fonts loaded: {} ", fontsLoaded);
+        return fontsLoaded;
     };
 }
