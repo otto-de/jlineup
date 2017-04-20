@@ -1,0 +1,12 @@
+{
+  "urls": {
+    "file://###CWD###/src/test/resources/acceptance/webpage/": {
+      "paths": [
+        "test.html"
+      ],
+      "wait-for-fonts-time": 1
+    }
+  },
+  "browser": "PhantomJS",
+  "threads": 1
+}

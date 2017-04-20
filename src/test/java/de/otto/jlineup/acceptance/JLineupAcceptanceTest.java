@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 
@@ -174,6 +175,14 @@ public class JLineupAcceptanceTest {
 
         assertThat(sysOut.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/:\n0.0 (0 %)"));
         assertThat(sysOut.toString(), containsString("Sum of overall screenshot differences:\n0.0 (0 %)"));
+        assertThat(sysOut.toString(), not(containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.")));
+    }
+
+    @Test
+    public void shouldNotCrashPhantomjsFontsNotLoaded() throws Exception {
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_phantom_fonts.lineup.json","--replace-in-url###CWD###="+CWD, "--step","before"});
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_phantom_fonts.lineup.json","--replace-in-url###CWD###="+CWD ,"--step","after"});
+        assertThat(sysOut.toString(), containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature."));
     }
 
     private String getTextFileContentAsString(Path reportJson) throws IOException {

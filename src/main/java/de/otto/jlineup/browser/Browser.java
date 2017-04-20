@@ -184,8 +184,12 @@ public class Browser implements AutoCloseable {
 
         //Wait for fonts
         if (screenshotContext.urlConfig.waitForFontsTime > 0) {
-            WebDriverWait wait = new WebDriverWait(getWebDriver(), screenshotContext.urlConfig.waitForFontsTime);
-            wait.until(fontsLoaded);
+            if(config.browser != Type.PHANTOMJS){
+                WebDriverWait wait = new WebDriverWait(getWebDriver(), screenshotContext.urlConfig.waitForFontsTime);
+                wait.until(fontsLoaded);
+            } else {
+                System.out.println("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.");
+            }
         }
 
         for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += viewportHeight) {
