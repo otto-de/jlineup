@@ -137,9 +137,9 @@ public class Main {
                     }
                 }
             }
-
-            System.out.printf("JLineup run finished for step '%s'%n", parameters.getStep());
         }
+
+        System.out.printf("JLineup run finished for step '%s'%n", parameters.getStep());
     }
 
     private static void setLogLevelToDebug() {

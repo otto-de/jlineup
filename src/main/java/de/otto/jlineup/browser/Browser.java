@@ -73,6 +73,7 @@ public class Browser implements AutoCloseable {
             " }\n" +
             "\n" +
             "return get_browser();\n";
+    static final String JS_GET_USER_AGENT = "return navigator.appVersion;";
 
 
     final private Parameters parameters;
@@ -152,7 +153,7 @@ public class Browser implements AutoCloseable {
             System.out.println(
                     "\n\n" +
                     "====================================================\n" +
-                    "Using Browser: " + getBrowserAndVersion() + "\n" +
+                    "User agent: " + getBrowserAndVersion() + "\n" +
                     "====================================================\n" +
                     "\n");
         }
@@ -346,11 +347,9 @@ public class Browser implements AutoCloseable {
         Thread.sleep(50);
     }
 
-    @SuppressWarnings("unchecked")
     private String getBrowserAndVersion() {
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
-        Map<String,Object> result = (Map<String, Object>)jse.executeScript(JS_GET_BROWSER_AND_VERSION_CALL);
-        return result.get("name") + " " + result.get("version");
+        return (String)jse.executeScript(JS_GET_USER_AGENT);
     }
 
     void scrollBy(int viewportHeight) throws InterruptedException {
