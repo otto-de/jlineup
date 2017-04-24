@@ -132,10 +132,13 @@ public class Main {
                 for (Map.Entry<String, UrlReport> entry : entries) {
                     //Exit with exit code 1 if at least one url report has a bigger difference than configured
                     if (config.urls != null && entry.getValue().summary.differenceMax > config.urls.get(entry.getKey()).maxDiff) {
+                        System.out.println("JLineup finished. There was a difference between before and after. Return code is 1.");
                         System.exit(1);
                     }
                 }
             }
+
+            System.out.printf("JLineup run finished for step '%s'%n", parameters.getStep());
         }
     }
 

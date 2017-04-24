@@ -12,7 +12,7 @@ apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'signing'
 
 static version() {
-    return '1.5.4-SNAPSHOT'
+    return '2.0.0-SNAPSHOT'
 }
 
 static isReleaseBuild() {
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compile("org.seleniumhq.selenium:selenium-java:3.3.1") {
+    compile("org.seleniumhq.selenium:selenium-java:3.4.0") {
         exclude module: "selenium-edge-driver"
         exclude module: "selenium-ie-driver"
         exclude module: "selenium-opera-driver"
