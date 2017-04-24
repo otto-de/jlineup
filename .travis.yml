@@ -19,4 +19,4 @@ cache:
   directories:
   - $HOME/.m2
 addons:
-  firefox: "52.0"
+  firefox: latest-beta
