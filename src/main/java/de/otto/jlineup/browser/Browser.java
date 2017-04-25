@@ -236,17 +236,29 @@ public class Browser implements AutoCloseable {
                 break;
             }
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
+            LOG.debug("Scroll by {}", viewportHeight.intValue());
             scrollBy(viewportHeight.intValue());
+            LOG.debug("Scroll by {} done", viewportHeight.intValue());
+
             if (screenshotContext.urlConfig.waitAfterScroll > 0) {
+                LOG.debug("Waiting for {} seconds (wait after scroll).", screenshotContext.urlConfig.waitAfterScroll);
                 TimeUnit.SECONDS.sleep(screenshotContext.urlConfig.waitAfterScroll);
             }
 
             //Refresh to check if page grows during scrolling
+            LOG.debug("Getting page height.");
             pageHeight = getPageHeight();
+            LOG.debug("Page height is {}", pageHeight);
         }
     }
 
     private void resizeBrowser(WebDriver localDriver, int width, int height) {
+        LOG.debug("Resize browser window to {}x{}", width, height);
+        // Firefox 53.0 hangs if you resize a window to a size it already has,
+        // so make sure another size is used before setting the desired one
+        // TODO: Remove the following line when fixed in Firefox!
+        localDriver.manage().window().setSize(new Dimension(width + 1, height + 1));
+        //
         localDriver.manage().window().setSize(new Dimension(width, height));
     }
 
@@ -285,10 +297,12 @@ public class Browser implements AutoCloseable {
                 final Integer maxWidth = screenshotContext.urlConfig.windowWidths.stream().max(Integer::compareTo).get();
                 LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, maxWidth, config.windowHeight));
                 resizeBrowser(driver, maxWidth, config.windowHeight);
+                LOG.debug("Getting url: {}", url);
                 driver.get(url);
                 LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
                 browserCacheWarmupMarks.add(url);
                 try {
+                    LOG.debug("Sleeping for {} seconds", warmupTime);
                     Thread.sleep(warmupTime * 1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

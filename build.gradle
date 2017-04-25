@@ -39,7 +39,7 @@ dependencies {
         exclude module: "htmlunit"
     }
     compile "io.github.bonigarcia:webdrivermanager:1.6.2"
-    compile "com.beust:jcommander:1.64"
+    compile "com.beust:jcommander:1.69"
     compile "com.google.code.gson:gson:2.8.0"
     compile "ch.qos.logback:logback-classic:1.2.3"
     compile "org.thymeleaf:thymeleaf:3.0.5.RELEASE"

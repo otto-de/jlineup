@@ -33,7 +33,7 @@ public final class Config {
     public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
     public static final int DEFAULT_WAIT_FOR_FONTS_TIME = 0;
     public static final int DEFAULT_THREADS = 1;
-    public static final int DEFAULT_REPORT_FORMAT = 1;
+    public static final int DEFAULT_REPORT_FORMAT = 2;
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;

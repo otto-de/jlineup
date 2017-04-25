@@ -1,5 +1,13 @@
 # JLineup Release History
 
+## Release 2.0.0
+* Breaking change: New json report format with summary. Use "report-format":1 to use legacy format for json report.
+* Breaking change: Screenshots folder is now below report folder by default. HTML report is in report folder.
+* Breaking change: JLineup returns error code 1 if report shows a difference
+* Selenium upgrade to 3.4
+* Support for Firefox 53.x, Chrome 58.x
+* Geckodriver 0.16.0, Chromedriver 2.29
+
 ## Release 1.5.3
 * Some exceptions lead to stalling browser sessions, now every exception is thrown
 
