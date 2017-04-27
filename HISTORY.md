@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 2.0.1
+* Bugfix: Fix difference image link in html report
+* Update Geckodriver to 0.16.1
+
 ## Release 2.0.0
 * Breaking change: New json report format with summary. Use "report-format":1 to use legacy format for json report.
 * Breaking change: Screenshots folder is now below report folder by default. HTML report is in report folder.
