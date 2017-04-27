@@ -97,7 +97,6 @@ public class BrowserTest {
             assertTrue(driverClass.isInstance(driver));
         } finally {
             if (driver != null) {
-                driver.close();
                 driver.quit();
             }
         }
