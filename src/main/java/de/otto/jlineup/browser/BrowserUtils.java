@@ -33,6 +33,9 @@ public class BrowserUtils {
     }
 
     static String buildUrl(String url, String path) {
+        if (path == null) {
+            path = "/";
+        }
         if (path.startsWith("/")) {
             path = path.substring(1);
         }
@@ -42,7 +45,7 @@ public class BrowserUtils {
         return url + path;
     }
 
-    WebDriver getWebDriverByConfig(Config config) {
+    synchronized WebDriver getWebDriverByConfig(Config config) {
         WebDriver driver;
         switch (config.browser) {
             case FIREFOX:

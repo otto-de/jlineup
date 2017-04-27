@@ -97,7 +97,6 @@ public class Browser implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        webDrivers.values().forEach(WebDriver::close);
         webDrivers.values().forEach(WebDriver::quit);
         webDrivers.clear();
     }
@@ -236,7 +235,6 @@ public class Browser implements AutoCloseable {
                 break;
             }
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
-            LOG.debug("Scroll by {}", viewportHeight.intValue());
             scrollBy(viewportHeight.intValue());
             LOG.debug("Scroll by {} done", viewportHeight.intValue());
 
@@ -246,20 +244,25 @@ public class Browser implements AutoCloseable {
             }
 
             //Refresh to check if page grows during scrolling
-            LOG.debug("Getting page height.");
             pageHeight = getPageHeight();
             LOG.debug("Page height is {}", pageHeight);
         }
     }
 
-    private void resizeBrowser(WebDriver localDriver, int width, int height) {
+    Random random = new Random();
+
+    private void resizeBrowser(WebDriver driver, int width, int height) throws InterruptedException {
         LOG.debug("Resize browser window to {}x{}", width, height);
-        // Firefox 53.0 hangs if you resize a window to a size it already has,
-        // so make sure another size is used before setting the desired one
-        // TODO: Remove the following line when fixed in Firefox!
-        localDriver.manage().window().setSize(new Dimension(width + 1, height + 1));
-        //
-        localDriver.manage().window().setSize(new Dimension(width, height));
+
+        if (config.browser == Type.FIREFOX) {
+            // Firefox 53.0 hangs if you resize a window to a size it already has,
+            // so make sure another size is used before setting the desired one
+            // TODO: Remove the following line when fixed in Firefox!
+            driver.manage().window().setSize(new Dimension(width + (random.nextInt(20) - 10), height + (random.nextInt(20) - 10)));
+            TimeUnit.MILLISECONDS.sleep(25);
+        }
+
+        driver.manage().window().setSize(new Dimension(width, height));
     }
 
     private WebDriver initializeWebDriver() {
@@ -289,7 +292,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) {
+    private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) throws InterruptedException {
         int warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > Config.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
             final Set<String> browserCacheWarmupMarks = cacheWarmupMarksMap.computeIfAbsent(Thread.currentThread().getName(), k -> initializeCacheWarmupMarks());
@@ -343,11 +346,13 @@ public class Browser implements AutoCloseable {
     }
 
     private Long getPageHeight() {
+        LOG.debug("Getting page height.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         return (Long) (jse.executeScript(JS_DOCUMENT_HEIGHT_CALL));
     }
 
     private Long getViewportHeight() {
+        LOG.debug("Getting viewport height.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         return (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
     }
@@ -356,17 +361,20 @@ public class Browser implements AutoCloseable {
         if (javaScript == null) {
             return;
         }
+        LOG.debug("Executing JavaScript: {}", javaScript);
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(javaScript);
         Thread.sleep(50);
     }
 
     private String getBrowserAndVersion() {
+        LOG.debug("Getting browser user agent.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         return (String)jse.executeScript(JS_GET_USER_AGENT);
     }
 
     void scrollBy(int viewportHeight) throws InterruptedException {
+        LOG.debug("Scroll by {}", viewportHeight);
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(String.format(JS_SCROLL_CALL, viewportHeight));
         //Sleep some milliseconds to give scrolling time before the next screenshot happens
@@ -374,6 +382,7 @@ public class Browser implements AutoCloseable {
     }
 
     private void scrollToTop() throws InterruptedException {
+        LOG.debug("Scroll to top");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(JS_SCROLL_TO_TOP_CALL);
         //Sleep some milliseconds to give scrolling time before the next screenshot happens
