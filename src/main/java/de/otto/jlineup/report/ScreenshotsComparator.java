@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.IIOException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,14 +95,14 @@ public class ScreenshotsComparator {
                     }
 
                     ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, config.windowHeight);
-                    String differenceImagePath = null;
+                    String differenceImageFileName = null;
                     if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
-                        differenceImagePath = fileService.writeScreenshot(imageComparisonResult.getDifferenceImage().orElse(null), url, path, windowWidth, yPosition, "DIFFERENCE");
+                        differenceImageFileName = Paths.get(fileService.writeScreenshot(imageComparisonResult.getDifferenceImage().orElse(null), url, path, windowWidth, yPosition, "DIFFERENCE")).getFileName().toString();
                     }
                     screenshotComparisonResults.add(new ScreenshotComparisonResult(fullUrlWithPath, windowWidth, yPosition, imageComparisonResult.getDifference(),
                             buildRelativePathFromReportDir(beforeFileName),
                             buildRelativePathFromReportDir(afterFileName),
-                            buildRelativePathFromReportDir(differenceImagePath)));
+                            buildRelativePathFromReportDir(differenceImageFileName)));
                 }
 
                 addMissingBeforeFilesToResults(screenshotComparisonResults, fullUrlWithPath, afterFileNamesWithNoBeforeFile);
