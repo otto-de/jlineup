@@ -116,15 +116,15 @@ public class Browser implements AutoCloseable {
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             final Future<?> takeScreenshotsResult = threadPool.submit(() -> {
                 try {
-                    takeScreenshotsForContext(screenshotContext);
+                    tryToTakeScreenshotsForContextNTimes(screenshotContext, 2);
                 } catch (InterruptedException | IOException e) {
                     //There was an error, prevent pool from taking more tasks and let run fail
-                    e.printStackTrace();
+                    LOG.error("Exception in Browser thread while taking screenshot.", e);
                     threadPool.shutdownNow();
                     throw new WebDriverException("Exception in Browser thread", e);
                 } catch (Exception other) {
                     //There was an error, prevent pool from taking more tasks and let run fail
-                    other.printStackTrace();
+                    LOG.error("Exception while taking screenshot.", other);
                     threadPool.shutdownNow();
                     throw other;
                 }
@@ -139,6 +139,24 @@ public class Browser implements AutoCloseable {
         //Get and propagate possible exceptions
         for (Future screenshotResult : screenshotResults) {
             screenshotResult.get();
+        }
+    }
+
+    private void tryToTakeScreenshotsForContextNTimes(ScreenshotContext screenshotContext, int maxRetries) throws IOException, InterruptedException {
+        int retries = 0;
+        while (retries <= maxRetries) {
+            try {
+                takeScreenshotsForContext(screenshotContext);
+                return;
+            }
+            catch (Exception e) {
+                if (retries < maxRetries) {
+                    LOG.info("try '{}' to take screen failed", retries, e);
+                } else {
+                    throw e;
+                }
+            }
+            retries++;
         }
     }
 
