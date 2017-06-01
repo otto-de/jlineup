@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 2.1.0
+* Feature: Introduce global page load timeout, defaults to 120 seconds
+* Feature: Global retry option if some Exception occurs during takeScreenshots, defaults to 0
+
 ## Release 2.0.1
 * Bugfix: Fix difference image link in html report
 * Update Geckodriver to 0.16.1

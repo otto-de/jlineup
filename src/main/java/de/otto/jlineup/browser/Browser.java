@@ -116,7 +116,7 @@ public class Browser implements AutoCloseable {
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             final Future<?> takeScreenshotsResult = threadPool.submit(() -> {
                 try {
-                    tryToTakeScreenshotsForContextNTimes(screenshotContext, 2);
+                    tryToTakeScreenshotsForContextNTimes(screenshotContext, config.screenshotRetries);
                 } catch (InterruptedException | IOException e) {
                     //There was an error, prevent pool from taking more tasks and let run fail
                     LOG.error("Exception in Browser thread while taking screenshot.", e);

@@ -35,6 +35,7 @@ public final class Config {
     public static final int DEFAULT_THREADS = 1;
     public static final int DEFAULT_REPORT_FORMAT = 2;
     public static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
+    public static final int DEFAULT_SCREENSHOT_RETRIES = 0;
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
@@ -48,6 +49,8 @@ public final class Config {
     public final Integer reportFormat;
     @SerializedName("debug")
     public final boolean debug;
+    @SerializedName("screenshot-retries")
+    public final int screenshotRetries;
 
     private final static Gson gson = new Gson();
     public int threads;
@@ -61,16 +64,18 @@ public final class Config {
         windowHeight = DEFAULT_WINDOW_HEIGHT;
         threads = DEFAULT_THREADS;
         debug = false;
+        screenshotRetries = DEFAULT_SCREENSHOT_RETRIES;
         reportFormat = DEFAULT_REPORT_FORMAT;
     }
 
-    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer pageLoadTimeout, final Integer windowHeight, final Integer threads, final Integer reportFormat, final boolean debug) {
+    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer pageLoadTimeout, final Integer windowHeight, final Integer threads, final Integer screenshotRetries, final Integer reportFormat, final boolean debug) {
         this.urls = urls;
         this.browser = browser != null ? browser : DEFAULT_BROWSER;
         this.globalWaitAfterPageLoad = globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad : DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         this.pageLoadTimeout = pageLoadTimeout != null ? pageLoadTimeout : DEFAULT_PAGELOAD_TIMEOUT;
         this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
         this.threads = threads != null ? threads : DEFAULT_THREADS;
+        this.screenshotRetries = screenshotRetries != null ? screenshotRetries : DEFAULT_SCREENSHOT_RETRIES;
         this.reportFormat = Objects.isNull(reportFormat) ? null : reportFormat.equals(DEFAULT_REPORT_FORMAT) ? null : reportFormat;
         this.debug = debug;
     }
@@ -80,7 +85,7 @@ public final class Config {
     }
 
     public static Config defaultConfig(String url) {
-        return new Config(ImmutableMap.of(url, new UrlConfig()), null, null, null, null, null, null, false);
+        return new Config(ImmutableMap.of(url, new UrlConfig()), null, null, null, null, null, null, null, false);
     }
 
     @Override
@@ -93,6 +98,7 @@ public final class Config {
                 ", windowHeight=" + windowHeight +
                 ", reportFormat=" + reportFormat +
                 ", debug=" + debug +
+                ", screenshotRetries=" + screenshotRetries +
                 ", threads=" + threads +
                 '}';
     }
@@ -101,20 +107,34 @@ public final class Config {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+
         Config config = (Config) o;
-        return debug == config.debug &&
-                threads == config.threads &&
-                Objects.equals(urls, config.urls) &&
-                browser == config.browser &&
-                Objects.equals(globalWaitAfterPageLoad, config.globalWaitAfterPageLoad) &&
-                Objects.equals(pageLoadTimeout, config.pageLoadTimeout) &&
-                Objects.equals(windowHeight, config.windowHeight) &&
-                Objects.equals(reportFormat, config.reportFormat);
+
+        if (pageLoadTimeout != config.pageLoadTimeout) return false;
+        if (debug != config.debug) return false;
+        if (screenshotRetries != config.screenshotRetries) return false;
+        if (threads != config.threads) return false;
+        if (urls != null ? !urls.equals(config.urls) : config.urls != null) return false;
+        if (browser != config.browser) return false;
+        if (globalWaitAfterPageLoad != null ? !globalWaitAfterPageLoad.equals(config.globalWaitAfterPageLoad) : config.globalWaitAfterPageLoad != null)
+            return false;
+        if (windowHeight != null ? !windowHeight.equals(config.windowHeight) : config.windowHeight != null)
+            return false;
+        return reportFormat != null ? reportFormat.equals(config.reportFormat) : config.reportFormat == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(urls, browser, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, debug, threads);
+        int result = urls != null ? urls.hashCode() : 0;
+        result = 31 * result + (browser != null ? browser.hashCode() : 0);
+        result = 31 * result + (globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad.hashCode() : 0);
+        result = 31 * result + pageLoadTimeout;
+        result = 31 * result + (windowHeight != null ? windowHeight.hashCode() : 0);
+        result = 31 * result + (reportFormat != null ? reportFormat.hashCode() : 0);
+        result = 31 * result + (debug ? 1 : 0);
+        result = 31 * result + screenshotRetries;
+        result = 31 * result + threads;
+        return result;
     }
 
     public static Config exampleConfig() {
@@ -142,6 +162,7 @@ public final class Config {
                 DEFAULT_PAGELOAD_TIMEOUT,
                 DEFAULT_WINDOW_HEIGHT,
                 DEFAULT_THREADS,
+                DEFAULT_SCREENSHOT_RETRIES,
                 DEFAULT_REPORT_FORMAT,
                 false
         );

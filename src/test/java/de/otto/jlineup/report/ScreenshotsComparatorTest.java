@@ -54,7 +54,8 @@ public class ScreenshotsComparatorTest {
                 0f,
                 Config.DEFAULT_PAGELOAD_TIMEOUT,
                 WINDOW_HEIGHT,
-                1,
+                Config.DEFAULT_THREADS,
+                Config.DEFAULT_SCREENSHOT_RETRIES,
                 Config.DEFAULT_REPORT_FORMAT,
                 false);
 
