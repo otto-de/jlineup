@@ -15,6 +15,7 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class BrowserUtils {
@@ -65,6 +66,7 @@ public class BrowserUtils {
                 driver = new PhantomJSDriver();
                 break;
         }
+        driver.manage().timeouts().pageLoadTimeout(config.pageLoadTimeout, TimeUnit.SECONDS);
         return driver;
     }
 

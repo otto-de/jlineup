@@ -52,6 +52,7 @@ public class ScreenshotsComparatorTest {
                         new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5)),
                 Browser.Type.CHROME,
                 0f,
+                Config.DEFAULT_PAGELOAD_TIMEOUT,
                 WINDOW_HEIGHT,
                 1,
                 Config.DEFAULT_REPORT_FORMAT,

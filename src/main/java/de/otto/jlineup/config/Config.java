@@ -34,11 +34,14 @@ public final class Config {
     public static final int DEFAULT_WAIT_FOR_FONTS_TIME = 0;
     public static final int DEFAULT_THREADS = 1;
     public static final int DEFAULT_REPORT_FORMAT = 2;
+    public static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
     @SerializedName(value = "wait-after-page-load", alternate = "async-wait")
     public final Float globalWaitAfterPageLoad;
+    @SerializedName(value = "page-load-timeout")
+    public final int pageLoadTimeout;
     @SerializedName("window-height")
     public final Integer windowHeight;
     @SerializedName("report-format")
@@ -54,16 +57,18 @@ public final class Config {
         urls = null;
         browser = DEFAULT_BROWSER;
         globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
+        pageLoadTimeout = DEFAULT_PAGELOAD_TIMEOUT;
         windowHeight = DEFAULT_WINDOW_HEIGHT;
         threads = DEFAULT_THREADS;
         debug = false;
         reportFormat = DEFAULT_REPORT_FORMAT;
     }
 
-    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer windowHeight, final Integer threads, final Integer reportFormat, final boolean debug) {
+    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer pageLoadTimeout, final Integer windowHeight, final Integer threads, final Integer reportFormat, final boolean debug) {
         this.urls = urls;
         this.browser = browser != null ? browser : DEFAULT_BROWSER;
         this.globalWaitAfterPageLoad = globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad : DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
+        this.pageLoadTimeout = pageLoadTimeout != null ? pageLoadTimeout : DEFAULT_PAGELOAD_TIMEOUT;
         this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
         this.threads = threads != null ? threads : DEFAULT_THREADS;
         this.reportFormat = Objects.isNull(reportFormat) ? null : reportFormat.equals(DEFAULT_REPORT_FORMAT) ? null : reportFormat;
@@ -75,7 +80,7 @@ public final class Config {
     }
 
     public static Config defaultConfig(String url) {
-        return new Config(ImmutableMap.of(url, new UrlConfig()), null, null, null, null, null, false);
+        return new Config(ImmutableMap.of(url, new UrlConfig()), null, null, null, null, null, null, false);
     }
 
     @Override
@@ -84,6 +89,7 @@ public final class Config {
                 "urls=" + urls +
                 ", browser=" + browser +
                 ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
+                ", pageLoadTimeout=" + pageLoadTimeout +
                 ", windowHeight=" + windowHeight +
                 ", reportFormat=" + reportFormat +
                 ", debug=" + debug +
@@ -101,13 +107,14 @@ public final class Config {
                 Objects.equals(urls, config.urls) &&
                 browser == config.browser &&
                 Objects.equals(globalWaitAfterPageLoad, config.globalWaitAfterPageLoad) &&
+                Objects.equals(pageLoadTimeout, config.pageLoadTimeout) &&
                 Objects.equals(windowHeight, config.windowHeight) &&
                 Objects.equals(reportFormat, config.reportFormat);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(urls, browser, globalWaitAfterPageLoad, windowHeight, reportFormat, debug, threads);
+        return Objects.hash(urls, browser, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, debug, threads);
     }
 
     public static Config exampleConfig() {
@@ -132,6 +139,7 @@ public final class Config {
                 )),
                 Browser.Type.PHANTOMJS,
                 DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD,
+                DEFAULT_PAGELOAD_TIMEOUT,
                 DEFAULT_WINDOW_HEIGHT,
                 DEFAULT_THREADS,
                 DEFAULT_REPORT_FORMAT,
