@@ -48,5 +48,7 @@
   },
   "browser": "firefox",
   "wait-after-page-load": 1,
-  "threads": 12
+  "threads": 12,
+  "page-load-timeout": 60,
+  "screenshot-retries": 2
 }

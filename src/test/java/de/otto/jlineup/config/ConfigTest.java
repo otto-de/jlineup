@@ -39,6 +39,8 @@ public class ConfigTest {
         assertThat(config.urls.get("https://www.otto.de").windowWidths, is(ImmutableList.of(800)));
         assertThat(config.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/")));
         assertThat(config.globalWaitAfterPageLoad, is(0F));
+        assertThat(config.pageLoadTimeout, is(120));
+        assertThat(config.screenshotRetries, is(0));
     }
 
     private void assertThatConfigContentsAreCorrect(Config config) {
@@ -48,6 +50,8 @@ public class ConfigTest {
         assertThat(config.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));
         assertThat(config.urls.get("https://www.otto.de"), is(BrowserUtilsTest.getExpectedUrlConfigForOttoDe()));
         assertThat(config.urls.get("http://www.google.de"), is(BrowserUtilsTest.getExpectedUrlConfigForGoogleDe()));
+        assertThat(config.pageLoadTimeout, is(60));
+        assertThat(config.screenshotRetries, is(2));
     }
 
 }
