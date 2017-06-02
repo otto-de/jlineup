@@ -17,25 +17,25 @@ import java.util.*;
 public final class Config {
 
     public static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
-
     public static final String EXAMPLE_URL = "https://www.example.com";
 
-    public static final Browser.Type DEFAULT_BROWSER = Browser.Type.PHANTOMJS;
-    public static final float DEFAULT_MAX_DIFF = 0;
-    public static final int DEFAULT_WINDOW_HEIGHT = 800;
-    public static final float DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD = 0f;
-    public static final List<Integer> DEFAULT_WINDOW_WIDTHS = ImmutableList.of(800);
-    public static final List<String> DEFAULT_PATHS = ImmutableList.of("/");
-    public static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
-    public static final int DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
-    public static final int DEFAULT_WAIT_AFTER_SCROLL = 0;
-    public static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
     public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
-    public static final int DEFAULT_WAIT_FOR_FONTS_TIME = 0;
-    public static final int DEFAULT_THREADS = 1;
     public static final int DEFAULT_REPORT_FORMAT = 2;
-    public static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
-    public static final int DEFAULT_SCREENSHOT_RETRIES = 0;
+
+    static final Browser.Type DEFAULT_BROWSER = Browser.Type.PHANTOMJS;
+    static final float DEFAULT_MAX_DIFF = 0;
+    static final int DEFAULT_WINDOW_HEIGHT = 800;
+    static final float DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD = 0f;
+    static final List<Integer> DEFAULT_WINDOW_WIDTHS = ImmutableList.of(800);
+    static final List<String> DEFAULT_PATHS = ImmutableList.of("/");
+    static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
+    static final int DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
+    static final int DEFAULT_WAIT_AFTER_SCROLL = 0;
+    static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
+    static final int DEFAULT_WAIT_FOR_FONTS_TIME = 0;
+    static final int DEFAULT_THREADS = 1;
+    static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
+    static final int DEFAULT_SCREENSHOT_RETRIES = 0;
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
@@ -47,45 +47,39 @@ public final class Config {
     public final Integer windowHeight;
     @SerializedName("report-format")
     public final Integer reportFormat;
-    @SerializedName("debug")
-    public final boolean debug;
     @SerializedName("screenshot-retries")
     public final int screenshotRetries;
+    @SerializedName("threads")
+    public int threads;
+    @SerializedName("debug")
+    public final boolean debug;
 
     private final static Gson gson = new Gson();
-    public int threads;
 
     /* Used by GSON to set default values */
     public Config() {
-        urls = null;
-        browser = DEFAULT_BROWSER;
-        globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
-        pageLoadTimeout = DEFAULT_PAGELOAD_TIMEOUT;
-        windowHeight = DEFAULT_WINDOW_HEIGHT;
-        threads = DEFAULT_THREADS;
-        debug = false;
-        screenshotRetries = DEFAULT_SCREENSHOT_RETRIES;
-        reportFormat = DEFAULT_REPORT_FORMAT;
+        Config config = configBuilder().build();
+        urls = config.urls;
+        browser = config.browser;
+        globalWaitAfterPageLoad = config.globalWaitAfterPageLoad;
+        pageLoadTimeout = config.pageLoadTimeout;
+        windowHeight = config.windowHeight;
+        threads = config.threads;
+        screenshotRetries = config.screenshotRetries;
+        reportFormat = config.reportFormat;
+        debug = config.debug;
     }
 
-    public Config(final Map<String, UrlConfig> urls, final Browser.Type browser, final Float globalWaitAfterPageLoad, final Integer pageLoadTimeout, final Integer windowHeight, final Integer threads, final Integer screenshotRetries, final Integer reportFormat, final boolean debug) {
-        this.urls = urls;
-        this.browser = browser != null ? browser : DEFAULT_BROWSER;
-        this.globalWaitAfterPageLoad = globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad : DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
-        this.pageLoadTimeout = pageLoadTimeout != null ? pageLoadTimeout : DEFAULT_PAGELOAD_TIMEOUT;
-        this.windowHeight = windowHeight != null ? windowHeight : DEFAULT_WINDOW_HEIGHT;
-        this.threads = threads != null ? threads : DEFAULT_THREADS;
-        this.screenshotRetries = screenshotRetries != null ? screenshotRetries : DEFAULT_SCREENSHOT_RETRIES;
-        this.reportFormat = Objects.isNull(reportFormat) ? null : reportFormat.equals(DEFAULT_REPORT_FORMAT) ? null : reportFormat;
-        this.debug = debug;
-    }
-
-    public static Config defaultConfig() {
-        return defaultConfig(EXAMPLE_URL);
-    }
-
-    public static Config defaultConfig(String url) {
-        return new Config(ImmutableMap.of(url, new UrlConfig()), null, null, null, null, null, null, null, false);
+    private Config(Builder builder) {
+        urls = builder.urls;
+        browser = builder.browser;
+        globalWaitAfterPageLoad = builder.globalWaitAfterPageLoad;
+        pageLoadTimeout = builder.pageLoadTimeout;
+        windowHeight = builder.windowHeight;
+        reportFormat = builder.reportFormat;
+        debug = builder.debug;
+        screenshotRetries = builder.screenshotRetries;
+        threads = builder.threads;
     }
 
     @Override
@@ -137,35 +131,40 @@ public final class Config {
         return result;
     }
 
+    public static Config defaultConfig() {
+        return defaultConfig(EXAMPLE_URL);
+    }
+
+    public static Config defaultConfig(String url) {
+        return configBuilder().withUrls(ImmutableMap.of(url, new UrlConfig())).build();
+    }
+
+    public static Builder configBuilder() {
+        return new Builder();
+    }
+
     public static Config exampleConfig() {
-        return new Config(ImmutableMap.of("http://www.example.com",
-                new UrlConfig(
-                        ImmutableList.of("/","someOtherPath"),
-                        DEFAULT_MAX_DIFF,
-                        ImmutableList.of(
-                                new Cookie("exampleCookieName", "exampleValue", "http://www.example.com", "/", new Date(1000L), true)
-                        ),
-                        ImmutableMap.of("live", "www"),
-                        ImmutableMap.of("exampleLocalStorageKey", "value"),
-                        ImmutableMap.of("exampleSessionStorageKey", "value"),
-                        ImmutableList.of(600,800,1000),
-                        DEFAULT_MAX_SCROLL_HEIGHT,
-                        DEFAULT_WAIT_AFTER_PAGE_LOAD,
-                        DEFAULT_WAIT_AFTER_SCROLL,
-                        DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL,
-                        DEFAULT_WARMUP_BROWSER_CACHE_TIME,
-                        "console.log('This is JavaScript!')",
-                        DEFAULT_WAIT_FOR_FONTS_TIME
-                )),
-                Browser.Type.PHANTOMJS,
-                DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD,
-                DEFAULT_PAGELOAD_TIMEOUT,
-                DEFAULT_WINDOW_HEIGHT,
-                DEFAULT_THREADS,
-                DEFAULT_SCREENSHOT_RETRIES,
-                DEFAULT_REPORT_FORMAT,
-                false
-        );
+        return configBuilder()
+                .withUrls(ImmutableMap.of("http://www.example.com",
+                        new UrlConfig(
+                                ImmutableList.of("/","someOtherPath"),
+                                DEFAULT_MAX_DIFF,
+                                ImmutableList.of(
+                                        new Cookie("exampleCookieName", "exampleValue", "http://www.example.com", "/", new Date(1000L), true)
+                                ),
+                                ImmutableMap.of("live", "www"),
+                                ImmutableMap.of("exampleLocalStorageKey", "value"),
+                                ImmutableMap.of("exampleSessionStorageKey", "value"),
+                                ImmutableList.of(600,800,1000),
+                                DEFAULT_MAX_SCROLL_HEIGHT,
+                                DEFAULT_WAIT_AFTER_PAGE_LOAD,
+                                DEFAULT_WAIT_AFTER_SCROLL,
+                                DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL,
+                                DEFAULT_WARMUP_BROWSER_CACHE_TIME,
+                                "console.log('This is JavaScript!')",
+                                DEFAULT_WAIT_FOR_FONTS_TIME
+                        )))
+                .build();
     }
 
     public static Config readConfig(final Parameters parameters) throws FileNotFoundException {
@@ -194,4 +193,70 @@ public final class Config {
 
     }
 
+
+
+    public static final class Builder {
+
+        private Map<String, UrlConfig> urls = null;
+        private Browser.Type browser = DEFAULT_BROWSER;
+        private float globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
+        private int pageLoadTimeout = DEFAULT_PAGELOAD_TIMEOUT;
+        private int windowHeight = DEFAULT_WINDOW_HEIGHT;
+        private int reportFormat = DEFAULT_REPORT_FORMAT;
+        private int screenshotRetries = DEFAULT_SCREENSHOT_RETRIES;
+        private int threads = DEFAULT_THREADS;
+        private boolean debug = false;
+
+        private Builder() {
+        }
+
+        public Builder withUrls(Map<String, UrlConfig> val) {
+            urls = val;
+            return this;
+        }
+
+        public Builder withBrowser(Browser.Type val) {
+            browser = val;
+            return this;
+        }
+
+        public Builder withGlobalWaitAfterPageLoad(float val) {
+            globalWaitAfterPageLoad = val;
+            return this;
+        }
+
+        public Builder withPageLoadTimeout(int val) {
+            pageLoadTimeout = val;
+            return this;
+        }
+
+        public Builder withWindowHeight(int val) {
+            windowHeight = val;
+            return this;
+        }
+
+        public Builder withReportFormat(int val) {
+            reportFormat = val;
+            return this;
+        }
+
+        public Builder withScreenshotRetries(int val) {
+            screenshotRetries = val;
+            return this;
+        }
+
+        public Builder withThreads(int val) {
+            threads = val;
+            return this;
+        }
+
+        public Builder withDebug(boolean val) {
+            debug = val;
+            return this;
+        }
+
+        public Config build() {
+            return new Config(this);
+        }
+    }
 }

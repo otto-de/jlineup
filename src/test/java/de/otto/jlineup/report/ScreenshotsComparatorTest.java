@@ -3,7 +3,6 @@ package de.otto.jlineup.report;
 import com.beust.jcommander.JCommander;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
@@ -19,6 +18,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import static de.otto.jlineup.config.Config.configBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -46,18 +46,12 @@ public class ScreenshotsComparatorTest {
         parameters = new Parameters();
         new JCommander(parameters, "-d", "src/test/resources/");
 
-        config = new Config(
-                ImmutableMap.of(
+        config = configBuilder()
+                .withUrls(ImmutableMap.of(
                         "http://url",
-                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5)),
-                Browser.Type.CHROME,
-                0f,
-                Config.DEFAULT_PAGELOAD_TIMEOUT,
-                WINDOW_HEIGHT,
-                Config.DEFAULT_THREADS,
-                Config.DEFAULT_SCREENSHOT_RETRIES,
-                Config.DEFAULT_REPORT_FORMAT,
-                false);
+                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5)))
+                .withWindowHeight(WINDOW_HEIGHT)
+                .build();
 
         testee = new ScreenshotsComparator(parameters, config, fileService, imageService);
     }

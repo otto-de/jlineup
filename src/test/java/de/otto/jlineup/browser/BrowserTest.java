@@ -28,6 +28,7 @@ import java.util.Map;
 
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.*;
+import static de.otto.jlineup.config.Config.configBuilder;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -60,7 +61,7 @@ public class BrowserTest {
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
         when(browserUtilsMock.getWebDriverByConfig(any(Config.class))).thenReturn(webDriverMock);
-        Config config = new Config(null, Browser.Type.PHANTOMJS, 0f, Config.DEFAULT_PAGELOAD_TIMEOUT,100, Config.DEFAULT_THREADS, Config.DEFAULT_SCREENSHOT_RETRIES, Config.DEFAULT_REPORT_FORMAT, false);
+        Config config = configBuilder().build();
         testee = new Browser(parameters, config, fileService, browserUtilsMock);
     }
 
@@ -73,19 +74,19 @@ public class BrowserTest {
 
     @Test
     public void shouldGetFirefoxDriver() throws InterruptedException {
-        final Config config = new Config(null, FIREFOX, 5f, Config.DEFAULT_PAGELOAD_TIMEOUT,800, Config.DEFAULT_THREADS, Config.DEFAULT_SCREENSHOT_RETRIES, Config.DEFAULT_REPORT_FORMAT, false);
+        final Config config = configBuilder().withBrowser(FIREFOX).build();
         assertSetDriverType(config, FirefoxDriver.class);
     }
 
     @Test
     public void shouldGetChromeDriver() throws InterruptedException {
-        final Config config = new Config(null, CHROME, 5f, Config.DEFAULT_PAGELOAD_TIMEOUT, 800, Config.DEFAULT_THREADS, Config.DEFAULT_SCREENSHOT_RETRIES,  Config.DEFAULT_REPORT_FORMAT, false);
+        final Config config = configBuilder().withBrowser(CHROME).build();
         assertSetDriverType(config, ChromeDriver.class);
     }
 
     @Test
     public void shouldGetPhantomJSDriver() throws InterruptedException {
-        final Config config = new Config(null, PHANTOMJS, 5f, Config.DEFAULT_PAGELOAD_TIMEOUT,800, Config.DEFAULT_THREADS, Config.DEFAULT_SCREENSHOT_RETRIES,  Config.DEFAULT_REPORT_FORMAT, false);
+        final Config config = configBuilder().withBrowser(PHANTOMJS).build();
         assertSetDriverType(config, PhantomJSDriver.class);
     }
 
@@ -205,7 +206,11 @@ public class BrowserTest {
                 "testJS();",
                 5);
 
-        Config config = new Config(ImmutableMap.of("testurl", urlConfig), Browser.Type.FIREFOX, 0f, Config.DEFAULT_PAGELOAD_TIMEOUT,100, Config.DEFAULT_THREADS, Config.DEFAULT_SCREENSHOT_RETRIES,  Config.DEFAULT_REPORT_FORMAT, false);
+        Config config = configBuilder()
+                .withBrowser(FIREFOX)
+                .withUrls(ImmutableMap.of("testurl", urlConfig))
+                .withWindowHeight(100)
+                .build();
         testee = new Browser(parameters, config, fileService, browserUtilsMock);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
