@@ -74,7 +74,7 @@ public class JLineupAcceptanceTest {
     @Test
     public void shouldExitWithExitStatus1IfThereIsAJSException() throws Exception {
         exit.expectSystemExitWithStatus(1);
-        exit.checkAssertionAfterwards(() -> assertThat(sysErr.toString(), containsString("WebDriverException")));
+        exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), containsString("doesnotexist")));
 
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_wrong_js.lineup.json"});
     }
@@ -219,6 +219,10 @@ public class JLineupAcceptanceTest {
                 }
             }
         });
+    }
+
+    private String combinedOutput() {
+        return sysOut.toString() + sysErr.toString();
     }
 
 }

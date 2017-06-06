@@ -14,5 +14,6 @@
   "browser": "chrome",
   "wait-after-page-load": 1,
   "threads": 4,
-  "report-format" : 2
+  "report-format" : 2,
+  "debug": true
 }

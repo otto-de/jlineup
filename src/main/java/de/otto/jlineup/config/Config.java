@@ -36,6 +36,7 @@ public final class Config {
     static final int DEFAULT_THREADS = 1;
     static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
+    static final int DEFAULT_GLOBAL_TIMEOUT = 600;
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
@@ -53,6 +54,8 @@ public final class Config {
     public int threads;
     @SerializedName("debug")
     public final boolean debug;
+    @SerializedName("timeout")
+    public final int globalTimeout;
 
     private final static Gson gson = new Gson();
 
@@ -67,6 +70,7 @@ public final class Config {
         threads = config.threads;
         screenshotRetries = config.screenshotRetries;
         reportFormat = config.reportFormat;
+        globalTimeout = config.globalTimeout;
         debug = config.debug;
     }
 
@@ -76,25 +80,11 @@ public final class Config {
         globalWaitAfterPageLoad = builder.globalWaitAfterPageLoad;
         pageLoadTimeout = builder.pageLoadTimeout;
         windowHeight = builder.windowHeight;
-        reportFormat = builder.reportFormat;
-        debug = builder.debug;
-        screenshotRetries = builder.screenshotRetries;
         threads = builder.threads;
-    }
-
-    @Override
-    public String toString() {
-        return "Config{" +
-                "urls=" + urls +
-                ", browser=" + browser +
-                ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
-                ", pageLoadTimeout=" + pageLoadTimeout +
-                ", windowHeight=" + windowHeight +
-                ", reportFormat=" + reportFormat +
-                ", debug=" + debug +
-                ", screenshotRetries=" + screenshotRetries +
-                ", threads=" + threads +
-                '}';
+        screenshotRetries = builder.screenshotRetries;
+        reportFormat = builder.reportFormat;
+        globalTimeout = builder.globalTimeout;
+        debug = builder.debug;
     }
 
     @Override
@@ -105,9 +95,10 @@ public final class Config {
         Config config = (Config) o;
 
         if (pageLoadTimeout != config.pageLoadTimeout) return false;
-        if (debug != config.debug) return false;
         if (screenshotRetries != config.screenshotRetries) return false;
         if (threads != config.threads) return false;
+        if (debug != config.debug) return false;
+        if (globalTimeout != config.globalTimeout) return false;
         if (urls != null ? !urls.equals(config.urls) : config.urls != null) return false;
         if (browser != config.browser) return false;
         if (globalWaitAfterPageLoad != null ? !globalWaitAfterPageLoad.equals(config.globalWaitAfterPageLoad) : config.globalWaitAfterPageLoad != null)
@@ -125,10 +116,27 @@ public final class Config {
         result = 31 * result + pageLoadTimeout;
         result = 31 * result + (windowHeight != null ? windowHeight.hashCode() : 0);
         result = 31 * result + (reportFormat != null ? reportFormat.hashCode() : 0);
-        result = 31 * result + (debug ? 1 : 0);
         result = 31 * result + screenshotRetries;
         result = 31 * result + threads;
+        result = 31 * result + (debug ? 1 : 0);
+        result = 31 * result + globalTimeout;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "urls=" + urls +
+                ", browser=" + browser +
+                ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
+                ", pageLoadTimeout=" + pageLoadTimeout +
+                ", windowHeight=" + windowHeight +
+                ", reportFormat=" + reportFormat +
+                ", screenshotRetries=" + screenshotRetries +
+                ", threads=" + threads +
+                ", debug=" + debug +
+                ", globalTimeout=" + globalTimeout +
+                '}';
     }
 
     public static Config defaultConfig() {
@@ -205,6 +213,7 @@ public final class Config {
         private int reportFormat = DEFAULT_REPORT_FORMAT;
         private int screenshotRetries = DEFAULT_SCREENSHOT_RETRIES;
         private int threads = DEFAULT_THREADS;
+        private int globalTimeout = DEFAULT_GLOBAL_TIMEOUT;
         private boolean debug = false;
 
         private Builder() {
@@ -252,6 +261,11 @@ public final class Config {
 
         public Builder withDebug(boolean val) {
             debug = val;
+            return this;
+        }
+
+        public Builder withGlobalTimeout(int val) {
+            globalTimeout = val;
             return this;
         }
 

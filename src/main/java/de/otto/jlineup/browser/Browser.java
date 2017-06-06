@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
@@ -101,7 +102,7 @@ public class Browser implements AutoCloseable {
         webDrivers.clear();
     }
 
-    public void takeScreenshots() throws IOException, InterruptedException, ExecutionException {
+    public void takeScreenshots() throws IOException, InterruptedException, ExecutionException, TimeoutException {
         boolean before = !parameters.isAfter();
         List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(parameters, config, before);
         if (screenshotContextList.size() > 0) {
@@ -109,9 +110,9 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws InterruptedException, ExecutionException {
+    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws InterruptedException, ExecutionException, TimeoutException {
 
-        List<Future> screenshotResults = new ArrayList<>();
+        Map<ScreenshotContext, Future> screenshotResults = new HashMap<>();
 
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             final Future<?> takeScreenshotsResult = threadPool.submit(() -> {
@@ -129,16 +130,29 @@ public class Browser implements AutoCloseable {
                     throw other;
                 }
             });
-            screenshotResults.add(takeScreenshotsResult);
+            screenshotResults.put(screenshotContext, takeScreenshotsResult);
             //submit screenshots to the browser with a slight delay, so not all instances open up in complete sync
             Thread.sleep(THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS);
         }
+        LOG.debug("Shutting down threadpool.");
         threadPool.shutdown();
-        threadPool.awaitTermination(15, TimeUnit.MINUTES);
+        LOG.debug("Threadpool shutdown finished.");
+        boolean notRanIntoTimeout = threadPool.awaitTermination(config.globalTimeout, TimeUnit.SECONDS);
+
+        if (!notRanIntoTimeout) {
+            LOG.error("Threadpool ran into timeout.");
+        } else {
+            LOG.info("Threadpool terminated.");
+        }
 
         //Get and propagate possible exceptions
-        for (Future screenshotResult : screenshotResults) {
-            screenshotResult.get();
+        for (Map.Entry<ScreenshotContext, Future> screenshotResult : screenshotResults.entrySet()) {
+            try {
+                screenshotResult.getValue().get(0, TimeUnit.SECONDS);
+            } catch (TimeoutException e) {
+                LOG.error("Timeout while getting screenshot result for {} with width {}.", screenshotResult.getKey().url, screenshotResult.getKey().windowWidth);
+                throw e;
+            }
         }
     }
 
@@ -151,7 +165,7 @@ public class Browser implements AutoCloseable {
             }
             catch (Exception e) {
                 if (retries < maxRetries) {
-                    LOG.info("try '{}' to take screen failed", retries, e);
+                    LOG.warn("try '{}' to take screen failed", retries, e);
                 } else {
                     throw e;
                 }
