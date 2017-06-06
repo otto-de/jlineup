@@ -212,6 +212,7 @@ public class BrowserTest {
                 .withUrls(ImmutableMap.of("testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
+        testee.close();
         testee = new Browser(parameters, config, fileService, browserUtilsMock);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);

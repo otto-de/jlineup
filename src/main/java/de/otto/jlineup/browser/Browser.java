@@ -100,7 +100,10 @@ public class Browser implements AutoCloseable {
     public void close() throws Exception {
         LOG.debug("Closing webdrivers.");
         synchronized (webDrivers) {
-            webDrivers.values().forEach(WebDriver::quit);
+            webDrivers.forEach((key, value) -> {
+                System.err.println("Removing webdriver for thread " + key);
+                value.quit();
+            });
             webDrivers.clear();
         }
         LOG.debug("Closing webdrivers done.");
@@ -504,6 +507,8 @@ public class Browser implements AutoCloseable {
             return webDrivers.computeIfAbsent(Thread.currentThread().getName(), k -> {
                 final WebDriver driver = browserUtils.getWebDriverByConfig(config);
                 driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+                LOG.debug("Adding webdriver for thread {}", Thread.currentThread().getName());
+                System.err.println("Adding webdriver for thread " + Thread.currentThread().getName());
                 return driver;
             });
         }
