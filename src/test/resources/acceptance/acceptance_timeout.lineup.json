@@ -6,13 +6,16 @@
       ],
       "max-diff": 0.05,
       "resolutions": [
-        600,800,1000,1200
-      ],
-      "javascript": "console.thisfunctiondoesnotexist('Moin!');"
+        600,
+        800,
+        1000,
+        1200
+      ]
     }
   },
   "browser": "chrome",
   "wait-after-page-load": 1,
-  "threads": 4,
-  "report-format" : 2
+  "threads": 2,
+  "report-format" : 2,
+  "timeout": 1
 }

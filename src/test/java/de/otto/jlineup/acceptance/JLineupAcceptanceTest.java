@@ -80,6 +80,14 @@ public class JLineupAcceptanceTest {
     }
 
     @Test
+    public void shouldExitWithExitStatus1IfThereIsAGlobalTimeout() throws Exception {
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), containsString("Timeout")));
+
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_timeout.lineup.json"});
+    }
+
+    @Test
     public void shouldOpenTestPage() throws Exception {
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--url","file://"+ CWD +"/src/test/resources/acceptance/webpage/test.html"});
     }

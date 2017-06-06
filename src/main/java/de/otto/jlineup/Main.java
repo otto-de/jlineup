@@ -91,14 +91,19 @@ public class Main {
 
         System.out.printf("Running JLineup [%s] with step '%s'.%n%n", getVersion(), parameters.getStep());
 
+        exit = false;
         if (!parameters.isJustCompare()) {
             BrowserUtils browserUtils = new BrowserUtils();
             try (Browser browser = new Browser(parameters, config, fileService, browserUtils)) {
                 browser.takeScreenshots();
             } catch (Exception e) {
                 System.err.println("JLineup Exception: " + e);
-                System.exit(1);
+                exit = true;
             }
+        }
+
+        if (exit) {
+            System.exit(1);
         }
 
         if (parameters.isAfter() || parameters.isJustCompare()) {

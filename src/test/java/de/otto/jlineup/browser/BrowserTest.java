@@ -63,6 +63,7 @@ public class BrowserTest {
         when(browserUtilsMock.getWebDriverByConfig(any(Config.class))).thenReturn(webDriverMock);
         Config config = configBuilder().build();
         testee = new Browser(parameters, config, fileService, browserUtilsMock);
+        testee.initWebDriver();
     }
 
     @After

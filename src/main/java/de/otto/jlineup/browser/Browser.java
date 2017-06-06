@@ -85,8 +85,8 @@ public class Browser implements AutoCloseable {
     /* Every thread has it's own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
     private ExecutorService threadPool;
 
-    private ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, Set<String>> cacheWarmupMarksMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Set<String>> cacheWarmupMarksMap = new ConcurrentHashMap<>();
 
     public Browser(Parameters parameters, Config config, FileService fileService, BrowserUtils browserUtils) {
         this.parameters = parameters;
@@ -98,8 +98,12 @@ public class Browser implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        webDrivers.values().forEach(WebDriver::quit);
-        webDrivers.clear();
+        LOG.debug("Closing webdrivers.");
+        synchronized (webDrivers) {
+            webDrivers.values().forEach(WebDriver::quit);
+            webDrivers.clear();
+        }
+        LOG.debug("Closing webdrivers done.");
     }
 
     public void takeScreenshots() throws IOException, InterruptedException, ExecutionException, TimeoutException {
@@ -178,7 +182,7 @@ public class Browser implements AutoCloseable {
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException, WebDriverException {
 
-        final WebDriver localDriver = getWebDriver();
+        final WebDriver localDriver = initWebDriver();
 
         if(printVersion.getAndSet(false)) {
             System.out.println(
@@ -295,12 +299,6 @@ public class Browser implements AutoCloseable {
         }
 
         driver.manage().window().setSize(new Dimension(width, height));
-    }
-
-    private WebDriver initializeWebDriver() {
-        final WebDriver driver = browserUtils.getWebDriverByConfig(config);
-        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
-        return driver;
     }
 
     private Set<String> initializeCacheWarmupMarks() {
@@ -501,8 +499,18 @@ public class Browser implements AutoCloseable {
         }
     }
 
+    WebDriver initWebDriver() {
+        synchronized (webDrivers) {
+            return webDrivers.computeIfAbsent(Thread.currentThread().getName(), k -> {
+                final WebDriver driver = browserUtils.getWebDriverByConfig(config);
+                driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+                return driver;
+            });
+        }
+    }
+
     private WebDriver getWebDriver() {
-        return webDrivers.computeIfAbsent(Thread.currentThread().getName(), k -> initializeWebDriver());
+        return webDrivers.get(Thread.currentThread().getName());
     }
 
     private void moveMouseToZeroZero() {
