@@ -61,17 +61,7 @@ public final class Config {
 
     /* Used by GSON to set default values */
     public Config() {
-        Config config = configBuilder().build();
-        urls = config.urls;
-        browser = config.browser;
-        globalWaitAfterPageLoad = config.globalWaitAfterPageLoad;
-        pageLoadTimeout = config.pageLoadTimeout;
-        windowHeight = config.windowHeight;
-        threads = config.threads;
-        screenshotRetries = config.screenshotRetries;
-        reportFormat = config.reportFormat;
-        globalTimeout = config.globalTimeout;
-        debug = config.debug;
+        this(configBuilder());
     }
 
     private Config(Builder builder) {
