@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 2.1.1
+* Update to chromedriver 2.30 to support Chrome 59.x
+
 ## Release 2.1.0
 * Feature: Introduce global page load timeout, defaults to 120 seconds
 * Feature: Global retry option if some Exception occurs during takeScreenshots, defaults to 0
