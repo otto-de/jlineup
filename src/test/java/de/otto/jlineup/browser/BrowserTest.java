@@ -61,6 +61,7 @@ public class BrowserTest {
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
         when(browserUtilsMock.getWebDriverByConfig(any(Config.class))).thenReturn(webDriverMock);
+        when(browserUtilsMock.getWebDriverByConfig(any(Config.class), anyInt())).thenReturn(webDriverMock);
         Config config = configBuilder().build();
         testee = new Browser(parameters, config, fileService, browserUtilsMock);
         testee.initializeWebDriver();
@@ -82,6 +83,12 @@ public class BrowserTest {
     @Test
     public void shouldGetChromeDriver() throws InterruptedException {
         final Config config = configBuilder().withBrowser(CHROME).build();
+        assertSetDriverType(config, ChromeDriver.class);
+    }
+
+    @Test
+    public void shouldGetChromeDriverForHeadlessChrome() throws Exception {
+        final Config config = configBuilder().withBrowser(CHROME_HEADLESS).build();
         assertSetDriverType(config, ChromeDriver.class);
     }
 
@@ -240,6 +247,53 @@ public class BrowserTest {
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(8)).executeScript(String.format(JS_SCROLL_CALL, 500));
+    }
+
+    @Test
+    public void shouldNotResizeWindowWhenDoingHeadless() throws Exception {
+        //given
+        final Long viewportHeight = 500L;
+        final Long pageHeight = 2000L;
+
+        UrlConfig urlConfig = new UrlConfig(
+                ImmutableList.of("/"),
+                0f,
+                ImmutableList.of(),
+                ImmutableMap.of(),
+                ImmutableMap.of(),
+                ImmutableMap.of(),
+                ImmutableList.of(600, 800),
+                5000,
+                0,
+                0,
+                0,
+                3,
+                null,
+                5);
+
+        Config config = configBuilder()
+                .withBrowser(CHROME_HEADLESS)
+                .withUrls(ImmutableMap.of("testurl", urlConfig))
+                .withWindowHeight(100)
+                .build();
+
+        testee.close();
+        testee = new Browser(parameters, config, fileService, browserUtilsMock);
+
+        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
+        ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", 800, true, urlConfig);
+
+        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
+        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
+        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
+        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
+        when(webDriverMock.executeScript(JS_GET_BROWSER_AND_VERSION_CALL)).thenReturn(ImmutableMap.of("name","test", "version", "1"));
+
+        //when
+        testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
+
+        verifyNoMoreInteractions(webDriverWindowMock);
     }
 
     @Test

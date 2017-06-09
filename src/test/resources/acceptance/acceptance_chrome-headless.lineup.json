@@ -1,0 +1,11 @@
+{
+  "urls": {
+    "file://###CWD###/src/test/resources/acceptance/webpage/": {
+      "paths": [
+        "test.html"
+      ]
+    }
+  },
+  "report-format" : 2,
+  "browser" : "chrome-headless"
+}

@@ -44,6 +44,8 @@ public class Browser implements AutoCloseable {
         FIREFOX,
         @SerializedName(value = "Chrome", alternate = {"chrome", "CHROME"})
         CHROME,
+        @SerializedName(value = "Chrome-Headless", alternate = {"chrome-headless", "CHROME_HEADLESS"})
+        CHROME_HEADLESS,
         @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
         PHANTOMJS;
     }
@@ -172,8 +174,7 @@ public class Browser implements AutoCloseable {
             try {
                 takeScreenshotsForContext(screenshotContext);
                 return;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 if (retries < maxRetries) {
                     LOG.warn("try '{}' to take screen failed", retries, e);
                 } else {
@@ -188,7 +189,11 @@ public class Browser implements AutoCloseable {
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException, WebDriverException {
 
-        final WebDriver localDriver = initializeWebDriver();
+        boolean headless = ( config.browser == Type.CHROME_HEADLESS );
+        final WebDriver localDriver;
+        if (headless) {
+            localDriver = initializeWebDriver(screenshotContext.windowWidth);
+        } else localDriver = initializeWebDriver();
 
         if(printVersion.getAndSet(false)) {
             System.out.println(
@@ -204,8 +209,10 @@ public class Browser implements AutoCloseable {
             moveMouseToZeroZero();
         }
 
-        localDriver.manage().window().setPosition(new Point(0, 0));
-        resizeBrowser(localDriver, screenshotContext.windowWidth, config.windowHeight);
+        if (!headless) {
+            localDriver.manage().window().setPosition(new Point(0, 0));
+            resizeBrowser(localDriver, screenshotContext.windowWidth, config.windowHeight);
+        }
 
         final String url = buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
         final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
@@ -222,7 +229,11 @@ public class Browser implements AutoCloseable {
             setSessionStorage(screenshotContext);
         }
 
-        checkBrowserCacheWarmup(screenshotContext, url, localDriver);
+        if (headless) {
+            browserCacheWarmupForHeadless(screenshotContext, url, localDriver);
+        } else {
+            checkBrowserCacheWarmup(screenshotContext, url, localDriver);
+        }
 
         //now get the real page
         LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.windowWidth, config.windowHeight));
@@ -258,7 +269,7 @@ public class Browser implements AutoCloseable {
 
         //Wait for fonts
         if (screenshotContext.urlConfig.waitForFontsTime > 0) {
-            if(config.browser != Type.PHANTOMJS){
+            if (config.browser != Type.PHANTOMJS) {
                 WebDriverWait wait = new WebDriverWait(getWebDriver(), screenshotContext.urlConfig.waitForFontsTime);
                 wait.until(fontsLoaded);
             } else {
@@ -303,7 +314,6 @@ public class Browser implements AutoCloseable {
             driver.manage().window().setSize(new Dimension(width + (random.nextInt(20) - 10), height + (random.nextInt(20) - 10)));
             TimeUnit.MILLISECONDS.sleep(25);
         }
-
         driver.manage().window().setSize(new Dimension(width, height));
     }
 
@@ -349,6 +359,23 @@ public class Browser implements AutoCloseable {
                 resizeBrowser(driver, screenshotContext.windowWidth, config.windowHeight);
                 LOG.debug("Cache warmup time is over. Getting " + url + " again.");
             }
+        }
+    }
+
+    private void browserCacheWarmupForHeadless(ScreenshotContext screenshotContext, String url, WebDriver driver) {
+        int warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
+        if (warmupTime > Config.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
+            LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, screenshotContext.windowWidth, config.windowHeight));
+            LOG.debug("Getting url: {}", url);
+            driver.get(url);
+            LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
+            try {
+                LOG.debug("Sleeping for {} seconds", warmupTime);
+                Thread.sleep(warmupTime * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            LOG.debug("Cache warmup time is over. Getting " + url + " again.");
         }
     }
 
@@ -406,7 +433,7 @@ public class Browser implements AutoCloseable {
     private String getBrowserAndVersion() {
         LOG.debug("Getting browser user agent.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
-        return (String)jse.executeScript(JS_GET_USER_AGENT);
+        return (String) jse.executeScript(JS_GET_USER_AGENT);
     }
 
     void scrollBy(int viewportHeight) throws InterruptedException {
@@ -505,6 +532,20 @@ public class Browser implements AutoCloseable {
         }
     }
 
+    WebDriver initializeWebDriver(int width) {
+        synchronized (webDrivers) {
+            String currentThreadName = Thread.currentThread().getName();
+            if (webDrivers.containsKey(currentThreadName)) {
+                WebDriver oldDriver = webDrivers.get(currentThreadName);
+                LOG.debug("Removing webdriver for thread {} ({})", currentThreadName, oldDriver.getClass().getCanonicalName());
+                oldDriver.quit();
+            }
+            WebDriver driver = createDriverWithWidth(width);
+            webDrivers.put(currentThreadName, driver);
+            return driver;
+        }
+    }
+
     WebDriver initializeWebDriver() {
         synchronized (webDrivers) {
             String currentThreadName = Thread.currentThread().getName();
@@ -521,6 +562,13 @@ public class Browser implements AutoCloseable {
         final WebDriver driver = browserUtils.getWebDriverByConfig(config);
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
         LOG.debug("Adding webdriver for thread {} ({})", Thread.currentThread().getName(), driver.getClass().getCanonicalName());
+        return driver;
+    }
+
+    private WebDriver createDriverWithWidth(int width) {
+        final WebDriver driver = browserUtils.getWebDriverByConfig(config, width);
+        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+        LOG.debug("Adding webdriver for thread {} with width {} ({})", Thread.currentThread().getName(), width, driver.getClass().getCanonicalName());
         return driver;
     }
 

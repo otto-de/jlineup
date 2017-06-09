@@ -1,11 +1,13 @@
 package de.otto.jlineup.config;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.google.common.collect.ImmutableList.of;
 import static de.otto.jlineup.config.Config.*;
 
 public class UrlConfig {
@@ -52,8 +54,8 @@ public class UrlConfig {
 
     //Default constructor for GSON
     public UrlConfig() {
-        this.paths = DEFAULT_PATHS;
-        this.windowWidths = DEFAULT_WINDOW_WIDTHS;
+        this.paths = of(DEFAULT_PATH);
+        this.windowWidths = of(DEFAULT_WINDOW_WIDTH);
         this.maxDiff = DEFAULT_MAX_DIFF;
         this.cookies = null;
         this.localStorage = null;
@@ -69,8 +71,8 @@ public class UrlConfig {
     }
 
     public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime) {
-        this.paths = paths != null ? paths : DEFAULT_PATHS;
-        this.windowWidths = windowWidths != null ? windowWidths : DEFAULT_WINDOW_WIDTHS;
+        this.paths = paths != null ? paths : of(DEFAULT_PATH);
+        this.windowWidths = windowWidths != null ? windowWidths : of(DEFAULT_WINDOW_WIDTH);
         this.maxDiff = maxDiff;
         this.cookies = cookies;
         this.envMapping = envMapping;

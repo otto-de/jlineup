@@ -47,6 +47,10 @@ public class BrowserUtils {
     }
 
     synchronized WebDriver getWebDriverByConfig(Config config) {
+        return getWebDriverByConfig(config, Config.DEFAULT_WINDOW_WIDTH);
+    }
+
+    synchronized WebDriver getWebDriverByConfig(Config config, int width) {
         WebDriver driver;
         switch (config.browser) {
             case FIREFOX:
@@ -59,6 +63,14 @@ public class BrowserUtils {
                 //To work in a headless env, this is needed
                 options.addArguments("--no-sandbox");
                 driver = new ChromeDriver(options);
+                break;
+            case CHROME_HEADLESS:
+                ChromeDriverManager.getInstance().setup();
+                ChromeOptions options_headless = new ChromeOptions();
+                //To work in a headless env, this is needed
+                options_headless.addArguments("--no-sandbox","--headless","--disable-gpu");
+                options_headless.addArguments("--window-size=" + width + "," + config.windowHeight);
+                driver = new ChromeDriver(options_headless);
                 break;
             case PHANTOMJS:
             default:
