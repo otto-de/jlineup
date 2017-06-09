@@ -63,7 +63,7 @@ public class BrowserTest {
         when(browserUtilsMock.getWebDriverByConfig(any(Config.class))).thenReturn(webDriverMock);
         Config config = configBuilder().build();
         testee = new Browser(parameters, config, fileService, browserUtilsMock);
-        testee.initWebDriver();
+        testee.initializeWebDriver();
     }
 
     @After
@@ -242,4 +242,8 @@ public class BrowserTest {
         verify(webDriverMock, times(8)).executeScript(String.format(JS_SCROLL_CALL, 500));
     }
 
+    @Test
+    public void shouldGrepChromeDrivers() throws Exception {
+        testee.grepChromedrivers();
+    }
 }

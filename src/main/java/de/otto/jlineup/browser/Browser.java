@@ -18,8 +18,10 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -101,10 +103,11 @@ public class Browser implements AutoCloseable {
         LOG.debug("Closing webdrivers.");
         synchronized (webDrivers) {
             webDrivers.forEach((key, value) -> {
-                System.err.println("Removing webdriver for thread " + key);
+                LOG.debug("Removing webdriver for thread {} ({})", key, value.getClass().getCanonicalName());
                 value.quit();
             });
             webDrivers.clear();
+            //grepChromedrivers();
         }
         LOG.debug("Closing webdrivers done.");
     }
@@ -185,7 +188,7 @@ public class Browser implements AutoCloseable {
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException, WebDriverException {
 
-        final WebDriver localDriver = initWebDriver();
+        final WebDriver localDriver = initializeWebDriver();
 
         if(printVersion.getAndSet(false)) {
             System.out.println(
@@ -502,16 +505,23 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    WebDriver initWebDriver() {
+    WebDriver initializeWebDriver() {
         synchronized (webDrivers) {
-            return webDrivers.computeIfAbsent(Thread.currentThread().getName(), k -> {
-                final WebDriver driver = browserUtils.getWebDriverByConfig(config);
-                driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
-                LOG.debug("Adding webdriver for thread {}", Thread.currentThread().getName());
-                System.err.println("Adding webdriver for thread " + Thread.currentThread().getName());
-                return driver;
-            });
+            String currentThreadName = Thread.currentThread().getName();
+            if (webDrivers.containsKey(currentThreadName)) {
+                return webDrivers.get(currentThreadName);
+            }
+            WebDriver driver = createDriver();
+            webDrivers.put(currentThreadName, driver);
+            return driver;
         }
+    }
+
+    private WebDriver createDriver() {
+        final WebDriver driver = browserUtils.getWebDriverByConfig(config);
+        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+        LOG.debug("Adding webdriver for thread {} ({})", Thread.currentThread().getName(), driver.getClass().getCanonicalName());
+        return driver;
     }
 
     private WebDriver getWebDriver() {
@@ -537,4 +547,10 @@ public class Browser implements AutoCloseable {
         LOG.debug("Fonts loaded: {} ", fontsLoaded);
         return fontsLoaded;
     };
+
+    void grepChromedrivers() throws IOException {
+        ProcessBuilder pb = new ProcessBuilder();
+        Process process = pb.command("/bin/sh", "-c", "ps -eaf | grep chromedriver").start();
+        new BufferedReader(new InputStreamReader(process.getInputStream())).lines().forEach(System.err::println);
+    }
 }

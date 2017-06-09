@@ -3,10 +3,7 @@ package de.otto.jlineup.acceptance;
 import com.google.gson.Gson;
 import de.otto.jlineup.Main;
 import de.otto.jlineup.report.Report;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import java.io.ByteArrayOutputStream;
@@ -32,7 +29,7 @@ public class JLineupAcceptanceTest {
 
     private final ByteArrayOutputStream sysOut = new ByteArrayOutputStream();
     private final ByteArrayOutputStream sysErr = new ByteArrayOutputStream();
-    public static final String CWD = Paths.get(".").toAbsolutePath().normalize().toString();
+    private static final String CWD = Paths.get(".").toAbsolutePath().normalize().toString();
 
     private PrintStream stdout = System.out;
     private PrintStream stderr = System.err;
@@ -193,16 +190,16 @@ public class JLineupAcceptanceTest {
         assertThat(sysOut.toString(), containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature."));
     }
 
-    private String getTextFileContentAsString(Path reportJson) throws IOException {
-        final List<String> reportJsonLines = Files.readAllLines(reportJson);
-        return reportJsonLines.stream().collect(Collectors.joining());
-    }
-
     @Test
     public void shouldPrintConfig() throws Exception {
         exit.checkAssertionAfterwards(() -> assertThat(sysOut.toString(), containsString("http://www.example.com")));
         exit.expectSystemExitWithStatus(0);
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--print-config"});
+    }
+
+    private String getTextFileContentAsString(Path reportJson) throws IOException {
+        final List<String> reportJsonLines = Files.readAllLines(reportJson);
+        return reportJsonLines.stream().collect(Collectors.joining());
     }
 
     private void deleteDir(Path path) throws IOException {
