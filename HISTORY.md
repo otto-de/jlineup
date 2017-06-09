@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 2.2.0
+* Add headless support without the need for Xvfb for Chrome >59 (use browser "chrome-headless" in config)
+
 ## Release 2.1.1
 * Update to chromedriver 2.30 to support Chrome 59.x
 
