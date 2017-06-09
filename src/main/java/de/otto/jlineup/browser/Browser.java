@@ -189,9 +189,9 @@ public class Browser implements AutoCloseable {
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException, WebDriverException {
 
-        boolean headless = ( config.browser == Type.CHROME_HEADLESS );
+        boolean headless_chrome = ( config.browser == Type.CHROME_HEADLESS );
         final WebDriver localDriver;
-        if (headless) {
+        if (headless_chrome) {
             localDriver = initializeWebDriver(screenshotContext.windowWidth);
         } else localDriver = initializeWebDriver();
 
@@ -204,12 +204,12 @@ public class Browser implements AutoCloseable {
                     "\n");
         }
 
-        //No need to move the mouse out of the way for phantomjs, but this avoids hovering links in other browsers
-        if (config.browser != Type.PHANTOMJS) {
+        //No need to move the mouse out of the way for headless browsers, but this avoids hovering links in other browsers
+        if (config.browser != Type.PHANTOMJS && !headless_chrome) {
             moveMouseToZeroZero();
         }
 
-        if (!headless) {
+        if (!headless_chrome) {
             localDriver.manage().window().setPosition(new Point(0, 0));
             resizeBrowser(localDriver, screenshotContext.windowWidth, config.windowHeight);
         }
@@ -229,7 +229,7 @@ public class Browser implements AutoCloseable {
             setSessionStorage(screenshotContext);
         }
 
-        if (headless) {
+        if (headless_chrome) {
             browserCacheWarmupForHeadless(screenshotContext, url, localDriver);
         } else {
             checkBrowserCacheWarmup(screenshotContext, url, localDriver);
