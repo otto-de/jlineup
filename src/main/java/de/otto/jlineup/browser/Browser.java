@@ -42,6 +42,8 @@ public class Browser implements AutoCloseable {
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
         FIREFOX,
+        @SerializedName(value = "Firefox-Headless", alternate = {"firefox-headless", "FIREFOX_HEADLESS"})
+        FIREFOX_HEADLESS,
         @SerializedName(value = "Chrome", alternate = {"chrome", "CHROME"})
         CHROME,
         @SerializedName(value = "Chrome-Headless", alternate = {"chrome-headless", "CHROME_HEADLESS"})
@@ -189,9 +191,9 @@ public class Browser implements AutoCloseable {
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException, WebDriverException {
 
-        boolean headless_chrome = ( config.browser == Type.CHROME_HEADLESS );
+        boolean headless_chrome_or_firefox = ( config.browser == Type.CHROME_HEADLESS || config.browser == Type.FIREFOX_HEADLESS);
         final WebDriver localDriver;
-        if (headless_chrome) {
+        if (headless_chrome_or_firefox) {
             localDriver = initializeWebDriver(screenshotContext.windowWidth);
         } else localDriver = initializeWebDriver();
 
@@ -205,11 +207,11 @@ public class Browser implements AutoCloseable {
         }
 
         //No need to move the mouse out of the way for headless browsers, but this avoids hovering links in other browsers
-        if (config.browser != Type.PHANTOMJS && !headless_chrome) {
+        if (config.browser != Type.PHANTOMJS && !headless_chrome_or_firefox) {
             moveMouseToZeroZero();
         }
 
-        if (!headless_chrome) {
+        if (!headless_chrome_or_firefox) {
             localDriver.manage().window().setPosition(new Point(0, 0));
             resizeBrowser(localDriver, screenshotContext.windowWidth, config.windowHeight);
         }
@@ -229,7 +231,7 @@ public class Browser implements AutoCloseable {
             setSessionStorage(screenshotContext);
         }
 
-        if (headless_chrome) {
+        if (headless_chrome_or_firefox) {
             browserCacheWarmupForHeadless(screenshotContext, url, localDriver);
         } else {
             checkBrowserCacheWarmup(screenshotContext, url, localDriver);

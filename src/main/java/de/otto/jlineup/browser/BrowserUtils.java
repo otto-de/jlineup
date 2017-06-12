@@ -10,6 +10,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.util.ArrayList;
@@ -56,6 +57,13 @@ public class BrowserUtils {
             case FIREFOX:
                 FirefoxDriverManager.getInstance().setup();
                 driver = new FirefoxDriver();
+                break;
+            case FIREFOX_HEADLESS:
+                FirefoxDriverManager.getInstance().setup();
+                FirefoxOptions firefoxOptions = new FirefoxOptions();
+                firefoxOptions.setBinary("/home/mgeweke/otto/firefox/firefox");
+                firefoxOptions.addArguments("-width", width + "" , "-height", config.windowHeight + "");
+                driver = new FirefoxDriver(firefoxOptions);
                 break;
             case CHROME:
                 ChromeDriverManager.getInstance().setup();
