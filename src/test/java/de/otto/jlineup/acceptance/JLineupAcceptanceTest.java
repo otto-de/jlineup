@@ -77,6 +77,22 @@ public class JLineupAcceptanceTest {
     }
 
     @Test
+    public void shouldExitWithExitStatus1IfThereIsAMalformedUrlInFirefox() throws Exception {
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), containsString("Reached error page")));
+
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_wrong_url_firefox.lineup.json"});
+    }
+
+    @Test
+    public void shouldExitWithExitStatus1IfThereIsAMalformedUrlInChrome() throws Exception {
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), containsString("ERR_NAME_NOT_RESOLVED")));
+
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_wrong_url_chrome.lineup.json"});
+    }
+
+    @Test
     public void shouldExitWithExitStatus1IfThereIsAGlobalTimeout() throws Exception {
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), containsString("Timeout")));

@@ -10,6 +10,9 @@ import de.otto.jlineup.image.ImageService;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -28,6 +31,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
@@ -82,17 +86,18 @@ public class Browser implements AutoCloseable {
             "return get_browser();\n";
     static final String JS_GET_USER_AGENT = "return navigator.appVersion;";
 
-
     final private Parameters parameters;
 
     final private Config config;
     final private FileService fileService;
     final private BrowserUtils browserUtils;
+
     /* Every thread has it's own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
     private ExecutorService threadPool;
-
     private final ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Set<String>> cacheWarmupMarksMap = new ConcurrentHashMap<>();
+
+    private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
 
     public Browser(Parameters parameters, Config config, FileService fileService, BrowserUtils browserUtils) {
         this.parameters = parameters;
@@ -105,7 +110,9 @@ public class Browser implements AutoCloseable {
     @Override
     public void close() throws Exception {
         LOG.debug("Closing webdrivers.");
+        shutdownCalled.getAndSet(true);
         synchronized (webDrivers) {
+            LOG.debug("Setting shutdown called to true");
             webDrivers.forEach((key, value) -> {
                 LOG.debug("Removing webdriver for thread {} ({})", key, value.getClass().getCanonicalName());
                 value.quit();
@@ -116,7 +123,7 @@ public class Browser implements AutoCloseable {
         LOG.debug("Closing webdrivers done.");
     }
 
-    public void takeScreenshots() throws IOException, InterruptedException, ExecutionException, TimeoutException {
+    public void takeScreenshots() throws Exception {
         boolean before = !parameters.isAfter();
         List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(parameters, config, before);
         if (screenshotContextList.size() > 0) {
@@ -124,7 +131,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws InterruptedException, ExecutionException, TimeoutException {
+    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws Exception {
 
         Map<ScreenshotContext, Future> screenshotResults = new HashMap<>();
 
@@ -141,7 +148,7 @@ public class Browser implements AutoCloseable {
                     //There was an error, prevent pool from taking more tasks and let run fail
                     LOG.error("Exception while taking screenshot.", other);
                     threadPool.shutdownNow();
-                    throw other;
+                    throw new WebDriverException(other);
                 }
             });
             screenshotResults.put(screenshotContext, takeScreenshotsResult);
@@ -162,7 +169,7 @@ public class Browser implements AutoCloseable {
         //Get and propagate possible exceptions
         for (Map.Entry<ScreenshotContext, Future> screenshotResult : screenshotResults.entrySet()) {
             try {
-                screenshotResult.getValue().get(0, TimeUnit.SECONDS);
+                screenshotResult.getValue().get(10, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
                 LOG.error("Timeout while getting screenshot result for {} with width {}.", screenshotResult.getKey().url, screenshotResult.getKey().windowWidth);
                 throw e;
@@ -170,7 +177,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    private void tryToTakeScreenshotsForContextNTimes(ScreenshotContext screenshotContext, int maxRetries) throws IOException, InterruptedException {
+    private void tryToTakeScreenshotsForContextNTimes(ScreenshotContext screenshotContext, int maxRetries) throws Exception {
         int retries = 0;
         while (retries <= maxRetries) {
             try {
@@ -189,7 +196,7 @@ public class Browser implements AutoCloseable {
 
     private AtomicBoolean printVersion = new AtomicBoolean(true);
 
-    private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws InterruptedException, IOException, WebDriverException {
+    private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws Exception {
 
         boolean headless_chrome_or_firefox = ( config.browser == Type.CHROME_HEADLESS || config.browser == Type.FIREFOX_HEADLESS);
         final WebDriver localDriver;
@@ -224,6 +231,7 @@ public class Browser implements AutoCloseable {
             //if you set cookies before getting the page once, it will fail
             LOG.info(String.format("Getting root url: %s to set cookies, local and session storage", rootUrl));
             localDriver.get(rootUrl);
+            checkForErrors(localDriver);
 
             //set cookies and local storage
             setCookies(screenshotContext);
@@ -243,6 +251,7 @@ public class Browser implements AutoCloseable {
         //Selenium's get() method blocks until the browser/page fires an onload event (files and images referenced in the html have been loaded,
         //but there might be JS calls that load more stuff dynamically afterwards).
         localDriver.get(url);
+        checkForErrors(localDriver);
 
         Long pageHeight = getPageHeight();
         final Long viewportHeight = getViewportHeight();
@@ -304,8 +313,19 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    Random random = new Random();
+    private void checkForErrors(WebDriver driver) throws Exception {
+        LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
+        if (logEntries != null) {
+            for (LogEntry logEntry : logEntries) {
+                if (logEntry.getLevel() == Level.SEVERE) {
+                    shutdownCalled.getAndSet(true);
+                    throw new WebDriverException(logEntry.getMessage());
+                }
+            }
+        }
+    }
 
+    private Random random = new Random();
     private void resizeBrowser(WebDriver driver, int width, int height) throws InterruptedException {
         LOG.debug("Resize browser window to {}x{}", width, height);
 
@@ -340,7 +360,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) throws InterruptedException {
+    private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) throws Exception {
         int warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > Config.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
             final Set<String> browserCacheWarmupMarks = cacheWarmupMarksMap.computeIfAbsent(Thread.currentThread().getName(), k -> initializeCacheWarmupMarks());
@@ -350,6 +370,7 @@ public class Browser implements AutoCloseable {
                 resizeBrowser(driver, maxWidth, config.windowHeight);
                 LOG.debug("Getting url: {}", url);
                 driver.get(url);
+                checkForErrors(driver);
                 LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
                 browserCacheWarmupMarks.add(url);
                 try {
@@ -364,19 +385,16 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    private void browserCacheWarmupForHeadless(ScreenshotContext screenshotContext, String url, WebDriver driver) {
+    private void browserCacheWarmupForHeadless(ScreenshotContext screenshotContext, String url, WebDriver driver) throws Exception {
         int warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > Config.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
             LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, screenshotContext.windowWidth, config.windowHeight));
             LOG.debug("Getting url: {}", url);
             driver.get(url);
+            checkForErrors(driver);
             LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
-            try {
-                LOG.debug("Sleeping for {} seconds", warmupTime);
-                Thread.sleep(warmupTime * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            LOG.debug("Sleeping for {} seconds", warmupTime);
+            Thread.sleep(warmupTime * 1000);
             LOG.debug("Cache warmup time is over. Getting " + url + " again.");
         }
     }
@@ -535,6 +553,7 @@ public class Browser implements AutoCloseable {
     }
 
     WebDriver initializeWebDriver(int width) {
+        if (shutdownCalled.get()) return null;
         synchronized (webDrivers) {
             String currentThreadName = Thread.currentThread().getName();
             if (webDrivers.containsKey(currentThreadName)) {
@@ -549,7 +568,9 @@ public class Browser implements AutoCloseable {
     }
 
     WebDriver initializeWebDriver() {
+        if (shutdownCalled.get()) return null;
         synchronized (webDrivers) {
+            if (shutdownCalled.get()) return null;
             String currentThreadName = Thread.currentThread().getName();
             if (webDrivers.containsKey(currentThreadName)) {
                 return webDrivers.get(currentThreadName);
@@ -561,6 +582,7 @@ public class Browser implements AutoCloseable {
     }
 
     private WebDriver createDriver() {
+        shutdownCalled.get();
         final WebDriver driver = browserUtils.getWebDriverByConfig(config);
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
         LOG.debug("Adding webdriver for thread {} ({})", Thread.currentThread().getName(), driver.getClass().getCanonicalName());

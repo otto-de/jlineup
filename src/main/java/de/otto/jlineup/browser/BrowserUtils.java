@@ -61,7 +61,6 @@ public class BrowserUtils {
             case FIREFOX_HEADLESS:
                 FirefoxDriverManager.getInstance().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
-                firefoxOptions.setBinary("/home/mgeweke/otto/firefox/firefox");
                 firefoxOptions.addArguments("-width", width + "" , "-height", config.windowHeight + "");
                 driver = new FirefoxDriver(firefoxOptions);
                 break;
@@ -69,14 +68,14 @@ public class BrowserUtils {
                 ChromeDriverManager.getInstance().setup();
                 ChromeOptions options = new ChromeOptions();
                 //To work in a headless env, this is needed
-                options.addArguments("--no-sandbox");
+                options.addArguments("--no-sandbox","--disable-composited-antialiasing");
                 driver = new ChromeDriver(options);
                 break;
             case CHROME_HEADLESS:
                 ChromeDriverManager.getInstance().setup();
                 ChromeOptions options_headless = new ChromeOptions();
                 //To work in a headless env, this is needed
-                options_headless.addArguments("--no-sandbox","--headless","--disable-gpu");
+                options_headless.addArguments("--no-sandbox","--headless","--disable-gpu", "--disable-composited-antialiasing");
                 options_headless.addArguments("--window-size=" + width + "," + config.windowHeight);
                 driver = new ChromeDriver(options_headless);
                 break;

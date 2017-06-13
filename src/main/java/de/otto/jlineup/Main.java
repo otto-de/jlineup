@@ -21,7 +21,8 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         final Parameters parameters = new Parameters();
-        final JCommander jCommander = new JCommander(parameters, args);
+        final JCommander jCommander = new JCommander(parameters);
+        jCommander.parse(args);
         jCommander.setProgramName("JLineup");
         if (parameters.isHelp()) {
             jCommander.usage();
