@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 2.2.1
+* Bugfix: Exit correctly when url is not reachable
+* Experimental support for headless firefox (needs firefox nightly >55)
+
 ## Release 2.2.0
 * Add headless support without the need for Xvfb for Chrome >59 (use browser "chrome-headless" in config)
 
