@@ -18,6 +18,9 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.io.File;
@@ -44,6 +47,8 @@ public class BrowserTest {
     @Mock
     private WebDriver.Window webDriverWindowMock;
     @Mock
+    private Logs webDriverLogs;
+    @Mock
     private BrowserUtils browserUtilsMock;
 
     @Mock
@@ -60,6 +65,7 @@ public class BrowserTest {
         when(webDriverMock.manage()).thenReturn(webDriverOptionsMock);
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
+        when(webDriverOptionsMock.logs()).thenReturn(webDriverLogs);
         when(browserUtilsMock.getWebDriverByConfig(any(Config.class))).thenReturn(webDriverMock);
         when(browserUtilsMock.getWebDriverByConfig(any(Config.class), anyInt())).thenReturn(webDriverMock);
         Config config = configBuilder().build();

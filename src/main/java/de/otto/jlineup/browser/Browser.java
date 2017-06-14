@@ -314,7 +314,12 @@ public class Browser implements AutoCloseable {
     }
 
     private void checkForErrors(WebDriver driver) throws Exception {
-        LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
+        LogEntries logEntries;
+        try {
+            logEntries = driver.manage().logs().get(LogType.BROWSER);
+        } catch (UnsupportedCommandException e) {
+            logEntries = null;
+        }
         if (logEntries != null) {
             for (LogEntry logEntry : logEntries) {
                 if (logEntry.getLevel() == Level.SEVERE) {
