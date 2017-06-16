@@ -11,6 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.util.ArrayList;
@@ -56,26 +57,27 @@ public class BrowserUtils {
         switch (config.browser) {
             case FIREFOX:
                 FirefoxDriverManager.getInstance().setup();
-                driver = new FirefoxDriver();
+                driver = new FirefoxDriver(getFirefoxProfileWithDisabledAnimatedGifs());
                 break;
             case FIREFOX_HEADLESS:
                 FirefoxDriverManager.getInstance().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
                 firefoxOptions.addArguments("-width", width + "" , "-height", config.windowHeight + "");
+                firefoxOptions.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
                 driver = new FirefoxDriver(firefoxOptions);
                 break;
             case CHROME:
                 ChromeDriverManager.getInstance().setup();
                 ChromeOptions options = new ChromeOptions();
                 //To work in a headless env, this is needed
-                options.addArguments("--no-sandbox","--disable-composited-antialiasing");
+                options.addArguments("--no-sandbox");
                 driver = new ChromeDriver(options);
                 break;
             case CHROME_HEADLESS:
                 ChromeDriverManager.getInstance().setup();
                 ChromeOptions options_headless = new ChromeOptions();
                 //To work in a headless env, this is needed
-                options_headless.addArguments("--no-sandbox","--headless","--disable-gpu", "--disable-composited-antialiasing");
+                options_headless.addArguments("--no-sandbox","--headless","--disable-gpu");
                 options_headless.addArguments("--window-size=" + width + "," + config.windowHeight);
                 driver = new ChromeDriver(options_headless);
                 break;
@@ -87,6 +89,12 @@ public class BrowserUtils {
         }
         driver.manage().timeouts().pageLoadTimeout(config.pageLoadTimeout, TimeUnit.SECONDS);
         return driver;
+    }
+
+    private FirefoxProfile getFirefoxProfileWithDisabledAnimatedGifs() {
+        FirefoxProfile firefoxProfileHeadless = new FirefoxProfile();
+        firefoxProfileHeadless.setPreference("image.animation_mode", "none");
+        return firefoxProfileHeadless;
     }
 
     static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(Parameters parameters, Config config, boolean before) {
