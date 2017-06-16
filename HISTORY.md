@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 2.3.0
+* Enhancement: Animated gifs are not played in firefox.
+
 ## Release 2.2.1
 * Bugfix: Exit correctly when url is not reachable
 * Experimental support for headless firefox (needs firefox nightly >55)
