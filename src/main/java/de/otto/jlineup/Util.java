@@ -1,5 +1,13 @@
 package de.otto.jlineup;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.FileAppender;
+import com.google.gson.GsonBuilder;
+import de.otto.jlineup.config.Config;
+import de.otto.jlineup.config.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,4 +57,38 @@ public class Util {
         return Executors.newFixedThreadPool(threads, factory);
     }
 
+    static void setLogLevelToDebug() {
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.DEBUG);
+    }
+
+    static void logToFile(Parameters parameters) {
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        PatternLayoutEncoder ple = new PatternLayoutEncoder();
+
+        ple.setPattern("%date %level [%thread] %logger{10} [%file:%line] %msg%n");
+        ple.setContext(lc);
+        ple.start();
+        FileAppender<ILoggingEvent> fileAppender = new FileAppender<>();
+        fileAppender.setFile(parameters.getWorkingDirectory() + "/jlineup.log");
+        fileAppender.setEncoder(ple);
+        fileAppender.setContext(lc);
+        fileAppender.start();
+
+        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        logger.addAppender(fileAppender);
+        logger.setLevel(Level.DEBUG);
+    }
+
+    static boolean shouldUseLegacyReportFormat(Config config) {
+        return (config.reportFormat != null && config.reportFormat == 1) || (config.reportFormat == null && Config.DEFAULT_REPORT_FORMAT == 1);
+    }
+
+    static String getVersion() {
+        return String.format("%s [%s]%n", readVersion(), readCommit());
+    }
+
+    static String createPrettyConfigJson(Config config) {
+        return new GsonBuilder().setPrettyPrinting().create().toJson(config);
+    }
 }

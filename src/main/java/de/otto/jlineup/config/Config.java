@@ -52,10 +52,12 @@ public final class Config {
     public final int screenshotRetries;
     @SerializedName("threads")
     public int threads;
-    @SerializedName("debug")
-    public final boolean debug;
     @SerializedName("timeout")
     public final int globalTimeout;
+    @SerializedName("debug")
+    public final boolean debug;
+    @SerializedName("log-to-file")
+    public final boolean logToFile;
 
     private final static Gson gson = new Gson();
 
@@ -75,6 +77,24 @@ public final class Config {
         reportFormat = builder.reportFormat;
         globalTimeout = builder.globalTimeout;
         debug = builder.debug;
+        logToFile = builder.logToFile;
+    }
+
+    @Override
+    public String toString() {
+        return "Config{" +
+                "urls=" + urls +
+                ", browser=" + browser +
+                ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
+                ", pageLoadTimeout=" + pageLoadTimeout +
+                ", windowHeight=" + windowHeight +
+                ", reportFormat=" + reportFormat +
+                ", screenshotRetries=" + screenshotRetries +
+                ", threads=" + threads +
+                ", globalTimeout=" + globalTimeout +
+                ", debug=" + debug +
+                ", logToFile=" + logToFile +
+                '}';
     }
 
     @Override
@@ -87,8 +107,9 @@ public final class Config {
         if (pageLoadTimeout != config.pageLoadTimeout) return false;
         if (screenshotRetries != config.screenshotRetries) return false;
         if (threads != config.threads) return false;
-        if (debug != config.debug) return false;
         if (globalTimeout != config.globalTimeout) return false;
+        if (debug != config.debug) return false;
+        if (logToFile != config.logToFile) return false;
         if (urls != null ? !urls.equals(config.urls) : config.urls != null) return false;
         if (browser != config.browser) return false;
         if (globalWaitAfterPageLoad != null ? !globalWaitAfterPageLoad.equals(config.globalWaitAfterPageLoad) : config.globalWaitAfterPageLoad != null)
@@ -108,25 +129,10 @@ public final class Config {
         result = 31 * result + (reportFormat != null ? reportFormat.hashCode() : 0);
         result = 31 * result + screenshotRetries;
         result = 31 * result + threads;
-        result = 31 * result + (debug ? 1 : 0);
         result = 31 * result + globalTimeout;
+        result = 31 * result + (debug ? 1 : 0);
+        result = 31 * result + (logToFile ? 1 : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Config{" +
-                "urls=" + urls +
-                ", browser=" + browser +
-                ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
-                ", pageLoadTimeout=" + pageLoadTimeout +
-                ", windowHeight=" + windowHeight +
-                ", reportFormat=" + reportFormat +
-                ", screenshotRetries=" + screenshotRetries +
-                ", threads=" + threads +
-                ", debug=" + debug +
-                ", globalTimeout=" + globalTimeout +
-                '}';
     }
 
     public static Config defaultConfig() {
@@ -205,6 +211,7 @@ public final class Config {
         private int threads = DEFAULT_THREADS;
         private int globalTimeout = DEFAULT_GLOBAL_TIMEOUT;
         private boolean debug = false;
+        private boolean logToFile = false;
 
         private Builder() {
         }
@@ -251,6 +258,11 @@ public final class Config {
 
         public Builder withDebug(boolean val) {
             debug = val;
+            return this;
+        }
+
+        public Builder withLogToFile(boolean val) {
+            logToFile = val;
             return this;
         }
 

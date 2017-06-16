@@ -38,6 +38,9 @@ public class Parameters {
     @Parameter(names = {"--debug"}, description = "Sets the log level to DEBUG, produces verbose information about the current task.")
     private boolean debug = false;
 
+    @Parameter(names = {"--log"}, description = "Sets the log level to DEBUG and logs to a file in the current working directory.")
+    private boolean logToFile = false;
+
     @Parameter(names = {"--version", "-v"}, description = "Prints version information.")
     private boolean version = false;
 
