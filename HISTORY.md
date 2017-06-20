@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 2.3.1
+* Enhancement: New log-to-file option in config enables logging to a file in the working dir
+
 ## Release 2.3.0
 * Enhancement: Animated gifs are not played in firefox.
 
