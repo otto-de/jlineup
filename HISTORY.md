@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 2.3.2
+* Bugfix: Limit max file lenght for screenshot files
+
 ## Release 2.3.1
 * Enhancement: New log-to-file option in config enables logging to a file in the working dir
 
