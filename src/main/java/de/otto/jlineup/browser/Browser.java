@@ -11,7 +11,6 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -198,19 +197,19 @@ public class Browser implements AutoCloseable {
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws Exception {
 
-        boolean headless_chrome_or_firefox = ( config.browser == Type.CHROME_HEADLESS || config.browser == Type.FIREFOX_HEADLESS);
+        boolean headless_chrome_or_firefox = (config.browser == Type.CHROME_HEADLESS || config.browser == Type.FIREFOX_HEADLESS);
         final WebDriver localDriver;
         if (headless_chrome_or_firefox) {
             localDriver = initializeWebDriver(screenshotContext.windowWidth);
         } else localDriver = initializeWebDriver();
 
-        if(printVersion.getAndSet(false)) {
+        if (printVersion.getAndSet(false)) {
             System.out.println(
                     "\n\n" +
-                    "====================================================\n" +
-                    "User agent: " + getBrowserAndVersion() + "\n" +
-                    "====================================================\n" +
-                    "\n");
+                            "====================================================\n" +
+                            "User agent: " + getBrowserAndVersion() + "\n" +
+                            "====================================================\n" +
+                            "\n");
         }
 
         //No need to move the mouse out of the way for headless browsers, but this avoids hovering links in other browsers
@@ -321,16 +320,15 @@ public class Browser implements AutoCloseable {
             logEntries = null;
         }
         if (logEntries != null) {
-            for (LogEntry logEntry : logEntries) {
-                if (logEntry.getLevel() == Level.SEVERE) {
-                    shutdownCalled.getAndSet(true);
-                    throw new WebDriverException(logEntry.getMessage());
-                }
+            if (!logEntries.getAll().isEmpty() && logEntries.getAll().get(0).getLevel() == Level.SEVERE) {
+                shutdownCalled.getAndSet(true);
+                throw new WebDriverException(logEntries.getAll().get(0).getMessage());
             }
         }
     }
 
     private Random random = new Random();
+
     private void resizeBrowser(WebDriver driver, int width, int height) throws InterruptedException {
         LOG.debug("Resize browser window to {}x{}", width, height);
 
