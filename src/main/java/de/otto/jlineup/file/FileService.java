@@ -20,6 +20,7 @@ public class FileService {
     public static final String AFTER = "after";
     public static final String DIVIDER = "_";
     public static final String PNG_EXTENSION = ".png";
+    private static final int MAX_URL_TO_FILENAME_LENGHT = 180;
 
     private final Parameters parameters;
 
@@ -116,6 +117,11 @@ public class FileService {
         String fileNamePrefix = url + DIVIDER + urlSubPath + DIVIDER;
         fileNamePrefix = fileNamePrefix.replace("://", DIVIDER);
         fileNamePrefix = fileNamePrefix.replaceAll("[^A-Za-z0-9\\-_]", DIVIDER);
+
+        if (fileNamePrefix.length() > MAX_URL_TO_FILENAME_LENGHT) {
+            fileNamePrefix = fileNamePrefix.substring(0, MAX_URL_TO_FILENAME_LENGHT) + DIVIDER;
+        }
+        
         fileNamePrefix = fileNamePrefix + hash + DIVIDER;
 
         return fileNamePrefix;

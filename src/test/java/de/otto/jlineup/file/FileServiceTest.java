@@ -2,6 +2,7 @@ package de.otto.jlineup.file;
 
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.config.Parameters;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -114,6 +115,13 @@ public class FileServiceTest {
     public void shouldGenerateFilename() throws Exception {
         String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "multi-media#anchor?one=two&three=fo_ur", 1000, 2000, "after");
         assertThat(outputString, is("https_www_otto_de_multi-media_anchor_one_two_three_fo_ur_99698cd_1000_02000_after.png"));
+    }
+
+    @Test
+    public void shouldGenerateFilenameWithAMaxLenghtOf255Bytes() throws Exception {
+        String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "multi-media#anchor?abcdefghijklmnopqrstuvwxyz=12345678901234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890", 1000, 2000, "after");
+        assertThat(outputString.length(), Matchers.lessThan(255));
+        assertThat(outputString, is("https_www_otto_de_multi-media_anchor_abcdefghijklmnopqrstuvwxyz_12345678901234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567_559e477_1000_02000_after.png"));
     }
 
     @Test
