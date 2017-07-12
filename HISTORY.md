@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 2.3.3
+* Bugfix: Don't stop jlineup run when there are severe errors in chrome after initial loading of page
+
 ## Release 2.3.2
 * Bugfix: Limit max file lenght for screenshot files
 
