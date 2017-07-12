@@ -18,7 +18,7 @@ nexusStaging {
 }
 
 static version() {
-    return '2.3.2'
+    return '2.3.3-SNAPSHOT'
 }
 
 static isReleaseBuild() {
