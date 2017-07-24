@@ -11,7 +11,7 @@ before_script:
   - sleep 3 # give xvfb some time to start
 language: java
 jdk:
-  - openjdk8
+  - oraclejdk8
 script:
   - gradle build -i
 cache:
