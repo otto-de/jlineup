@@ -19,4 +19,4 @@ cache:
   directories:
   - $HOME/.m2
 addons:
-  firefox: latest-beta
+  firefox: latest-nightly
