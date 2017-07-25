@@ -21,18 +21,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@Ignore
 public class JLineupAcceptanceTest {
 
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
-    private final ByteArrayOutputStream sysOut = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream sysErr = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream systemOutCaptor = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream systemErrCaptor = new ByteArrayOutputStream();
     private static final String CWD = Paths.get(".").toAbsolutePath().normalize().toString();
 
     private PrintStream stdout = System.out;
     private PrintStream stderr = System.err;
+
+    private MirrorOutputStream teeOut = new MirrorOutputStream(stdout, systemOutCaptor);
+    private MirrorOutputStream teeErr = new MirrorOutputStream(stderr, systemErrCaptor);
 
     private Path tempDirectory;
 
@@ -40,8 +42,8 @@ public class JLineupAcceptanceTest {
 
     @Before
     public void setUpStreams() {
-        System.setOut(new PrintStream(sysOut));
-        System.setErr(new PrintStream(sysErr));
+        System.setOut(new PrintStream(teeOut));
+        System.setErr(new PrintStream(teeErr));
     }
 
     @Before
@@ -63,7 +65,7 @@ public class JLineupAcceptanceTest {
     @Test
     public void shouldExitWithExitStatus1IfConfigHasNoUrls() throws Exception {
         exit.expectSystemExitWithStatus(1);
-        exit.checkAssertionAfterwards(() -> assertThat(sysErr.toString(), containsString("No urls are configured in the config.")));
+        exit.checkAssertionAfterwards(() -> assertThat(systemErrCaptor.toString(), containsString("No urls are configured in the config.")));
 
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_no_urls.lineup.json"});
     }
@@ -212,9 +214,9 @@ public class JLineupAcceptanceTest {
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
 
-        assertThat(sysOut.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/:\n0.0 (0 %)"));
-        assertThat(sysOut.toString(), containsString("Sum of overall screenshot differences:\n0.0 (0 %)"));
-        assertThat(sysOut.toString(), not(containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.")));
+        assertThat(systemOutCaptor.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/:\n0.0 (0 %)"));
+        assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences:\n0.0 (0 %)"));
+        assertThat(systemOutCaptor.toString(), not(containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.")));
     }
 
     @Test
@@ -227,12 +229,12 @@ public class JLineupAcceptanceTest {
     public void shouldNotCrashPhantomjsFontsNotLoaded() throws Exception {
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_phantom_fonts.lineup.json","--replace-in-url###CWD###="+CWD, "--step","before"});
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_phantom_fonts.lineup.json","--replace-in-url###CWD###="+CWD ,"--step","after"});
-        assertThat(sysOut.toString(), containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature."));
+        assertThat(systemOutCaptor.toString(), containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature."));
     }
 
     @Test
     public void shouldPrintConfig() throws Exception {
-        exit.checkAssertionAfterwards(() -> assertThat(sysOut.toString(), containsString("http://www.example.com")));
+        exit.checkAssertionAfterwards(() -> assertThat(systemOutCaptor.toString(), containsString("http://www.example.com")));
         exit.expectSystemExitWithStatus(0);
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--print-config"});
     }
@@ -267,7 +269,7 @@ public class JLineupAcceptanceTest {
     }
 
     private String combinedOutput() {
-        return sysOut.toString() + sysErr.toString();
+        return systemOutCaptor.toString() + systemErrCaptor.toString();
     }
 
 }
