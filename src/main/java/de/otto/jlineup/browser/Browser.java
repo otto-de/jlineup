@@ -64,25 +64,6 @@ public class Browser implements AutoCloseable {
     static final String JS_SCROLL_TO_TOP_CALL = "window.scrollTo(0, 0);";
     static final String JS_RETURN_DOCUMENT_FONTS_SIZE_CALL = "return document.fonts.size;";
     static final String JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL = "return document.fonts.status === 'loaded';";
-    static final String JS_GET_BROWSER_AND_VERSION_CALL = "function get_browser() {\n" +
-            "    var ua=navigator.userAgent,tem,M=ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\\/))\\/?\\s*(\\d+)/i) || []; \n" +
-            "    if(/trident/i.test(M[1])){\n" +
-            "        tem=/\\brv[ :]+(\\d+)/g.exec(ua) || []; \n" +
-            "        return {name:'IE',version:(tem[1]||'')};\n" +
-            "        }   \n" +
-            "    if(M[1]==='Chrome'){\n" +
-            "        tem=ua.match(/\\bOPR|Edge\\/(\\d+)/)\n" +
-            "        if(tem!=null)   {return {name:'Opera', version:tem[1]};}\n" +
-            "        }   \n" +
-            "    M=M[2]? [M[1], M[2]]: [navigator.appName, navigator.appVersion, '-?'];\n" +
-            "    if((tem=ua.match(/version\\/(\\d+)/i))!=null) {M.splice(1,1,tem[1]);}\n" +
-            "    return {\n" +
-            "      name: M[0],\n" +
-            "      version: M[1]\n" +
-            "    };\n" +
-            " }\n" +
-            "\n" +
-            "return get_browser();\n";
     static final String JS_GET_USER_AGENT = "return navigator.appVersion;";
 
     final private Parameters parameters;

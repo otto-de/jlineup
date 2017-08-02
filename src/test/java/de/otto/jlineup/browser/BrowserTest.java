@@ -236,7 +236,6 @@ public class BrowserTest {
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
         when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
         when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
-        when(webDriverMock.executeScript(JS_GET_BROWSER_AND_VERSION_CALL)).thenReturn(ImmutableMap.of("name","test", "version", "1"));
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
@@ -294,7 +293,6 @@ public class BrowserTest {
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
         when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
         when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
-        when(webDriverMock.executeScript(JS_GET_BROWSER_AND_VERSION_CALL)).thenReturn(ImmutableMap.of("name","test", "version", "1"));
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
