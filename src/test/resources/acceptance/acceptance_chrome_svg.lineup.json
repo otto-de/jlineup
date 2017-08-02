@@ -1,0 +1,41 @@
+{
+  "urls": {
+    "file://###CWD###/src/test/resources/acceptance/webpage/": {
+      "paths": [
+        "logo.html"
+      ],
+      "window-widths": [
+        300,
+        400,
+        500,
+        550,
+        570,
+        600,
+        700,
+        750,
+        800,
+        850,
+        900,
+        1000,
+        1001,
+        1002,
+        1003,
+        1004,
+        1005,
+        501,
+        502,
+        503,
+        504,
+        505,
+        506,
+        507,
+        508,
+        509,
+        510
+      ]
+    }
+  },
+  "report-format" : 2,
+  "threads" : 5,
+  "browser" : "chrome-headless"
+}
