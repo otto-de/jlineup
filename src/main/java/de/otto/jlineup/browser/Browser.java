@@ -64,7 +64,7 @@ public class Browser implements AutoCloseable {
     static final String JS_SCROLL_TO_TOP_CALL = "window.scrollTo(0, 0);";
     static final String JS_RETURN_DOCUMENT_FONTS_SIZE_CALL = "return document.fonts.size;";
     static final String JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL = "return document.fonts.status === 'loaded';";
-    static final String JS_GET_USER_AGENT = "return navigator.appVersion;";
+    static final String JS_GET_USER_AGENT = "return navigator.userAgent;";
 
     final private Parameters parameters;
 
