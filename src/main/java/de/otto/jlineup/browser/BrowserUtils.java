@@ -62,6 +62,8 @@ public class BrowserUtils {
             case FIREFOX_HEADLESS:
                 FirefoxDriverManager.getInstance().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
+                //Headless parameter is supported with Firefox >= 55
+                firefoxOptions.addArguments("--headless");
                 firefoxOptions.addArguments("-width", width + "" , "-height", config.windowHeight + "");
                 firefoxOptions.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
                 driver = new FirefoxDriver(firefoxOptions);
