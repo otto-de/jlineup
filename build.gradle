@@ -48,7 +48,7 @@ dependencies {
     compile "com.beust:jcommander:1.72"
     compile "com.google.code.gson:gson:2.8.1"
     compile "ch.qos.logback:logback-classic:1.2.3"
-    compile "org.thymeleaf:thymeleaf:3.0.6.RELEASE"
+    compile "org.thymeleaf:thymeleaf:3.0.7.RELEASE"
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-core:2.8.47"
     testCompile "org.hamcrest:hamcrest-core:1.3"
