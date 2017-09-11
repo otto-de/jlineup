@@ -57,16 +57,18 @@ public class BrowserUtils {
         switch (config.browser) {
             case FIREFOX:
                 FirefoxDriverManager.getInstance().setup();
-                driver = new FirefoxDriver(getFirefoxProfileWithDisabledAnimatedGifs());
+                FirefoxOptions firefoxOptions = new FirefoxOptions();
+                firefoxOptions.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
+                driver = new FirefoxDriver(firefoxOptions);
                 break;
             case FIREFOX_HEADLESS:
                 FirefoxDriverManager.getInstance().setup();
-                FirefoxOptions firefoxOptions = new FirefoxOptions();
+                FirefoxOptions firefoxOptionsForHeadless = new FirefoxOptions();
                 //Headless parameter is supported with Firefox >= 55
-                firefoxOptions.addArguments("--headless");
-                firefoxOptions.addArguments("-width", width + "" , "-height", config.windowHeight + "");
-                firefoxOptions.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
-                driver = new FirefoxDriver(firefoxOptions);
+                firefoxOptionsForHeadless.addArguments("--headless");
+                firefoxOptionsForHeadless.addArguments("-width", width + "" , "-height", config.windowHeight + "");
+                firefoxOptionsForHeadless.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
+                driver = new FirefoxDriver(firefoxOptionsForHeadless);
                 break;
             case CHROME:
                 ChromeDriverManager.getInstance().setup();
