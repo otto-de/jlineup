@@ -35,8 +35,8 @@ to get some idea how to use it.
 
 JLineup 2.3.3 was tested successfully with
 
-* Chrome 59.x
-* Firefox 55.x (nightly)
+* Chrome 61.x
+* Firefox 57.x (nightly)
 * PhantomJS 2.1.1 (auto-downloaded by JLineup if not installed)
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
