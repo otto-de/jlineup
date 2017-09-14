@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 2.3.5
+* Bugfix: Don't crash when no webdriver was downloaded before
+
+## Release 2.3.4
+* New Selenium and Webdrivermanager versions
+
 ## Release 2.3.3
 * Bugfix: Don't stop jlineup run when there are severe errors in chrome after initial loading of page
 
