@@ -18,7 +18,7 @@ nexusStaging {
 }
 
 static version() {
-    return '2.3.5'
+    return '2.3.6-SNAPSHOT'
 }
 
 static isReleaseBuild() {
@@ -44,11 +44,12 @@ dependencies {
         exclude module: "selenium-safari-driver"
         exclude module: "htmlunit"
     }
-    compile "io.github.bonigarcia:webdrivermanager:1.7.1"
+    compile "io.github.bonigarcia:webdrivermanager:1.7.2"
+    compile "com.codeborne:phantomjsdriver:1.4.0"
     compile "com.beust:jcommander:1.72"
-    compile "com.google.code.gson:gson:2.8.1"
+    compile "com.google.code.gson:gson:2.8.2"
     compile "ch.qos.logback:logback-classic:1.2.3"
-    compile "org.thymeleaf:thymeleaf:3.0.7.RELEASE"
+    compile "org.thymeleaf:thymeleaf:3.0.8.RELEASE"
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-core:2.10.0"
     testCompile "org.hamcrest:hamcrest-core:1.3"
