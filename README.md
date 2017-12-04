@@ -51,7 +51,7 @@ JLineup uses some third party tools and libraries
 
 ##### Webdrivermanager
 
-* [Webdrivermanager](https://github.com/bonigarcia/webdrivermanager) is licensed under the [GNU Lesser General Public License](https://www.gnu.org/licenses/lgpl-2.1.html)
+* [Webdrivermanager](https://github.com/bonigarcia/webdrivermanager) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
   
 ##### JCommander
 
