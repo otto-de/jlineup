@@ -30,12 +30,12 @@ public class HTMLReportWriter {
         TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
 
-        Map<String, Object> variables = prepareVariablesForReportTemplate(screenshotComparisonResults);
+        final Map<String, Object> variables = prepareVariablesForReportTemplate(screenshotComparisonResults);
 
         return templateEngine.process(template, new Context(Locale.US, variables));
     }
 
-    private Map<String, Object> prepareVariablesForReportTemplate(List<ScreenshotComparisonResult> screenshotComparisonResults) {
+    private Map<String, Object> prepareVariablesForReportTemplate(final List<ScreenshotComparisonResult> screenshotComparisonResults) {
         Map<String, Object> variables = new HashMap<>();
         List<ScreenshotComparisonResultContext> screenshotComparisonResultContexts = new LinkedList<>();
 
@@ -57,23 +57,23 @@ public class HTMLReportWriter {
         return variables;
     }
 
-    private String getContextKey(ScreenshotComparisonResult screenshotComparisonResult) {
+    private String getContextKey(final ScreenshotComparisonResult screenshotComparisonResult) {
         return screenshotComparisonResult.url + "|||" + screenshotComparisonResult.width;
     }
 
     private class ScreenshotComparisonResultContext {
 
-        private String url;
-        private int width;
-        private List<ScreenshotComparisonResult> results;
+        private final String url;
+        private final int width;
+        private final List<ScreenshotComparisonResult> results;
 
-        public ScreenshotComparisonResultContext(String url, int width) {
+        ScreenshotComparisonResultContext(final String url, final int width) {
             this.url = url;
             this.width = width;
             this.results = new LinkedList<>();
         }
 
-        public void addResult(ScreenshotComparisonResult result) {
+        void addResult(ScreenshotComparisonResult result) {
             results.add(result);
         }
 
