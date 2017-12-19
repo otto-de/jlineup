@@ -44,7 +44,7 @@ dependencies {
         exclude module: "selenium-safari-driver"
         exclude module: "htmlunit"
     }
-    compile "io.github.bonigarcia:webdrivermanager:2.0.0"
+    compile "io.github.bonigarcia:webdrivermanager:2.0.1"
     compile "com.codeborne:phantomjsdriver:1.4.3"
     compile "com.beust:jcommander:1.72"
     compile "com.google.code.gson:gson:2.8.2"
