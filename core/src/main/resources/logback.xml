@@ -8,6 +8,8 @@
         </encoder>
     </appender>
 
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
     <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>

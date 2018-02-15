@@ -1,5 +1,6 @@
 package de.otto.jlineup.browser;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.Util;
 import de.otto.jlineup.config.Config;
@@ -207,11 +208,12 @@ public class Browser implements AutoCloseable {
         final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
 
         if (areThereCookiesOrStorage(screenshotContext)) {
+
             //get root page from url to be able to set cookies afterwards
             //if you set cookies before getting the page once, it will fail
-            LOG.info(String.format("Getting root url: %s to set cookies, local and session storage", rootUrl));
-            localDriver.get(rootUrl);
-            checkForErrors(localDriver);
+            //LOG.info(String.format("Getting root url: %s to set cookies, local and session storage", rootUrl));
+            //localDriver.get(rootUrl);
+            //checkForErrors(localDriver);
 
             //set cookies and local storage
             setCookies(screenshotContext);

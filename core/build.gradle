@@ -1,0 +1,170 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
+    }
+}
+
+plugins {
+    id 'org.springframework.boot'
+}
+
+
+def seleniumVersion = '3.7.0'
+ext['selenium.version'] = seleniumVersion
+
+/*
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+*/
+
+dependencies {
+    compile("org.seleniumhq.selenium:selenium-java:" + seleniumVersion) {
+        exclude module: "selenium-edge-driver"
+        exclude module: "selenium-ie-driver"
+        exclude module: "selenium-opera-driver"
+        exclude module: "selenium-safari-driver"
+        exclude module: "htmlunit"
+    }
+    compile "io.github.bonigarcia:webdrivermanager:2.0.1"
+    compile "com.codeborne:phantomjsdriver:1.4.3"
+    compile "com.beust:jcommander:1.72"
+    compile "com.google.code.gson:gson:2.8.2"
+    compile "ch.qos.logback:logback-classic:1.2.3"
+    compile "org.thymeleaf:thymeleaf:3.0.8.RELEASE"
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.11.0"
+    testCompile "org.hamcrest:hamcrest-core:1.3"
+    testCompile "org.hamcrest:hamcrest-library:1.3"
+    testCompile "com.github.stefanbirkner:system-rules:1.16.1"
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+        showStandardStreams = true
+    }
+}
+
+mainClassName = 'de.otto.jlineup.Main'
+
+/*
+shadowJar {
+    baseName = 'jlineup'
+    classifier = null
+    version = null
+}
+*/
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    baseName = 'jlineup'
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    baseName = 'jlineup'
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+    //archives shadowJar
+}
+
+[distZip, distTar].each { task ->
+    configurations.archives.artifacts.removeAll
+            { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
+    task.enabled = false
+}
+
+signing {
+    sign configurations.archives
+}
+
+jar {
+    baseName = "jlineup"
+    archiveName = "jlineup.jar"
+}
+
+tasks.processResources.doLast { task ->
+    def resourcesDir = project.sourceSets.main.output.resourcesDir
+    resourcesDir.mkdirs()
+
+    def versionProperties = new File(resourcesDir, "version.properties")
+    if (versionProperties) {
+        def gitVersion = runCommand("git log -n1 --format=format:%H")
+        def fullVersion = version
+        versionProperties.text = "\njlineup.commit = ${gitVersion}" + "\njlineup.version = ${fullVersion}"
+    }
+}
+
+bootRepackage {
+    mainClass = 'de.otto.jlineup.Main'
+    executable = true
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            // use this for local upload debugging instead of sonatype
+            // repository(url: "file://${buildDir}/repo")
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+                name 'JLineup'
+                packaging 'jar'
+                description 'Webapp image comparison tool'
+                url 'http://github.com/otto-de/jlineup'
+
+                scm {
+                    url 'scm:git@github.com:otto-de/jlineup.git'
+                    connection 'scm:git@github.com:otto-de/jlineup.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'mgeweke'
+                        name 'Marco Geweke'
+                        url 'https://github.com/MediaMarco'
+                    }
+                }
+            }
+        }
+    }
+}
+
+static String runCommand(command) {
+    Process proc = command.execute()
+    def out = new StringBuffer()
+    proc.consumeProcessOutputStream(out)
+    proc.consumeProcessErrorStream(out)
+    proc.waitFor()
+    def errorlevel = proc.exitValue()
+    if (errorlevel != 0) {
+        throw new RuntimeException("exec failed on command: '${command}' with errorlevel ${errorlevel}".toString())
+    }
+    out.toString().trim()
+}
