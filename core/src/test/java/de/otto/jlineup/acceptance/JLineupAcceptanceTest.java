@@ -209,7 +209,7 @@ public class JLineupAcceptanceTest {
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
-        final ArrayList<Map<String, String>> report = gson.fromJson(jsonReportText, ArrayList.class);
+        @SuppressWarnings("unchecked") final ArrayList<Map<String, String>> report = gson.fromJson(jsonReportText, ArrayList.class);
         assertThat(report.get(0).get("difference"), is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
