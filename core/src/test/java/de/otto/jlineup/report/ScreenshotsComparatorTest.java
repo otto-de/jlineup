@@ -44,7 +44,8 @@ public class ScreenshotsComparatorTest {
     public void setup() {
         initMocks(this);
         parameters = new Parameters();
-        new JCommander(parameters, "-d", "src/test/resources/");
+        JCommander jCommander = new JCommander(parameters);
+        jCommander.parse( "-d", "src/test/resources/");
 
         config = configBuilder()
                 .withUrls(ImmutableMap.of(

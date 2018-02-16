@@ -57,14 +57,17 @@ task sourcesJar(type: Jar) {
 artifacts {
     archives sourcesJar
     archives javadocJar
-    //archives shadowJar
+    archives jar
 }
 
+
+/*
 [distZip, distTar].each { task ->
     configurations.archives.artifacts.removeAll
             { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
     task.enabled = false
 }
+*/
 
 signing {
     sign configurations.archives

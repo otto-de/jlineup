@@ -105,7 +105,7 @@ public class FileService {
 
     private String generateScreenshotFileNamePrefix(String url, String urlSubPath) {
 
-        String hash = Hashing.sha1().hashString(url + urlSubPath, Charsets.UTF_8).toString().substring(0, 7);
+        @SuppressWarnings("deprecation") String hash = Hashing.sha1().hashString(url + urlSubPath, Charsets.UTF_8).toString().substring(0, 7);
 
         if (urlSubPath.equals("/") || urlSubPath.equals("")) {
             urlSubPath = "root";
@@ -159,7 +159,7 @@ public class FileService {
                 directory, pathMatcher::matches)) {
             dirStream.forEach(filePath -> files.add(filePath.getFileName().toString()));
         }
-        Collections.sort(files, Comparator.naturalOrder());
+        files.sort(Comparator.naturalOrder());
         return files;
     }
 
