@@ -14,7 +14,7 @@ language: java
 jdk:
   - oraclejdk8
 script:
-  - gradle clean build -i
+  - gradle clean test -i
 cache:
   directories:
   - $HOME/.m2
