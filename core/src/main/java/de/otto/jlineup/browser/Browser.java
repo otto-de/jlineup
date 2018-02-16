@@ -10,6 +10,7 @@ import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.*;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogType;
@@ -42,6 +43,7 @@ public class Browser implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(Browser.class);
     public static final int THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
     public static final int DEFAULT_SLEEP_AFTER_SCROLL_MILLIS = 50;
+    public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;
 
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
@@ -208,12 +210,11 @@ public class Browser implements AutoCloseable {
         final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
 
         if (areThereCookiesOrStorage(screenshotContext)) {
-
             //get root page from url to be able to set cookies afterwards
             //if you set cookies before getting the page once, it will fail
-            //LOG.info(String.format("Getting root url: %s to set cookies, local and session storage", rootUrl));
-            //localDriver.get(rootUrl);
-            //checkForErrors(localDriver);
+            LOG.info(String.format("Getting root url: %s to set cookies, local and session storage", rootUrl));
+            localDriver.get(rootUrl);
+            checkForErrors(localDriver);
 
             //set cookies and local storage
             setCookies(screenshotContext);
@@ -308,6 +309,21 @@ public class Browser implements AutoCloseable {
                 throw new WebDriverException(logEntries.getAll().get(0).getMessage());
             }
         }
+
+        if (config.browser == Type.CHROME) {
+            driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+            try {
+                WebElement element = driver.findElement(By.xpath("//*[@id=\"main-message\"]/div[2]"));
+                if (element != null && element.getText() != null) {
+                    throw new WebDriverException(element.getText());
+                }
+            } catch (NoSuchElementException e) {
+                //ignore
+            } finally {
+                driver.manage().timeouts().implicitlyWait(DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS, TimeUnit.SECONDS);
+            }
+        }
+
     }
 
     private Random random = new Random();

@@ -7,8 +7,10 @@ import org.junit.*;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class JLineupAcceptanceTest {
 
     private final ByteArrayOutputStream systemOutCaptor = new ByteArrayOutputStream();
     private final ByteArrayOutputStream systemErrCaptor = new ByteArrayOutputStream();
+
     private static final String CWD = Paths.get(".").toAbsolutePath().normalize().toString();
 
     private PrintStream stdout = System.out;
@@ -286,6 +289,16 @@ public class JLineupAcceptanceTest {
 
     private String combinedOutput() {
         return systemOutCaptor.toString() + systemErrCaptor.toString();
+    }
+
+    private File getFile(String name) {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(name);
+        return new File(url.getPath());
+    }
+
+    private String getPath(String name) {
+        File file = getFile(name);
+        return file.getAbsolutePath();
     }
 
 }
