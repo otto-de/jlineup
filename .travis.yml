@@ -12,6 +12,7 @@ before_script:
   - sleep 3 # give xvfb some time to start
 language: java
 install:
+  - echo "Override default Travis install step to avoid unnecessary './gradlew assemble'."
 jdk:
   - oraclejdk8
 script:
