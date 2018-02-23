@@ -328,16 +328,8 @@ public class Browser implements AutoCloseable {
 
     private Random random = new Random();
 
-    private void resizeBrowser(WebDriver driver, int width, int height) throws InterruptedException {
+    private void resizeBrowser(WebDriver driver, int width, int height) {
         LOG.debug("Resize browser window to {}x{}", width, height);
-
-        if (config.browser == Type.FIREFOX) {
-            // Firefox 53.0 hangs if you resize a window to a size it already has,
-            // so make sure another size is used before setting the desired one
-            // TODO: Remove the following line when fixed in Firefox!
-            driver.manage().window().setSize(new Dimension(width + (random.nextInt(20) - 10), height + (random.nextInt(20) - 10)));
-            TimeUnit.MILLISECONDS.sleep(25);
-        }
         driver.manage().window().setSize(new Dimension(width, height));
     }
 
