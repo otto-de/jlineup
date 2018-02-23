@@ -176,7 +176,6 @@ public final class Config {
     }
 
     public static Config readConfig(final String workingDir, final String configFileName) throws FileNotFoundException {
-
         List<String> searchPaths = new ArrayList<>();
         Path configFilePath = Paths.get(workingDir + "/" + configFileName);
         searchPaths.add(configFilePath.toString());
@@ -187,20 +186,16 @@ public final class Config {
                 configFilePath = Paths.get(LINEUP_CONFIG_DEFAULT_PATH);
                 searchPaths.add(configFilePath.toString());
                 if (!Files.exists(configFilePath)) {
-                    throw new FileNotFoundException("Config file not found. Search locations were: " + Arrays.toString(searchPaths.toArray()));
+                    String cwd = Paths.get(".").toAbsolutePath().normalize().toString();
+                    throw new FileNotFoundException("Config file not found. Search locations were: " + Arrays.toString(searchPaths.toArray()) + " - working dir: " + cwd);
                 }
             }
         }
-
         BufferedReader br = new BufferedReader(new FileReader(configFilePath.toString()));
         return gson.fromJson(br, Config.class);
-
     }
 
-
-
     public static final class Builder {
-
         private Map<String, UrlConfig> urls = null;
         private Browser.Type browser = DEFAULT_BROWSER;
         private float globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
