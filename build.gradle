@@ -34,6 +34,18 @@ idea {
             provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping.@vcs = 'Git'
         }
     }
+    workspace {
+        iws {
+            withXml { xmlFile ->
+                def runManager = xmlFile.asNode().component.find { it.@name == 'RunManager' }
+                // setup JUnit's default run configuration
+                def junitDefaults = runManager.configuration.find { it.@default == 'true' && it.@type == 'JUnit' }
+                junitDefaults.option.find { it.@name == 'WORKING_DIRECTORY' }.replaceNode {
+                    option(name: 'WORKING_DIRECTORY', value: '$MODULE_DIR$')
+                }
+            }
+        }
+    }
 }
 
 subprojects {
@@ -80,6 +92,4 @@ subprojects {
             }
         }
     }
-
-
 }
