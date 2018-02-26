@@ -145,6 +145,7 @@ public class Browser implements AutoCloseable {
 
         if (!notRanIntoTimeout) {
             LOG.error("Threadpool ran into timeout.");
+            throw new TimeoutException("Global timeout of " + config.globalTimeout + " seconds was reached.");
         } else {
             LOG.info("Threadpool terminated.");
         }
