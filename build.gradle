@@ -1,12 +1,19 @@
 buildscript {
+    ext {
+        springBootVersion = '2.0.0.RC2'
+    }
     repositories {
         mavenCentral()
+        maven { url "https://repo.spring.io/snapshot" }
+        maven { url "https://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
-
 plugins {
-    id 'net.researchgate.release' version '2.4.0'
-    id 'io.codearte.nexus-staging' version '0.9.0'
+    //id 'net.researchgate.release' version '2.4.0'
+    id 'io.codearte.nexus-staging' version '0.11.0'
 }
 
 apply plugin: 'java'

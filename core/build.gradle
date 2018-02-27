@@ -1,14 +1,5 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.9.RELEASE")
-    }
-}
-
 plugins {
-    id 'org.springframework.boot' version '1.5.9.RELEASE'
+    id 'org.springframework.boot'
 }
 
 def seleniumVersion = '3.8.1'
@@ -54,28 +45,33 @@ task sourcesJar(type: Jar) {
     classifier = 'sources'
 }
 
+jar {
+    baseName = "jlineup"
+    archiveName = "jlineup.jar"
+}
+
+bootJar {
+    baseName = "jlineup"
+    archiveName = "jlineup.jar"
+    mainClassName = 'de.otto.jlineup.Main'
+    launchScript()
+}
+
 artifacts {
     archives sourcesJar
     archives javadocJar
+    archives bootJar
     archives jar
 }
 
-
-/*
-[distZip, distTar].each { task ->
+[distZip, bootDistZip, distTar, bootDistTar].each { task ->
     configurations.archives.artifacts.removeAll
             { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
     task.enabled = false
 }
-*/
 
 signing {
     sign configurations.archives
-}
-
-jar {
-    baseName = "jlineup"
-    archiveName = "jlineup.jar"
 }
 
 tasks.processResources.doLast { task ->
@@ -90,11 +86,6 @@ tasks.processResources.doLast { task ->
     }
 }
 
-bootRepackage {
-    mainClass = 'de.otto.jlineup.Main'
-    executable = true
-}
-
 uploadArchives {
     configuration = configurations.archives
     repositories {
@@ -103,6 +94,8 @@ uploadArchives {
 
             // use this for local upload debugging instead of sonatype
             // repository(url: "file://${buildDir}/repo")
+            // snapshotRepository(url: "file://${buildDir}/repo")
+
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                 authentication(userName: sonatypeUsername, password: sonatypePassword)
@@ -111,6 +104,7 @@ uploadArchives {
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
                 authentication(userName: sonatypeUsername, password: sonatypePassword)
             }
+
 
             pom.project {
                 name 'JLineup'
