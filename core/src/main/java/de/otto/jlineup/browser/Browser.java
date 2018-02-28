@@ -140,7 +140,7 @@ public class Browser implements AutoCloseable {
         }
         LOG.debug("Shutting down threadpool.");
         threadPool.shutdown();
-        LOG.debug("Threadpool shutdown finished.");
+        LOG.debug("Threadpool shutdown finished. Awaiting termination.");
         boolean notRanIntoTimeout = threadPool.awaitTermination(config.globalTimeout, TimeUnit.SECONDS);
 
         if (!notRanIntoTimeout) {

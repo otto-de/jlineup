@@ -22,6 +22,8 @@ a Ruby tool. We did a rewrite in Java, because we can
 leverage some quicker image comparison here and we can
 get rid of Ruby in our JVM-based pipelines.
 
+Credit for Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
+
 ## Howto
 
 JLineup comes as executable Java Archive.
@@ -73,4 +75,4 @@ JLineup uses some third party tools and libraries
 
 ##### Thymeleaf
 
-* [Thymeleaf](http://www.thymeleaf.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0) 
+* [Thymeleaf](http://www.thymeleaf.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
