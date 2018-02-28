@@ -92,7 +92,6 @@ uploadArchives {
             //repository(url: "file://${buildDir}/repo")
             //snapshotRepository(url: "file://${buildDir}/repo")
 
-
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                 authentication(userName: sonatypeUsername, password: sonatypePassword)
             }

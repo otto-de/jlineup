@@ -1,5 +1,10 @@
 # JLineup Release History
 
+## Release 2.4.0
+* Improvement: Better handling of global timeout
+* Dependency updates
+* New project structure
+
 ## Release 2.3.5
 * Bugfix: Don't crash when no webdriver was downloaded before
 
