@@ -99,6 +99,10 @@ public class Parameters {
         return debug;
     }
 
+    public boolean isLogToFile() {
+        return logToFile;
+    }
+
     @Override
     public String toString() {
         return "Parameters{" +
@@ -111,6 +115,7 @@ public class Parameters {
                 ", url='" + url + '\'' +
                 ", printConfig=" + printConfig +
                 ", debug=" + debug +
+                ", logToFile=" + logToFile +
                 ", version=" + version +
                 ", urlReplacements=" + urlReplacements +
                 '}';
@@ -124,6 +129,7 @@ public class Parameters {
         return help == that.help &&
                 printConfig == that.printConfig &&
                 debug == that.debug &&
+                logToFile == that.logToFile &&
                 version == that.version &&
                 step == that.step &&
                 Objects.equals(configFile, that.configFile) &&
@@ -136,7 +142,8 @@ public class Parameters {
 
     @Override
     public int hashCode() {
-        return Objects.hash(help, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, url, printConfig, debug, version, urlReplacements);
+
+        return Objects.hash(help, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, url, printConfig, debug, logToFile, version, urlReplacements);
     }
 
     public boolean isVersion() {

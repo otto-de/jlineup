@@ -4,7 +4,7 @@
 
 [![Travis CI](https://travis-ci.org/otto-de/jlineup.svg?branch=master)](https://travis-ci.org/otto-de/jlineup)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup)
-[![Dependency Status](https://www.versioneye.com/user/projects/58175e12d33a712754f2ab3d/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58175e12d33a712754f2ab3d)
+<!--- [![Dependency Status](https://www.versioneye.com/user/projects/58175e12d33a712754f2ab3d/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58175e12d33a712754f2ab3d)) -->
 [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=build.gradle)
 
 ## About
