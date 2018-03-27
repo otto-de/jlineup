@@ -62,7 +62,7 @@ public class Util {
         root.setLevel(Level.DEBUG);
     }
 
-    static void logToFile(Parameters parameters) {
+    static void logToFile(String workingDir) {
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         PatternLayoutEncoder ple = new PatternLayoutEncoder();
 
@@ -70,7 +70,7 @@ public class Util {
         ple.setContext(lc);
         ple.start();
         FileAppender<ILoggingEvent> fileAppender = new FileAppender<>();
-        fileAppender.setFile(parameters.getWorkingDirectory() + "/jlineup.log");
+        fileAppender.setFile(workingDir + "/jlineup.log");
         fileAppender.setEncoder(ple);
         fileAppender.setContext(lc);
         fileAppender.start();

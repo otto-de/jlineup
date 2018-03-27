@@ -36,8 +36,8 @@ public class JLineup {
             Util.setLogLevelToDebug();
         }
 
-        if (config.logToFile) {
-            Util.logToFile(jLineupOptions.getParameters());
+        if (config.logToFile || jLineupOptions.getParameters().isLogToFile()) {
+            Util.logToFile(jLineupOptions.getParameters().getWorkingDirectory());
         }
 
         //Only create screenshots and report dirs if config was found
