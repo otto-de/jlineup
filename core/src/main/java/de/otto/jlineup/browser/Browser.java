@@ -1,11 +1,10 @@
 package de.otto.jlineup.browser;
 
-import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
+import de.otto.jlineup.JLineupRunConfiguration;
 import de.otto.jlineup.Util;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
-import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import org.openqa.selenium.Dimension;
@@ -44,7 +43,6 @@ public class Browser implements AutoCloseable {
     public static final int THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
     public static final int DEFAULT_SLEEP_AFTER_SCROLL_MILLIS = 50;
     public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;
-
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
         FIREFOX,
@@ -56,6 +54,7 @@ public class Browser implements AutoCloseable {
         CHROME_HEADLESS,
         @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
         PHANTOMJS;
+
     }
 
     static final String JS_DOCUMENT_HEIGHT_CALL = "return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );";
@@ -69,11 +68,10 @@ public class Browser implements AutoCloseable {
     static final String JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL = "return document.fonts.status === 'loaded';";
     static final String JS_GET_USER_AGENT = "return navigator.userAgent;";
 
-    final private Parameters parameters;
-
-    final private Config config;
-    final private FileService fileService;
-    final private BrowserUtils browserUtils;
+    private final Config config;
+    private final FileService fileService;
+    private final BrowserUtils browserUtils;
+    private final JLineupRunConfiguration jLineupRunConfiguration;
 
     /* Every thread has it's own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
     private ExecutorService threadPool;
@@ -82,8 +80,8 @@ public class Browser implements AutoCloseable {
 
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
 
-    public Browser(Parameters parameters, Config config, FileService fileService, BrowserUtils browserUtils) {
-        this.parameters = parameters;
+    public Browser(JLineupRunConfiguration jLineupRunConfiguration, Config config, FileService fileService, BrowserUtils browserUtils) {
+        this.jLineupRunConfiguration = jLineupRunConfiguration;
         this.config = config;
         this.fileService = fileService;
         this.browserUtils = browserUtils;
@@ -107,8 +105,7 @@ public class Browser implements AutoCloseable {
     }
 
     public void takeScreenshots() throws Exception {
-        boolean before = !parameters.isAfter();
-        List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(parameters, config, before);
+        List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(jLineupRunConfiguration, config);
         if (screenshotContextList.size() > 0) {
             takeScreenshots(screenshotContextList);
         }

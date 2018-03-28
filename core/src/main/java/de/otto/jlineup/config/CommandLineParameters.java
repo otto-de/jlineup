@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import static de.otto.jlineup.config.Step.*;
 
-public class Parameters {
+public class CommandLineParameters {
 
     @Parameter(names = {"-?", "--help"}, help = true, description = "Shows this help")
     private boolean help = false;
@@ -46,6 +46,10 @@ public class Parameters {
 
     @DynamicParameter(names = {"--replace-in-url", "-R"}, description = "The given keys are replaced with the corresponding values in all urls that are tested.")
     private Map<String, String> urlReplacements = new HashMap<>();
+
+    public CommandLineParameters() {
+
+    };
 
     public String getWorkingDirectory() {
         return workingDirectory;
@@ -105,7 +109,7 @@ public class Parameters {
 
     @Override
     public String toString() {
-        return "Parameters{" +
+        return "CommandLineParameters{" +
                 "help=" + help +
                 ", step=" + step +
                 ", configFile='" + configFile + '\'' +
@@ -125,7 +129,7 @@ public class Parameters {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Parameters that = (Parameters) o;
+        CommandLineParameters that = (CommandLineParameters) o;
         return help == that.help &&
                 printConfig == that.printConfig &&
                 debug == that.debug &&
@@ -149,4 +153,5 @@ public class Parameters {
     public boolean isVersion() {
         return version;
     }
+
 }

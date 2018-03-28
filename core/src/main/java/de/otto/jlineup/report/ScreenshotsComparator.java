@@ -1,9 +1,10 @@
 package de.otto.jlineup.report;
 
 import com.google.common.annotations.VisibleForTesting;
+import de.otto.jlineup.JLineupRunConfiguration;
 import de.otto.jlineup.browser.BrowserUtils;
+import de.otto.jlineup.config.CommandLineParameters;
 import de.otto.jlineup.config.Config;
-import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
@@ -28,13 +29,16 @@ public class ScreenshotsComparator {
     private static final String BEFORE_MATCHER = DIVIDER + BEFORE + PNG_EXTENSION;
     private static final String AFTER_MATCHER = DIVIDER + AFTER + PNG_EXTENSION;
 
-    final private Parameters parameters;
-    final private Config config;
-    final private FileService fileService;
-    final private ImageService imageService;
+    private final JLineupRunConfiguration jLineupRunConfiguration;
+    private final Config config;
+    private final FileService fileService;
+    private final ImageService imageService;
 
-    public ScreenshotsComparator(Parameters parameters, Config config, FileService fileService, ImageService imageService) {
-        this.parameters = parameters;
+    public ScreenshotsComparator(JLineupRunConfiguration jLineupRunConfiguration,
+                                 Config config,
+                                 FileService fileService,
+                                 ImageService imageService) {
+        this.jLineupRunConfiguration = jLineupRunConfiguration;
         this.config = config;
         this.fileService = fileService;
         this.imageService = imageService;
@@ -49,7 +53,7 @@ public class ScreenshotsComparator {
         Map<String, List<ScreenshotComparisonResult>> results = new HashMap<>();
         for (Map.Entry<String, UrlConfig> urlConfigEntry : config.urls.entrySet()) {
             List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
-            String url = BrowserUtils.prepareDomain(parameters, urlConfigEntry.getKey());
+            String url = BrowserUtils.prepareDomain(jLineupRunConfiguration, urlConfigEntry.getKey());
             UrlConfig urlConfig = urlConfigEntry.getValue();
             LOG.debug("Url: {}", url);
             for (String path : urlConfig.paths) {

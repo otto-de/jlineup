@@ -1,7 +1,8 @@
 package de.otto.jlineup.file;
 
 import com.google.common.collect.ImmutableList;
-import de.otto.jlineup.config.Parameters;
+import de.otto.jlineup.JLineupRunConfiguration;
+import de.otto.jlineup.config.CommandLineParameters;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,6 +18,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
+import static de.otto.jlineup.JLineupRunConfiguration.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.file.FileService.AFTER;
 import static de.otto.jlineup.file.FileService.BEFORE;
 import static org.hamcrest.CoreMatchers.is;
@@ -28,8 +30,7 @@ public class FileServiceTest {
 
     private FileService testee;
 
-    @Mock
-    private Parameters parameters;
+    private JLineupRunConfiguration jLineupRunConfiguration;
 
     @Rule
     public TemporaryFolder tempDir = new TemporaryFolder();
@@ -41,18 +42,21 @@ public class FileServiceTest {
     public void setup() throws IOException {
         initMocks(this);
 
-        when(parameters.getWorkingDirectory()).thenReturn("src/test/resources");
-        when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
-        when(parameters.getReportDirectory()).thenReturn("report");
-
-        testee = new FileService(parameters);
-
         tempDirPath = tempDir.getRoot().getPath();
 
         writeScreenshotTestPath = tempDirPath + "/testdirforlineupwritetest";
+
+        jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+                .withWorkingDirectory(writeScreenshotTestPath)
+                .withScreenshotDirectory("screenshots")
+                .withReportDirectory("report")
+                .build();
+
+        testee = new FileService(jLineupRunConfiguration);
         testee.createDirIfNotExists(writeScreenshotTestPath);
         testee.createDirIfNotExists(writeScreenshotTestPath + "/screenshots");
         testee.createDirIfNotExists(writeScreenshotTestPath + "/report");
+
     }
 
     @Test
@@ -65,7 +69,6 @@ public class FileServiceTest {
 
     @Test
     public void shouldWriteScreenshot() throws IOException {
-        when(parameters.getWorkingDirectory()).thenReturn(writeScreenshotTestPath);
         BufferedImage bufferedImage = new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB);
         bufferedImage.setRGB(0, 0, 200);
 
@@ -76,7 +79,6 @@ public class FileServiceTest {
 
     @Test
     public void shouldWriteJsonReport() throws Exception {
-        when(parameters.getWorkingDirectory()).thenReturn(writeScreenshotTestPath);
 
         testee.writeJsonReport("[{\"toll\":\"mega\"}]");
 
@@ -103,12 +105,9 @@ public class FileServiceTest {
 
     @Test
     public void shouldGenerateFullPathToPngFile() {
-        when(parameters.getWorkingDirectory()).thenReturn("some/working/dir");
-        when(parameters.getScreenshotDirectory()).thenReturn("someScreenshotDir");
-
         final String fullFileNameWithPath = testee.getScreenshotPath("testurl", "/", 1001, 2002, "step");
 
-        assertThat(fullFileNameWithPath, is("some/working/dir/someScreenshotDir/testurl_root_bbf1812_1001_02002_step.png"));
+        assertThat(fullFileNameWithPath, is(writeScreenshotTestPath + "/screenshots/testurl_root_bbf1812_1001_02002_step.png"));
     }
 
     @Test
@@ -138,17 +137,32 @@ public class FileServiceTest {
 
     @Test
     public void shouldFindBeforeImages() throws IOException {
+
+        jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+                .withWorkingDirectory("src/test/resources")
+                .withScreenshotDirectory("screenshots")
+                .withReportDirectory("report")
+                .build();
+        FileService fileService = new FileService(jLineupRunConfiguration);
+
         //when
-        List<String> beforeFiles = testee.getFilenamesForStep("/", "http://url", BEFORE);
+        List<String> beforeFiles = fileService.getFilenamesForStep("/", "http://url", BEFORE);
         //then
         assertThat(beforeFiles, is(ImmutableList.of("http_url_root_ff3c40c_1001_02002_before.png")));
     }
 
     @Test
     public void shouldFindAfterImages() throws IOException {
+        jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+                .withWorkingDirectory("src/test/resources")
+                .withScreenshotDirectory("screenshots")
+                .withReportDirectory("report")
+                .build();
+        FileService fileService = new FileService(jLineupRunConfiguration);
+
         //when
-        List<String> beforeFiles = testee.getFilenamesForStep("/", "http://url", AFTER);
+        List<String> afterFiles = fileService.getFilenamesForStep("/", "http://url", AFTER);
         //then
-        assertThat(beforeFiles, is(ImmutableList.of("http_url_root_ff3c40c_1001_02002_after.png", "http_url_root_ff3c40c_1001_03003_after.png")));
+        assertThat(afterFiles, is(ImmutableList.of("http_url_root_ff3c40c_1001_02002_after.png", "http_url_root_ff3c40c_1001_03003_after.png")));
     }
 }

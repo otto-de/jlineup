@@ -2,9 +2,10 @@ package de.otto.jlineup.browser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import de.otto.jlineup.JLineupRunConfiguration;
+import de.otto.jlineup.config.CommandLineParameters;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
-import de.otto.jlineup.config.Parameters;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
 import org.junit.After;
@@ -18,8 +19,6 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
@@ -32,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static de.otto.jlineup.JLineupRunConfiguration.fromCommandlineParameters;
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.config.Config.configBuilder;
@@ -55,7 +55,7 @@ public class BrowserTest {
     private BrowserUtils browserUtilsMock;
 
     @Mock
-    private Parameters parameters;
+    private JLineupRunConfiguration jLineupRunConfiguration;
     @Mock
     private FileService fileService;
 
@@ -72,7 +72,7 @@ public class BrowserTest {
         when(browserUtilsMock.getWebDriverByConfig(any(Config.class))).thenReturn(webDriverMock);
         when(browserUtilsMock.getWebDriverByConfig(any(Config.class), anyInt())).thenReturn(webDriverMock);
         Config config = configBuilder().build();
-        testee = new Browser(parameters, config, fileService, browserUtilsMock);
+        testee = new Browser(jLineupRunConfiguration, config, fileService, browserUtilsMock);
         testee.initializeWebDriver();
     }
 
@@ -229,7 +229,7 @@ public class BrowserTest {
                 .withWindowHeight(100)
                 .build();
         testee.close();
-        testee = new Browser(parameters, config, fileService, browserUtilsMock);
+        testee = new Browser(jLineupRunConfiguration, config, fileService, browserUtilsMock);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
         ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", 800, true, urlConfig);
@@ -286,7 +286,7 @@ public class BrowserTest {
                 .build();
 
         testee.close();
-        testee = new Browser(parameters, config, fileService, browserUtilsMock);
+        testee = new Browser(jLineupRunConfiguration, config, fileService, browserUtilsMock);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
         ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", 800, true, urlConfig);

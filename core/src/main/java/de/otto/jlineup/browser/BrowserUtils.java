@@ -1,12 +1,13 @@
 package de.otto.jlineup.browser;
 
+import de.otto.jlineup.JLineupRunConfiguration;
+import de.otto.jlineup.config.CommandLineParameters;
 import de.otto.jlineup.config.Config;
-import de.otto.jlineup.config.Parameters;
+import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import io.github.bonigarcia.wdm.PhantomJsDriverManager;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -102,7 +103,7 @@ public class BrowserUtils {
         return firefoxProfileHeadless;
     }
 
-    static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(Parameters parameters, Config config, boolean before) {
+    static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(JLineupRunConfiguration jLineupRunConfiguration, Config config) {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
         Map<String, UrlConfig> urls = config.urls;
 
@@ -119,17 +120,17 @@ public class BrowserUtils {
                 screenshotContextList.addAll(
                         resolutions.stream()
                                 .map(windowWidth ->
-                                        new ScreenshotContext(prepareDomain(parameters, urlConfigEntry.getKey()), path, windowWidth,
-                                                before, urlConfigEntry.getValue()))
+                                        new ScreenshotContext(prepareDomain(jLineupRunConfiguration, urlConfigEntry.getKey()), path, windowWidth,
+                                                jLineupRunConfiguration.getStep() == Step.before, urlConfigEntry.getValue()))
                                 .collect(Collectors.toList()));
             }
         }
         return screenshotContextList;
     }
 
-    public static String prepareDomain(final Parameters parameters, final String url) {
+    public static String prepareDomain(final JLineupRunConfiguration jLineupRunConfiguration, final String url) {
         String processedUrl = url;
-        for (Map.Entry<String, String> replacement : parameters.getUrlReplacements().entrySet()) {
+        for (Map.Entry<String, String> replacement : jLineupRunConfiguration.getUrlReplacements().entrySet()) {
              processedUrl = processedUrl.replace(replacement.getKey(), replacement.getValue());
         }
         return processedUrl;

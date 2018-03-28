@@ -171,7 +171,7 @@ public final class Config {
                 .build();
     }
 
-    public static Config readConfig(final Parameters parameters) throws FileNotFoundException {
+    public static Config readConfig(final CommandLineParameters parameters) throws FileNotFoundException {
         return Config.readConfig(parameters.getWorkingDirectory(), parameters.getConfigFile());
     }
 

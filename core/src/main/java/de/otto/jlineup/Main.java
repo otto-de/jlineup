@@ -2,8 +2,8 @@ package de.otto.jlineup;
 
 import com.beust.jcommander.JCommander;
 import de.otto.jlineup.browser.BrowserUtils;
+import de.otto.jlineup.config.CommandLineParameters;
 import de.otto.jlineup.config.Config;
-import de.otto.jlineup.config.Parameters;
 
 import java.io.FileNotFoundException;
 
@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        final Parameters parameters = new Parameters();
+        final CommandLineParameters parameters = new CommandLineParameters();
         final JCommander jCommander = new JCommander(parameters);
         jCommander.parse(args);
         jCommander.setProgramName("JLineup");
@@ -42,8 +42,18 @@ public class Main {
             System.exit(0);
         }
 
-        JLineupOptions jLineupOptions = new JLineupOptions(parameters);
-        JLineup jLineup = new JLineup(config, jLineupOptions);
+        if (config.debug) {
+            Util.setLogLevelToDebug();
+        }
+
+        if (config.logToFile || parameters.isLogToFile()) {
+            Util.logToFile(parameters.getWorkingDirectory());
+        }
+
+        System.out.printf("Running JLineup [%s] with step '%s'.%n%n", Util.getVersion(), parameters.getStep());
+
+        JLineupRunConfiguration jLineupRunConfiguration = JLineupRunConfiguration.fromCommandlineParameters(parameters);
+        JLineup jLineup = new JLineup(config, jLineupRunConfiguration);
 
         int errorLevel = jLineup.run();
         if (errorLevel != 0) {
@@ -51,7 +61,7 @@ public class Main {
         }
     }
 
-    private static Config buildConfig(Parameters parameters) throws FileNotFoundException {
+    private static Config buildConfig(CommandLineParameters parameters) throws FileNotFoundException {
         Config config;
         if (parameters.getUrl() != null) {
             String url = BrowserUtils.prependHTTPIfNotThereAndToLowerCase(parameters.getUrl());

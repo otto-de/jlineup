@@ -2,16 +2,15 @@ package de.otto.jlineup.browser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import de.otto.jlineup.config.Config;
-import de.otto.jlineup.config.Cookie;
-import de.otto.jlineup.config.Parameters;
-import de.otto.jlineup.config.UrlConfig;
+import de.otto.jlineup.JLineupRunConfiguration;
+import de.otto.jlineup.config.*;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
+import static de.otto.jlineup.JLineupRunConfiguration.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -50,11 +49,14 @@ public class BrowserUtilsTest {
     @Test
     public void shouldGenerateScreenshotsParameters() throws FileNotFoundException {
         //given
-        Parameters parameters = mock(Parameters.class);
         Config config = Config.readConfig(".", "src/test/resources/lineup_test.json");
-        when(parameters.getWorkingDirectory()).thenReturn("some/working/dir");
-        when(parameters.getScreenshotDirectory()).thenReturn("screenshots");
-        when(parameters.getUrlReplacements()).thenReturn(ImmutableMap.of("google","doodle"));
+
+        JLineupRunConfiguration jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+                .withWorkingDirectory("some/working/dir")
+                .withScreenshotDirectory("screenshots")
+                .withUrlReplacements(ImmutableMap.of("google", "doodle"))
+                .withStep(Step.before)
+                .build();
 
         UrlConfig expectedUrlConfigForOttoDe = getExpectedUrlConfigForOttoDe();
         UrlConfig expectedUrlConfigForGoogleDe = getExpectedUrlConfigForGoogleDe();
@@ -70,7 +72,7 @@ public class BrowserUtilsTest {
         );
 
         //when
-        final List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(parameters, config, true);
+        final List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(jLineupRunConfiguration, config);
 
         //then
         assertThat(screenshotContextList, containsInAnyOrder(expectedScreenshotContextList.toArray()));
@@ -79,10 +81,11 @@ public class BrowserUtilsTest {
     @Test
     public void shouldPrepareDomain() {
         //given
-        Parameters parameters = mock(Parameters.class);
-        when(parameters.getUrlReplacements()).thenReturn(ImmutableMap.of(".otto.", ".bonprix."));
+        JLineupRunConfiguration jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+                .withUrlReplacements(ImmutableMap.of(".otto.", ".bonprix."))
+                .build();
         //when
-        String result = BrowserUtils.prepareDomain(parameters, "www.otto.de");
+        String result = BrowserUtils.prepareDomain(jLineupRunConfiguration, "www.otto.de");
         //then
         assertThat(result, is("www.bonprix.de"));
     }

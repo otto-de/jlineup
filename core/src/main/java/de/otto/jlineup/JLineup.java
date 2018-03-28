@@ -3,6 +3,7 @@ package de.otto.jlineup;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.Config;
+import de.otto.jlineup.config.Step;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import de.otto.jlineup.report.*;
@@ -15,42 +16,27 @@ import java.util.Set;
 public class JLineup {
 
     private final Config config;
-    private final JLineupOptions jLineupOptions;
+    private final JLineupRunConfiguration jLineupRunConfiguration;
 
-    public JLineup(Config config, JLineupOptions jLineupOptions) {
+    public JLineup(Config config, JLineupRunConfiguration jLineupRunConfiguration) {
         this.config = config;
-        this.jLineupOptions = jLineupOptions;
+        this.jLineupRunConfiguration = jLineupRunConfiguration;
     }
 
     public int run() throws IOException {
-        FileService fileService = new FileService(jLineupOptions.getParameters());
+        FileService fileService = new FileService(jLineupRunConfiguration);
         ImageService imageService = new ImageService();
 
         //Make sure the working dir exists
-        if (jLineupOptions.getParameters().isBefore()) {
+        if (jLineupRunConfiguration.getStep() == Step.before) {
             fileService.createWorkingDirectoryIfNotExists();
-        }
-
-
-        if (config.debug) {
-            Util.setLogLevelToDebug();
-        }
-
-        if (config.logToFile || jLineupOptions.getParameters().isLogToFile()) {
-            Util.logToFile(jLineupOptions.getParameters().getWorkingDirectory());
-        }
-
-        //Only create screenshots and report dirs if config was found
-        if (jLineupOptions.getParameters().isBefore()) {
             fileService.createOrClearReportDirectory();
             fileService.createOrClearScreenshotsDirectory();
         }
 
-        System.out.printf("Running JLineup [%s] with step '%s'.%n%n", Util.getVersion(), jLineupOptions.getParameters().getStep());
-
-        if (!jLineupOptions.getParameters().isJustCompare()) {
+        if (jLineupRunConfiguration.getStep() == Step.before || jLineupRunConfiguration.getStep() == Step.after) {
             BrowserUtils browserUtils = new BrowserUtils();
-            try (Browser browser = new Browser(jLineupOptions.getParameters(), config, fileService, browserUtils)) {
+            try (Browser browser = new Browser(jLineupRunConfiguration, config, fileService, browserUtils)) {
                 browser.takeScreenshots();
             } catch (Exception e) {
                 System.err.println("JLineup Exception: " + e);
@@ -58,8 +44,8 @@ public class JLineup {
             }
         }
 
-        if (jLineupOptions.getParameters().isAfter() || jLineupOptions.getParameters().isJustCompare()) {
-            ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(jLineupOptions.getParameters(), config, fileService, imageService);
+        if (jLineupRunConfiguration.getStep() == Step.after || jLineupRunConfiguration.getStep() == Step.compare) {
+            ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(jLineupRunConfiguration, config, fileService, imageService);
             final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
 
             final ReportGenerator reportGenerator = new ReportGenerator();
@@ -96,7 +82,7 @@ public class JLineup {
             }
         }
 
-        System.out.printf("JLineup run finished for step '%s'%n", jLineupOptions.getParameters().getStep());
+        System.out.printf("JLineup run finished for step '%s'%n", jLineupRunConfiguration.getStep());
         return 0;
     }
 }

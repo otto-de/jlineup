@@ -7,7 +7,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
 import com.google.gson.GsonBuilder;
 import de.otto.jlineup.config.Config;
-import de.otto.jlineup.config.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
