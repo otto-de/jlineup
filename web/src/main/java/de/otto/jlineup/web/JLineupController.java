@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @RestController
 public class JLineupController {
@@ -25,7 +26,7 @@ public class JLineupController {
 
     @PostMapping("/run")
     public String runBefore(final HttpServletRequest httpServletRequest,
-                            final @RequestBody String config) {
+                            final @RequestBody String config) throws IOException {
         return jLineupService.startRun(config);
     }
 }
