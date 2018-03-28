@@ -16,7 +16,7 @@ install:
 jdk:
   - oraclejdk8
 script:
-  - gradle clean test -i
+  - ./gradlew clean test -i
 cache:
   directories:
   - $HOME/.m2
