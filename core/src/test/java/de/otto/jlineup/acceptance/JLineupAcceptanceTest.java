@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@Ignore
 public class JLineupAcceptanceTest {
 
     @Rule
