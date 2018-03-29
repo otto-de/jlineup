@@ -1,2 +1,3 @@
 rootProject.name = 'jlineup'
-include 'core','web'
+include 'core'
+include 'web'

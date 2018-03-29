@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':core')
+    compile project(":core")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
 

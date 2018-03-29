@@ -16,7 +16,6 @@ public class JLineupRunConfiguration {
     private final Step step;
     private final Map<String, String> urlReplacements;
 
-
     private JLineupRunConfiguration(Builder builder) {
         reportDirectory = builder.reportDirectory;
         workingDirectory = builder.workingDirectory;
