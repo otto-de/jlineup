@@ -87,7 +87,4 @@ public class Util {
         return String.format("%s [%s]%n", readVersion(), readCommit());
     }
 
-    static String createPrettyConfigJson(Config config) {
-        return new GsonBuilder().setPrettyPrinting().create().toJson(config);
-    }
 }

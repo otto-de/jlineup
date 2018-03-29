@@ -27,6 +27,6 @@ public class JLineupController {
     @PostMapping("/run")
     public String runBefore(final HttpServletRequest httpServletRequest,
                             final @RequestBody String config) throws IOException {
-        return jLineupService.startRun(config);
+        return jLineupService.startBeforeRun(config);
     }
 }

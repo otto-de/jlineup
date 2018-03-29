@@ -3,6 +3,7 @@ package de.otto.jlineup.config;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.browser.Browser;
 
@@ -59,7 +60,7 @@ public final class Config {
     @SerializedName("log-to-file")
     public final boolean logToFile;
 
-    private final static Gson gson = new Gson();
+    private final static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     /* Used by GSON to set default values */
     public Config() {
@@ -78,6 +79,14 @@ public final class Config {
         globalTimeout = builder.globalTimeout;
         debug = builder.debug;
         logToFile = builder.logToFile;
+    }
+
+    public static Config parse(String config) {
+        return gson.fromJson(config, Config.class);
+    }
+
+    public static String prettyPrint(Config config) {
+        return gson.toJson(config);
     }
 
     @Override

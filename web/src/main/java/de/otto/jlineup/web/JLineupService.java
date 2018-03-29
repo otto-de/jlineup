@@ -4,21 +4,37 @@ import de.otto.jlineup.JLineup;
 import de.otto.jlineup.JLineupRunConfiguration;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Step;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class JLineupService {
 
-    public JLineupService() {
+    private final static ConcurrentHashMap<String, Config> runs = new ConcurrentHashMap<>();
 
+    private final JLineupSpawner jLineupSpawner;
+
+    @Autowired
+    public JLineupService(JLineupSpawner jLineupSpawner) {
+        this.jLineupSpawner = jLineupSpawner;
     }
 
-    String startRun(String config) throws IOException {
-        JLineup jLineup = new JLineup(Config.exampleConfig(), JLineupRunConfiguration.jLineupRunConfigurationBuilder().withStep(Step.before).build());
+    String startBeforeRun(String config) throws IOException {
+        Config parsedConfig = Config.parse(config);
+        String id = String.valueOf(UUID.randomUUID());
+        runs.put(id, parsedConfig);
+        JLineup jLineup = jLineupSpawner.createBeforeRun(id, parsedConfig);
         jLineup.run();
-        return String.valueOf(UUID.randomUUID());
+        return id;
     }
+
+    void startAfterRun(String id) throws IOException {
+        JLineup jLineup = jLineupSpawner.createAfterRun(id, runs.get(id));
+        jLineup.run();
+    }
+
 }
