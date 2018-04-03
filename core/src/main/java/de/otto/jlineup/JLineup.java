@@ -7,6 +7,8 @@ import de.otto.jlineup.config.Step;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import de.otto.jlineup.report.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class JLineup {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JLineup.class);
 
     private final Config config;
     private final JLineupRunConfiguration jLineupRunConfiguration;
@@ -24,6 +28,12 @@ public class JLineup {
     }
 
     public int run() throws IOException {
+
+        if (config.urls == null) {
+            LOG.error("No urls are configured in the config.");
+            return 1;
+        }
+
         FileService fileService = new FileService(jLineupRunConfiguration);
         ImageService imageService = new ImageService();
 

@@ -1,5 +1,6 @@
 package de.otto.jlineup.web;
 
+import com.google.gson.JsonParseException;
 import de.otto.jlineup.config.Config;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +11,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Optional;
 
-import static de.otto.jlineup.web.JLineupRun.jLineupRunBuilder;
+import static de.otto.jlineup.web.JLineupRunStatus.jLineupRunStatusBuilder;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -53,7 +54,7 @@ public class JLineupControllerTest {
     @Test
     public void shouldReturnRun() throws Exception {
         // given
-        when(jLineupService.getRun("someId")).thenReturn(Optional.of(jLineupRunBuilder()
+        when(jLineupService.getRun("someId")).thenReturn(Optional.of(jLineupRunStatusBuilder()
                 .withId("someId")
                 .withState(State.BEFORE_RUNNING)
                 .withConfig(Config.exampleConfig())
@@ -73,7 +74,7 @@ public class JLineupControllerTest {
 
         // given
         String config = Config.prettyPrint(Config.exampleConfig());
-        JLineupRun run = jLineupRunBuilder().withId("someNewId").withConfig(Config.exampleConfig()).withState(State.BEFORE_RUNNING).build();
+        JLineupRunStatus run = jLineupRunStatusBuilder().withId("someNewId").withConfig(Config.exampleConfig()).withState(State.BEFORE_RUNNING).build();
         when(jLineupService.startBeforeRun(config)).thenReturn(run);
 
         // when
@@ -89,10 +90,44 @@ public class JLineupControllerTest {
     }
 
     @Test
+    public void shouldReturn400WhenConfigIsMissing() throws Exception {
+
+        // given
+        when(jLineupService.startBeforeRun("")).thenThrow(new JsonParseException("Ex"));
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs")
+                        .content("")
+                        .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturnUnprocessableWhenConfigIsInvalid() throws Exception {
+
+        // given
+        when(jLineupService.startBeforeRun("invalid")).thenThrow(new JsonParseException("Ex"));
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs")
+                        .content("invalid")
+                        .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
     public void shouldStartAfterRun() throws Exception {
 
         // given
-        JLineupRun run = jLineupRunBuilder().withId("someRunId").withConfig(Config.exampleConfig()).withState(State.AFTER_RUNNING).build();
+        JLineupRunStatus run = jLineupRunStatusBuilder().withId("someRunId").withConfig(Config.exampleConfig()).withState(State.AFTER_RUNNING).build();
         when(jLineupService.startAfterRun("someRunId")).thenReturn(run);
 
         // when

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.browser.Browser;
 
@@ -82,7 +83,13 @@ public final class Config {
     }
 
     public static Config parse(String config) {
-        return gson.fromJson(config, Config.class);
+        Config parsedConfig = gson.fromJson(config, Config.class);
+        if (parsedConfig == null) {
+            throw new JsonParseException(String.format("Config is not valid: '%s'", config));
+        } else if (parsedConfig.urls == null) {
+            throw new JsonParseException("No urls in JLineup config.");
+        }
+        return parsedConfig;
     }
 
     public static String prettyPrint(Config config) {

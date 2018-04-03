@@ -108,10 +108,6 @@ public class BrowserUtils {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
         Map<String, UrlConfig> urls = config.urls;
 
-        if (urls==null) {
-            throw new JLineupException("No urls are configured in the config.");
-        }
-
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
             final UrlConfig urlConfig = urlConfigEntry.getValue();
             final List<Integer> resolutions = urlConfig.windowWidths;
