@@ -18,7 +18,12 @@ public class JLineupSpawner {
     }
 
     private JLineup createRun(String id, Config config, Step step) {
-        return new JLineup(config, JLineupRunConfiguration.jLineupRunConfigurationBuilder().withWorkingDirectory("/tmp/jlineup-run-" + id).withStep(step).build());
+        return new JLineup(config, JLineupRunConfiguration.jLineupRunConfigurationBuilder()
+                .withWorkingDirectory("/tmp/jlineup-run-" + id)
+                .withScreenshotDirectory("screenshots")
+                .withReportDirectory("report")
+                .withStep(step)
+                .build());
     }
 
 }

@@ -1,5 +1,6 @@
 package de.otto.jlineup.browser;
 
+import de.otto.jlineup.JLineup;
 import de.otto.jlineup.JLineupRunConfiguration;
 import de.otto.jlineup.config.CommandLineParameters;
 import de.otto.jlineup.config.Config;
@@ -103,13 +104,12 @@ public class BrowserUtils {
         return firefoxProfileHeadless;
     }
 
-    static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(JLineupRunConfiguration jLineupRunConfiguration, Config config) {
+    static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(JLineupRunConfiguration jLineupRunConfiguration, Config config) throws JLineupException {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
         Map<String, UrlConfig> urls = config.urls;
 
         if (urls==null) {
-            System.err.println("No urls are configured in the config.");
-            System.exit(1);
+            throw new JLineupException("No urls are configured in the config.");
         }
 
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {

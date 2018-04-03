@@ -1,9 +1,9 @@
 package de.otto.jlineup.web;
 
 import de.otto.jlineup.JLineup;
-import de.otto.jlineup.Util;
 import de.otto.jlineup.config.Config;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class JLineupServiceTest {
         Config config = Config.exampleConfig();
 
         //when
-        String id = testee.startBeforeRun(Config.prettyPrint(config));
+        String id = testee.startBeforeRun(Config.prettyPrint(config)).getId();
 
         //then
         verify(jLineupSpawner).createBeforeRun(id, config);
@@ -48,7 +48,7 @@ public class JLineupServiceTest {
 
         //given
         Config config = Config.exampleConfig();
-        String id = testee.startBeforeRun(Config.prettyPrint(config));
+        String id = testee.startBeforeRun(Config.prettyPrint(config)).getId();
 
         //when
         testee.startAfterRun(id);
@@ -56,5 +56,13 @@ public class JLineupServiceTest {
         //then
         verify(jLineupSpawner).createAfterRun(id, config);
         verify(jLineupAfter).run();
+    }
+
+    @Test
+    @Ignore
+    public void test() throws IOException {
+        testee = new JLineupService(new JLineupSpawner());
+        String id = testee.startBeforeRun(Config.prettyPrint(Config.exampleConfig())).getId();
+        testee.startAfterRun(id);
     }
 }

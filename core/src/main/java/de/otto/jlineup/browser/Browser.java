@@ -104,7 +104,7 @@ public class Browser implements AutoCloseable {
         LOG.debug("Closing webdrivers done.");
     }
 
-    public void takeScreenshots() throws Exception {
+    public void takeScreenshots() throws Exception, JLineupException {
         List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(jLineupRunConfiguration, config);
         if (screenshotContextList.size() > 0) {
             takeScreenshots(screenshotContextList);

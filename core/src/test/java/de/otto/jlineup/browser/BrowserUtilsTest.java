@@ -47,7 +47,7 @@ public class BrowserUtilsTest {
     }
 
     @Test
-    public void shouldGenerateScreenshotsParameters() throws FileNotFoundException {
+    public void shouldGenerateScreenshotsParameters() throws FileNotFoundException, JLineupException {
         //given
         Config config = Config.readConfig(".", "src/test/resources/lineup_test.json");
 
