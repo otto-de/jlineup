@@ -53,7 +53,7 @@ public class BrowserUtilsTest {
 
         JLineupRunConfiguration jLineupRunConfiguration = jLineupRunConfigurationBuilder()
                 .withWorkingDirectory("some/working/dir")
-                .withScreenshotDirectory("screenshots")
+                .withScreenshotsDirectory("screenshots")
                 .withUrlReplacements(ImmutableMap.of("google", "doodle"))
                 .withStep(Step.before)
                 .build();

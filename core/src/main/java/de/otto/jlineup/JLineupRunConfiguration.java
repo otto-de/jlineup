@@ -12,14 +12,14 @@ public class JLineupRunConfiguration {
 
     private final String reportDirectory;
     private final String workingDirectory;
-    private final String screenshotDirectory;
+    private final String screenshotsDirectory;
     private final Step step;
     private final Map<String, String> urlReplacements;
 
     private JLineupRunConfiguration(Builder builder) {
         reportDirectory = builder.reportDirectory;
         workingDirectory = builder.workingDirectory;
-        screenshotDirectory = builder.screenshotDirectory;
+        screenshotsDirectory = builder.screenshotsDirectory;
         step = builder.step;
         urlReplacements = builder.urlReplacements;
     }
@@ -27,7 +27,7 @@ public class JLineupRunConfiguration {
     public static JLineupRunConfiguration fromCommandlineParameters(CommandLineParameters commandLineParameters) {
         return JLineupRunConfiguration.jLineupRunConfigurationBuilder()
                 .withWorkingDirectory(commandLineParameters.getWorkingDirectory())
-                .withScreenshotDirectory(commandLineParameters.getScreenshotDirectory())
+                .withScreenshotsDirectory(commandLineParameters.getScreenshotDirectory())
                 .withReportDirectory(commandLineParameters.getReportDirectory())
                 .withStep(commandLineParameters.getStep())
                 .withUrlReplacements(firstNonNull(commandLineParameters.getUrlReplacements(), emptyMap()))
@@ -46,8 +46,8 @@ public class JLineupRunConfiguration {
         return workingDirectory;
     }
 
-    public String getScreenshotDirectory() {
-        return screenshotDirectory;
+    public String getScreenshotsDirectory() {
+        return screenshotsDirectory;
     }
 
     public Step getStep() {
@@ -62,7 +62,7 @@ public class JLineupRunConfiguration {
     public static final class Builder {
         private String reportDirectory;
         private String workingDirectory;
-        private String screenshotDirectory;
+        private String screenshotsDirectory;
         private Map<String, String> urlReplacements = emptyMap();
         private Step step;
 
@@ -79,8 +79,8 @@ public class JLineupRunConfiguration {
             return this;
         }
 
-        public Builder withScreenshotDirectory(String val) {
-            screenshotDirectory = val;
+        public Builder withScreenshotsDirectory(String val) {
+            screenshotsDirectory = val;
             return this;
         }
 

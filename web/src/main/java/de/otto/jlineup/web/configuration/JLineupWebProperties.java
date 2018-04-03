@@ -5,12 +5,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "jlineup")
 public class JLineupWebProperties {
 
-    private String workingDirectoryPrefix = "/tmp/jlineup-run-";
-    private String screenshotsDirectory = "screenshots";
-    private String reportDirectory = "report";
+    private String workingDirectory = "/tmp/jlineup/";
+    private String screenshotsDirectory = "report-{id}";
+    private String reportDirectory = "report-{id}";
 
-    public String getWorkingDirectoryPrefix() {
-        return workingDirectoryPrefix;
+    public String getWorkingDirectory() {
+        return workingDirectory;
     }
 
     public String getScreenshotsDirectory() {
@@ -21,8 +21,8 @@ public class JLineupWebProperties {
         return reportDirectory;
     }
 
-    public void setWorkingDirectoryPrefix(String workingDirectoryPrefix) {
-        this.workingDirectoryPrefix = workingDirectoryPrefix;
+    public void setWorkingDirectory(String workingDirectory) {
+        this.workingDirectory = workingDirectory;
     }
 
     public void setScreenshotsDirectory(String screenshotsDirectory) {

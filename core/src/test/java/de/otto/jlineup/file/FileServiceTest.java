@@ -48,7 +48,7 @@ public class FileServiceTest {
 
         jLineupRunConfiguration = jLineupRunConfigurationBuilder()
                 .withWorkingDirectory(writeScreenshotTestPath)
-                .withScreenshotDirectory("screenshots")
+                .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
                 .build();
 
@@ -140,7 +140,7 @@ public class FileServiceTest {
 
         jLineupRunConfiguration = jLineupRunConfigurationBuilder()
                 .withWorkingDirectory("src/test/resources")
-                .withScreenshotDirectory("screenshots")
+                .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
                 .build();
         FileService fileService = new FileService(jLineupRunConfiguration);
@@ -155,7 +155,7 @@ public class FileServiceTest {
     public void shouldFindAfterImages() throws IOException {
         jLineupRunConfiguration = jLineupRunConfigurationBuilder()
                 .withWorkingDirectory("src/test/resources")
-                .withScreenshotDirectory("screenshots")
+                .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
                 .build();
         FileService fileService = new FileService(jLineupRunConfiguration);
@@ -164,5 +164,41 @@ public class FileServiceTest {
         List<String> afterFiles = fileService.getFilenamesForStep("/", "http://url", AFTER);
         //then
         assertThat(afterFiles, is(ImmutableList.of("http_url_root_ff3c40c_1001_02002_after.png", "http_url_root_ff3c40c_1001_03003_after.png")));
+    }
+
+    @Test
+    public void shouldBuildRelativePathsForDifferentDirectories() {
+        //given
+        jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+                .withWorkingDirectory("src/test/resources")
+                .withScreenshotsDirectory("screenshots")
+                .withReportDirectory("report")
+                .build();
+        FileService fileService = new FileService(jLineupRunConfiguration);
+
+        //when
+        String relativePathFromReportDirToScreenshotsDir = fileService.getRelativePathFromReportDirToScreenshotsDir();
+
+        //then
+        assertThat(relativePathFromReportDirToScreenshotsDir, is("../screenshots/"));
+
+    }
+
+    @Test
+    public void shouldBuildRelativePathsForSame() {
+        //given
+        jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+                .withWorkingDirectory("src/test/resources")
+                .withScreenshotsDirectory("rreeppoorrtt")
+                .withReportDirectory("rreeppoorrtt")
+                .build();
+        FileService fileService = new FileService(jLineupRunConfiguration);
+
+        //when
+        String relativePathFromReportDirToScreenshotsDir = fileService.getRelativePathFromReportDirToScreenshotsDir();
+
+        //then
+        assertThat(relativePathFromReportDirToScreenshotsDir, is(""));
+
     }
 }

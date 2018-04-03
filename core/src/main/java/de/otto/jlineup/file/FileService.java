@@ -57,7 +57,7 @@ public class FileService {
     }
 
     private Path getScreenshotDirectory() {
-        return Paths.get(String.format("%s/%s", jLineupRunConfiguration.getWorkingDirectory(), jLineupRunConfiguration.getScreenshotDirectory()));
+        return Paths.get(String.format("%s/%s", jLineupRunConfiguration.getWorkingDirectory(), jLineupRunConfiguration.getScreenshotsDirectory()));
     }
 
     private Path getReportDirectory() {
@@ -74,7 +74,7 @@ public class FileService {
     }
 
     public void createOrClearScreenshotsDirectory() {
-        createOrClearDirectoryBelowWorkingDir(jLineupRunConfiguration.getWorkingDirectory(), jLineupRunConfiguration.getScreenshotDirectory());
+        createOrClearDirectoryBelowWorkingDir(jLineupRunConfiguration.getWorkingDirectory(), jLineupRunConfiguration.getScreenshotsDirectory());
     }
 
     private void createOrClearDirectoryBelowWorkingDir(String workingDirectory, String subDirectory) {
@@ -130,13 +130,13 @@ public class FileService {
     @VisibleForTesting
     String getScreenshotPath(String url, String urlSubPath, int width, int yPosition, String step) {
         return jLineupRunConfiguration.getWorkingDirectory() + (jLineupRunConfiguration.getWorkingDirectory().endsWith("/") ? "" : "/")
-                + jLineupRunConfiguration.getScreenshotDirectory() + (jLineupRunConfiguration.getScreenshotDirectory().endsWith("/") ? "" : "/")
+                + jLineupRunConfiguration.getScreenshotsDirectory() + (jLineupRunConfiguration.getScreenshotsDirectory().endsWith("/") ? "" : "/")
                 + generateScreenshotFileName(url, urlSubPath, width, yPosition, step);
     }
 
     private String getScreenshotPath(String fileName) {
         return jLineupRunConfiguration.getWorkingDirectory() + (jLineupRunConfiguration.getWorkingDirectory().endsWith("/") ? "" : "/")
-                + jLineupRunConfiguration.getScreenshotDirectory() + (jLineupRunConfiguration.getScreenshotDirectory().endsWith("/") ? "" : "/")
+                + jLineupRunConfiguration.getScreenshotsDirectory() + (jLineupRunConfiguration.getScreenshotsDirectory().endsWith("/") ? "" : "/")
                 + fileName;
     }
 
@@ -183,7 +183,7 @@ public class FileService {
         Path screenshotDirectory = getScreenshotDirectory().toAbsolutePath();
         Path reportDirectory = getReportDirectory().toAbsolutePath();
         Path relative = reportDirectory.relativize(screenshotDirectory);
-        return relative.toString() + "/";
+        return relative.toString().equals("") ? "" : relative.toString() + "/";
     }
 
     public void writeJsonReport(String reportJson) throws FileNotFoundException {

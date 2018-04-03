@@ -28,9 +28,9 @@ public class JLineupSpawner {
 
     private JLineup createRun(String id, Config config, Step step) {
         return new JLineup(config, JLineupRunConfiguration.jLineupRunConfigurationBuilder()
-                .withWorkingDirectory(properties.getWorkingDirectoryPrefix() + id)
-                .withScreenshotDirectory(properties.getScreenshotsDirectory())
-                .withReportDirectory(properties.getReportDirectory())
+                .withWorkingDirectory(properties.getWorkingDirectory().replace("{id}", id))
+                .withScreenshotsDirectory(properties.getScreenshotsDirectory().replace("{id}", id))
+                .withReportDirectory(properties.getReportDirectory().replace("{id}", id))
                 .withStep(step)
                 .build());
     }

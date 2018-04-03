@@ -21,7 +21,7 @@ public class HTMLReportWriter {
         fileService.writeHtmlReport(renderReport("report", report.getFlatResultList()));
     }
 
-    String renderReport(String template, List<ScreenshotComparisonResult> screenshotComparisonResults) throws FileNotFoundException {
+    String renderReport(String template, List<ScreenshotComparisonResult> screenshotComparisonResults) {
 
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setTemplateMode("HTML");

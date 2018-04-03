@@ -26,7 +26,7 @@ public class JLineupRunConfigurationTest {
         JLineupRunConfiguration jLineupRunConfiguration = JLineupRunConfiguration.fromCommandlineParameters(commandLineParameters);
 
         assertThat(jLineupRunConfiguration.getReportDirectory(), is("someReportDirectory"));
-        assertThat(jLineupRunConfiguration.getScreenshotDirectory(), is("someScreenshotDirectory"));
+        assertThat(jLineupRunConfiguration.getScreenshotsDirectory(), is("someScreenshotDirectory"));
         assertThat(jLineupRunConfiguration.getWorkingDirectory(), is("someWorkingDirectory"));
         assertThat(jLineupRunConfiguration.getStep(), is(Step.after));
     }
