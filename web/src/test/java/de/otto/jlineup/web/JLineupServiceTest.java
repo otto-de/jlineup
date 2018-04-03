@@ -51,13 +51,14 @@ public class JLineupServiceTest {
     }
 
     @Test
-    public void shouldStartBeforeRun() throws IOException {
+    public void shouldStartBeforeRun() throws IOException, InterruptedException {
 
         //given
         Config config = Config.exampleConfig();
 
         //when
         String id = testee.startBeforeRun(Config.prettyPrint(config)).getId();
+        Thread.sleep(100);
 
         //then
         verify(jLineupSpawner).createBeforeRun(id, config);

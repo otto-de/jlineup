@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +36,7 @@ public class JLineupService {
     JLineupRunStatus startBeforeRun(String config) throws IOException {
         Config parsedConfig = Config.parse(config);
         String id = String.valueOf(UUID.randomUUID());
-        final JLineupRunStatus jLineupRunStatus = jLineupRunStatusBuilder().withId(id).withConfig(parsedConfig).withState(State.BEFORE_RUNNING).build();
+        final JLineupRunStatus jLineupRunStatus = jLineupRunStatusBuilder().withId(id).withConfig(parsedConfig).withState(State.BEFORE_RUNNING).withStartTime(Instant.now()).build();
         runs.put(id, jLineupRunStatus);
         final JLineup jLineup = jLineupSpawner.createBeforeRun(id, parsedConfig);
         executorService.submit( () -> {
@@ -72,7 +73,7 @@ public class JLineupService {
             try {
                 int returnCode = jLineup.run();
                 if (returnCode == 0) {
-                    runs.put(id, copyOfRunStatusBuilder(afterStatus).withState(State.FINISHED).build());
+                    runs.put(id, copyOfRunStatusBuilder(afterStatus).withState(State.FINISHED).withEndTime(Instant.now()).build());
                 } else {
                     runs.put(id, copyOfRunStatusBuilder(afterStatus).withState(State.ERROR).build());
                 }
