@@ -1,5 +1,8 @@
 package de.otto.jlineup.config;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -16,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class Config {
 
     public static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
@@ -42,23 +46,34 @@ public final class Config {
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
+
     @SerializedName(value = "wait-after-page-load", alternate = "async-wait")
+    @JsonProperty("wait-after-page-load")
+    @JsonAlias({"async-wait"})
     public final Float globalWaitAfterPageLoad;
     @SerializedName(value = "page-load-timeout")
+    @JsonProperty("page-load-timeout")
     public final int pageLoadTimeout;
     @SerializedName("window-height")
+    @JsonProperty("window-height")
     public final Integer windowHeight;
     @SerializedName("report-format")
+    @JsonProperty("report-format")
     public final Integer reportFormat;
     @SerializedName("screenshot-retries")
+    @JsonProperty("screenshot-retries")
     public final int screenshotRetries;
     @SerializedName("threads")
+    @JsonProperty("threads")
     public int threads;
     @SerializedName("timeout")
+    @JsonProperty("timeout")
     public final int globalTimeout;
     @SerializedName("debug")
+    @JsonProperty("debug")
     public final boolean debug;
     @SerializedName("log-to-file")
+    @JsonProperty("log-to-file")
     public final boolean logToFile;
 
     private final static Gson gson = new GsonBuilder().setPrettyPrinting().create();

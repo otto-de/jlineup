@@ -1,5 +1,6 @@
 package de.otto.jlineup.browser;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.JLineupRunConfiguration;
 import de.otto.jlineup.Utils;
@@ -7,8 +8,8 @@ import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.*;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.logging.LogEntries;
@@ -43,16 +44,22 @@ public class Browser implements AutoCloseable {
     public static final int THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
     public static final int DEFAULT_SLEEP_AFTER_SCROLL_MILLIS = 50;
     public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;
+
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
+        @JsonProperty("Firefox")
         FIREFOX,
         @SerializedName(value = "Firefox-Headless", alternate = {"firefox-headless", "FIREFOX_HEADLESS"})
+        @JsonProperty("Firefox-Headless")
         FIREFOX_HEADLESS,
         @SerializedName(value = "Chrome", alternate = {"chrome", "CHROME"})
+        @JsonProperty("Chrome")
         CHROME,
         @SerializedName(value = "Chrome-Headless", alternate = {"chrome-headless", "CHROME_HEADLESS"})
+        @JsonProperty("Chrome-Headless")
         CHROME_HEADLESS,
         @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
+        @JsonProperty("PhantomJS")
         PHANTOMJS;
 
     }

@@ -1,11 +1,16 @@
 package de.otto.jlineup.config;
 
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtilsTest;
+import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
 import static org.hamcrest.CoreMatchers.is;
@@ -17,6 +22,15 @@ public class ConfigTest {
     public void shouldReadConfig() throws FileNotFoundException {
         Config config = Config.readConfig("src/test/resources/", "lineup_test.json");
         assertThatConfigContentsAreCorrect(config);
+    }
+
+    @Test
+    public void shouldReadConfigAndParsedWithJackson() throws IOException {
+        Config configGson = Config.readConfig("src/test/resources/", "lineup_test.json");
+        Config configJackson = new ObjectMapper()
+                .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
+                .readValue(new File("src/test/resources/lineup_test.json"), Config.class);
+        Assert.assertEquals(configGson, configJackson);
     }
 
     @Test

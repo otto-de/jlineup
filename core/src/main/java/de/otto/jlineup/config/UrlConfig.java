@@ -1,6 +1,8 @@
 package de.otto.jlineup.config;
 
-import com.google.common.collect.ImmutableList;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -10,46 +12,60 @@ import java.util.Objects;
 import static com.google.common.collect.ImmutableList.of;
 import static de.otto.jlineup.config.Config.*;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UrlConfig {
 
     public final List<String> paths;
 
     @SerializedName("max-diff")
+    @JsonProperty("max-diff")
     public final float maxDiff;
 
     public final List<Cookie> cookies;
 
     @SerializedName("env-mapping")
+    @JsonProperty("env-mapping")
     public final Map<String, String> envMapping;
 
     @SerializedName("local-storage")
+    @JsonProperty("local-storage")
     public final Map<String, String> localStorage;
 
     @SerializedName("session-storage")
+    @JsonProperty("session-storage")
     public final Map<String, String> sessionStorage;
 
     @SerializedName(value = "window-widths", alternate = {"resolutions","widths"})
+    @JsonProperty(value = "window-widths")
+    @JsonAlias({"resolutions","widths"})
     public final List<Integer> windowWidths;
 
     @SerializedName("max-scroll-height")
+    @JsonProperty("max-scroll-height")
     public final int maxScrollHeight;
 
     @SerializedName("wait-after-page-load")
+    @JsonProperty("wait-after-page-load")
     public final int waitAfterPageLoad;
 
     @SerializedName("wait-after-scroll")
+    @JsonProperty("wait-after-scroll")
     public final int waitAfterScroll;
 
     @SerializedName("wait-for-no-animation-after-scroll")
+    @JsonProperty("wait-for-no-animation-after-scroll")
     public final float waitForNoAnimationAfterScroll;
 
     @SerializedName("warmup-browser-cache-time")
+    @JsonProperty("warmup-browser-cache-time")
     public final int warmupBrowserCacheTime;
 
     @SerializedName("wait-for-fonts-time")
+    @JsonProperty("wait-for-fonts-time")
     public final int waitForFontsTime;
 
     @SerializedName("javascript")
+    @JsonProperty("javascript")
     public final String javaScript;
 
     //Default constructor for GSON

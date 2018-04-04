@@ -3,12 +3,23 @@ package de.otto.jlineup.config;
 import java.util.Date;
 
 public class Cookie {
+
     public final String name;
     public final String value;
     public final String domain;
     public final String path;
     public final Date expiry;
     public final boolean secure;
+
+    // default constructor for jackson
+    public Cookie() {
+        this.name = null;
+        this.value = null;
+        this.domain = null;
+        this.path = null;
+        this.expiry = null;
+        this.secure = false;
+    }
 
     public Cookie(String name, String value, String domain, String path, Date expiry, boolean secure) {
         this.name = name;
