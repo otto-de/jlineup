@@ -1,11 +1,9 @@
 package de.otto.jlineup.web;
 
-import com.google.gson.JsonParseException;
 import de.otto.jlineup.JLineup;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,7 +25,7 @@ public class JLineupServiceTest {
     public final ExpectedException exception = ExpectedException.none();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         jLineupSpawner = mock(JLineupSpawner.class);
         jLineupBefore = mock(JLineup.class);
         jLineupAfter = mock(JLineup.class);
@@ -37,27 +35,13 @@ public class JLineupServiceTest {
     }
 
     @Test
-    public void shouldThrowExceptionWithEmptyConfig() throws IOException {
-        exception.expect(JsonParseException.class);
-        exception.expectMessage("Config is not valid: ''");
-        testee.startBeforeRun("");
-    }
-
-    @Test
-    public void shouldThrowExceptionWithConfigWithoutURL() throws IOException {
-        exception.expect(JsonParseException.class);
-        exception.expectMessage("No urls in JLineup config.");
-        testee.startBeforeRun("{}");
-    }
-
-    @Test
     public void shouldStartBeforeRun() throws IOException, InterruptedException {
 
         //given
         Config config = Config.exampleConfig();
 
         //when
-        String id = testee.startBeforeRun(Config.prettyPrint(config)).getId();
+        String id = testee.startBeforeRun(config).getId();
         Thread.sleep(100);
 
         //then
@@ -70,7 +54,7 @@ public class JLineupServiceTest {
 
         //given
         Config config = Config.exampleConfig();
-        String id = testee.startBeforeRun(Config.prettyPrint(config)).getId();
+        String id = testee.startBeforeRun(config).getId();
 
         //when
         Thread.sleep(100);
@@ -81,12 +65,4 @@ public class JLineupServiceTest {
         verify(jLineupAfter).run();
     }
 
-    @Test
-    @Ignore
-    public void test() throws IOException {
-        JLineupWebProperties jLineupWebProperties = new JLineupWebProperties();
-        testee = new JLineupService(new JLineupSpawner(jLineupWebProperties), jLineupWebProperties);
-        String id = testee.startBeforeRun(Config.prettyPrint(Config.exampleConfig())).getId();
-        testee.startAfterRun(id);
-    }
 }

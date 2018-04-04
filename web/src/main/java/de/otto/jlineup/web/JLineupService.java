@@ -33,12 +33,11 @@ public class JLineupService {
         this.properties = properties;
     }
 
-    JLineupRunStatus startBeforeRun(String config) throws IOException {
-        Config parsedConfig = Config.parse(config);
+    JLineupRunStatus startBeforeRun(Config config) {
         String id = String.valueOf(UUID.randomUUID());
-        final JLineupRunStatus jLineupRunStatus = jLineupRunStatusBuilder().withId(id).withConfig(parsedConfig).withState(State.BEFORE_RUNNING).withStartTime(Instant.now()).build();
+        final JLineupRunStatus jLineupRunStatus = jLineupRunStatusBuilder().withId(id).withConfig(config).withState(State.BEFORE_RUNNING).withStartTime(Instant.now()).build();
         runs.put(id, jLineupRunStatus);
-        final JLineup jLineup = jLineupSpawner.createBeforeRun(id, parsedConfig);
+        final JLineup jLineup = jLineupSpawner.createBeforeRun(id, config);
         executorService.submit( () -> {
             try {
                 int returnCode = jLineup.run();
@@ -55,7 +54,7 @@ public class JLineupService {
         return jLineupRunStatus;
     }
 
-    JLineupRunStatus startAfterRun(String id) throws IOException {
+    JLineupRunStatus startAfterRun(String id) {
         Optional<JLineupRunStatus> run = getRun(id);
         if (!run.isPresent()) {
             throw new JLineupWebException(HttpServletResponse.SC_NOT_FOUND, "Run not found, cannot start after step");

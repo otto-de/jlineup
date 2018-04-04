@@ -19,6 +19,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static de.otto.jlineup.config.Cookie.COOKIE_TIME_FORMAT;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class Config {
 
@@ -76,7 +78,7 @@ public final class Config {
     @JsonProperty("log-to-file")
     public final boolean logToFile;
 
-    private final static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final static Gson gson = new GsonBuilder().setDateFormat(COOKIE_TIME_FORMAT).setPrettyPrinting().create();
 
     /* Used by GSON to set default values */
     public Config() {

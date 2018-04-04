@@ -1,6 +1,7 @@
 package de.otto.jlineup.web;
 
 import com.google.gson.JsonParseException;
+import de.otto.jlineup.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,10 +27,10 @@ public class JLineupController {
         return "JLineup is great!";
     }
 
-    @PostMapping("/runs")
+    @PostMapping(value = "/runs")
     public void runBefore(final HttpServletRequest httpServletRequest,
                             final HttpServletResponse httpServletResponse,
-                            final @RequestBody String config) throws IOException {
+                            final @RequestBody Config config) {
 
         String id = jLineupService.startBeforeRun(config).getId();
         httpServletResponse.setStatus(HttpServletResponse.SC_ACCEPTED);
@@ -39,7 +40,7 @@ public class JLineupController {
     @PostMapping("/runs/{id}")
     public void runAfter(final HttpServletRequest httpServletRequest,
                          final HttpServletResponse httpServletResponse,
-                         @PathVariable final String id) throws IOException {
+                         @PathVariable final String id) {
         jLineupService.startAfterRun(id);
         httpServletResponse.setStatus(HttpServletResponse.SC_ACCEPTED);
         httpServletResponse.setHeader("Location", String.format("/runs/%s", id));
