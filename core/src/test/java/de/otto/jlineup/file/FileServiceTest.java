@@ -2,13 +2,11 @@ package de.otto.jlineup.file;
 
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.JLineupRunConfiguration;
-import de.otto.jlineup.config.CommandLineParameters;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.mockito.Mock;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -23,7 +21,6 @@ import static de.otto.jlineup.file.FileService.AFTER;
 import static de.otto.jlineup.file.FileService.BEFORE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FileServiceTest {

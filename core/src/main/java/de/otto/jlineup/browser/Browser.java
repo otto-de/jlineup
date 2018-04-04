@@ -2,7 +2,7 @@ package de.otto.jlineup.browser;
 
 import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.JLineupRunConfiguration;
-import de.otto.jlineup.Util;
+import de.otto.jlineup.Utils;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.file.FileService;
@@ -85,7 +85,7 @@ public class Browser implements AutoCloseable {
         this.config = config;
         this.fileService = fileService;
         this.browserUtils = browserUtils;
-        this.threadPool = Util.createThreadPool(config.threads, "BrowserThread");
+        this.threadPool = Utils.createThreadPool(config.threads, "BrowserThread");
     }
 
     @Override

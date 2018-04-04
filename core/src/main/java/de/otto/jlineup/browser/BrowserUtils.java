@@ -1,8 +1,6 @@
 package de.otto.jlineup.browser;
 
-import de.otto.jlineup.JLineup;
 import de.otto.jlineup.JLineupRunConfiguration;
-import de.otto.jlineup.config.CommandLineParameters;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;

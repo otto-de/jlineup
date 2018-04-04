@@ -1,9 +1,14 @@
-package de.otto.jlineup.acceptance;
+package de.otto.jlineup.cli.acceptance;
 
 import com.google.gson.Gson;
-import de.otto.jlineup.Main;
+import de.otto.jlineup.cli.Main;
 import de.otto.jlineup.report.Report;
-import org.junit.*;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.MatcherAssert;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import java.io.ByteArrayOutputStream;
@@ -18,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class JLineupAcceptanceTest {
@@ -90,7 +95,7 @@ public class JLineupAcceptanceTest {
     @Test
     public void shouldExitWithExitStatus1IfThereIsAMalformedUrlInChrome() throws Exception {
         exit.expectSystemExitWithStatus(1);
-        exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), anyOf(containsString("ERR_NAME_RESOLUTION_FAILED"), containsString("ERR_NAME_NOT_RESOLVED"))));
+        exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), CoreMatchers.anyOf(containsString("ERR_NAME_RESOLUTION_FAILED"), containsString("ERR_NAME_NOT_RESOLVED"))));
 
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_wrong_url_chrome.lineup.json"});
     }
@@ -120,7 +125,7 @@ public class JLineupAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
@@ -138,7 +143,7 @@ public class JLineupAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
@@ -156,7 +161,7 @@ public class JLineupAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
@@ -174,7 +179,7 @@ public class JLineupAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
@@ -192,7 +197,7 @@ public class JLineupAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
@@ -210,7 +215,7 @@ public class JLineupAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         @SuppressWarnings("unchecked") final ArrayList<Map<String, String>> report = gson.fromJson(jsonReportText, ArrayList.class);
-        assertThat(report.get(0).get("difference"), is(0.0d));
+        assertThat(report.get(0).get("difference"), CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
@@ -228,14 +233,14 @@ public class JLineupAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
 
         assertThat(systemOutCaptor.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/:\n0.0 (0 %)"));
         assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences:\n0.0 (0 %)"));
-        assertThat(systemOutCaptor.toString(), not(containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.")));
+        assertThat(systemOutCaptor.toString(), CoreMatchers.not(containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.")));
     }
 
     @Test

@@ -72,7 +72,6 @@ subprojects {
     apply plugin: 'signing'
     apply plugin: 'idea'
     apply plugin: 'maven'
-    apply plugin: 'org.springframework.boot'
 
     jar {
         manifest.attributes provider: 'gradle'

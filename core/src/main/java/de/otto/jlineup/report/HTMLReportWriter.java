@@ -1,6 +1,6 @@
 package de.otto.jlineup.report;
 
-import de.otto.jlineup.Util;
+import de.otto.jlineup.Utils;
 import de.otto.jlineup.file.FileService;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -52,8 +52,8 @@ public class HTMLReportWriter {
         }
 
         variables.put("resultContexts", screenshotComparisonResultContexts);
-        variables.put("jlineup_version", Util.readVersion());
-        variables.put("jlineup_commit", Util.readCommit());
+        variables.put("jlineup_version", Utils.readVersion());
+        variables.put("jlineup_commit", Utils.readCommit());
         return variables;
     }
 

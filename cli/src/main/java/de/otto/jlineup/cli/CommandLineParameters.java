@@ -1,13 +1,12 @@
-package de.otto.jlineup.config;
+package de.otto.jlineup.cli;
 
 import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.Parameter;
+import de.otto.jlineup.config.Step;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import static de.otto.jlineup.config.Step.*;
 
 public class CommandLineParameters {
 
@@ -15,7 +14,7 @@ public class CommandLineParameters {
     private boolean help = false;
 
     @Parameter(names = {"-s", "--step"}, description = "JLineup step - 'before' just takes screenshots, 'after' takes screenshots and compares them with the 'before'-screenshots in the screenshots directory. 'compare' just compares existing screenshots, it's also included in 'after'.")
-    private Step step = before;
+    private Step step = Step.before;
 
     @Parameter(names = {"--config", "-c"}, description = "Config file")
     private String configFile = "lineup.json";
@@ -68,15 +67,15 @@ public class CommandLineParameters {
     }
 
     public boolean isAfter() {
-        return step == after;
+        return step == Step.after;
     }
 
     public boolean isBefore() {
-        return step != after && step != compare;
+        return step != Step.after && step != Step.compare;
     }
 
     public boolean isJustCompare() {
-        return step == compare;
+        return step == Step.compare;
     }
 
     public boolean isHelp() {

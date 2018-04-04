@@ -1,4 +1,4 @@
-package de.otto.jlineup.acceptance;
+package de.otto.jlineup.cli.acceptance;
 
 import java.io.IOException;
 import java.io.OutputStream;

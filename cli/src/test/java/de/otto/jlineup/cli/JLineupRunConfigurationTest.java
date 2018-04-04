@@ -1,7 +1,7 @@
-package de.otto.jlineup;
+package de.otto.jlineup.cli;
 
 import com.beust.jcommander.JCommander;
-import de.otto.jlineup.config.CommandLineParameters;
+import de.otto.jlineup.JLineupRunConfiguration;
 import de.otto.jlineup.config.Step;
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ public class JLineupRunConfigurationTest {
         JCommander jCommander = new JCommander(commandLineParameters);
         jCommander.parse(params);
 
-        JLineupRunConfiguration jLineupRunConfiguration = JLineupRunConfiguration.fromCommandlineParameters(commandLineParameters);
+        JLineupRunConfiguration jLineupRunConfiguration = Utils.convertCommandLineParametersToRunConfiguration(commandLineParameters);
 
         assertThat(jLineupRunConfiguration.getReportDirectory(), is("someReportDirectory"));
         assertThat(jLineupRunConfiguration.getScreenshotsDirectory(), is("someScreenshotDirectory"));

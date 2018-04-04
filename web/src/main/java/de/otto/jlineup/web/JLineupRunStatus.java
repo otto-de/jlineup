@@ -100,6 +100,17 @@ public class JLineupRunStatus {
 
 
     @Override
+    public String toString() {
+        return "JLineupRunStatus{" +
+                "id='" + id + '\'' +
+                ", config=" + config +
+                ", state=" + state +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -117,14 +128,4 @@ public class JLineupRunStatus {
         return Objects.hash(id, config, state, startTime, endTime);
     }
 
-    @Override
-    public String toString() {
-        return "JLineupRunStatus{" +
-                "id='" + id + '\'' +
-                ", config=" + config +
-                ", state=" + state +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                '}';
-    }
 }

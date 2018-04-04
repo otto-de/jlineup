@@ -62,7 +62,7 @@ public class JLineup {
             final Report report = reportGenerator.generateReport(comparisonResults);
 
             JSONReportWriter jsonReportWriter;
-            if (Util.shouldUseLegacyReportFormat(config)) {
+            if (Utils.shouldUseLegacyReportFormat(config)) {
                 jsonReportWriter = new JSONReportWriter_V1(fileService);
             } else {
                 jsonReportWriter = new JSONReportWriter_V2(fileService);
@@ -81,7 +81,7 @@ public class JLineup {
             System.out.println("Sum of overall screenshot differences:\n" + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
             System.out.println("Max difference of a single screenshot:\n" + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
 
-            if (!Util.shouldUseLegacyReportFormat(config)) {
+            if (!Utils.shouldUseLegacyReportFormat(config)) {
                 for (Map.Entry<String, UrlReport> entry : entries) {
                     //Exit with exit code 1 if at least one url report has a bigger difference than configured
                     if (config.urls != null && entry.getValue().summary.differenceMax > config.urls.get(entry.getKey()).maxDiff) {

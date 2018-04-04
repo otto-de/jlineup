@@ -1,11 +1,9 @@
 package de.otto.jlineup;
 
-import de.otto.jlineup.config.CommandLineParameters;
 import de.otto.jlineup.config.Step;
 
 import java.util.Map;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.util.Collections.emptyMap;
 
 public class JLineupRunConfiguration {
@@ -22,16 +20,6 @@ public class JLineupRunConfiguration {
         screenshotsDirectory = builder.screenshotsDirectory;
         step = builder.step;
         urlReplacements = builder.urlReplacements;
-    }
-
-    public static JLineupRunConfiguration fromCommandlineParameters(CommandLineParameters commandLineParameters) {
-        return JLineupRunConfiguration.jLineupRunConfigurationBuilder()
-                .withWorkingDirectory(commandLineParameters.getWorkingDirectory())
-                .withScreenshotsDirectory(commandLineParameters.getScreenshotDirectory())
-                .withReportDirectory(commandLineParameters.getReportDirectory())
-                .withStep(commandLineParameters.getStep())
-                .withUrlReplacements(firstNonNull(commandLineParameters.getUrlReplacements(), emptyMap()))
-                .build();
     }
 
     public static Builder jLineupRunConfigurationBuilder() {

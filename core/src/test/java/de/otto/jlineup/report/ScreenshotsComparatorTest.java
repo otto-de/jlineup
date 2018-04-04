@@ -1,10 +1,8 @@
 package de.otto.jlineup.report;
 
-import com.beust.jcommander.JCommander;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.JLineupRunConfiguration;
-import de.otto.jlineup.config.CommandLineParameters;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
@@ -16,11 +14,9 @@ import org.mockito.Mock;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static de.otto.jlineup.JLineupRunConfiguration.fromCommandlineParameters;
 import static de.otto.jlineup.config.Config.configBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -34,7 +30,7 @@ public class ScreenshotsComparatorTest {
 
     private ScreenshotsComparator testee;
 
-    private CommandLineParameters parameters;
+    private JLineupRunConfiguration runConfig;
     private Config config;
 
     @Mock
@@ -46,10 +42,7 @@ public class ScreenshotsComparatorTest {
     @Before
     public void setup() {
         initMocks(this);
-        parameters = new CommandLineParameters();
-        JCommander jCommander = new JCommander(parameters);
-        jCommander.parse( "-d", "src/test/resources/");
-
+        runConfig = JLineupRunConfiguration.jLineupRunConfigurationBuilder().withWorkingDirectory("src/test/resources").build();
         config = configBuilder()
                 .withUrls(ImmutableMap.of(
                         "http://url",
@@ -57,7 +50,7 @@ public class ScreenshotsComparatorTest {
                 .withWindowHeight(WINDOW_HEIGHT)
                 .build();
 
-        testee = new ScreenshotsComparator(fromCommandlineParameters(parameters), config, fileService, imageService);
+        testee = new ScreenshotsComparator(runConfig, config, fileService, imageService);
     }
 
     @Test

@@ -4,7 +4,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import de.otto.jlineup.JLineupRunConfiguration;
-import de.otto.jlineup.config.CommandLineParameters;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

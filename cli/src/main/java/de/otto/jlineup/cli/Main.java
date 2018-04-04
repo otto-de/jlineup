@@ -1,8 +1,10 @@
-package de.otto.jlineup;
+package de.otto.jlineup.cli;
 
 import com.beust.jcommander.JCommander;
+import de.otto.jlineup.JLineup;
+import de.otto.jlineup.JLineupRunConfiguration;
+import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.BrowserUtils;
-import de.otto.jlineup.config.CommandLineParameters;
 import de.otto.jlineup.config.Config;
 
 import java.io.FileNotFoundException;
@@ -17,17 +19,17 @@ public class Main {
         jCommander.setProgramName("JLineup");
         if (parameters.isHelp()) {
             jCommander.usage();
-            System.out.printf("Version: %s%n", Util.getVersion());
+            System.out.printf("Version: %s%n", Utils.getVersion());
             return;
         }
 
         if (parameters.isVersion()) {
-            System.out.printf("JLineup version %s", Util.getVersion());
+            System.out.printf("JLineup version %s", Utils.getVersion());
             return;
         }
 
         if (parameters.isDebug()) {
-            Util.setLogLevelToDebug();
+            Utils.setLogLevelToDebug();
         }
 
         Config config = null;
@@ -43,16 +45,16 @@ public class Main {
         }
 
         if (config.debug) {
-            Util.setLogLevelToDebug();
+            Utils.setLogLevelToDebug();
         }
 
         if (config.logToFile || parameters.isLogToFile()) {
-            Util.logToFile(parameters.getWorkingDirectory());
+            Utils.logToFile(parameters.getWorkingDirectory());
         }
 
-        System.out.printf("Running JLineup [%s] with step '%s'.%n%n", Util.getVersion(), parameters.getStep());
+        System.out.printf("Running JLineup [%s] with step '%s'.%n%n", Utils.getVersion(), parameters.getStep());
 
-        JLineupRunConfiguration jLineupRunConfiguration = JLineupRunConfiguration.fromCommandlineParameters(parameters);
+        JLineupRunConfiguration jLineupRunConfiguration = de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfiguration(parameters);
         JLineup jLineup = new JLineup(config, jLineupRunConfiguration);
 
         int errorLevel = jLineup.run();
@@ -74,7 +76,7 @@ public class Main {
             }
         } else {
             try {
-                config = Config.readConfig(parameters);
+                config = de.otto.jlineup.cli.Utils.readConfig(parameters);
             } catch (FileNotFoundException e) {
                 if (!parameters.isPrintConfig()) {
                     System.err.println(e.getMessage());

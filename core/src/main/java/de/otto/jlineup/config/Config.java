@@ -187,10 +187,6 @@ public final class Config {
                 .build();
     }
 
-    public static Config readConfig(final CommandLineParameters parameters) throws FileNotFoundException {
-        return Config.readConfig(parameters.getWorkingDirectory(), parameters.getConfigFile());
-    }
-
     public static Config readConfig(final String workingDir, final String configFileName) throws FileNotFoundException {
         List<String> searchPaths = new ArrayList<>();
         Path configFilePath = Paths.get(workingDir + "/" + configFileName);

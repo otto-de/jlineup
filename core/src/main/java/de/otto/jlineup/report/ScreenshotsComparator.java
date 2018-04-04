@@ -3,7 +3,6 @@ package de.otto.jlineup.report;
 import com.google.common.annotations.VisibleForTesting;
 import de.otto.jlineup.JLineupRunConfiguration;
 import de.otto.jlineup.browser.BrowserUtils;
-import de.otto.jlineup.config.CommandLineParameters;
 import de.otto.jlineup.config.Config;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;

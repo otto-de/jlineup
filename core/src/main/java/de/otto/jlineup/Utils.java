@@ -5,7 +5,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
-import com.google.gson.GsonBuilder;
 import de.otto.jlineup.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +16,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Util {
+public class Utils {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Util.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
 
     private final static AtomicInteger threadCounter = new AtomicInteger();
 
     public static String readVersion() {
         Properties prop = new Properties();
         try {
-            prop.load(Main.class.getClassLoader().getResourceAsStream("version.properties"));
+            prop.load(Utils.class.getClassLoader().getResourceAsStream("version.properties"));
         }
         catch (IOException ex) {
             ex.printStackTrace();
@@ -37,7 +36,7 @@ public class Util {
     public static String readCommit() {
         Properties prop = new Properties();
         try {
-            prop.load(Main.class.getClassLoader().getResourceAsStream("version.properties"));
+            prop.load(Utils.class.getClassLoader().getResourceAsStream("version.properties"));
         }
         catch (IOException ex) {
             ex.printStackTrace();
@@ -56,12 +55,12 @@ public class Util {
         return Executors.newFixedThreadPool(threads, factory);
     }
 
-    static void setLogLevelToDebug() {
+    public static void setLogLevelToDebug() {
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.DEBUG);
     }
 
-    static void logToFile(String workingDir) {
+    public static void logToFile(String workingDir) {
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         PatternLayoutEncoder ple = new PatternLayoutEncoder();
 
@@ -79,11 +78,11 @@ public class Util {
         logger.setLevel(Level.DEBUG);
     }
 
-    static boolean shouldUseLegacyReportFormat(Config config) {
+    public static boolean shouldUseLegacyReportFormat(Config config) {
         return (config.reportFormat != null && config.reportFormat == 1) || (config.reportFormat == null && Config.DEFAULT_REPORT_FORMAT == 1);
     }
 
-    static String getVersion() {
+    public static String getVersion() {
         return String.format("%s [%s]%n", readVersion(), readCommit());
     }
 
