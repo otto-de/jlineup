@@ -27,11 +27,11 @@ public class JLineupRunner {
         this.runStepConfig = runStepConfig;
     }
 
-    public int run() throws IOException {
+    public boolean run() throws IOException {
 
         if (jobConfig.urls == null) {
             LOG.error("No urls are configured in the config.");
-            return 1;
+            return false;
         }
 
         FileService fileService = new FileService(runStepConfig);
@@ -50,7 +50,7 @@ public class JLineupRunner {
                 browser.takeScreenshots();
             } catch (Exception e) {
                 System.err.println("JLineupRunner Exception: " + e);
-                return 1;
+                return false;
             }
         }
 
@@ -93,6 +93,6 @@ public class JLineupRunner {
         }
 
         System.out.printf("JLineupRunner run finished for step '%s'%n", runStepConfig.getStep());
-        return 0;
+        return true;
     }
 }

@@ -57,9 +57,9 @@ public class Main {
         RunStepConfig runStepConfig = de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfiguration(parameters);
         JLineupRunner jLineupRunner = new JLineupRunner(jobConfig, runStepConfig);
 
-        int errorLevel = jLineupRunner.run();
-        if (errorLevel != 0) {
-            System.exit(errorLevel);
+        boolean runSucceeded = jLineupRunner.run();
+        if (!runSucceeded) {
+            System.exit(1);
         }
     }
 

@@ -48,8 +48,8 @@ public class JLineupService {
         final JLineupRunner jLineupRunner = jLineupSpawner.createBeforeRun(id, jobConfig);
         executorService.submit( () -> {
             try {
-                int returnCode = jLineupRunner.run();
-                if (returnCode == 0) {
+                boolean runSucceeded = jLineupRunner.run();
+                if (runSucceeded) {
                     runs.put(id, copyOfRunStatusBuilder(jLineupRunStatus).withState(State.BEFORE_DONE).build());
                 } else {
                     runs.put(id, copyOfRunStatusBuilder(jLineupRunStatus).withState(State.ERROR).build());
@@ -78,8 +78,8 @@ public class JLineupService {
         final JLineupRunner jLineupRunner = jLineupSpawner.createAfterRun(id, beforeStatus.getJobConfig());
         executorService.submit( () -> {
             try {
-                int returnCode = jLineupRunner.run();
-                if (returnCode == 0) {
+                boolean runSucceeded = jLineupRunner.run();
+                if (runSucceeded) {
                     runs.put(id, copyOfRunStatusBuilder(afterStatus).withState(State.FINISHED).withEndTime(Instant.now()).build());
                 } else {
                     runs.put(id, copyOfRunStatusBuilder(afterStatus).withState(State.ERROR).build());
