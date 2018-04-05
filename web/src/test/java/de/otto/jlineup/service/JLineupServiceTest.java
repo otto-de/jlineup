@@ -1,7 +1,8 @@
-package de.otto.jlineup.web;
+package de.otto.jlineup.service;
 
 import de.otto.jlineup.JLineup;
 import de.otto.jlineup.config.Config;
+import de.otto.jlineup.web.JLineupSpawner;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,7 +51,7 @@ public class JLineupServiceTest {
     }
 
     @Test
-    public void shouldStartAfterRun() throws IOException, InterruptedException {
+    public void shouldStartAfterRun() throws IOException, InterruptedException, InvalidRunStateException, RunNotFoundException {
 
         //given
         Config config = Config.exampleConfig();

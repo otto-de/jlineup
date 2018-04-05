@@ -1,24 +1,35 @@
 package de.otto.jlineup.web;
 
 import de.otto.jlineup.config.Config;
+import de.otto.jlineup.service.InvalidRunStateException;
+import de.otto.jlineup.service.JLineupService;
+import de.otto.jlineup.service.RunNotFoundException;
+import org.hamcrest.core.StringContains;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.result.ContentResultMatchers;
+import org.springframework.test.web.servlet.result.StatusResultMatchers;
 
 import java.util.Optional;
 
 import static de.otto.jlineup.web.JLineupRunStatus.jLineupRunStatusBuilder;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -129,17 +140,38 @@ public class JLineupControllerTest {
     public void shouldReturn404ForAfterStepWhenRunIsUnknown() throws Exception {
 
         // given
-        when(jLineupService.startAfterRun("unknownId")).thenThrow(new JLineupWebException(HttpStatus.NOT_FOUND, "Run not found, cannot start after step"));
+        String runId = "unknownId";
+        when(jLineupService.startAfterRun(runId)).thenThrow(new RunNotFoundException(runId));
 
         // when
         ResultActions result = mvc
-                .perform(post("/runs/unknownId")
+                .perform(post("/runs/" + runId)
                         .accept(MediaType.APPLICATION_JSON));
 
         // then
         result
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(runId)));
+    }
 
+    @Test
+    public void shouldReturn412ForAfterStepWhenRunIsNotReadyForAfterStep() throws Exception {
+
+        // given
+        String runId = "unknownId";
+        when(jLineupService.startAfterRun(runId)).thenThrow(new InvalidRunStateException(runId, State.BEFORE_RUNNING, State.BEFORE_DONE));
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs/" + runId)
+                        .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isPreconditionFailed())
+                .andExpect(content().string(containsString(runId)))
+                .andExpect(content().string(containsString(State.BEFORE_RUNNING.name())))
+                .andExpect(content().string(containsString(State.BEFORE_DONE.name())));
     }
 
 }

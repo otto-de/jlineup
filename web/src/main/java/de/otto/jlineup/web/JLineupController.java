@@ -1,20 +1,17 @@
 package de.otto.jlineup.web;
 
-import com.google.gson.JsonParseException;
 import de.otto.jlineup.config.Config;
+import de.otto.jlineup.service.InvalidRunStateException;
+import de.otto.jlineup.service.JLineupService;
+import de.otto.jlineup.service.RunNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Optional;
-
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @RestController
 public class JLineupController {
@@ -41,7 +38,7 @@ public class JLineupController {
     }
 
     @PostMapping("/runs/{runId}")
-    public ResponseEntity<Void> runAfter(@PathVariable String runId) {
+    public ResponseEntity<Void> runAfter(@PathVariable String runId) throws InvalidRunStateException, RunNotFoundException {
         jLineupService.startAfterRun(runId);
 
         HttpHeaders headers = new HttpHeaders();
@@ -59,9 +56,15 @@ public class JLineupController {
         }
     }
 
-    @ExceptionHandler(JLineupWebException.class)
-    public ResponseEntity<String> exceptionHandler(final JLineupWebException exception) {
-        return new ResponseEntity<>(exception.getMessage(), exception.getStatus());
+    @ExceptionHandler(RunNotFoundException.class)
+    public ResponseEntity<String> exceptionHandler(final RunNotFoundException exception) {
+        return new ResponseEntity<>(String.format("Run with id '%s' was not found", exception.getId()), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidRunStateException.class)
+    public ResponseEntity<String> exceptionHandler(final InvalidRunStateException exception) {
+        return new ResponseEntity<>(String.format("Run with id '%s' has wrong state. was %s but expected %s",
+                exception.getId(), exception.getCurrentState(), exception.getExpectedState()), HttpStatus.PRECONDITION_FAILED);
     }
 
 }

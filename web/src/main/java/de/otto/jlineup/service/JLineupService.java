@@ -1,13 +1,14 @@
-package de.otto.jlineup.web;
+package de.otto.jlineup.service;
 
 import de.otto.jlineup.JLineup;
 import de.otto.jlineup.config.Config;
+import de.otto.jlineup.web.JLineupRunStatus;
+import de.otto.jlineup.web.JLineupSpawner;
+import de.otto.jlineup.web.State;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Optional;
@@ -34,7 +35,7 @@ public class JLineupService {
         this.properties = properties;
     }
 
-    JLineupRunStatus startBeforeRun(Config config) {
+    public JLineupRunStatus startBeforeRun(Config config) {
         String id = String.valueOf(UUID.randomUUID());
         final JLineupRunStatus jLineupRunStatus = jLineupRunStatusBuilder().withId(id).withConfig(config).withState(State.BEFORE_RUNNING).withStartTime(Instant.now()).build();
         runs.put(id, jLineupRunStatus);
@@ -55,15 +56,15 @@ public class JLineupService {
         return jLineupRunStatus;
     }
 
-    JLineupRunStatus startAfterRun(String id) {
+    public JLineupRunStatus startAfterRun(String id) throws RunNotFoundException, InvalidRunStateException {
         Optional<JLineupRunStatus> run = getRun(id);
         if (!run.isPresent()) {
-            throw new JLineupWebException(HttpStatus.NOT_FOUND, "Run not found, cannot start after step");
+            throw new RunNotFoundException(id);
         }
 
         JLineupRunStatus beforeStatus = run.get();
         if (beforeStatus.getState() != State.BEFORE_DONE) {
-            throw new JLineupWebException(HttpStatus.PRECONDITION_FAILED, "Cannot start after run for job that is not in state BEFORE_DONE. Desired job is in state " + beforeStatus.getState());
+            throw new InvalidRunStateException(beforeStatus.getId(), beforeStatus.getState(), State.BEFORE_DONE);
         }
 
         JLineupRunStatus afterStatus = copyOfRunStatusBuilder(beforeStatus).withState(State.AFTER_RUNNING).build();
