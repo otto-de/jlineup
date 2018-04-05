@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JLineupSpawner {
+public class JLineupRunnerFactory {
 
-    JLineupWebProperties properties;
+    private final JLineupWebProperties properties;
 
     @Autowired
-    public JLineupSpawner(JLineupWebProperties properties) {
+    public JLineupRunnerFactory(JLineupWebProperties properties) {
         this.properties = properties;
     }
 

@@ -3,13 +3,13 @@ package de.otto.jlineup.service;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.web.JLineupRunStatus;
-import de.otto.jlineup.web.JLineupSpawner;
+import de.otto.jlineup.web.JLineupRunnerFactory;
 import de.otto.jlineup.web.State;
-import de.otto.jlineup.web.configuration.JLineupWebProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,43 +23,43 @@ import static de.otto.jlineup.web.JLineupRunStatus.jLineupRunStatusBuilder;
 @Service
 public class JLineupService {
 
-    private final static ConcurrentHashMap<String, JLineupRunStatus> runs = new ConcurrentHashMap<>();
-    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
-    private final JLineupSpawner jLineupSpawner;
+    private static final Logger LOG = LoggerFactory.getLogger(JLineupService.class);
 
-    private final JLineupWebProperties properties;
+    private final ConcurrentHashMap<String, JLineupRunStatus> runs = new ConcurrentHashMap<>();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+
+    private final JLineupRunnerFactory jLineupRunnerFactory;
 
     @Autowired
-    public JLineupService(JLineupSpawner jLineupSpawner, JLineupWebProperties properties) {
-        this.jLineupSpawner = jLineupSpawner;
-        this.properties = properties;
+    public JLineupService(JLineupRunnerFactory jLineupRunnerFactory) {
+        this.jLineupRunnerFactory = jLineupRunnerFactory;
     }
 
     public JLineupRunStatus startBeforeRun(JobConfig jobConfig) {
-        String id = UUID.randomUUID().toString();
-        final JLineupRunStatus jLineupRunStatus = jLineupRunStatusBuilder()
-                .withId(id)
+        String runId = UUID.randomUUID().toString();
+        final JLineupRunStatus beforeStatus = jLineupRunStatusBuilder()
+                .withId(runId)
                 .withConfig(jobConfig)
                 .withState(State.BEFORE_RUNNING)
                 .withStartTime(Instant.now())
                 .build();
 
-        runs.put(id, jLineupRunStatus);
-        final JLineupRunner jLineupRunner = jLineupSpawner.createBeforeRun(id, jobConfig);
+        runs.put(runId, beforeStatus);
+        final JLineupRunner jLineupRunner = jLineupRunnerFactory.createBeforeRun(runId, jobConfig);
         executorService.submit( () -> {
             try {
                 boolean runSucceeded = jLineupRunner.run();
                 if (runSucceeded) {
-                    runs.put(id, copyOfRunStatusBuilder(jLineupRunStatus).withState(State.BEFORE_DONE).build());
+                    changeState(runId, State.BEFORE_DONE);
                 } else {
-                    runs.put(id, copyOfRunStatusBuilder(jLineupRunStatus).withState(State.ERROR).build());
+                    changeState(runId, State.ERROR);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                runs.put(id, copyOfRunStatusBuilder(jLineupRunStatus).withState(State.ERROR).build());
+            } catch (Exception e) {
+                LOG.error("Error in before runStep.", e);
+                changeState(runId, State.ERROR);
             }
         });
-        return jLineupRunStatus;
+        return beforeStatus;
     }
 
     public JLineupRunStatus startAfterRun(String id) throws RunNotFoundException, InvalidRunStateException {
@@ -73,23 +73,34 @@ public class JLineupService {
             throw new InvalidRunStateException(beforeStatus.getId(), beforeStatus.getState(), State.BEFORE_DONE);
         }
 
-        JLineupRunStatus afterStatus = copyOfRunStatusBuilder(beforeStatus).withState(State.AFTER_RUNNING).build();
-        runs.put(id, afterStatus);
-        final JLineupRunner jLineupRunner = jLineupSpawner.createAfterRun(id, beforeStatus.getJobConfig());
+        JLineupRunStatus afterStatus = changeState(id, State.AFTER_RUNNING);
+
+        final JLineupRunner jLineupRunner = jLineupRunnerFactory.createAfterRun(id, beforeStatus.getJobConfig());
         executorService.submit( () -> {
             try {
                 boolean runSucceeded = jLineupRunner.run();
                 if (runSucceeded) {
-                    runs.put(id, copyOfRunStatusBuilder(afterStatus).withState(State.FINISHED).withEndTime(Instant.now()).build());
+                    changeState(id, State.FINISHED);
                 } else {
-                    runs.put(id, copyOfRunStatusBuilder(afterStatus).withState(State.ERROR).build());
+                    changeState(id, State.ERROR);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                runs.put(id, copyOfRunStatusBuilder(afterStatus).withState(State.ERROR).build());
+            } catch (Exception e) {
+                LOG.error("Error in after runStep.", e);
+                changeState(id, State.ERROR);
             }
         });
         return afterStatus;
+    }
+
+    private JLineupRunStatus changeState(String runId, State state) {
+        JLineupRunStatus runStatus = runs.get(runId);
+        JLineupRunStatus.Builder runStatusBuilder = copyOfRunStatusBuilder(runStatus).withState(state);
+
+        if (state == State.FINISHED) {
+            runStatusBuilder.withEndTime(Instant.now());
+        }
+
+        return runs.put(runId, runStatusBuilder.build());
     }
 
     public Optional<JLineupRunStatus> getRun(String id) {
