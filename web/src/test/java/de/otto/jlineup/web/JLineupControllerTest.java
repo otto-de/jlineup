@@ -4,6 +4,7 @@ import de.otto.jlineup.config.Config;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -128,7 +129,7 @@ public class JLineupControllerTest {
     public void shouldReturn404ForAfterStepWhenRunIsUnknown() throws Exception {
 
         // given
-        when(jLineupService.startAfterRun("unknownId")).thenThrow(new JLineupWebException(SC_NOT_FOUND, "Run not found, cannot start after step"));
+        when(jLineupService.startAfterRun("unknownId")).thenThrow(new JLineupWebException(HttpStatus.NOT_FOUND, "Run not found, cannot start after step"));
 
         // when
         ResultActions result = mvc

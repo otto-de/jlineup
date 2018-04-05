@@ -1,15 +1,17 @@
 package de.otto.jlineup.web;
 
+import org.springframework.http.HttpStatus;
+
 public class JLineupWebException extends RuntimeException {
 
-    private final int status;
+    private final HttpStatus status;
 
-    public JLineupWebException(int status, String message) {
+    public JLineupWebException(HttpStatus status, String message) {
         super(message);
         this.status = status;
     }
 
-    public int getStatus() {
+    public HttpStatus getStatus() {
         return status;
     }
 }

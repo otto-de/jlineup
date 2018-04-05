@@ -3,11 +3,15 @@ package de.otto.jlineup.web;
 import com.google.gson.JsonParseException;
 import de.otto.jlineup.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
@@ -28,47 +32,36 @@ public class JLineupController {
     }
 
     @PostMapping(value = "/runs")
-    public void runBefore(final HttpServletRequest httpServletRequest,
-                            final HttpServletResponse httpServletResponse,
-                            final @RequestBody Config config) {
-
+    public ResponseEntity<Void> runBefore(@RequestBody Config config) {
         String id = jLineupService.startBeforeRun(config).getId();
-        httpServletResponse.setStatus(HttpServletResponse.SC_ACCEPTED);
-        httpServletResponse.setHeader("Location", String.format("/runs/%s", id));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/runs/" + id));
+        return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("/runs/{id}")
-    public void runAfter(final HttpServletRequest httpServletRequest,
-                         final HttpServletResponse httpServletResponse,
-                         @PathVariable final String id) {
-        jLineupService.startAfterRun(id);
-        httpServletResponse.setStatus(HttpServletResponse.SC_ACCEPTED);
-        httpServletResponse.setHeader("Location", String.format("/runs/%s", id));
+    @PostMapping("/runs/{runId}")
+    public ResponseEntity<Void> runAfter(@PathVariable String runId) {
+        jLineupService.startAfterRun(runId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/runs/" + runId));
+        return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/runs/{id}")
-    public String getRun(final HttpServletRequest httpServletRequest,
-                         final HttpServletResponse httpServletResponse,
-                         @PathVariable final String id) throws IOException {
-        Optional<JLineupRunStatus> run = jLineupService.getRun(id);
+    @GetMapping("/runs/{runId}")
+    public ResponseEntity<String> getRun(@PathVariable String runId) {
+        Optional<JLineupRunStatus> run = jLineupService.getRun(runId);
         if (run.isPresent()) {
-            return run.get().toString();
+            return new ResponseEntity<>(run.get().toString(), HttpStatus.OK);
         } else {
-            httpServletResponse.sendError(HttpServletResponse.SC_NOT_FOUND, "Run with id " + id + " not found");
-            return null;
+            return new ResponseEntity<>("Run with id '" + runId + "' not found", HttpStatus.NOT_FOUND);
         }
     }
 
     @ExceptionHandler(JLineupWebException.class)
-    public void exceptionHandler(final JLineupWebException exception,
-                                 final HttpServletResponse response) throws IOException {
-        response.sendError(exception.getStatus(),
-                exception.getMessage());
+    public ResponseEntity<String> exceptionHandler(final JLineupWebException exception) {
+        return new ResponseEntity<>(exception.getMessage(), exception.getStatus());
     }
 
-    @ExceptionHandler(JsonParseException.class)
-    public void jsonParseExceptionHandler(final JsonParseException exception,
-                                          final HttpServletResponse response) throws IOException {
-        response.sendError(UNPROCESSABLE_ENTITY.value(), exception.getMessage());
-    }
 }
