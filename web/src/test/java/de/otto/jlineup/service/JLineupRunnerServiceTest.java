@@ -43,7 +43,7 @@ public class JLineupRunnerServiceTest {
 
         //when
         String id = testee.startBeforeRun(jobConfig).getId();
-        Thread.sleep(100);
+        Thread.sleep(1000);
 
         //then
         verify(jLineupRunnerFactory).createBeforeRun(id, jobConfig);
@@ -59,7 +59,7 @@ public class JLineupRunnerServiceTest {
         String id = testee.startBeforeRun(jobConfig).getId();
 
         //when
-        Thread.sleep(100);
+        Thread.sleep(1000);
         testee.startAfterRun(id);
 
         //then
