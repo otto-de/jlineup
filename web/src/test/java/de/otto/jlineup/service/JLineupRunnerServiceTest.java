@@ -55,8 +55,8 @@ public class JLineupRunnerServiceTest {
 
         //given
         JobConfig jobConfig = JobConfig.exampleConfig();
-        String id = testee.startBeforeRun(jobConfig).getId();
         when(jLineupRunnerBefore.run()).thenReturn(true);
+        String id = testee.startBeforeRun(jobConfig).getId();
 
         //when
         Thread.sleep(100);
