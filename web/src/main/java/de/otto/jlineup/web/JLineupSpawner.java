@@ -1,8 +1,8 @@
 package de.otto.jlineup.web;
 
-import de.otto.jlineup.JLineup;
-import de.otto.jlineup.JLineupRunConfiguration;
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.JLineupRunner;
+import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +18,16 @@ public class JLineupSpawner {
         this.properties = properties;
     }
 
-    public JLineup createBeforeRun(String id, Config config) {
-        return createRun(id, config, Step.before);
+    public JLineupRunner createBeforeRun(String id, JobConfig jobConfig) {
+        return createRun(id, jobConfig, Step.before);
     }
 
-    public JLineup createAfterRun(String id, Config config) {
-        return createRun(id, config, Step.after);
+    public JLineupRunner createAfterRun(String id, JobConfig jobConfig) {
+        return createRun(id, jobConfig, Step.after);
     }
 
-    private JLineup createRun(String id, Config config, Step step) {
-        return new JLineup(config, JLineupRunConfiguration.jLineupRunConfigurationBuilder()
+    private JLineupRunner createRun(String id, JobConfig jobConfig, Step step) {
+        return new JLineupRunner(jobConfig, RunStepConfig.jLineupRunConfigurationBuilder()
                 .withWorkingDirectory(properties.getWorkingDirectory().replace("{id}", id))
                 .withScreenshotsDirectory(properties.getScreenshotsDirectory().replace("{id}", id))
                 .withReportDirectory(properties.getReportDirectory().replace("{id}", id))

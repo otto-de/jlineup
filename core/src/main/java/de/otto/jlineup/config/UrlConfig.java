@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.collect.ImmutableList.of;
-import static de.otto.jlineup.config.Config.*;
+import static de.otto.jlineup.config.JobConfig.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UrlConfig {

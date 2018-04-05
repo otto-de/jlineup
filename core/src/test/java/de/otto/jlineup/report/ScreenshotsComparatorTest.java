@@ -2,8 +2,8 @@ package de.otto.jlineup.report;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import de.otto.jlineup.JLineupRunConfiguration;
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import static de.otto.jlineup.config.Config.configBuilder;
+import static de.otto.jlineup.config.JobConfig.configBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -30,8 +30,8 @@ public class ScreenshotsComparatorTest {
 
     private ScreenshotsComparator testee;
 
-    private JLineupRunConfiguration runConfig;
-    private Config config;
+    private RunStepConfig runConfig;
+    private JobConfig jobConfig;
 
     @Mock
     private FileService fileService;
@@ -42,15 +42,15 @@ public class ScreenshotsComparatorTest {
     @Before
     public void setup() {
         initMocks(this);
-        runConfig = JLineupRunConfiguration.jLineupRunConfigurationBuilder().withWorkingDirectory("src/test/resources").build();
-        config = configBuilder()
+        runConfig = RunStepConfig.jLineupRunConfigurationBuilder().withWorkingDirectory("src/test/resources").build();
+        jobConfig = configBuilder()
                 .withUrls(ImmutableMap.of(
                         "http://url",
                         new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5)))
                 .withWindowHeight(WINDOW_HEIGHT)
                 .build();
 
-        testee = new ScreenshotsComparator(runConfig, config, fileService, imageService);
+        testee = new ScreenshotsComparator(runConfig, jobConfig, fileService, imageService);
     }
 
     @Test

@@ -18,7 +18,7 @@
 * Bugfix: Limit max file lenght for screenshot files
 
 ## Release 2.3.1
-* Enhancement: New log-to-file option in config enables logging to a file in the working dir
+* Enhancement: New log-to-file option in jobConfig enables logging to a file in the working dir
 
 ## Release 2.3.0
 * Enhancement: Animated gifs are not played in firefox.
@@ -28,7 +28,7 @@
 * Experimental support for headless firefox (needs firefox nightly >55)
 
 ## Release 2.2.0
-* Add headless support without the need for Xvfb for Chrome >59 (use browser "chrome-headless" in config)
+* Add headless support without the need for Xvfb for Chrome >59 (use browser "chrome-headless" in jobConfig)
 
 ## Release 2.1.1
 * Update to chromedriver 2.30 to support Chrome 59.x
@@ -67,12 +67,12 @@
   (https://github.com/bonigarcia/webdrivermanager/commit/29c531266c78399f3999b246da479163d734bee8)
 
 ## Release 1.4.0
-* Cache warmup is always done with the greatest horizontal resolution of an url config
+* Cache warmup is always done with the greatest horizontal resolution of an url jobConfig
 * It's possible to specify session storage, similar to local storage
 * Increasing waiting time bug fixed (long sleep phases when using multiple threads and many paths/urls)
 
 ## Release 1.3.3
-* It's possible to specify debug mode in config now ("debug":true), additionally to command line param
+* It's possible to specify debug mode in jobConfig now ("debug":true), additionally to command line param
 
 ## Release 1.3.2
 * Bugfix: JLineup 1.3.1 was not making any screenshots when wait-for-fonts-time was not 0
@@ -103,7 +103,7 @@
 * It's possible to use multiple threads and browser instances to speed up
 
 ## Release 1.1.2
-* --print-config now shows full example configuration
+* --print-jobConfig now shows full example configuration
 
 ## Release 1.1.1
 * The report contains the JLineup version at the bottom

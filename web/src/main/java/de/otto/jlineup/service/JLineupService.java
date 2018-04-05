@@ -1,7 +1,7 @@
 package de.otto.jlineup.service;
 
-import de.otto.jlineup.JLineup;
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.JLineupRunner;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.JLineupSpawner;
 import de.otto.jlineup.web.State;
@@ -35,14 +35,20 @@ public class JLineupService {
         this.properties = properties;
     }
 
-    public JLineupRunStatus startBeforeRun(Config config) {
-        String id = String.valueOf(UUID.randomUUID());
-        final JLineupRunStatus jLineupRunStatus = jLineupRunStatusBuilder().withId(id).withConfig(config).withState(State.BEFORE_RUNNING).withStartTime(Instant.now()).build();
+    public JLineupRunStatus startBeforeRun(JobConfig jobConfig) {
+        String id = UUID.randomUUID().toString();
+        final JLineupRunStatus jLineupRunStatus = jLineupRunStatusBuilder()
+                .withId(id)
+                .withConfig(jobConfig)
+                .withState(State.BEFORE_RUNNING)
+                .withStartTime(Instant.now())
+                .build();
+
         runs.put(id, jLineupRunStatus);
-        final JLineup jLineup = jLineupSpawner.createBeforeRun(id, config);
+        final JLineupRunner jLineupRunner = jLineupSpawner.createBeforeRun(id, jobConfig);
         executorService.submit( () -> {
             try {
-                int returnCode = jLineup.run();
+                int returnCode = jLineupRunner.run();
                 if (returnCode == 0) {
                     runs.put(id, copyOfRunStatusBuilder(jLineupRunStatus).withState(State.BEFORE_DONE).build());
                 } else {
@@ -69,10 +75,10 @@ public class JLineupService {
 
         JLineupRunStatus afterStatus = copyOfRunStatusBuilder(beforeStatus).withState(State.AFTER_RUNNING).build();
         runs.put(id, afterStatus);
-        final JLineup jLineup = jLineupSpawner.createAfterRun(id, beforeStatus.getConfig());
+        final JLineupRunner jLineupRunner = jLineupSpawner.createAfterRun(id, beforeStatus.getJobConfig());
         executorService.submit( () -> {
             try {
-                int returnCode = jLineup.run();
+                int returnCode = jLineupRunner.run();
                 if (returnCode == 0) {
                     runs.put(id, copyOfRunStatusBuilder(afterStatus).withState(State.FINISHED).withEndTime(Instant.now()).build());
                 } else {

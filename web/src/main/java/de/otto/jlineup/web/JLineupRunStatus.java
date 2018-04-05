@@ -1,6 +1,6 @@
 package de.otto.jlineup.web;
 
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.config.JobConfig;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -8,14 +8,14 @@ import java.util.Objects;
 public class JLineupRunStatus {
 
     private final String id;
-    private final Config config;
+    private final JobConfig jobConfig;
     private final State state;
     private final Instant startTime;
     private final Instant endTime;
 
     private JLineupRunStatus(Builder builder) {
         id = builder.id;
-        config = builder.config;
+        jobConfig = builder.jobConfig;
         state = builder.state;
         startTime = builder.startTime;
         endTime = builder.endTime;
@@ -25,8 +25,8 @@ public class JLineupRunStatus {
         return id;
     }
 
-    public Config getConfig() {
-        return config;
+    public JobConfig getJobConfig() {
+        return jobConfig;
     }
 
     public State getState() {
@@ -46,12 +46,12 @@ public class JLineupRunStatus {
     }
 
     public static Builder copyOfRunStatusBuilder(JLineupRunStatus jLineupRunStatus) {
-        Builder builder = new Builder(jLineupRunStatus.id, jLineupRunStatus.config, jLineupRunStatus.state, jLineupRunStatus.startTime, jLineupRunStatus.endTime);
+        Builder builder = new Builder(jLineupRunStatus.id, jLineupRunStatus.jobConfig, jLineupRunStatus.state, jLineupRunStatus.startTime, jLineupRunStatus.endTime);
         return builder;
     }
     public static final class Builder {
         private String id;
-        private Config config;
+        private JobConfig jobConfig;
         private State state;
         private Instant startTime;
         private Instant endTime;
@@ -59,9 +59,9 @@ public class JLineupRunStatus {
         public Builder() {
         }
 
-        private Builder(String id, Config config, State state, Instant startTime, Instant endTime) {
+        private Builder(String id, JobConfig jobConfig, State state, Instant startTime, Instant endTime) {
             this.id = id;
-            this.config = config;
+            this.jobConfig = jobConfig;
             this.state = state;
             this.startTime = startTime;
             this.endTime = endTime;
@@ -72,8 +72,8 @@ public class JLineupRunStatus {
             return this;
         }
 
-        public Builder withConfig(Config val) {
-            config = val;
+        public Builder withConfig(JobConfig val) {
+            jobConfig = val;
             return this;
         }
 
@@ -103,7 +103,7 @@ public class JLineupRunStatus {
     public String toString() {
         return "JLineupRunStatus{" +
                 "id='" + id + '\'' +
-                ", config=" + config +
+                ", jobConfig=" + jobConfig +
                 ", state=" + state +
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
@@ -116,7 +116,7 @@ public class JLineupRunStatus {
         if (o == null || getClass() != o.getClass()) return false;
         JLineupRunStatus that = (JLineupRunStatus) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(config, that.config) &&
+                Objects.equals(jobConfig, that.jobConfig) &&
                 state == that.state &&
                 Objects.equals(startTime, that.startTime) &&
                 Objects.equals(endTime, that.endTime);
@@ -125,7 +125,7 @@ public class JLineupRunStatus {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, config, state, startTime, endTime);
+        return Objects.hash(id, jobConfig, state, startTime, endTime);
     }
 
 }

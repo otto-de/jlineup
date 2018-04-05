@@ -1,7 +1,7 @@
 package de.otto.jlineup.browser;
 
-import de.otto.jlineup.JLineupRunConfiguration;
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
@@ -49,13 +49,13 @@ public class BrowserUtils {
         return url + path;
     }
 
-    synchronized WebDriver getWebDriverByConfig(Config config) {
-        return getWebDriverByConfig(config, Config.DEFAULT_WINDOW_WIDTH);
+    synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig) {
+        return getWebDriverByConfig(jobConfig, JobConfig.DEFAULT_WINDOW_WIDTH);
     }
 
-    synchronized WebDriver getWebDriverByConfig(Config config, int width) {
+    synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, int width) {
         WebDriver driver;
-        switch (config.browser) {
+        switch (jobConfig.browser) {
             case FIREFOX:
                 FirefoxDriverManager.getInstance().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
@@ -67,7 +67,7 @@ public class BrowserUtils {
                 FirefoxOptions firefoxOptionsForHeadless = new FirefoxOptions();
                 //Headless parameter is supported with Firefox >= 55
                 firefoxOptionsForHeadless.addArguments("--headless");
-                firefoxOptionsForHeadless.addArguments("-width", width + "" , "-height", config.windowHeight + "");
+                firefoxOptionsForHeadless.addArguments("-width", width + "" , "-height", jobConfig.windowHeight + "");
                 firefoxOptionsForHeadless.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
                 driver = new FirefoxDriver(firefoxOptionsForHeadless);
                 break;
@@ -83,7 +83,7 @@ public class BrowserUtils {
                 ChromeOptions options_headless = new ChromeOptions();
                 //To work in a headless env, this is needed
                 options_headless.addArguments("--no-sandbox","--headless","--disable-gpu");
-                options_headless.addArguments("--window-size=" + width + "," + config.windowHeight);
+                options_headless.addArguments("--window-size=" + width + "," + jobConfig.windowHeight);
                 driver = new ChromeDriver(options_headless);
                 break;
             case PHANTOMJS:
@@ -92,7 +92,7 @@ public class BrowserUtils {
                 driver = new PhantomJSDriver();
                 break;
         }
-        driver.manage().timeouts().pageLoadTimeout(config.pageLoadTimeout, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(jobConfig.pageLoadTimeout, TimeUnit.SECONDS);
         return driver;
     }
 
@@ -102,9 +102,9 @@ public class BrowserUtils {
         return firefoxProfileHeadless;
     }
 
-    static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(JLineupRunConfiguration jLineupRunConfiguration, Config config) throws JLineupException {
+    static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(RunStepConfig runStepConfig, JobConfig jobConfig) throws JLineupException {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
-        Map<String, UrlConfig> urls = config.urls;
+        Map<String, UrlConfig> urls = jobConfig.urls;
 
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
             final UrlConfig urlConfig = urlConfigEntry.getValue();
@@ -114,17 +114,17 @@ public class BrowserUtils {
                 screenshotContextList.addAll(
                         resolutions.stream()
                                 .map(windowWidth ->
-                                        new ScreenshotContext(prepareDomain(jLineupRunConfiguration, urlConfigEntry.getKey()), path, windowWidth,
-                                                jLineupRunConfiguration.getStep() == Step.before, urlConfigEntry.getValue()))
+                                        new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getKey()), path, windowWidth,
+                                                runStepConfig.getStep() == Step.before, urlConfigEntry.getValue()))
                                 .collect(Collectors.toList()));
             }
         }
         return screenshotContextList;
     }
 
-    public static String prepareDomain(final JLineupRunConfiguration jLineupRunConfiguration, final String url) {
+    public static String prepareDomain(final RunStepConfig runStepConfig, final String url) {
         String processedUrl = url;
-        for (Map.Entry<String, String> replacement : jLineupRunConfiguration.getUrlReplacements().entrySet()) {
+        for (Map.Entry<String, String> replacement : runStepConfig.getUrlReplacements().entrySet()) {
              processedUrl = processedUrl.replace(replacement.getKey(), replacement.getValue());
         }
         return processedUrl;

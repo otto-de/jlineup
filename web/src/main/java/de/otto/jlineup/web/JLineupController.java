@@ -1,6 +1,6 @@
 package de.otto.jlineup.web;
 
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.service.RunNotFoundException;
@@ -25,12 +25,12 @@ public class JLineupController {
 
     @GetMapping("/")
     public String getHello() {
-        return "JLineup is great!";
+        return "JLineupRunner is great!";
     }
 
     @PostMapping(value = "/runs")
-    public ResponseEntity<Void> runBefore(@RequestBody Config config) {
-        String id = jLineupService.startBeforeRun(config).getId();
+    public ResponseEntity<Void> runBefore(@RequestBody JobConfig jobConfig) {
+        String id = jLineupService.startBeforeRun(jobConfig).getId();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/runs/" + id));

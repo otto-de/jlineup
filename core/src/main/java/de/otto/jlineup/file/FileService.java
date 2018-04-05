@@ -3,7 +3,7 @@ package de.otto.jlineup.file;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
-import de.otto.jlineup.JLineupRunConfiguration;
+import de.otto.jlineup.RunStepConfig;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -21,10 +21,10 @@ public class FileService {
     public static final String PNG_EXTENSION = ".png";
     private static final int MAX_URL_TO_FILENAME_LENGHT = 180;
 
-    private final JLineupRunConfiguration jLineupRunConfiguration;
+    private final RunStepConfig runStepConfig;
 
-    public FileService(JLineupRunConfiguration jLineupRunConfiguration) {
-        this.jLineupRunConfiguration = jLineupRunConfiguration;
+    public FileService(RunStepConfig runStepConfig) {
+        this.runStepConfig = runStepConfig;
     }
 
     @VisibleForTesting
@@ -52,20 +52,20 @@ public class FileService {
     }
 
     public void createOrClearReportDirectory() {
-        createOrClearDirectoryBelowWorkingDir(jLineupRunConfiguration.getWorkingDirectory(), jLineupRunConfiguration.getReportDirectory());
+        createOrClearDirectoryBelowWorkingDir(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory());
     }
 
     private Path getScreenshotDirectory() {
-        return Paths.get(String.format("%s/%s", jLineupRunConfiguration.getWorkingDirectory(), jLineupRunConfiguration.getScreenshotsDirectory()));
+        return Paths.get(String.format("%s/%s", runStepConfig.getWorkingDirectory(), runStepConfig.getScreenshotsDirectory()));
     }
 
     private Path getReportDirectory() {
-        return Paths.get(String.format("%s/%s", jLineupRunConfiguration.getWorkingDirectory(), jLineupRunConfiguration.getReportDirectory()));
+        return Paths.get(String.format("%s/%s", runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory()));
     }
 
     public void createWorkingDirectoryIfNotExists() {
         try {
-            createDirIfNotExists(jLineupRunConfiguration.getWorkingDirectory());
+            createDirIfNotExists(runStepConfig.getWorkingDirectory());
         } catch (IOException e) {
             System.err.println("Could not create or open working directory.");
             System.exit(1);
@@ -73,7 +73,7 @@ public class FileService {
     }
 
     public void createOrClearScreenshotsDirectory() {
-        createOrClearDirectoryBelowWorkingDir(jLineupRunConfiguration.getWorkingDirectory(), jLineupRunConfiguration.getScreenshotsDirectory());
+        createOrClearDirectoryBelowWorkingDir(runStepConfig.getWorkingDirectory(), runStepConfig.getScreenshotsDirectory());
     }
 
     private void createOrClearDirectoryBelowWorkingDir(String workingDirectory, String subDirectory) {
@@ -128,14 +128,14 @@ public class FileService {
 
     @VisibleForTesting
     String getScreenshotPath(String url, String urlSubPath, int width, int yPosition, String step) {
-        return jLineupRunConfiguration.getWorkingDirectory() + (jLineupRunConfiguration.getWorkingDirectory().endsWith("/") ? "" : "/")
-                + jLineupRunConfiguration.getScreenshotsDirectory() + (jLineupRunConfiguration.getScreenshotsDirectory().endsWith("/") ? "" : "/")
+        return runStepConfig.getWorkingDirectory() + (runStepConfig.getWorkingDirectory().endsWith("/") ? "" : "/")
+                + runStepConfig.getScreenshotsDirectory() + (runStepConfig.getScreenshotsDirectory().endsWith("/") ? "" : "/")
                 + generateScreenshotFileName(url, urlSubPath, width, yPosition, step);
     }
 
     private String getScreenshotPath(String fileName) {
-        return jLineupRunConfiguration.getWorkingDirectory() + (jLineupRunConfiguration.getWorkingDirectory().endsWith("/") ? "" : "/")
-                + jLineupRunConfiguration.getScreenshotsDirectory() + (jLineupRunConfiguration.getScreenshotsDirectory().endsWith("/") ? "" : "/")
+        return runStepConfig.getWorkingDirectory() + (runStepConfig.getWorkingDirectory().endsWith("/") ? "" : "/")
+                + runStepConfig.getScreenshotsDirectory() + (runStepConfig.getScreenshotsDirectory().endsWith("/") ? "" : "/")
                 + fileName;
     }
 

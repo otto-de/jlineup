@@ -13,10 +13,10 @@ public class CommandLineParameters {
     @Parameter(names = {"-?", "--help"}, help = true, description = "Shows this help")
     private boolean help = false;
 
-    @Parameter(names = {"-s", "--step"}, description = "JLineup step - 'before' just takes screenshots, 'after' takes screenshots and compares them with the 'before'-screenshots in the screenshots directory. 'compare' just compares existing screenshots, it's also included in 'after'.")
+    @Parameter(names = {"-s", "--step"}, description = "JLineupRunner step - 'before' just takes screenshots, 'after' takes screenshots and compares them with the 'before'-screenshots in the screenshots directory. 'compare' just compares existing screenshots, it's also included in 'after'.")
     private Step step = Step.before;
 
-    @Parameter(names = {"--config", "-c"}, description = "Config file")
+    @Parameter(names = {"--config", "-c"}, description = "JobConfig file")
     private String configFile = "lineup.json";
 
     @Parameter(names = {"--working-dir", "-d"}, description = "Path to the working directory")
@@ -28,7 +28,7 @@ public class CommandLineParameters {
     @Parameter(names = {"--report-dir", "-rd"}, description = "HTML report directory name - relative to working directory")
     private String reportDirectory = "report";
 
-    @Parameter(names = {"--url", "-u"}, description = "If you run JLineup without config file, this is the one url that is tested with the default config.")
+    @Parameter(names = {"--url", "-u"}, description = "If you run JLineupRunner without config file, this is the one url that is tested with the default config.")
     private String url = null;
 
     @Parameter(names = {"--print-config"}, description = "Prints a default config file to standard out. Useful as quick start.")

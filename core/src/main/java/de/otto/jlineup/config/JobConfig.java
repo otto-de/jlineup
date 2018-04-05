@@ -22,7 +22,7 @@ import java.util.*;
 import static de.otto.jlineup.config.Cookie.COOKIE_TIME_FORMAT;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public final class Config {
+public final class JobConfig {
 
     public static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
     public static final String EXAMPLE_URL = "https://www.example.com";
@@ -81,11 +81,11 @@ public final class Config {
     private final static Gson gson = new GsonBuilder().setDateFormat(COOKIE_TIME_FORMAT).setPrettyPrinting().create();
 
     /* Used by GSON to set default values */
-    public Config() {
+    public JobConfig() {
         this(configBuilder());
     }
 
-    private Config(Builder builder) {
+    private JobConfig(Builder builder) {
         urls = builder.urls;
         browser = builder.browser;
         globalWaitAfterPageLoad = builder.globalWaitAfterPageLoad;
@@ -99,23 +99,23 @@ public final class Config {
         logToFile = builder.logToFile;
     }
 
-    public static Config parse(String config) {
-        Config parsedConfig = gson.fromJson(config, Config.class);
-        if (parsedConfig == null) {
-            throw new JsonParseException(String.format("Config is not valid: '%s'", config));
-        } else if (parsedConfig.urls == null) {
+    public static JobConfig parse(String config) {
+        JobConfig parsedJobConfig = gson.fromJson(config, JobConfig.class);
+        if (parsedJobConfig == null) {
+            throw new JsonParseException(String.format("JobConfig is not valid: '%s'", config));
+        } else if (parsedJobConfig.urls == null) {
             throw new JsonParseException("No urls in JLineup config.");
         }
-        return parsedConfig;
+        return parsedJobConfig;
     }
 
-    public static String prettyPrint(Config config) {
-        return gson.toJson(config);
+    public static String prettyPrint(JobConfig jobConfig) {
+        return gson.toJson(jobConfig);
     }
 
     @Override
     public String toString() {
-        return "Config{" +
+        return "JobConfig{" +
                 "urls=" + urls +
                 ", browser=" + browser +
                 ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
@@ -135,21 +135,21 @@ public final class Config {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Config config = (Config) o;
+        JobConfig jobConfig = (JobConfig) o;
 
-        if (pageLoadTimeout != config.pageLoadTimeout) return false;
-        if (screenshotRetries != config.screenshotRetries) return false;
-        if (threads != config.threads) return false;
-        if (globalTimeout != config.globalTimeout) return false;
-        if (debug != config.debug) return false;
-        if (logToFile != config.logToFile) return false;
-        if (urls != null ? !urls.equals(config.urls) : config.urls != null) return false;
-        if (browser != config.browser) return false;
-        if (globalWaitAfterPageLoad != null ? !globalWaitAfterPageLoad.equals(config.globalWaitAfterPageLoad) : config.globalWaitAfterPageLoad != null)
+        if (pageLoadTimeout != jobConfig.pageLoadTimeout) return false;
+        if (screenshotRetries != jobConfig.screenshotRetries) return false;
+        if (threads != jobConfig.threads) return false;
+        if (globalTimeout != jobConfig.globalTimeout) return false;
+        if (debug != jobConfig.debug) return false;
+        if (logToFile != jobConfig.logToFile) return false;
+        if (urls != null ? !urls.equals(jobConfig.urls) : jobConfig.urls != null) return false;
+        if (browser != jobConfig.browser) return false;
+        if (globalWaitAfterPageLoad != null ? !globalWaitAfterPageLoad.equals(jobConfig.globalWaitAfterPageLoad) : jobConfig.globalWaitAfterPageLoad != null)
             return false;
-        if (windowHeight != null ? !windowHeight.equals(config.windowHeight) : config.windowHeight != null)
+        if (windowHeight != null ? !windowHeight.equals(jobConfig.windowHeight) : jobConfig.windowHeight != null)
             return false;
-        return reportFormat != null ? reportFormat.equals(config.reportFormat) : config.reportFormat == null;
+        return reportFormat != null ? reportFormat.equals(jobConfig.reportFormat) : jobConfig.reportFormat == null;
     }
 
     @Override
@@ -168,11 +168,11 @@ public final class Config {
         return result;
     }
 
-    public static Config defaultConfig() {
+    public static JobConfig defaultConfig() {
         return defaultConfig(EXAMPLE_URL);
     }
 
-    public static Config defaultConfig(String url) {
+    public static JobConfig defaultConfig(String url) {
         return configBuilder().withUrls(ImmutableMap.of(url, new UrlConfig())).build();
     }
 
@@ -180,7 +180,7 @@ public final class Config {
         return new Builder();
     }
 
-    public static Config exampleConfig() {
+    public static JobConfig exampleConfig() {
         return configBuilder()
                 .withUrls(ImmutableMap.of("http://www.example.com",
                         new UrlConfig(
@@ -204,7 +204,7 @@ public final class Config {
                 .build();
     }
 
-    public static Config readConfig(final String workingDir, final String configFileName) throws FileNotFoundException {
+    public static JobConfig readConfig(final String workingDir, final String configFileName) throws FileNotFoundException {
         List<String> searchPaths = new ArrayList<>();
         Path configFilePath = Paths.get(workingDir + "/" + configFileName);
         searchPaths.add(configFilePath.toString());
@@ -216,12 +216,12 @@ public final class Config {
                 searchPaths.add(configFilePath.toString());
                 if (!Files.exists(configFilePath)) {
                     String cwd = Paths.get(".").toAbsolutePath().normalize().toString();
-                    throw new FileNotFoundException("Config file not found. Search locations were: " + Arrays.toString(searchPaths.toArray()) + " - working dir: " + cwd);
+                    throw new FileNotFoundException("JobConfig file not found. Search locations were: " + Arrays.toString(searchPaths.toArray()) + " - working dir: " + cwd);
                 }
             }
         }
         BufferedReader br = new BufferedReader(new FileReader(configFilePath.toString()));
-        return gson.fromJson(br, Config.class);
+        return gson.fromJson(br, JobConfig.class);
     }
 
     public static final class Builder {
@@ -295,8 +295,8 @@ public final class Config {
             return this;
         }
 
-        public Config build() {
-            return new Config(this);
+        public JobConfig build() {
+            return new JobConfig(this);
         }
     }
 }

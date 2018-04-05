@@ -6,7 +6,7 @@ import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 
-public class JLineupRunConfiguration {
+public class RunStepConfig {
 
     private final String reportDirectory;
     private final String workingDirectory;
@@ -14,7 +14,7 @@ public class JLineupRunConfiguration {
     private final Step step;
     private final Map<String, String> urlReplacements;
 
-    private JLineupRunConfiguration(Builder builder) {
+    private RunStepConfig(Builder builder) {
         reportDirectory = builder.reportDirectory;
         workingDirectory = builder.workingDirectory;
         screenshotsDirectory = builder.screenshotsDirectory;
@@ -77,8 +77,8 @@ public class JLineupRunConfiguration {
             return this;
         }
 
-        public JLineupRunConfiguration build() {
-            return new JLineupRunConfiguration(this);
+        public RunStepConfig build() {
+            return new RunStepConfig(this);
         }
 
         public Builder withUrlReplacements(Map<String, String> val) {

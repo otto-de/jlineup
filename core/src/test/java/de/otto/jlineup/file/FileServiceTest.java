@@ -1,7 +1,7 @@
 package de.otto.jlineup.file;
 
 import com.google.common.collect.ImmutableList;
-import de.otto.jlineup.JLineupRunConfiguration;
+import de.otto.jlineup.RunStepConfig;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import static de.otto.jlineup.JLineupRunConfiguration.jLineupRunConfigurationBuilder;
+import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.file.FileService.AFTER;
 import static de.otto.jlineup.file.FileService.BEFORE;
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +27,7 @@ public class FileServiceTest {
 
     private FileService testee;
 
-    private JLineupRunConfiguration jLineupRunConfiguration;
+    private RunStepConfig runStepConfig;
 
     @Rule
     public TemporaryFolder tempDir = new TemporaryFolder();
@@ -43,13 +43,13 @@ public class FileServiceTest {
 
         writeScreenshotTestPath = tempDirPath + "/testdirforlineupwritetest";
 
-        jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+        runStepConfig = jLineupRunConfigurationBuilder()
                 .withWorkingDirectory(writeScreenshotTestPath)
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
                 .build();
 
-        testee = new FileService(jLineupRunConfiguration);
+        testee = new FileService(runStepConfig);
         testee.createDirIfNotExists(writeScreenshotTestPath);
         testee.createDirIfNotExists(writeScreenshotTestPath + "/screenshots");
         testee.createDirIfNotExists(writeScreenshotTestPath + "/report");
@@ -135,12 +135,12 @@ public class FileServiceTest {
     @Test
     public void shouldFindBeforeImages() throws IOException {
 
-        jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+        runStepConfig = jLineupRunConfigurationBuilder()
                 .withWorkingDirectory("src/test/resources")
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
                 .build();
-        FileService fileService = new FileService(jLineupRunConfiguration);
+        FileService fileService = new FileService(runStepConfig);
 
         //when
         List<String> beforeFiles = fileService.getFilenamesForStep("/", "http://url", BEFORE);
@@ -150,12 +150,12 @@ public class FileServiceTest {
 
     @Test
     public void shouldFindAfterImages() throws IOException {
-        jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+        runStepConfig = jLineupRunConfigurationBuilder()
                 .withWorkingDirectory("src/test/resources")
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
                 .build();
-        FileService fileService = new FileService(jLineupRunConfiguration);
+        FileService fileService = new FileService(runStepConfig);
 
         //when
         List<String> afterFiles = fileService.getFilenamesForStep("/", "http://url", AFTER);
@@ -166,12 +166,12 @@ public class FileServiceTest {
     @Test
     public void shouldBuildRelativePathsForDifferentDirectories() {
         //given
-        jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+        runStepConfig = jLineupRunConfigurationBuilder()
                 .withWorkingDirectory("src/test/resources")
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
                 .build();
-        FileService fileService = new FileService(jLineupRunConfiguration);
+        FileService fileService = new FileService(runStepConfig);
 
         //when
         String relativePathFromReportDirToScreenshotsDir = fileService.getRelativePathFromReportDirToScreenshotsDir();
@@ -184,12 +184,12 @@ public class FileServiceTest {
     @Test
     public void shouldBuildRelativePathsForSame() {
         //given
-        jLineupRunConfiguration = jLineupRunConfigurationBuilder()
+        runStepConfig = jLineupRunConfigurationBuilder()
                 .withWorkingDirectory("src/test/resources")
                 .withScreenshotsDirectory("rreeppoorrtt")
                 .withReportDirectory("rreeppoorrtt")
                 .build();
-        FileService fileService = new FileService(jLineupRunConfiguration);
+        FileService fileService = new FileService(runStepConfig);
 
         //when
         String relativePathFromReportDirToScreenshotsDir = fileService.getRelativePathFromReportDirToScreenshotsDir();

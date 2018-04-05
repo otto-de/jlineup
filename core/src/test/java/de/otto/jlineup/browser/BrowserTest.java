@@ -2,8 +2,8 @@ package de.otto.jlineup.browser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import de.otto.jlineup.JLineupRunConfiguration;
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
@@ -29,7 +29,7 @@ import java.util.Objects;
 
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.*;
-import static de.otto.jlineup.config.Config.configBuilder;
+import static de.otto.jlineup.config.JobConfig.configBuilder;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -50,7 +50,7 @@ public class BrowserTest {
     private BrowserUtils browserUtilsMock;
 
     @Mock
-    private JLineupRunConfiguration jLineupRunConfiguration;
+    private RunStepConfig runStepConfig;
     @Mock
     private FileService fileService;
 
@@ -64,10 +64,10 @@ public class BrowserTest {
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
         when(webDriverOptionsMock.logs()).thenReturn(webDriverLogs);
-        when(browserUtilsMock.getWebDriverByConfig(any(Config.class))).thenReturn(webDriverMock);
-        when(browserUtilsMock.getWebDriverByConfig(any(Config.class), anyInt())).thenReturn(webDriverMock);
-        Config config = configBuilder().build();
-        testee = new Browser(jLineupRunConfiguration, config, fileService, browserUtilsMock);
+        when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class))).thenReturn(webDriverMock);
+        when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), anyInt())).thenReturn(webDriverMock);
+        JobConfig jobConfig = configBuilder().build();
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
         testee.initializeWebDriver();
     }
 
@@ -80,33 +80,33 @@ public class BrowserTest {
 
     @Test
     public void shouldGetFirefoxDriver() throws InterruptedException {
-        final Config config = configBuilder().withBrowser(FIREFOX).build();
-        assertSetDriverType(config, FirefoxDriver.class);
+        final JobConfig jobConfig = configBuilder().withBrowser(FIREFOX).build();
+        assertSetDriverType(jobConfig, FirefoxDriver.class);
     }
 
     @Test
     public void shouldGetChromeDriver() throws InterruptedException {
-        final Config config = configBuilder().withBrowser(CHROME).build();
-        assertSetDriverType(config, ChromeDriver.class);
+        final JobConfig jobConfig = configBuilder().withBrowser(CHROME).build();
+        assertSetDriverType(jobConfig, ChromeDriver.class);
     }
 
     @Test
     public void shouldGetChromeDriverForHeadlessChrome() throws Exception {
-        final Config config = configBuilder().withBrowser(CHROME_HEADLESS).build();
-        assertSetDriverType(config, ChromeDriver.class);
+        final JobConfig jobConfig = configBuilder().withBrowser(CHROME_HEADLESS).build();
+        assertSetDriverType(jobConfig, ChromeDriver.class);
     }
 
     @Test
     public void shouldGetPhantomJSDriver() throws InterruptedException {
-        final Config config = configBuilder().withBrowser(PHANTOMJS).build();
-        assertSetDriverType(config, PhantomJSDriver.class);
+        final JobConfig jobConfig = configBuilder().withBrowser(PHANTOMJS).build();
+        assertSetDriverType(jobConfig, PhantomJSDriver.class);
     }
 
-    private void assertSetDriverType(Config config, Class<? extends WebDriver> driverClass) {
+    private void assertSetDriverType(JobConfig jobConfig, Class<? extends WebDriver> driverClass) {
         WebDriver driver = null;
         BrowserUtils realBrowserUtils = new BrowserUtils();
         try {
-            driver = realBrowserUtils.getWebDriverByConfig(config);
+            driver = realBrowserUtils.getWebDriverByConfig(jobConfig);
             assertTrue(driverClass.isInstance(driver));
         } finally {
             if (driver != null) {
@@ -218,13 +218,13 @@ public class BrowserTest {
                 "testJS();",
                 5);
 
-        Config config = configBuilder()
+        JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
                 .withUrls(ImmutableMap.of("testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
         testee.close();
-        testee = new Browser(jLineupRunConfiguration, config, fileService, browserUtilsMock);
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
         ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", 800, true, urlConfig);
@@ -274,14 +274,14 @@ public class BrowserTest {
                 null,
                 5);
 
-        Config config = configBuilder()
+        JobConfig jobConfig = configBuilder()
                 .withBrowser(CHROME_HEADLESS)
                 .withUrls(ImmutableMap.of("testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
 
         testee.close();
-        testee = new Browser(jLineupRunConfiguration, config, fileService, browserUtilsMock);
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
         ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", 800, true, urlConfig);

@@ -92,7 +92,7 @@ uploadArchives {
             }
 
             pom.project {
-                name 'JLineup'
+                name 'JLineupRunner'
                 packaging 'jar'
                 description 'Webapp image comparison tool'
                 url 'http://github.com/otto-de/jlineup'

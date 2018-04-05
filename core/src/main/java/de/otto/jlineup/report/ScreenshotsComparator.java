@@ -1,9 +1,9 @@
 package de.otto.jlineup.report;
 
 import com.google.common.annotations.VisibleForTesting;
-import de.otto.jlineup.JLineupRunConfiguration;
+import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.BrowserUtils;
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
@@ -28,31 +28,31 @@ public class ScreenshotsComparator {
     private static final String BEFORE_MATCHER = DIVIDER + BEFORE + PNG_EXTENSION;
     private static final String AFTER_MATCHER = DIVIDER + AFTER + PNG_EXTENSION;
 
-    private final JLineupRunConfiguration jLineupRunConfiguration;
-    private final Config config;
+    private final RunStepConfig runStepConfig;
+    private final JobConfig jobConfig;
     private final FileService fileService;
     private final ImageService imageService;
 
-    public ScreenshotsComparator(JLineupRunConfiguration jLineupRunConfiguration,
-                                 Config config,
+    public ScreenshotsComparator(RunStepConfig runStepConfig,
+                                 JobConfig jobConfig,
                                  FileService fileService,
                                  ImageService imageService) {
-        this.jLineupRunConfiguration = jLineupRunConfiguration;
-        this.config = config;
+        this.runStepConfig = runStepConfig;
+        this.jobConfig = jobConfig;
         this.fileService = fileService;
         this.imageService = imageService;
     }
 
     public Map<String, List<ScreenshotComparisonResult>> compare() throws IOException {
         LOG.debug("Comparing images...");
-        if (config.urls == null) {
+        if (jobConfig.urls == null) {
             LOG.debug("No urls configured, so no comparison.");
             return null;
         }
         Map<String, List<ScreenshotComparisonResult>> results = new HashMap<>();
-        for (Map.Entry<String, UrlConfig> urlConfigEntry : config.urls.entrySet()) {
+        for (Map.Entry<String, UrlConfig> urlConfigEntry : jobConfig.urls.entrySet()) {
             List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
-            String url = BrowserUtils.prepareDomain(jLineupRunConfiguration, urlConfigEntry.getKey());
+            String url = BrowserUtils.prepareDomain(runStepConfig, urlConfigEntry.getKey());
             UrlConfig urlConfig = urlConfigEntry.getValue();
             LOG.debug("Url: {}", url);
             for (String path : urlConfig.paths) {
@@ -85,7 +85,7 @@ public class ScreenshotsComparator {
                     try {
                         imageBefore = fileService.readScreenshot(beforeFileName);
                     } catch (IIOException e) {
-                        System.err.println("Can't read screenshot of 'before' step. Did you run JLineup with '--step before' parameter before trying to run '--step after' or --compare?");
+                        System.err.println("Can't read screenshot of 'before' step. Did you run JLineupRunner with '--step before' parameter before trying to run '--step after' or --compare?");
                         throw e;
                     }
 
@@ -97,7 +97,7 @@ public class ScreenshotsComparator {
                         continue;
                     }
 
-                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, config.windowHeight);
+                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, jobConfig.windowHeight);
                     String differenceImageFileName = null;
                     if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
                         differenceImageFileName = Paths.get(fileService.writeScreenshot(imageComparisonResult.getDifferenceImage().orElse(null), url, path, windowWidth, yPosition, "DIFFERENCE")).getFileName().toString();

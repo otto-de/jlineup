@@ -2,7 +2,7 @@ package de.otto.jlineup;
 
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
@@ -15,54 +15,54 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class JLineup {
+public class JLineupRunner {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JLineup.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JLineupRunner.class);
 
-    private final Config config;
-    private final JLineupRunConfiguration jLineupRunConfiguration;
+    private final JobConfig jobConfig;
+    private final RunStepConfig runStepConfig;
 
-    public JLineup(Config config, JLineupRunConfiguration jLineupRunConfiguration) {
-        this.config = config;
-        this.jLineupRunConfiguration = jLineupRunConfiguration;
+    public JLineupRunner(JobConfig jobConfig, RunStepConfig runStepConfig) {
+        this.jobConfig = jobConfig;
+        this.runStepConfig = runStepConfig;
     }
 
     public int run() throws IOException {
 
-        if (config.urls == null) {
+        if (jobConfig.urls == null) {
             LOG.error("No urls are configured in the config.");
             return 1;
         }
 
-        FileService fileService = new FileService(jLineupRunConfiguration);
+        FileService fileService = new FileService(runStepConfig);
         ImageService imageService = new ImageService();
 
         //Make sure the working dir exists
-        if (jLineupRunConfiguration.getStep() == Step.before) {
+        if (runStepConfig.getStep() == Step.before) {
             fileService.createWorkingDirectoryIfNotExists();
             fileService.createOrClearReportDirectory();
             fileService.createOrClearScreenshotsDirectory();
         }
 
-        if (jLineupRunConfiguration.getStep() == Step.before || jLineupRunConfiguration.getStep() == Step.after) {
+        if (runStepConfig.getStep() == Step.before || runStepConfig.getStep() == Step.after) {
             BrowserUtils browserUtils = new BrowserUtils();
-            try (Browser browser = new Browser(jLineupRunConfiguration, config, fileService, browserUtils)) {
+            try (Browser browser = new Browser(runStepConfig, jobConfig, fileService, browserUtils)) {
                 browser.takeScreenshots();
             } catch (Exception e) {
-                System.err.println("JLineup Exception: " + e);
+                System.err.println("JLineupRunner Exception: " + e);
                 return 1;
             }
         }
 
-        if (jLineupRunConfiguration.getStep() == Step.after || jLineupRunConfiguration.getStep() == Step.compare) {
-            ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(jLineupRunConfiguration, config, fileService, imageService);
+        if (runStepConfig.getStep() == Step.after || runStepConfig.getStep() == Step.compare) {
+            ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
             final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
 
             final ReportGenerator reportGenerator = new ReportGenerator();
             final Report report = reportGenerator.generateReport(comparisonResults);
 
             JSONReportWriter jsonReportWriter;
-            if (Utils.shouldUseLegacyReportFormat(config)) {
+            if (Utils.shouldUseLegacyReportFormat(jobConfig)) {
                 jsonReportWriter = new JSONReportWriter_V1(fileService);
             } else {
                 jsonReportWriter = new JSONReportWriter_V2(fileService);
@@ -81,18 +81,18 @@ public class JLineup {
             System.out.println("Sum of overall screenshot differences:\n" + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
             System.out.println("Max difference of a single screenshot:\n" + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
 
-            if (!Utils.shouldUseLegacyReportFormat(config)) {
+            if (!Utils.shouldUseLegacyReportFormat(jobConfig)) {
                 for (Map.Entry<String, UrlReport> entry : entries) {
                     //Exit with exit code 1 if at least one url report has a bigger difference than configured
-                    if (config.urls != null && entry.getValue().summary.differenceMax > config.urls.get(entry.getKey()).maxDiff) {
-                        System.out.println("JLineup finished. There was a difference between before and after. Return code is 1.");
+                    if (jobConfig.urls != null && entry.getValue().summary.differenceMax > jobConfig.urls.get(entry.getKey()).maxDiff) {
+                        System.out.println("JLineupRunner finished. There was a difference between before and after. Return code is 1.");
                         System.exit(1);
                     }
                 }
             }
         }
 
-        System.out.printf("JLineup run finished for step '%s'%n", jLineupRunConfiguration.getStep());
+        System.out.printf("JLineupRunner run finished for step '%s'%n", runStepConfig.getStep());
         return 0;
     }
 }

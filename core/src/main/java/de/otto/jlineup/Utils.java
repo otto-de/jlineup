@@ -5,7 +5,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.config.JobConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,8 +78,8 @@ public class Utils {
         logger.setLevel(Level.DEBUG);
     }
 
-    public static boolean shouldUseLegacyReportFormat(Config config) {
-        return (config.reportFormat != null && config.reportFormat == 1) || (config.reportFormat == null && Config.DEFAULT_REPORT_FORMAT == 1);
+    public static boolean shouldUseLegacyReportFormat(JobConfig jobConfig) {
+        return (jobConfig.reportFormat != null && jobConfig.reportFormat == 1) || (jobConfig.reportFormat == null && JobConfig.DEFAULT_REPORT_FORMAT == 1);
     }
 
     public static String getVersion() {

@@ -1,29 +1,21 @@
 package de.otto.jlineup.web;
 
-import de.otto.jlineup.config.Config;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.service.RunNotFoundException;
-import org.hamcrest.core.StringContains;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.result.ContentResultMatchers;
-import org.springframework.test.web.servlet.result.StatusResultMatchers;
 
 import java.util.Optional;
 
 import static de.otto.jlineup.web.JLineupRunStatus.jLineupRunStatusBuilder;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -34,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
-public class JLineupControllerTest {
+public class JLineupRunnerControllerTest {
 
     @Mock
     private JLineupService jLineupService;
@@ -70,7 +62,7 @@ public class JLineupControllerTest {
         when(jLineupService.getRun("someId")).thenReturn(Optional.of(jLineupRunStatusBuilder()
                 .withId("someId")
                 .withState(State.BEFORE_RUNNING)
-                .withConfig(Config.exampleConfig())
+                .withConfig(JobConfig.exampleConfig())
                 .build()));
 
         // when
@@ -86,14 +78,14 @@ public class JLineupControllerTest {
     public void shouldStartNewRun() throws Exception {
 
         // given
-        Config config = Config.exampleConfig();
-        JLineupRunStatus run = jLineupRunStatusBuilder().withId("someNewId").withConfig(config).withState(State.BEFORE_RUNNING).build();
+        JobConfig jobConfig = JobConfig.exampleConfig();
+        JLineupRunStatus run = jLineupRunStatusBuilder().withId("someNewId").withConfig(jobConfig).withState(State.BEFORE_RUNNING).build();
         when(jLineupService.startBeforeRun(any())).thenReturn(run);
 
         // when
         ResultActions result = mvc
                 .perform(post("/runs")
-                        .content(Config.prettyPrint(config))
+                        .content(JobConfig.prettyPrint(jobConfig))
                         .contentType(MediaType.APPLICATION_JSON));
 
         // then
@@ -101,7 +93,7 @@ public class JLineupControllerTest {
                 .andExpect(status().isAccepted())
                 .andExpect(header().string("Location", "/runs/someNewId"));
 
-        verify(jLineupService).startBeforeRun(config);
+        verify(jLineupService).startBeforeRun(jobConfig);
     }
 
     @Test
@@ -122,7 +114,7 @@ public class JLineupControllerTest {
     public void shouldStartAfterRun() throws Exception {
 
         // given
-        JLineupRunStatus run = jLineupRunStatusBuilder().withId("someRunId").withConfig(Config.exampleConfig()).withState(State.AFTER_RUNNING).build();
+        JLineupRunStatus run = jLineupRunStatusBuilder().withId("someRunId").withConfig(JobConfig.exampleConfig()).withState(State.AFTER_RUNNING).build();
         when(jLineupService.startAfterRun("someRunId")).thenReturn(run);
 
         // when

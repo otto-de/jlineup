@@ -1,14 +1,14 @@
 package de.otto.jlineup.cli;
 
 import com.beust.jcommander.JCommander;
-import de.otto.jlineup.JLineupRunConfiguration;
+import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.Step;
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
-public class JLineupRunConfigurationTest {
+public class RunStepConfigTest {
 
     @Test
     public void shouldConvertCommandlineParameters() {
@@ -23,11 +23,11 @@ public class JLineupRunConfigurationTest {
         JCommander jCommander = new JCommander(commandLineParameters);
         jCommander.parse(params);
 
-        JLineupRunConfiguration jLineupRunConfiguration = Utils.convertCommandLineParametersToRunConfiguration(commandLineParameters);
+        RunStepConfig runStepConfig = Utils.convertCommandLineParametersToRunConfiguration(commandLineParameters);
 
-        assertThat(jLineupRunConfiguration.getReportDirectory(), is("someReportDirectory"));
-        assertThat(jLineupRunConfiguration.getScreenshotsDirectory(), is("someScreenshotDirectory"));
-        assertThat(jLineupRunConfiguration.getWorkingDirectory(), is("someWorkingDirectory"));
-        assertThat(jLineupRunConfiguration.getStep(), is(Step.after));
+        assertThat(runStepConfig.getReportDirectory(), is("someReportDirectory"));
+        assertThat(runStepConfig.getScreenshotsDirectory(), is("someScreenshotDirectory"));
+        assertThat(runStepConfig.getWorkingDirectory(), is("someWorkingDirectory"));
+        assertThat(runStepConfig.getStep(), is(Step.after));
     }
 }
