@@ -4,6 +4,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import de.otto.jlineup.RunStepConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -14,6 +16,8 @@ import java.util.Comparator;
 import java.util.List;
 
 public class FileService {
+
+    public final static Logger LOG = LoggerFactory.getLogger(FileService.class);
 
     public static final String BEFORE = "before";
     public static final String AFTER = "after";
@@ -51,7 +55,7 @@ public class FileService {
         });
     }
 
-    public void createOrClearReportDirectory() {
+    public void createOrClearReportDirectory() throws IOException {
         createOrClearDirectoryBelowWorkingDir(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory());
     }
 
@@ -63,27 +67,25 @@ public class FileService {
         return Paths.get(String.format("%s/%s", runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory()));
     }
 
-    public void createWorkingDirectoryIfNotExists() {
+    public void createWorkingDirectoryIfNotExists() throws IOException {
         try {
             createDirIfNotExists(runStepConfig.getWorkingDirectory());
         } catch (IOException e) {
-            System.err.println("Could not create or open working directory.");
-            System.exit(1);
+            throw new IOException("Could not create or open working directory.", e);
         }
     }
 
-    public void createOrClearScreenshotsDirectory() {
+    public void createOrClearScreenshotsDirectory() throws IOException {
         createOrClearDirectoryBelowWorkingDir(runStepConfig.getWorkingDirectory(), runStepConfig.getScreenshotsDirectory());
     }
 
-    private void createOrClearDirectoryBelowWorkingDir(String workingDirectory, String subDirectory) {
+    private void createOrClearDirectoryBelowWorkingDir(String workingDirectory, String subDirectory) throws IOException {
         try {
             final String subDirectoryPath = workingDirectory + "/" + subDirectory;
             createDirIfNotExists(subDirectoryPath);
             clearDirectory(subDirectoryPath);
         } catch (IOException e) {
-            System.err.println("Could not create or open " + subDirectory + " directory.");
-            System.exit(1);
+            throw new IOException("Could not create or open " + subDirectory + " directory.", e);
         }
     }
 

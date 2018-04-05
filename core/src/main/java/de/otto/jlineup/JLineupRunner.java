@@ -49,7 +49,7 @@ public class JLineupRunner {
             try (Browser browser = new Browser(runStepConfig, jobConfig, fileService, browserUtils)) {
                 browser.takeScreenshots();
             } catch (Exception e) {
-                System.err.println("JLineupRunner Exception: " + e);
+                LOG.error("JLineup Browser Exception!", e);
                 return false;
             }
         }
@@ -73,20 +73,19 @@ public class JLineupRunner {
 
             final Set<Map.Entry<String, UrlReport>> entries = report.screenshotComparisonsForUrl.entrySet();
             for (Map.Entry<String, UrlReport> entry : entries) {
-                System.out.println("Sum of screenshot differences for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceSum + " (" + Math.round(entry.getValue().summary.differenceSum * 100d) + " %)");
-                System.out.println("Max difference of a single screenshot for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceMax + " (" + Math.round(entry.getValue().summary.differenceMax * 100d) + " %)");
-                System.out.println("");
+                LOG.info("Sum of screenshot differences for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceSum + " (" + Math.round(entry.getValue().summary.differenceSum * 100d) + " %)");
+                LOG.info("Max difference of a single screenshot for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceMax + " (" + Math.round(entry.getValue().summary.differenceMax * 100d) + " %)");
             }
 
-            System.out.println("Sum of overall screenshot differences:\n" + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
-            System.out.println("Max difference of a single screenshot:\n" + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
+            LOG.info("Sum of overall screenshot differences:\n" + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
+            LOG.info("Max difference of a single screenshot:\n" + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
 
             if (!Utils.shouldUseLegacyReportFormat(jobConfig)) {
                 for (Map.Entry<String, UrlReport> entry : entries) {
                     //Exit with exit code 1 if at least one url report has a bigger difference than configured
                     if (jobConfig.urls != null && entry.getValue().summary.differenceMax > jobConfig.urls.get(entry.getKey()).maxDiff) {
-                        System.out.println("JLineupRunner finished. There was a difference between before and after. Return code is 1.");
-                        System.exit(1);
+                        LOG.info("JLineupRunner finished. There was a difference between before and after. Return code is 1.");
+                        return false;
                     }
                 }
             }
