@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class JLineupRunnerAcceptanceTest {
+public class JLineupCLIAcceptanceTest {
 
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();

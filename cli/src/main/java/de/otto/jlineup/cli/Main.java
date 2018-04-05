@@ -6,25 +6,29 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 
 public class Main {
+
+    public final static Logger LOG = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws Exception {
 
         final CommandLineParameters parameters = new CommandLineParameters();
         final JCommander jCommander = new JCommander(parameters);
         jCommander.parse(args);
-        jCommander.setProgramName("JLineupRunner");
+        jCommander.setProgramName("JLineup");
         if (parameters.isHelp()) {
             jCommander.usage();
-            System.out.printf("Version: %s%n", Utils.getVersion());
+            LOG.info("Version: {}\n", Utils.getVersion());
             return;
         }
 
         if (parameters.isVersion()) {
-            System.out.printf("JLineupRunner version %s", Utils.getVersion());
+            LOG.info("JLineup version {}", Utils.getVersion());
             return;
         }
 
@@ -52,7 +56,7 @@ public class Main {
             Utils.logToFile(parameters.getWorkingDirectory());
         }
 
-        System.out.printf("Running JLineupRunner [%s] with step '%s'.%n%n", Utils.getVersion(), parameters.getStep());
+        LOG.info("Running JLineup [{}] with step '{}'.\n\n", Utils.getVersion(), parameters.getStep());
 
         RunStepConfig runStepConfig = de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfiguration(parameters);
         JLineupRunner jLineupRunner = new JLineupRunner(jobConfig, runStepConfig);
@@ -69,18 +73,18 @@ public class Main {
             String url = BrowserUtils.prependHTTPIfNotThereAndToLowerCase(parameters.getUrl());
             jobConfig = JobConfig.defaultConfig(url);
             if (!parameters.isPrintConfig()) {
-                System.out.printf("You specified an explicit URL parameter (%s), any given jobConfig file is ignored! This should only be done for testing purpose.%n", url);
-                System.out.printf("Using generated jobConfig:%n%s%n", JobConfig.prettyPrint(jobConfig));
-                System.out.println("You can take this generated jobConfig as base and save it as a text file named 'lineup.json'.");
-                System.out.println("Just add --print-jobConfig parameter to let JLineupRunner print an example jobConfig");
+                LOG.info("You specified an explicit URL parameter ({}), any given jobConfig file is ignored! This should only be done for testing purpose.%n", url);
+                LOG.info("Using generated jobConfig:%n%s%n", JobConfig.prettyPrint(jobConfig));
+                LOG.info("You can take this generated jobConfig as base and save it as a text file named 'lineup.json'.");
+                LOG.info("Just add --print-jobConfig parameter to let JLineupRunner print an example jobConfig");
             }
         } else {
             try {
                 jobConfig = de.otto.jlineup.cli.Utils.readConfig(parameters);
             } catch (FileNotFoundException e) {
                 if (!parameters.isPrintConfig()) {
-                    System.err.println(e.getMessage());
-                    System.err.println("Use --help to see the JLineupRunner quick help.");
+                    LOG.error(e.getMessage());
+                    LOG.error("Use --help to see the JLineupRunner quick help.");
                     throw e;
                 } else {
                     return JobConfig.exampleConfig();
