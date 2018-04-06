@@ -30,7 +30,7 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = JlineupWebApplication.class)
+@ContextConfiguration(classes = JLineupWebApplication.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class JLineupWebApplicationTests {
 

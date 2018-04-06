@@ -3,6 +3,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.0")
+    compile("de.otto.edison:edison-core:2.0.0-m1-SNAPSHOT")
 
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("io.rest-assured:rest-assured:3.0.7")

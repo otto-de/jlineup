@@ -5,11 +5,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@SpringBootApplication(scanBasePackages = "de.otto.jlineup")
+@SpringBootApplication(scanBasePackages = {"de.otto.jlineup", "de.otto.edison"})
 @EnableConfigurationProperties(JLineupWebProperties.class)
-public class JlineupWebApplication {
+public class JLineupWebApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(JlineupWebApplication.class, args);
+		SpringApplication.run(JLineupWebApplication.class, args);
 	}
 }

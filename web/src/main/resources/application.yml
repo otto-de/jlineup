@@ -1,0 +1,9 @@
+jlineup:
+  workingDirectory: /tmp/jlineup/
+  screenshotsDirectory: report-{id}
+  reportDirectory: report-{id}
+
+edison:
+  status:
+    application:
+      description: Takes screenshots of configured webpages and checks for differences
