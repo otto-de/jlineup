@@ -1,5 +1,6 @@
 package de.otto.jlineup.web;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.otto.jlineup.config.JobConfig;
 
 import java.time.Instant;
@@ -10,11 +11,23 @@ import java.util.concurrent.CompletableFuture;
 public class JLineupRunStatus {
 
     private final String id;
-    private final JobConfig jobConfig;
     private final State state;
     private final Instant startTime;
     private final Instant endTime;
+    @JsonIgnore
     private final CompletableFuture<State> currentJobStepFuture;
+    @JsonIgnore
+    private final JobConfig jobConfig;
+
+    // default constructor for json deserialization
+    public JLineupRunStatus() {
+        id = null;
+        jobConfig = null;
+        state = null;
+        startTime = null;
+        endTime = null;
+        currentJobStepFuture = null;
+    }
 
     private JLineupRunStatus(Builder builder) {
         id = builder.id;
