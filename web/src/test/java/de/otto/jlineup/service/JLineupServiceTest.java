@@ -14,7 +14,7 @@ import java.io.IOException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class JLineupRunnerServiceTest {
+public class JLineupServiceTest {
 
     private JLineupService testee;
 
@@ -43,7 +43,7 @@ public class JLineupRunnerServiceTest {
 
         //when
         String id = testee.startBeforeRun(jobConfig).getId();
-        Thread.sleep(1000);
+        waitForCompletion();
 
         //then
         verify(jLineupRunnerFactory).createBeforeRun(id, jobConfig);
@@ -59,12 +59,20 @@ public class JLineupRunnerServiceTest {
         String id = testee.startBeforeRun(jobConfig).getId();
 
         //when
-        Thread.sleep(1000);
+        waitForCompletion();
         testee.startAfterRun(id);
+        waitForCompletion();
 
         //then
         verify(jLineupRunnerFactory).createAfterRun(id, jobConfig);
         verify(jLineupRunnerAfter).run();
+    }
+
+    private void waitForCompletion() throws InterruptedException {
+        while(testee.getRunningJobsCount() > 0) {
+            Thread.sleep(10);
+        }
+        return;
     }
 
 }

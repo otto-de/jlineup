@@ -16,6 +16,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.otto.jlineup.web.JLineupRunStatus.copyOfRunStatusBuilder;
 import static de.otto.jlineup.web.JLineupRunStatus.jLineupRunStatusBuilder;
@@ -27,6 +29,7 @@ public class JLineupService {
 
     private final ConcurrentHashMap<String, JLineupRunStatus> runs = new ConcurrentHashMap<>();
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private final AtomicInteger runningJobs = new AtomicInteger();
 
     private final JLineupRunnerFactory jLineupRunnerFactory;
 
@@ -46,6 +49,7 @@ public class JLineupService {
 
         runs.put(runId, beforeStatus);
         final JLineupRunner jLineupRunner = jLineupRunnerFactory.createBeforeRun(runId, jobConfig);
+        runningJobs.incrementAndGet();
         executorService.submit( () -> {
             try {
                 boolean runSucceeded = jLineupRunner.run();
@@ -57,6 +61,8 @@ public class JLineupService {
             } catch (Exception e) {
                 LOG.error("Error in before runStep.", e);
                 changeState(runId, State.ERROR);
+            } finally {
+                runningJobs.decrementAndGet();
             }
         });
         return beforeStatus;
@@ -76,7 +82,8 @@ public class JLineupService {
         JLineupRunStatus afterStatus = changeState(id, State.AFTER_RUNNING);
 
         final JLineupRunner jLineupRunner = jLineupRunnerFactory.createAfterRun(id, beforeStatus.getJobConfig());
-        executorService.submit( () -> {
+        runningJobs.incrementAndGet();
+        executorService.submit(() -> {
             try {
                 boolean runSucceeded = jLineupRunner.run();
                 if (runSucceeded) {
@@ -87,6 +94,8 @@ public class JLineupService {
             } catch (Exception e) {
                 LOG.error("Error in after runStep.", e);
                 changeState(id, State.ERROR);
+            } finally {
+                runningJobs.decrementAndGet();
             }
         });
         return afterStatus;
@@ -105,6 +114,10 @@ public class JLineupService {
 
     public Optional<JLineupRunStatus> getRun(String id) {
         return Optional.ofNullable(runs.get(id));
+    }
+
+    public int getRunningJobsCount() {
+        return runningJobs.get();
     }
 
 }
