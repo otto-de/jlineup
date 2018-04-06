@@ -97,4 +97,5 @@ public class JLineupServiceTest {
         assertThat(status.get().getReports().getJsonUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.json"));
 
     }
+
 }

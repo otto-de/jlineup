@@ -45,8 +45,8 @@ public class JLineupRunStatus {
         return state;
     }
 
-    public Optional<Instant> getStartTime() {
-        return Optional.ofNullable(startTime);
+    public Instant getStartTime() {
+        return startTime;
     }
 
     public Optional<Instant> getEndTime() {
@@ -69,8 +69,8 @@ public class JLineupRunStatus {
         Builder builder = runStatusBuilder()
                 .withId(jLineupRunStatus.getId())
                 .withJobConfig(jLineupRunStatus.getJobConfig())
-                .withState(jLineupRunStatus.getState());
-        jLineupRunStatus.getStartTime().ifPresent(builder::withStartTime);
+                .withState(jLineupRunStatus.getState())
+                .withStartTime(jLineupRunStatus.getStartTime());
         jLineupRunStatus.getEndTime().ifPresent(builder::withEndTime);
         jLineupRunStatus.getCurrentJobStepFuture().ifPresent(builder::withCurrentJobStepFuture);
         return builder;
@@ -80,7 +80,7 @@ public class JLineupRunStatus {
         private String id;
         private JobConfig jobConfig;
         private State state;
-        private Instant startTime;
+        private Instant startTime = Instant.now();
         private Instant endTime;
         private CompletableFuture<State> currentJobStepFuture;
         private Reports reports;

@@ -1,5 +1,6 @@
 package de.otto.jlineup.service;
 
+import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.web.JLineupRunStatus;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -137,6 +139,10 @@ public class JLineupService {
 
     public int getRunningJobsCount() {
         return runningJobs.get();
+    }
+
+    public List<JLineupRunStatus> getRunStatus() {
+        return ImmutableList.copyOf(this.runs.values());
     }
 
 }
