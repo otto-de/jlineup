@@ -28,7 +28,7 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 @Service
 public class JLineupService {
 
-    public final static int MAX_NUMBER_OF_PARALLEL_JOB_STEPS = 4;
+    private final static int MAX_NUMBER_OF_PARALLEL_JOB_STEPS = 4;
 
     private static final Logger LOG = LoggerFactory.getLogger(JLineupService.class);
 
@@ -135,10 +135,6 @@ public class JLineupService {
 
     public Optional<JLineupRunStatus> getRun(String id) {
         return Optional.ofNullable(runs.get(id));
-    }
-
-    public int getRunningJobsCount() {
-        return runningJobs.get();
     }
 
     public List<JLineupRunStatus> getRunStatus() {

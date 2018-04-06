@@ -15,10 +15,6 @@ dependencies {
     testCompile "com.github.stefanbirkner:system-rules:1.17.0"
 }
 
-bootJar {
-    enabled = true
-}
-
 test {
     testLogging {
         exceptionFormat = 'full'
@@ -39,6 +35,7 @@ task sourcesJar(type: Jar) {
 }
 
 bootJar {
+    enabled = true
     baseName = "jlineup"
     archiveName = "jlineup.jar"
     mainClassName = 'de.otto.jlineup.cli.Main'
