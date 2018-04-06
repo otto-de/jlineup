@@ -28,7 +28,7 @@ public class JLineupRunnerFactory {
 
     private JLineupRunner createRun(String id, JobConfig jobConfig, Step step) {
         return new JLineupRunner(jobConfig, RunStepConfig.jLineupRunConfigurationBuilder()
-                .withWorkingDirectory(properties.getWorkingDirectory().replace("{id}", id))
+                .withWorkingDirectory(properties.getWorkingDirectory())
                 .withScreenshotsDirectory(properties.getScreenshotsDirectory().replace("{id}", id))
                 .withReportDirectory(properties.getReportDirectory().replace("{id}", id))
                 .withStep(step)

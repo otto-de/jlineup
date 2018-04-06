@@ -27,7 +27,7 @@ public class JLineupRunner {
         this.runStepConfig = runStepConfig;
     }
 
-    public boolean run() throws IOException {
+    public boolean run() {
 
         if (jobConfig.urls == null) {
             LOG.error("No urls are configured in the config.");
@@ -39,9 +39,13 @@ public class JLineupRunner {
 
         //Make sure the working dir exists
         if (runStepConfig.getStep() == Step.before) {
-            fileService.createWorkingDirectoryIfNotExists();
-            fileService.createOrClearReportDirectory();
-            fileService.createOrClearScreenshotsDirectory();
+            try {
+                fileService.createWorkingDirectoryIfNotExists();
+                fileService.createOrClearReportDirectory();
+                fileService.createOrClearScreenshotsDirectory();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         if (runStepConfig.getStep() == Step.before || runStepConfig.getStep() == Step.after) {
@@ -54,41 +58,46 @@ public class JLineupRunner {
             }
         }
 
-        if (runStepConfig.getStep() == Step.after || runStepConfig.getStep() == Step.compare) {
-            ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
-            final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
+        try {
+            if (runStepConfig.getStep() == Step.after || runStepConfig.getStep() == Step.compare) {
+                ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
+                final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
 
-            final ReportGenerator reportGenerator = new ReportGenerator();
-            final Report report = reportGenerator.generateReport(comparisonResults);
+                final ReportGenerator reportGenerator = new ReportGenerator();
+                final Report report = reportGenerator.generateReport(comparisonResults);
 
-            JSONReportWriter jsonReportWriter;
-            if (Utils.shouldUseLegacyReportFormat(jobConfig)) {
-                jsonReportWriter = new JSONReportWriter_V1(fileService);
-            } else {
-                jsonReportWriter = new JSONReportWriter_V2(fileService);
-            }
-            jsonReportWriter.writeComparisonReportAsJson(report);
-            final HTMLReportWriter htmlReportWriter = new HTMLReportWriter(fileService);
-            htmlReportWriter.writeReport(report);
+                JSONReportWriter jsonReportWriter;
+                if (Utils.shouldUseLegacyReportFormat(jobConfig)) {
+                    jsonReportWriter = new JSONReportWriter_V1(fileService);
+                } else {
+                    jsonReportWriter = new JSONReportWriter_V2(fileService);
+                }
+                jsonReportWriter.writeComparisonReportAsJson(report);
 
-            final Set<Map.Entry<String, UrlReport>> entries = report.screenshotComparisonsForUrl.entrySet();
-            for (Map.Entry<String, UrlReport> entry : entries) {
-                LOG.info("Sum of screenshot differences for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceSum + " (" + Math.round(entry.getValue().summary.differenceSum * 100d) + " %)");
-                LOG.info("Max difference of a single screenshot for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceMax + " (" + Math.round(entry.getValue().summary.differenceMax * 100d) + " %)");
-            }
+                final HTMLReportWriter htmlReportWriter = new HTMLReportWriter(fileService);
+                htmlReportWriter.writeReport(report);
 
-            LOG.info("Sum of overall screenshot differences:\n" + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
-            LOG.info("Max difference of a single screenshot:\n" + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
-
-            if (!Utils.shouldUseLegacyReportFormat(jobConfig)) {
+                final Set<Map.Entry<String, UrlReport>> entries = report.screenshotComparisonsForUrl.entrySet();
                 for (Map.Entry<String, UrlReport> entry : entries) {
-                    //Exit with exit code 1 if at least one url report has a bigger difference than configured
-                    if (jobConfig.urls != null && entry.getValue().summary.differenceMax > jobConfig.urls.get(entry.getKey()).maxDiff) {
-                        LOG.info("JLineupRunner finished. There was a difference between before and after. Return code is 1.");
-                        return false;
+                    LOG.info("Sum of screenshot differences for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceSum + " (" + Math.round(entry.getValue().summary.differenceSum * 100d) + " %)");
+                    LOG.info("Max difference of a single screenshot for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceMax + " (" + Math.round(entry.getValue().summary.differenceMax * 100d) + " %)");
+                }
+
+                LOG.info("Sum of overall screenshot differences:\n" + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
+                LOG.info("Max difference of a single screenshot:\n" + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
+
+                if (!Utils.shouldUseLegacyReportFormat(jobConfig)) {
+                    for (Map.Entry<String, UrlReport> entry : entries) {
+                        //Exit with exit code 1 if at least one url report has a bigger difference than configured
+                        if (jobConfig.urls != null && entry.getValue().summary.differenceMax > jobConfig.urls.get(entry.getKey()).maxDiff) {
+                            LOG.info("JLineupRunner finished. There was a difference between before and after. Return code is 1.");
+                            return false;
+                        }
                     }
                 }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         System.out.printf("JLineupRunner run finished for step '%s'%n", runStepConfig.getStep());

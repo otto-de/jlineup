@@ -2,6 +2,7 @@ package de.otto.jlineup.service;
 
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.JLineupRunnerFactory;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.junit.Before;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -36,43 +38,37 @@ public class JLineupServiceTest {
     }
 
     @Test
-    public void shouldStartBeforeRun() throws IOException, InterruptedException {
+    public void shouldStartBeforeRun() throws InterruptedException, ExecutionException {
 
         //given
         JobConfig jobConfig = JobConfig.exampleConfig();
 
         //when
-        String id = testee.startBeforeRun(jobConfig).getId();
-        waitForCompletion();
+        JLineupRunStatus beforeStatus = testee.startBeforeRun(jobConfig);
+        beforeStatus.getCurrentJobStepFuture().get().get();
+
 
         //then
-        verify(jLineupRunnerFactory).createBeforeRun(id, jobConfig);
+        verify(jLineupRunnerFactory).createBeforeRun(beforeStatus.getId(), jobConfig);
         verify(jLineupRunnerBefore).run();
     }
 
     @Test
-    public void shouldStartAfterRun() throws IOException, InterruptedException, InvalidRunStateException, RunNotFoundException {
+    public void shouldStartAfterRun() throws InterruptedException, InvalidRunStateException, RunNotFoundException, ExecutionException {
 
         //given
         JobConfig jobConfig = JobConfig.exampleConfig();
         when(jLineupRunnerBefore.run()).thenReturn(true);
-        String id = testee.startBeforeRun(jobConfig).getId();
+        JLineupRunStatus beforeStatus = testee.startBeforeRun(jobConfig);
 
         //when
-        waitForCompletion();
-        testee.startAfterRun(id);
-        waitForCompletion();
+        beforeStatus.getCurrentJobStepFuture().get().get();
+        JLineupRunStatus afterStatus = testee.startAfterRun(beforeStatus.getId());
+        afterStatus.getCurrentJobStepFuture().get().get();
 
         //then
-        verify(jLineupRunnerFactory).createAfterRun(id, jobConfig);
+        verify(jLineupRunnerFactory).createAfterRun(beforeStatus.getId(), jobConfig);
         verify(jLineupRunnerAfter).run();
-    }
-
-    private void waitForCompletion() throws InterruptedException {
-        while(testee.getRunningJobsCount() > 0) {
-            Thread.sleep(10);
-        }
-        return;
     }
 
 }

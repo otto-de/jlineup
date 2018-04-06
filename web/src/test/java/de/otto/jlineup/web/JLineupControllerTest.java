@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Optional;
 
-import static de.otto.jlineup.web.JLineupRunStatus.jLineupRunStatusBuilder;
+import static de.otto.jlineup.web.JLineupRunStatus.runStatusBuilder;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -59,10 +59,10 @@ public class JLineupControllerTest {
     @Test
     public void shouldReturnRun() throws Exception {
         // given
-        when(jLineupService.getRun("someId")).thenReturn(Optional.of(jLineupRunStatusBuilder()
+        when(jLineupService.getRun("someId")).thenReturn(Optional.of(runStatusBuilder()
                 .withId("someId")
                 .withState(State.BEFORE_RUNNING)
-                .withConfig(JobConfig.exampleConfig())
+                .withJobConfig(JobConfig.exampleConfig())
                 .build()));
 
         // when
@@ -79,7 +79,7 @@ public class JLineupControllerTest {
 
         // given
         JobConfig jobConfig = JobConfig.exampleConfig();
-        JLineupRunStatus run = jLineupRunStatusBuilder().withId("someNewId").withConfig(jobConfig).withState(State.BEFORE_RUNNING).build();
+        JLineupRunStatus run = runStatusBuilder().withId("someNewId").withJobConfig(jobConfig).withState(State.BEFORE_RUNNING).build();
         when(jLineupService.startBeforeRun(any())).thenReturn(run);
 
         // when
@@ -114,7 +114,7 @@ public class JLineupControllerTest {
     public void shouldStartAfterRun() throws Exception {
 
         // given
-        JLineupRunStatus run = jLineupRunStatusBuilder().withId("someRunId").withConfig(JobConfig.exampleConfig()).withState(State.AFTER_RUNNING).build();
+        JLineupRunStatus run = runStatusBuilder().withId("someRunId").withJobConfig(JobConfig.exampleConfig()).withState(State.AFTER_RUNNING).build();
         when(jLineupService.startAfterRun("someRunId")).thenReturn(run);
 
         // when
