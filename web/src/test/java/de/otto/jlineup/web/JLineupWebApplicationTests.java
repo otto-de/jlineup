@@ -47,7 +47,7 @@ public class JLineupWebApplicationTests {
     }
 
     @Test
-    public void should() {
+    public void shouldMakeFullJLineupRun() {
         JobConfig jobConfig = createTestConfig();
 
         String location = startBeforeRun(jobConfig);

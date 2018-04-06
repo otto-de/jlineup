@@ -4,15 +4,18 @@ import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.JLineupRunnerFactory;
-import de.otto.jlineup.web.configuration.JLineupWebProperties;
+import de.otto.jlineup.web.State;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -71,4 +74,27 @@ public class JLineupServiceTest {
         verify(jLineupRunnerAfter).run();
     }
 
+    @Test
+    public void shouldContainReportPathInResult() throws ExecutionException, InterruptedException, InvalidRunStateException, RunNotFoundException {
+        //given
+        JobConfig jobConfig = JobConfig.exampleConfig();
+        when(jLineupRunnerBefore.run()).thenReturn(true);
+        JLineupRunStatus beforeStatus = testee.startBeforeRun(jobConfig);
+
+        when(jLineupRunnerAfter.run()).thenReturn(true);
+        beforeStatus.getCurrentJobStepFuture().get().get();
+        JLineupRunStatus afterStatus = testee.startAfterRun(beforeStatus.getId());
+        afterStatus.getCurrentJobStepFuture().get().get();
+
+
+        //when
+        Optional<JLineupRunStatus> status = testee.getRun(beforeStatus.getId());
+
+        //then
+        assertTrue(status.isPresent());
+        assertThat(status.get().getState(), is(State.FINISHED));
+        assertThat(status.get().getReports().getHtmlUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.html"));
+        assertThat(status.get().getReports().getJsonUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.json"));
+
+    }
 }

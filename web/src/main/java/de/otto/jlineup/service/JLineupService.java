@@ -121,8 +121,14 @@ public class JLineupService {
         JLineupRunStatus.Builder runStatusBuilder = copyOfRunStatusBuilder(runStatus).withState(state);
         if (state == State.FINISHED) {
             runStatusBuilder.withEndTime(Instant.now());
+            runStatusBuilder.withReports(JLineupRunStatus.Reports.reportsBuilder()
+                    .withHtmlUrl("/reports/report-" + runId + "/report.html")
+                    .withJsonUrl("/reports/report-" + runId + "/report.json")
+                    .build());
         }
-        return runs.put(runId, runStatusBuilder.build());
+        JLineupRunStatus newStatus = runStatusBuilder.build();
+        runs.put(runId, newStatus);
+        return newStatus;
     }
 
     public Optional<JLineupRunStatus> getRun(String id) {
