@@ -1,4 +1,4 @@
-package de.otto.jlineup.web.configuration;
+package de.otto.jlineup.web;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -6,8 +6,6 @@ import de.otto.edison.status.domain.StatusDetail;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.service.JLineupService;
-import de.otto.jlineup.web.JLineupRunStatus;
-import de.otto.jlineup.web.State;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

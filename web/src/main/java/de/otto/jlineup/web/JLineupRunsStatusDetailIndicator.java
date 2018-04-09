@@ -1,12 +1,10 @@
-package de.otto.jlineup.web.configuration;
+package de.otto.jlineup.web;
 
 import de.otto.edison.status.domain.Link;
 import de.otto.edison.status.domain.Status;
 import de.otto.edison.status.domain.StatusDetail;
 import de.otto.edison.status.indicator.StatusDetailIndicator;
 import de.otto.jlineup.service.JLineupService;
-import de.otto.jlineup.web.JLineupRunStatus;
-import de.otto.jlineup.web.State;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
