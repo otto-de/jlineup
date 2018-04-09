@@ -19,6 +19,7 @@ import java.util.List;
 import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.file.FileService.AFTER;
 import static de.otto.jlineup.file.FileService.BEFORE;
+import static de.otto.jlineup.file.FileUtils.clearDirectory;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -83,21 +84,6 @@ public class FileServiceTest {
         assertThat(Files.exists(reportFilePath), is(true));
         List<String> reportFileContents = Files.readAllLines(reportFilePath);
         assertThat(reportFileContents.get(0), is("[{\"toll\":\"mega\"}]"));
-    }
-
-    @Test
-    public void shouldClearDirectory() throws IOException {
-        //given
-        final Path dirToClear = testee.createDirIfNotExists(tempDirPath + "/testdirforcleardirectorylineuptest");
-        Files.createFile(dirToClear.resolve(Paths.get("test1")));
-        Files.createFile(dirToClear.resolve(Paths.get("test2")));
-        Files.createFile(dirToClear.resolve(Paths.get("test3")));
-
-        //when
-        testee.clearDirectory(dirToClear.toString());
-
-        //then
-        assertThat(dirToClear.toFile().list().length, is(0));
     }
 
     @Test

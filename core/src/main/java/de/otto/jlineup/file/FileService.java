@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static de.otto.jlineup.file.FileUtils.clearDirectory;
+
 public class FileService {
 
     public final static Logger LOG = LoggerFactory.getLogger(FileService.class);
@@ -38,22 +40,6 @@ public class FileService {
         return path;
     }
 
-    @VisibleForTesting
-    void clearDirectory(String path) throws IOException {
-        Path directory = Paths.get(path);
-        Files.newDirectoryStream(directory).forEach(file -> {
-            try {
-
-                if (Files.isDirectory(file)) {
-                    clearDirectory(file.toAbsolutePath().toString());
-                }
-
-                Files.delete(file);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
-    }
 
     public void createOrClearReportDirectory() throws IOException {
         createOrClearDirectoryBelowWorkingDir(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory());
