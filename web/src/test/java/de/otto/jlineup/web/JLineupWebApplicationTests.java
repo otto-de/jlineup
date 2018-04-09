@@ -8,6 +8,7 @@ import de.otto.jlineup.utils.RegexMatcher;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.awaitility.Awaitility;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +60,27 @@ public class JLineupWebApplicationTests {
         JLineupRunStatus finalState = awaitRunState(State.FINISHED, locationAfter);
 
         assertReportExists(finalState);
+    }
+
+    @Test
+    public void shouldMakeFullJLineupRunInParallel() {
+        JobConfig jobConfig = createTestConfig();
+        JobConfig jobConfig2 = createTestConfig();
+
+        String location = startBeforeRun(jobConfig);
+        String location2 = startBeforeRun(jobConfig2);
+
+        awaitRunState(State.BEFORE_DONE, location);
+        awaitRunState(State.BEFORE_DONE, location2);
+
+        String locationAfter = startAfterRun(location);
+        String locationAfter2 = startAfterRun(location2);
+
+        JLineupRunStatus finalState = awaitRunState(State.FINISHED, locationAfter);
+        JLineupRunStatus finalState2 = awaitRunState(State.FINISHED, locationAfter2);
+
+        assertReportExists(finalState);
+        assertReportExists(finalState2);
     }
 
     private void assertReportExists(JLineupRunStatus finalState) {
