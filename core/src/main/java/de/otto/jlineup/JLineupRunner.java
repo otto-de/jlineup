@@ -100,7 +100,7 @@ public class JLineupRunner {
             throw new RuntimeException(e);
         }
 
-        System.out.printf("JLineupRunner run finished for step '%s'%n", runStepConfig.getStep());
+        LOG.info("JLineupRunner run finished for step '{}'\n", runStepConfig.getStep());
         return true;
     }
 }
