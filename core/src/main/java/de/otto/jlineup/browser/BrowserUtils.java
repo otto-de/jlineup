@@ -57,12 +57,16 @@ public class BrowserUtils {
         WebDriver driver;
         switch (jobConfig.browser) {
             case FIREFOX:
+            case Firefox:
+            case firefox:
                 FirefoxDriverManager.getInstance().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
                 firefoxOptions.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
                 driver = new FirefoxDriver(firefoxOptions);
                 break;
             case FIREFOX_HEADLESS:
+            case Firefox_Headless:
+            case firefox_headless:
                 FirefoxDriverManager.getInstance().setup();
                 FirefoxOptions firefoxOptionsForHeadless = new FirefoxOptions();
                 //Headless parameter is supported with Firefox >= 55
@@ -72,6 +76,8 @@ public class BrowserUtils {
                 driver = new FirefoxDriver(firefoxOptionsForHeadless);
                 break;
             case CHROME:
+            case Chrome:
+            case chrome:
                 ChromeDriverManager.getInstance().setup();
                 ChromeOptions options = new ChromeOptions();
                 //To work in a headless env, this is needed
@@ -79,6 +85,8 @@ public class BrowserUtils {
                 driver = new ChromeDriver(options);
                 break;
             case CHROME_HEADLESS:
+            case Chrome_Headless:
+            case chrome_headless:
                 ChromeDriverManager.getInstance().setup();
                 ChromeOptions options_headless = new ChromeOptions();
                 //To work in a headless env, this is needed
@@ -87,6 +95,8 @@ public class BrowserUtils {
                 driver = new ChromeDriver(options_headless);
                 break;
             case PHANTOMJS:
+            case PhantomJS:
+            case phantomjs:
             default:
                 PhantomJsDriverManager.getInstance().setup();
                 driver = new PhantomJSDriver();

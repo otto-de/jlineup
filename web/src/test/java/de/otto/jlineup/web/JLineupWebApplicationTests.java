@@ -56,7 +56,7 @@ public class JLineupWebApplicationTests {
 
         String locationAfter = startAfterRun(location);
 
-        JLineupRunStatus finalState = awaitRunState(State.FINISHED, locationAfter);
+        JLineupRunStatus finalState = awaitRunState(State.FINISHED_WITHOUT_DIFFERENCES, locationAfter);
 
         assertReportExists(finalState);
     }
@@ -75,8 +75,8 @@ public class JLineupWebApplicationTests {
         String locationAfter = startAfterRun(location);
         String locationAfter2 = startAfterRun(location2);
 
-        JLineupRunStatus finalState = awaitRunState(State.FINISHED, locationAfter);
-        JLineupRunStatus finalState2 = awaitRunState(State.FINISHED, locationAfter2);
+        JLineupRunStatus finalState = awaitRunState(State.FINISHED_WITHOUT_DIFFERENCES, locationAfter);
+        JLineupRunStatus finalState2 = awaitRunState(State.FINISHED_WITHOUT_DIFFERENCES, locationAfter2);
 
         assertReportExists(finalState);
         assertReportExists(finalState2);

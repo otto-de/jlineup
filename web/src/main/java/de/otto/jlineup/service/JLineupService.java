@@ -100,9 +100,9 @@ public class JLineupService {
                     changeState(runId, State.AFTER_RUNNING);
                     boolean runSucceeded = jLineupRunner.run();
                     if (runSucceeded) {
-                        return State.FINISHED;
+                        return State.FINISHED_WITHOUT_DIFFERENCES;
                     } else {
-                        return State.ERROR;
+                        return State.FINISHED_WITH_DIFFERENCES;
                     }
                 }, executorService)
                 .exceptionally(ex -> {
@@ -121,7 +121,10 @@ public class JLineupService {
     private JLineupRunStatus changeState(String runId, State state) {
         JLineupRunStatus runStatus = runs.get(runId);
         JLineupRunStatus.Builder runStatusBuilder = copyOfRunStatusBuilder(runStatus).withState(state);
-        if (state == State.FINISHED) {
+        if (state == State.FINISHED_WITH_DIFFERENCES
+                || state == State.FINISHED_WITHOUT_DIFFERENCES
+                || state == State.ERROR
+                || state == State.DEAD) {
             runStatusBuilder.withEndTime(Instant.now());
             runStatusBuilder.withReports(JLineupRunStatus.Reports.reportsBuilder()
                     .withHtmlUrl("/reports/report-" + runId + "/report.html")

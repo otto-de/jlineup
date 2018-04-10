@@ -47,20 +47,30 @@ public class Browser implements AutoCloseable {
 
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
-        @JsonProperty("Firefox")
         FIREFOX,
+        Firefox, //TODO: remove when Jackson handling of aliases for enum types is fixed
+        firefox, //TODO: remove when Jackson handling of aliases for enum types is fixed
         @SerializedName(value = "Firefox-Headless", alternate = {"firefox-headless", "FIREFOX_HEADLESS"})
-        @JsonProperty("Firefox-Headless")
         FIREFOX_HEADLESS,
+        @JsonProperty("firefox-headless")
+        firefox_headless, //TODO: remove when Jackson handling of aliases for enum types is fixed
+        @JsonProperty("Firefox-Headless")
+        Firefox_Headless, //TODO: remove when Jackson handling of aliases for enum types is fixed
         @SerializedName(value = "Chrome", alternate = {"chrome", "CHROME"})
-        @JsonProperty("Chrome")
         CHROME,
+        Chrome, //TODO: remove when Jackson handling of aliases for enum types is fixed
+        chrome, //TODO: remove when Jackson handling of aliases for enum types is fixed
         @SerializedName(value = "Chrome-Headless", alternate = {"chrome-headless", "CHROME_HEADLESS"})
-        @JsonProperty("Chrome-Headless")
         CHROME_HEADLESS,
+        @JsonProperty("chrome-headless")
+        chrome_headless, //TODO: remove when Jackson handling of aliases for enum types is fixed
+        @JsonProperty("Chrome-Headless")
+        Chrome_Headless, //TODO: remove when Jackson handling of aliases for enum types is fixed
         @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
         @JsonProperty("PhantomJS")
-        PHANTOMJS;
+        PHANTOMJS,
+        PhantomJS, //TODO: remove when Jackson handling of aliases for enum types is fixed
+        phantomjs; //TODO: remove when Jackson handling of aliases for enum types is fixed
 
     }
 

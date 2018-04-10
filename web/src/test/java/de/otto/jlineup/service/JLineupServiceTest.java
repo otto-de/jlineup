@@ -92,7 +92,7 @@ public class JLineupServiceTest {
 
         //then
         assertTrue(status.isPresent());
-        assertThat(status.get().getState(), is(State.FINISHED));
+        assertThat(status.get().getState(), is(State.FINISHED_WITHOUT_DIFFERENCES));
         assertThat(status.get().getReports().getHtmlUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.html"));
         assertThat(status.get().getReports().getJsonUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.json"));
 

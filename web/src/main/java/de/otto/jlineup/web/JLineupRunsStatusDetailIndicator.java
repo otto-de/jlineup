@@ -35,8 +35,9 @@ public class JLineupRunsStatusDetailIndicator implements StatusDetailIndicator {
         return jLineupService.getRunStatus().stream()
                 .sorted(Comparator.comparing(JLineupRunStatus::getStartTime).reversed())
                 .map(status -> {
-                            List<Link> reportLink = status.getState() == State.FINISHED ?
-                                    of(Link.link("", status.getReports().getHtmlUrl(), "Report")) : Collections.emptyList();
+                            List<Link> reportLink =
+                                    status.getState() == State.FINISHED_WITH_DIFFERENCES || status.getState() == State.FINISHED_WITHOUT_DIFFERENCES ?
+                                            of(Link.link("", status.getReports().getHtmlUrl(), "Report")) : Collections.emptyList();
 
                             String message = String.format("Run id: %s State: %s Duration: %s", status.getId(), status.getState().toString(), getDuration(status));
                             return StatusDetail.statusDetail(
