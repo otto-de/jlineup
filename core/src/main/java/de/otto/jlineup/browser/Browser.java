@@ -67,10 +67,35 @@ public class Browser implements AutoCloseable {
         @JsonProperty("Chrome-Headless")
         Chrome_Headless, //TODO: remove when Jackson handling of aliases for enum types is fixed
         @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
-        @JsonProperty("PhantomJS")
         PHANTOMJS,
         PhantomJS, //TODO: remove when Jackson handling of aliases for enum types is fixed
         phantomjs; //TODO: remove when Jackson handling of aliases for enum types is fixed
+
+        public boolean isFirefox() {
+            return this == FIREFOX || this == FIREFOX_HEADLESS
+                    || this == Firefox || this == Firefox_Headless
+                    || this == firefox || this == firefox_headless;
+        }
+
+        public boolean isChrome() {
+            return this == CHROME || this == CHROME_HEADLESS
+                    || this == Chrome || this == Chrome_Headless
+                    || this == chrome || this == chrome_headless;
+        }
+
+        public boolean isPhantomJS() {
+            return this == PHANTOMJS || this == PhantomJS || this == phantomjs;
+        }
+
+        public boolean isHeadlessRealBrowser() {
+            return this == FIREFOX_HEADLESS || this == CHROME_HEADLESS
+                    || this == Firefox_Headless || this == Chrome_Headless
+                    || this == firefox_headless || this == chrome_headless;
+        }
+
+        public boolean isHeadless() {
+            return isHeadlessRealBrowser() || isPhantomJS();
+        }
 
     }
 
@@ -196,9 +221,9 @@ public class Browser implements AutoCloseable {
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws Exception {
 
-        boolean headless_chrome_or_firefox = (jobConfig.browser == Type.CHROME_HEADLESS || jobConfig.browser == Type.FIREFOX_HEADLESS);
+        boolean headlessRealBrowser = jobConfig.browser.isHeadlessRealBrowser();
         final WebDriver localDriver;
-        if (headless_chrome_or_firefox) {
+        if (headlessRealBrowser) {
             localDriver = initializeWebDriver(screenshotContext.windowWidth);
         } else localDriver = initializeWebDriver();
 
@@ -212,11 +237,11 @@ public class Browser implements AutoCloseable {
         }
 
         //No need to move the mouse out of the way for headless browsers, but this avoids hovering links in other browsers
-        if (jobConfig.browser != Type.PHANTOMJS && !headless_chrome_or_firefox) {
+        if (!jobConfig.browser.isHeadless()) {
             moveMouseToZeroZero();
         }
 
-        if (!headless_chrome_or_firefox) {
+        if (!headlessRealBrowser) {
             localDriver.manage().window().setPosition(new Point(0, 0));
             resizeBrowser(localDriver, screenshotContext.windowWidth, jobConfig.windowHeight);
         }
@@ -237,7 +262,7 @@ public class Browser implements AutoCloseable {
             setSessionStorage(screenshotContext);
         }
 
-        if (headless_chrome_or_firefox) {
+        if (headlessRealBrowser) {
             browserCacheWarmupForHeadless(screenshotContext, url, localDriver);
         } else {
             checkBrowserCacheWarmup(screenshotContext, url, localDriver);
@@ -278,11 +303,11 @@ public class Browser implements AutoCloseable {
 
         //Wait for fonts
         if (screenshotContext.urlConfig.waitForFontsTime > 0) {
-            if (jobConfig.browser != Type.PHANTOMJS) {
+            if (!jobConfig.browser.isPhantomJS()) {
                 WebDriverWait wait = new WebDriverWait(getWebDriver(), screenshotContext.urlConfig.waitForFontsTime);
                 wait.until(fontsLoaded);
             } else {
-                System.out.println("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.");
+                LOG.warn("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.");
             }
         }
 
@@ -293,7 +318,7 @@ public class Browser implements AutoCloseable {
                     screenshotContext.urlSubPath, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
             //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
             //This is subject to change because W3C standard wants viewport screenshots
-            if (jobConfig.browser == Type.PHANTOMJS) {
+            if (jobConfig.browser.isPhantomJS()) {
                 break;
             }
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
@@ -325,7 +350,7 @@ public class Browser implements AutoCloseable {
             }
         }
 
-        if (jobConfig.browser == Type.CHROME) {
+        if (jobConfig.browser.isChrome()) {
             driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
             try {
                 WebElement element = driver.findElement(By.xpath("//*[@id=\"main-message\"]/div[2]"));
@@ -359,7 +384,7 @@ public class Browser implements AutoCloseable {
     }
 
     private void setCookies(ScreenshotContext screenshotContext) {
-        if (jobConfig.browser == Type.PHANTOMJS) {
+        if (jobConfig.browser.isPhantomJS()) {
             //current phantomjs driver has a bug that prevents selenium's normal way of setting cookies
             LOG.debug("Setting cookies for PhantomJS");
             setCookiesPhantomJS(screenshotContext.urlConfig.cookies);

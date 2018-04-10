@@ -10,6 +10,19 @@
             <pattern>%msg%n</pattern>
         </encoder>
     </appender>
+
+    <appender name="STDOUT2" class="ch.qos.logback.core.ConsoleAppender">
+        <Target>System.out</Target>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
     <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
         <Target>System.err</Target>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -22,7 +35,8 @@
         </encoder>
     </appender>
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT2" />
         <appender-ref ref="STDERR" />
     </root>
 </configuration>

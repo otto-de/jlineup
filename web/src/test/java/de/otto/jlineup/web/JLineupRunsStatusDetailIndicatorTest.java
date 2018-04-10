@@ -64,7 +64,7 @@ public class JLineupRunsStatusDetailIndicatorTest {
         List<StatusDetail> statusDetailList = jLineupRunsStatusDetailIndicator.statusDetails();
 
         assertThat(statusDetailList.get(0).getName(), is("JLineup Run for www.sample1.de"));
-        assertThat(statusDetailList.get(0).getMessage(), is("Run id: someId State: FINISHED Duration: 01:00:00.000"));
+        assertThat(statusDetailList.get(0).getMessage(), is("Run id: someId State: FINISHED_WITHOUT_DIFFERENCES Duration: 01:00:00.000"));
         assertThat(statusDetailList.get(0).getLinks().get(0).href, is("reportHtmlUrl"));
 
         assertThat(statusDetailList.get(1).getName(), is("JLineup Run for www.other1.de"));

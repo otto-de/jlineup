@@ -48,7 +48,7 @@ public class ConfigTest {
     @Test
     public void shouldReadMinimalConfigAndInsertDefaults() throws FileNotFoundException {
         JobConfig jobConfig = JobConfig.readConfig("src/test/resources/", "lineup_minimal_test.json");
-        assertThat(jobConfig.browser, is(Browser.Type.PHANTOMJS));
+        assertThat(jobConfig.browser.isPhantomJS(), is(true));
         assertThat(jobConfig.windowHeight, is(800));
         assertThat(jobConfig.urls.get("https://www.otto.de").windowWidths, is(ImmutableList.of(800)));
         assertThat(jobConfig.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/")));
@@ -58,7 +58,8 @@ public class ConfigTest {
     }
 
     private void assertThatConfigContentsAreCorrect(JobConfig jobConfig) {
-        assertThat(jobConfig.browser, is(FIREFOX));
+        assertThat(jobConfig.browser.isFirefox(), is(true));
+        assertThat(jobConfig.browser.isHeadless(), is(false));
         assertThat(jobConfig.globalWaitAfterPageLoad, is(1f));
         assertThat(jobConfig.urls.get("https://www.otto.de").windowWidths, is(ImmutableList.of(600, 800, 1200)));
         assertThat(jobConfig.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));

@@ -2,7 +2,7 @@ apply plugin: 'org.springframework.boot'
 
 bootJar {
     enabled = true
-    baseName = "jlineup"
+    baseName = "jlineup-web"
     archiveName = "jlineup-web.jar"
 }
 
