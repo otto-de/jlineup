@@ -25,7 +25,7 @@ public class JLineupController {
 
     @GetMapping("/")
     public String getHello() {
-        return "JLineupRunner is great!";
+        return "JLineup is great!";
     }
 
     @PostMapping(value = "/runs")

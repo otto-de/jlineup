@@ -41,7 +41,7 @@ public class JLineupRunsStatusDetailIndicator implements StatusDetailIndicator {
 
                             String message = String.format("Run id: %s State: %s Duration: %s", status.getId(), status.getState().toString(), getDuration(status));
                             return StatusDetail.statusDetail(
-                                    "JLineup Run for " + Strings.join(status.getJobConfig().urls.keySet(), ','),
+                                    "JLineup run " + status.getId() + " (" + Strings.join(status.getJobConfig().urls.keySet(), ',') + ")",
                                     Status.OK,
                                     message,
                                     reportLink);
