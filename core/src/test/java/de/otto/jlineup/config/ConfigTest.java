@@ -3,7 +3,6 @@ package de.otto.jlineup.config;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtilsTest;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +11,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
