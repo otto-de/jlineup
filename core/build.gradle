@@ -24,6 +24,7 @@ dependencies {
 
 jar {
     enabled = true
+    baseName = "jlineup-core"
 }
 
 test {
@@ -34,13 +35,13 @@ test {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    baseName = 'jlineup'
+    baseName = 'jlineup-core'
     classifier = 'javadoc'
     from 'build/docs/javadoc'
 }
 
 task sourcesJar(type: Jar) {
-    baseName = 'jlineup'
+    baseName = 'jlineup-core'
     from sourceSets.main.allSource
     classifier = 'sources'
 }
@@ -79,20 +80,21 @@ uploadArchives {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            // use this for local upload debugging instead of sonatype
-            //repository(url: "file://${buildDir}/repo")
-            //snapshotRepository(url: "file://${buildDir}/repo")
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
-            }
-
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: sonatypeUsername, password: sonatypePassword)
+            if (project.debugUpload) {
+                // use this for local upload debugging instead of sonatype
+                repository(url: "file://${buildDir}/repo")
+                snapshotRepository(url: "file://${buildDir}/repo")
+            } else {
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
             }
 
             pom.project {
-                name 'JLineup'
+                name 'JLineup Core'
                 packaging 'jar'
                 description 'Webapp image comparison tool'
                 url 'http://github.com/otto-de/jlineup'

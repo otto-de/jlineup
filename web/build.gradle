@@ -1,12 +1,5 @@
 apply plugin: 'org.springframework.boot'
 
-bootJar {
-    enabled = true
-    baseName = "jlineup-web"
-    archiveName = "jlineup-web.jar"
-}
-
-
 dependencies {
     compile project(":core")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
@@ -17,4 +10,92 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("io.rest-assured:rest-assured:3.0.7")
     testCompile("org.awaitility:awaitility:3.1.0")
+}
+
+jar {
+    baseName = "jlineup-web"
+}
+
+bootJar {
+    enabled = true
+    baseName = "jlineup-web"
+    mainClassName = "de.otto.jlineup.web.JLineupWebApplication"
+    launchScript()
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    baseName = 'jlineup-web'
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    baseName = 'jlineup-web'
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+    archives bootJar
+}
+
+[distZip, bootDistZip, distTar, bootDistTar].each { task ->
+    configurations.archives.artifacts.removeAll
+            { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
+    task.enabled = false
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            if (project.debugUpload) {
+                // use this for local upload debugging instead of sonatype
+                repository(url: "file://${buildDir}/repo")
+                snapshotRepository(url: "file://${buildDir}/repo")
+            } else {
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
+                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                }
+            }
+
+            pom.project {
+                name 'JLineup Webservice'
+                packaging 'jar'
+                description 'Webapp image comparison tool'
+                url 'http://github.com/otto-de/jlineup'
+
+                scm {
+                    url 'scm:git@github.com:otto-de/jlineup.git'
+                    connection 'scm:git@github.com:otto-de/jlineup.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'mgeweke'
+                        name 'Marco Geweke'
+                        url 'https://github.com/MediaMarco'
+                    }
+                }
+            }
+        }
+    }
 }
