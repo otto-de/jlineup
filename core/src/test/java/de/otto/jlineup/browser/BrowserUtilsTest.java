@@ -3,7 +3,10 @@ package de.otto.jlineup.browser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.config.*;
+import de.otto.jlineup.config.Cookie;
+import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.UrlConfig;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
@@ -14,8 +17,7 @@ import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertThat;
 
 public class BrowserUtilsTest {
 

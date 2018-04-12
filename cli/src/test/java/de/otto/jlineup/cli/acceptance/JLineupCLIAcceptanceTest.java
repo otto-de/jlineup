@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import de.otto.jlineup.cli.Main;
 import de.otto.jlineup.report.Report;
 import org.hamcrest.CoreMatchers;
-import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
