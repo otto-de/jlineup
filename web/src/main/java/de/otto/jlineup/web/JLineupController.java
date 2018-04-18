@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Optional;
 
@@ -29,20 +30,20 @@ public class JLineupController {
     }
 
     @PostMapping(value = "/runs")
-    public ResponseEntity<Void> runBefore(@RequestBody JobConfig jobConfig) {
+    public ResponseEntity<Void> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) {
         String id = jLineupService.startBeforeRun(jobConfig).getId();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/runs/" + id));
+        headers.setLocation(URI.create(request.getContextPath() + "/runs/" + id));
         return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/runs/{runId}")
-    public ResponseEntity<Void> runAfter(@PathVariable String runId) throws InvalidRunStateException, RunNotFoundException {
+    public ResponseEntity<Void> runAfter(@PathVariable String runId, HttpServletRequest request) throws InvalidRunStateException, RunNotFoundException {
         jLineupService.startAfterRun(runId);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/runs/" + runId));
+        headers.setLocation(URI.create(request.getContextPath() + "/runs/" + runId));
         return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
     }
 

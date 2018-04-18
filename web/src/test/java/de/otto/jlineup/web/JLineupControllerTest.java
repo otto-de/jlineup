@@ -29,14 +29,12 @@ public class JLineupControllerTest {
     @Mock
     private JLineupService jLineupService;
 
-    private JLineupController jLineupController;
-
     private MockMvc mvc;
 
     @Before
     public void setUp() {
         initMocks(this);
-        jLineupController = new JLineupController(jLineupService);
+        JLineupController jLineupController = new JLineupController(jLineupService);
         mvc = standaloneSetup(jLineupController).build();
     }
 
@@ -47,7 +45,8 @@ public class JLineupControllerTest {
 
         // when
         ResultActions result = mvc
-                .perform(get("/runs/someId")
+                .perform(get("/testContextPath/runs/someId")
+                        .contextPath("/testContextPath")
                         .accept(MediaType.APPLICATION_JSON));
 
         //then
@@ -65,7 +64,8 @@ public class JLineupControllerTest {
 
         // when
         ResultActions result = mvc
-                .perform(get("/runs/someId")
+                .perform(get("/testContextPath/runs/someId")
+                        .contextPath("/testContextPath")
                         .accept(MediaType.APPLICATION_JSON));
 
         // then
@@ -82,14 +82,15 @@ public class JLineupControllerTest {
 
         // when
         ResultActions result = mvc
-                .perform(post("/runs")
+                .perform(post("/testContextPath/runs")
+                        .contextPath("/testContextPath")
                         .content(JobConfig.prettyPrint(jobConfig))
                         .contentType(MediaType.APPLICATION_JSON));
 
         // then
         result
                 .andExpect(status().isAccepted())
-                .andExpect(header().string("Location", "/runs/someNewId"));
+                .andExpect(header().string("Location", "/testContextPath/runs/someNewId"));
 
         verify(jLineupService).startBeforeRun(jobConfig);
     }
@@ -117,13 +118,14 @@ public class JLineupControllerTest {
 
         // when
         ResultActions result = mvc
-                .perform(post("/runs/someRunId")
+                .perform(post("/testContextPath/runs/someRunId")
+                        .contextPath("/testContextPath")
                         .accept(MediaType.APPLICATION_JSON));
 
         // then
         result
                 .andExpect(status().isAccepted())
-                .andExpect(header().string("Location", "/runs/someRunId"));
+                .andExpect(header().string("Location", "/testContextPath/runs/someRunId"));
     }
 
     @Test
