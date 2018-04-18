@@ -8,6 +8,7 @@ public class JLineupWebProperties {
     private String workingDirectory = "/tmp/jlineup/";
     private String screenshotsDirectory = "report-{id}";
     private String reportDirectory = "report-{id}";
+    private int maxParallelJobs = 1;
 
     public String getWorkingDirectory() {
         return workingDirectory;
@@ -31,5 +32,13 @@ public class JLineupWebProperties {
 
     public void setReportDirectory(String reportDirectory) {
         this.reportDirectory = reportDirectory;
+    }
+
+    public int getMaxParallelJobs() {
+        return maxParallelJobs;
+    }
+
+    public void setMaxParallelJobs(int maxParallelJobs) {
+        this.maxParallelJobs = maxParallelJobs;
     }
 }

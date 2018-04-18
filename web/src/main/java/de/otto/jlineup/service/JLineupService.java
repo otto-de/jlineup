@@ -6,6 +6,7 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.JLineupRunnerFactory;
 import de.otto.jlineup.web.State;
+import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,19 +29,18 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 @Service
 public class JLineupService {
 
-    private final static int MAX_NUMBER_OF_PARALLEL_JOB_STEPS = 4;
-
     private static final Logger LOG = LoggerFactory.getLogger(JLineupService.class);
 
     private final ConcurrentHashMap<String, JLineupRunStatus> runs = new ConcurrentHashMap<>();
-    private final ExecutorService executorService = Executors.newFixedThreadPool(MAX_NUMBER_OF_PARALLEL_JOB_STEPS);
+    private final ExecutorService executorService;
     private final AtomicInteger runningJobs = new AtomicInteger();
 
     private final JLineupRunnerFactory jLineupRunnerFactory;
 
     @Autowired
-    public JLineupService(JLineupRunnerFactory jLineupRunnerFactory) {
+    public JLineupService(JLineupRunnerFactory jLineupRunnerFactory, JLineupWebProperties jLineupWebProperties) {
         this.jLineupRunnerFactory = jLineupRunnerFactory;
+        this.executorService = Executors.newFixedThreadPool(jLineupWebProperties.getMaxParallelJobs());
     }
 
     public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) {
