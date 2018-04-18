@@ -33,6 +33,8 @@ import java.util.Objects;
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.config.JobConfig.configBuilder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -131,19 +133,19 @@ public class BrowserTest {
         verify(webDriverOptionsMock, times(2)).addCookie(cookieCaptor.capture());
         List<org.openqa.selenium.Cookie> capturedCookies = cookieCaptor.getAllValues();
 
-        Assert.assertEquals("someName", capturedCookies.get(0).getName());
-        Assert.assertEquals("someValue", capturedCookies.get(0).getValue());
-        Assert.assertEquals("someDomain", capturedCookies.get(0).getDomain());
-        Assert.assertEquals("somePath", capturedCookies.get(0).getPath());
-        Assert.assertEquals(new Date(10000L), capturedCookies.get(0).getExpiry());
+        assertEquals("someName", capturedCookies.get(0).getName());
+        assertEquals("someValue", capturedCookies.get(0).getValue());
+        assertEquals("someDomain", capturedCookies.get(0).getDomain());
+        assertEquals("somePath", capturedCookies.get(0).getPath());
+        assertEquals(new Date(10000L), capturedCookies.get(0).getExpiry());
         Assert.assertTrue(capturedCookies.get(0).isSecure());
 
-        Assert.assertEquals("someOtherName", capturedCookies.get(1).getName());
-        Assert.assertEquals("someOtherValue", capturedCookies.get(1).getValue());
-        Assert.assertEquals("someOtherDomain", capturedCookies.get(1).getDomain());
-        Assert.assertEquals("someOtherPath", capturedCookies.get(1).getPath());
-        Assert.assertEquals(new Date(10000000000L), capturedCookies.get(1).getExpiry());
-        Assert.assertFalse(capturedCookies.get(1).isSecure());
+        assertEquals("someOtherName", capturedCookies.get(1).getName());
+        assertEquals("someOtherValue", capturedCookies.get(1).getValue());
+        assertEquals("someOtherDomain", capturedCookies.get(1).getDomain());
+        assertEquals("someOtherPath", capturedCookies.get(1).getPath());
+        assertEquals(new Date(10000000000L), capturedCookies.get(1).getExpiry());
+        assertFalse(capturedCookies.get(1).isSecure());
     }
 
     @Test
@@ -253,6 +255,68 @@ public class BrowserTest {
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(8)).executeScript(String.format(JS_SCROLL_CALL, 500));
+    }
+
+
+    @Test
+    public void shouldSetCookieForDifferentDomain() throws Exception {
+        //given
+        final Long viewportHeight = 500L;
+        final Long pageHeight = 2000L;
+
+        Date cookieExpiry = new Date();
+        UrlConfig urlConfig = new UrlConfig(
+                ImmutableList.of("/"),
+                0f,
+                ImmutableList.of(new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false),
+                        new Cookie("testcookiename2", "testcookievalue2", "anotherCookieurl", "/", cookieExpiry, false),
+                        new Cookie("testcookiename3", "testcookievalue3")),
+                ImmutableMap.of(),
+                ImmutableMap.of("key", "value"),
+                ImmutableMap.of("key", "value"),
+                ImmutableList.of(600),
+                5000,
+                0,
+                0,
+                0,
+                3,
+                null,
+                5);
+
+        JobConfig jobConfig = configBuilder()
+                .withBrowser(FIREFOX)
+                .withUrls(ImmutableMap.of("testurl", urlConfig))
+                .withWindowHeight(100)
+                .build();
+        testee.close();
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
+
+        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
+
+        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
+        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/http_url_root_ff3c40c_1001_02002_before.png")));
+        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
+        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
+
+        //when
+        testee.takeScreenshots(ImmutableList.of(screenshotContext));
+
+        //then
+        verify(webDriverWindowMock, times(3)).setSize(new Dimension(600, 100));
+        verify(webDriverMock, times(1)).executeScript(JS_SCROLL_TO_TOP_CALL);
+        verify(webDriverMock, times(5)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
+        verify(webDriverMock, times(1)).get("cookieurl");
+        verify(webDriverMock, times(1)).get("anotherCookieurl");
+        verify(webDriverMock, times(1)).get("testurl");
+        verify(webDriverMock, times(3)).get("testurl/");
+        verify(webDriverMock, times(1)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
+        verify(webDriverOptionsMock, times(1)).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false));
+        verify(webDriverOptionsMock, times(1)).addCookie(new org.openqa.selenium.Cookie("testcookiename2", "testcookievalue2", "anotherCookieurl", "/", cookieExpiry, false));
+        verify(webDriverOptionsMock, times(1)).addCookie(new org.openqa.selenium.Cookie("testcookiename3", "testcookievalue3"));
+        verify(webDriverMock, times(1)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
+        verify(webDriverMock, times(1)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value"));
+        verify(webDriverMock, times(4)).executeScript(String.format(JS_SCROLL_CALL, 500));
     }
 
     @Test

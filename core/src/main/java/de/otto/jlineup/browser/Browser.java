@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
 import static de.otto.jlineup.file.FileService.BEFORE;
+import static java.util.stream.Collectors.groupingBy;
 
 public class Browser implements AutoCloseable {
 
@@ -249,15 +250,18 @@ public class Browser implements AutoCloseable {
         final String url = buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
         final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
 
-        if (areThereCookiesOrStorage(screenshotContext)) {
+        if (areThereCookies(screenshotContext)) {
+            //set cookies and local storage
+            setCookies(screenshotContext, localDriver);
+        }
+
+        if (isThereStorage(screenshotContext)) {
             //get root page from url to be able to set cookies afterwards
             //if you set cookies before getting the page once, it will fail
             LOG.info(String.format("Getting root url: %s to set cookies, local and session storage", rootUrl));
             localDriver.get(rootUrl);
             checkForErrors(localDriver);
 
-            //set cookies and local storage
-            setCookies(screenshotContext);
             setLocalStorage(screenshotContext);
             setSessionStorage(screenshotContext);
         }
@@ -336,7 +340,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    private void checkForErrors(WebDriver driver) throws Exception {
+    private void checkForErrors(WebDriver driver) {
         LogEntries logEntries;
         try {
             logEntries = driver.manage().logs().get(LogType.BROWSER);
@@ -366,8 +370,6 @@ public class Browser implements AutoCloseable {
 
     }
 
-    private Random random = new Random();
-
     private void resizeBrowser(WebDriver driver, int width, int height) {
         LOG.debug("Resize browser window to {}x{}", width, height);
         driver.manage().window().setSize(new Dimension(width, height));
@@ -377,21 +379,34 @@ public class Browser implements AutoCloseable {
         return new HashSet<>();
     }
 
-    private boolean areThereCookiesOrStorage(ScreenshotContext screenshotContext) {
-        return (screenshotContext.urlConfig.cookies != null && screenshotContext.urlConfig.cookies.size() > 0)
-                || (screenshotContext.urlConfig.localStorage != null && screenshotContext.urlConfig.localStorage.size() > 0)
-                || (screenshotContext.urlConfig.sessionStorage != null && screenshotContext.urlConfig.sessionStorage.size() > 0);
+    private boolean areThereCookies(ScreenshotContext screenshotContext) {
+        return (screenshotContext.urlConfig.cookies != null && !screenshotContext.urlConfig.cookies.isEmpty());
     }
 
-    private void setCookies(ScreenshotContext screenshotContext) {
-        if (jobConfig.browser.isPhantomJS()) {
-            //current phantomjs driver has a bug that prevents selenium's normal way of setting cookies
-            LOG.debug("Setting cookies for PhantomJS");
-            setCookiesPhantomJS(screenshotContext.urlConfig.cookies);
-        } else {
-            LOG.debug("Setting cookies");
-            setCookies(screenshotContext.urlConfig.cookies);
-        }
+    private boolean isThereStorage(ScreenshotContext screenshotContext) {
+        return ((screenshotContext.urlConfig.localStorage != null && screenshotContext.urlConfig.localStorage.size() > 0)
+                || (screenshotContext.urlConfig.sessionStorage != null && screenshotContext.urlConfig.sessionStorage.size() > 0));
+    }
+
+
+    private void setCookies(ScreenshotContext screenshotContext, WebDriver localDriver) {
+        Map<String, List<Cookie>> cookieByDomain = screenshotContext.urlConfig.cookies
+                .stream()
+                .collect(groupingBy(cookie -> cookie.domain != null ? cookie.domain : screenshotContext.url));
+
+        cookieByDomain.keySet().forEach(domain -> {
+            localDriver.get(domain);
+            checkForErrors(localDriver);
+            if (jobConfig.browser.isPhantomJS()) {
+                //current phantomjs driver has a bug that prevents selenium's normal way of setting cookies
+                LOG.debug("Setting cookies for PhantomJS");
+                setCookiesPhantomJS(cookieByDomain.get(domain));
+            } else {
+                LOG.debug("Setting cookies");
+                setCookies(cookieByDomain.get(domain));
+            }
+
+        });
     }
 
     private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) throws Exception {
