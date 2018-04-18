@@ -64,18 +64,6 @@ signing {
     sign configurations.archives
 }
 
-tasks.processResources.doLast { task ->
-    def resourcesDir = project.sourceSets.main.output.resourcesDir
-    resourcesDir.mkdirs()
-
-    def versionProperties = new File(resourcesDir, "version.properties")
-    if (versionProperties) {
-        def gitVersion = runCommand("git log -n1 --format=format:%H")
-        def fullVersion = version
-        versionProperties.text = "\njlineup.commit = ${gitVersion}" + "\njlineup.version = ${fullVersion}"
-    }
-}
-
 uploadArchives {
     configuration = configurations.archives
     repositories {

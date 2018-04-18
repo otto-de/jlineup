@@ -10,6 +10,8 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("io.rest-assured:rest-assured:3.0.7")
     testCompile("org.awaitility:awaitility:3.1.0")
+
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
 }
 
 jar {
