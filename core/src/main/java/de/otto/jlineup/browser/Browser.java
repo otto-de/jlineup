@@ -1,5 +1,6 @@
 package de.otto.jlineup.browser;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.RunStepConfig;
@@ -49,53 +50,41 @@ public class Browser implements AutoCloseable {
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
         FIREFOX,
-        Firefox, //TODO: remove when Jackson handling of aliases for enum types is fixed
-        firefox, //TODO: remove when Jackson handling of aliases for enum types is fixed
         @SerializedName(value = "Firefox-Headless", alternate = {"firefox-headless", "FIREFOX_HEADLESS"})
         FIREFOX_HEADLESS,
-        @JsonProperty("firefox-headless")
-        firefox_headless, //TODO: remove when Jackson handling of aliases for enum types is fixed
-        @JsonProperty("Firefox-Headless")
-        Firefox_Headless, //TODO: remove when Jackson handling of aliases for enum types is fixed
         @SerializedName(value = "Chrome", alternate = {"chrome", "CHROME"})
         CHROME,
-        Chrome, //TODO: remove when Jackson handling of aliases for enum types is fixed
-        chrome, //TODO: remove when Jackson handling of aliases for enum types is fixed
         @SerializedName(value = "Chrome-Headless", alternate = {"chrome-headless", "CHROME_HEADLESS"})
         CHROME_HEADLESS,
-        @JsonProperty("chrome-headless")
-        chrome_headless, //TODO: remove when Jackson handling of aliases for enum types is fixed
-        @JsonProperty("Chrome-Headless")
-        Chrome_Headless, //TODO: remove when Jackson handling of aliases for enum types is fixed
         @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
-        PHANTOMJS,
-        PhantomJS, //TODO: remove when Jackson handling of aliases for enum types is fixed
-        phantomjs; //TODO: remove when Jackson handling of aliases for enum types is fixed
+        PHANTOMJS;
 
         public boolean isFirefox() {
-            return this == FIREFOX || this == FIREFOX_HEADLESS
-                    || this == Firefox || this == Firefox_Headless
-                    || this == firefox || this == firefox_headless;
+            return this == FIREFOX || this == FIREFOX_HEADLESS;
         }
 
         public boolean isChrome() {
-            return this == CHROME || this == CHROME_HEADLESS
-                    || this == Chrome || this == Chrome_Headless
-                    || this == chrome || this == chrome_headless;
+            return this == CHROME || this == CHROME_HEADLESS;
         }
 
         public boolean isPhantomJS() {
-            return this == PHANTOMJS || this == PhantomJS || this == phantomjs;
+            return this == PHANTOMJS;
         }
 
         public boolean isHeadlessRealBrowser() {
-            return this == FIREFOX_HEADLESS || this == CHROME_HEADLESS
-                    || this == Firefox_Headless || this == Chrome_Headless
-                    || this == firefox_headless || this == chrome_headless;
+            return this == FIREFOX_HEADLESS || this == CHROME_HEADLESS;
         }
 
         public boolean isHeadless() {
             return isHeadlessRealBrowser() || isPhantomJS();
+        }
+
+        @JsonCreator
+        public static Type forValue(String value) {
+            String browserNameEnum = value
+                    .toUpperCase()
+                    .replace("-", "_");
+            return Browser.Type.valueOf(browserNameEnum);
         }
 
     }

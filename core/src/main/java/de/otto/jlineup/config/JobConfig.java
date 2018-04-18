@@ -30,11 +30,11 @@ public final class JobConfig {
     public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
     public static final int DEFAULT_REPORT_FORMAT = 2;
 
-    static final Browser.Type DEFAULT_BROWSER = Browser.Type.PhantomJS;
+    static final Browser.Type DEFAULT_BROWSER = Browser.Type.PHANTOMJS;
     static final float DEFAULT_MAX_DIFF = 0;
     static final int DEFAULT_WINDOW_HEIGHT = 800;
     static final float DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD = 0f;
-    static final int DEFAULT_WINDOW_WIDTH = 800;
+    public static final int DEFAULT_WINDOW_WIDTH = 800;
     static final String DEFAULT_PATH = "/";
     static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
     static final int DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;

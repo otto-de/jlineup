@@ -26,7 +26,6 @@ public class ConfigTest {
     public void shouldReadConfigAndParsedWithJackson() throws IOException {
         JobConfig jobConfigGson = JobConfig.readConfig("src/test/resources/", "lineup_test.json");
         JobConfig jobConfigJackson = new ObjectMapper()
-                .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
                 .readValue(new File("src/test/resources/lineup_test.json"), JobConfig.class);
         Assert.assertEquals(jobConfigGson, jobConfigJackson);
     }
