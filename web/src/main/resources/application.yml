@@ -2,6 +2,7 @@ jlineup:
   workingDirectory: /tmp/jlineup/
   screenshotsDirectory: report-{id}
   reportDirectory: report-{id}
+  maxParallelJobs: 1
 
 edison:
   status:

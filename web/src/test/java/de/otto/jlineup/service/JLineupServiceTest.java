@@ -5,6 +5,7 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.JLineupRunnerFactory;
 import de.otto.jlineup.web.State;
+import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,7 +23,7 @@ import static org.mockito.Mockito.*;
 public class JLineupServiceTest {
 
     private JLineupService testee;
-
+    private JLineupWebProperties jLineupWebProperties;
     private JLineupRunnerFactory jLineupRunnerFactory;
     private JLineupRunner jLineupRunnerBefore;
     private JLineupRunner jLineupRunnerAfter;
@@ -35,9 +36,11 @@ public class JLineupServiceTest {
         jLineupRunnerFactory = mock(JLineupRunnerFactory.class);
         jLineupRunnerBefore = mock(JLineupRunner.class);
         jLineupRunnerAfter = mock(JLineupRunner.class);
+        jLineupWebProperties = mock(JLineupWebProperties.class);
         when(jLineupRunnerFactory.createBeforeRun(any(), any())).thenReturn(jLineupRunnerBefore);
         when(jLineupRunnerFactory.createAfterRun(any(), any())).thenReturn(jLineupRunnerAfter);
-        testee = new JLineupService(jLineupRunnerFactory);
+        when(jLineupWebProperties.getMaxParallelJobs()).thenReturn(1);
+        testee = new JLineupService(jLineupRunnerFactory, jLineupWebProperties);
     }
 
     @Test
