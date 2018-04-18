@@ -67,7 +67,7 @@ public final class JobConfig {
     public final int screenshotRetries;
     @SerializedName("threads")
     @JsonProperty("threads")
-    public int threads;
+    public final int threads;
     @SerializedName("timeout")
     @JsonProperty("timeout")
     public final int globalTimeout;
@@ -111,6 +111,21 @@ public final class JobConfig {
 
     public static String prettyPrint(JobConfig jobConfig) {
         return gson.toJson(jobConfig);
+    }
+
+    public static Builder copyOfBuilder(JobConfig jobConfig) {
+        return configBuilder()
+                .withUrls(jobConfig.urls)
+                .withBrowser(jobConfig.browser)
+                .withGlobalWaitAfterPageLoad(jobConfig.globalWaitAfterPageLoad)
+                .withPageLoadTimeout(jobConfig.pageLoadTimeout)
+                .withWindowHeight(jobConfig.windowHeight)
+                .withThreads(jobConfig.threads)
+                .withScreenshotRetries(jobConfig.screenshotRetries)
+                .withReportFormat(jobConfig.reportFormat)
+                .withGlobalTimeout(jobConfig.globalTimeout)
+                .withDebug(jobConfig.debug)
+                .withLogToFile(jobConfig.logToFile);
     }
 
     @Override
