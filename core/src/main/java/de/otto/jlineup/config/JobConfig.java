@@ -41,7 +41,7 @@ public final class JobConfig {
     static final int DEFAULT_WAIT_AFTER_SCROLL = 0;
     static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
     static final int DEFAULT_WAIT_FOR_FONTS_TIME = 0;
-    static final int DEFAULT_THREADS = 1;
+    static final int DEFAULT_THREADS = 0;
     static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
     static final int DEFAULT_GLOBAL_TIMEOUT = 600;

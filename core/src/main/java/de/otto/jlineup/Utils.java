@@ -44,7 +44,12 @@ public class Utils {
         return prop.getProperty("jlineup.commit");
     }
 
-    public static ExecutorService createThreadPool(int threads, String baseName) {
+    public static ExecutorService createThreadPool(int threads, final String baseName) {
+
+        if (threads < 1) {
+            threads = 1;
+        }
+
         final ThreadFactory factory = target -> {
             String name = String.format("%s-%d", baseName, threadCounter.getAndIncrement());
             final Thread thread = new Thread(target, name);

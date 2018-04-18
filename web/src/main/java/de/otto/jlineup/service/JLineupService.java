@@ -43,7 +43,7 @@ public class JLineupService {
         this.executorService = Executors.newFixedThreadPool(jLineupWebProperties.getMaxParallelJobs());
     }
 
-    public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) {
+    public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) throws BrowserNotInstalledException {
         String runId = UUID.randomUUID().toString();
         final JLineupRunStatus beforeStatus = runStatusBuilder()
                 .withId(runId)
@@ -79,7 +79,7 @@ public class JLineupService {
         return JLineupRunStatus.copyOfRunStatusBuilder(beforeStatus).withCurrentJobStepFuture(state).build();
     }
 
-    public synchronized JLineupRunStatus startAfterRun(String runId) throws RunNotFoundException, InvalidRunStateException {
+    public synchronized JLineupRunStatus startAfterRun(String runId) throws RunNotFoundException, InvalidRunStateException, BrowserNotInstalledException {
 
         Optional<JLineupRunStatus> run = getRun(runId);
         if (!run.isPresent()) {

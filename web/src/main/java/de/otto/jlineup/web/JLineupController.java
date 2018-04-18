@@ -1,6 +1,7 @@
 package de.otto.jlineup.web;
 
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.service.RunNotFoundException;
@@ -30,7 +31,7 @@ public class JLineupController {
     }
 
     @PostMapping(value = "/runs")
-    public ResponseEntity<Void> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) {
+    public ResponseEntity<Void> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) throws BrowserNotInstalledException {
         String id = jLineupService.startBeforeRun(jobConfig).getId();
 
         HttpHeaders headers = new HttpHeaders();
@@ -39,7 +40,7 @@ public class JLineupController {
     }
 
     @PostMapping("/runs/{runId}")
-    public ResponseEntity<Void> runAfter(@PathVariable String runId, HttpServletRequest request) throws InvalidRunStateException, RunNotFoundException {
+    public ResponseEntity<Void> runAfter(@PathVariable String runId, HttpServletRequest request) throws InvalidRunStateException, RunNotFoundException, BrowserNotInstalledException {
         jLineupService.startAfterRun(runId);
 
         HttpHeaders headers = new HttpHeaders();
