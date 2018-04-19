@@ -3,7 +3,6 @@ package de.otto.jlineup.service;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.exceptions.NoUrlsConfiguredException;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.JLineupRunnerFactory;
 import de.otto.jlineup.web.State;
@@ -44,7 +43,7 @@ public class JLineupService {
         this.executorService = Executors.newFixedThreadPool(jLineupWebProperties.getMaxParallelJobs());
     }
 
-    public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) throws BrowserNotInstalledException, NoUrlsConfiguredException {
+    public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) throws Exception {
         String runId = UUID.randomUUID().toString();
         final JLineupRunStatus beforeStatus = runStatusBuilder()
                 .withId(runId)
@@ -80,7 +79,7 @@ public class JLineupService {
         return JLineupRunStatus.copyOfRunStatusBuilder(beforeStatus).withCurrentJobStepFuture(state).build();
     }
 
-    public synchronized JLineupRunStatus startAfterRun(String runId) throws RunNotFoundException, InvalidRunStateException, BrowserNotInstalledException, NoUrlsConfiguredException {
+    public synchronized JLineupRunStatus startAfterRun(String runId) throws Exception {
 
         Optional<JLineupRunStatus> run = getRun(runId);
         if (!run.isPresent()) {

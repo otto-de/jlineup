@@ -70,7 +70,7 @@ public class JLineupCLIAcceptanceTest {
     @Test
     public void shouldExitWithExitStatus1IfConfigHasNoUrls() throws Exception {
         exit.expectSystemExitWithStatus(1);
-        exit.checkAssertionAfterwards(() -> assertThat(systemErrCaptor.toString(), containsString("No urls are configured in the config.")));
+        exit.checkAssertionAfterwards(() -> assertThat(systemErrCaptor.toString(), containsString("No URLs configured.")));
 
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_no_urls.lineup.json"});
     }

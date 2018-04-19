@@ -2,7 +2,7 @@ package de.otto.jlineup.web;
 
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.exceptions.NoUrlsConfiguredException;
+import de.otto.jlineup.exceptions.ConfigValidationException;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
@@ -12,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
@@ -34,7 +33,7 @@ public class JLineupController {
     }
 
     @PostMapping(value = "/runs")
-    public ResponseEntity<Void> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) throws BrowserNotInstalledException, NoUrlsConfiguredException {
+    public ResponseEntity<Void> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) throws Exception {
         String id = jLineupService.startBeforeRun(jobConfig).getId();
 
         HttpHeaders headers = new HttpHeaders();
@@ -43,7 +42,7 @@ public class JLineupController {
     }
 
     @PostMapping("/runs/{runId}")
-    public ResponseEntity<Void> runAfter(@PathVariable String runId, HttpServletRequest request) throws InvalidRunStateException, RunNotFoundException, BrowserNotInstalledException, NoUrlsConfiguredException {
+    public ResponseEntity<Void> runAfter(@PathVariable String runId, HttpServletRequest request) throws Exception {
         jLineupService.startAfterRun(runId);
 
         HttpHeaders headers = new HttpHeaders();
@@ -83,8 +82,8 @@ public class JLineupController {
         return new ResponseEntity<>(exception.getCause().getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    @ExceptionHandler(NoUrlsConfiguredException.class)
-    public ResponseEntity<String> exceptionHandler(final NoUrlsConfiguredException exception) {
-        return new ResponseEntity<>("No urls configured in config.", HttpStatus.UNPROCESSABLE_ENTITY);
+    @ExceptionHandler(ConfigValidationException.class)
+    public ResponseEntity<String> exceptionHandler(final ConfigValidationException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }

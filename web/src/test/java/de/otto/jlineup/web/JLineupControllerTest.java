@@ -1,7 +1,7 @@
 package de.otto.jlineup.web;
 
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.exceptions.NoUrlsConfiguredException;
+import de.otto.jlineup.exceptions.ConfigValidationException;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
@@ -189,11 +189,11 @@ public class JLineupControllerTest {
     }
 
     @Test
-    public void shouldReturn422IfNoURLsAreGiven() throws Exception {
+    public void shouldReturn422IfConfigValidationFails() throws Exception {
 
         // given
         JobConfig jobConfig = JobConfig.copyOfBuilder(exampleConfig()).withUrls(null).build();
-        when(jLineupService.startBeforeRun(jobConfig)).thenThrow(new NoUrlsConfiguredException());
+        when(jLineupService.startBeforeRun(jobConfig)).thenThrow(new ConfigValidationException("Validation message"));
 
         // when
         ResultActions result = mvc
@@ -204,7 +204,7 @@ public class JLineupControllerTest {
         // then
         result
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string("No urls configured in config."));
+                .andExpect(content().string("Validation message"));
     }
 
 }

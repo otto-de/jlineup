@@ -99,16 +99,6 @@ public final class JobConfig {
         logToFile = builder.logToFile;
     }
 
-    public static JobConfig parse(String config) {
-        JobConfig parsedJobConfig = gson.fromJson(config, JobConfig.class);
-        if (parsedJobConfig == null) {
-            throw new JsonParseException(String.format("JobConfig is not valid: '%s'", config));
-        } else if (parsedJobConfig.urls == null) {
-            throw new JsonParseException("No urls in JLineup config.");
-        }
-        return parsedJobConfig;
-    }
-
     public static String prettyPrint(JobConfig jobConfig) {
         return gson.toJson(jobConfig);
     }

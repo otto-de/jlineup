@@ -6,12 +6,13 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.exceptions.NoUrlsConfiguredException;
+import de.otto.jlineup.exceptions.ConfigValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 
+import static de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfiguration;
 import static de.otto.jlineup.cli.Utils.readConfig;
 
 public class Main {
@@ -61,13 +62,13 @@ public class Main {
 
         LOG.info("Running JLineup [{}] with step '{}'.\n\n", Utils.getVersion(), parameters.getStep());
 
-        RunStepConfig runStepConfig = de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfiguration(parameters);
+        RunStepConfig runStepConfig = convertCommandLineParametersToRunConfiguration(parameters);
 
         JLineupRunner jLineupRunner = null;
         try {
             jLineupRunner = new JLineupRunner(jobConfig, runStepConfig);
-        } catch (NoUrlsConfiguredException e) {
-            LOG.error("No urls are configured in the config.");
+        } catch (ConfigValidationException e) {
+            LOG.error(e.getMessage());
             System.exit(1);
         }
 
