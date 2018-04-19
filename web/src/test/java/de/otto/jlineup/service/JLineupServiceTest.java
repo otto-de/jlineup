@@ -32,7 +32,7 @@ public class JLineupServiceTest {
     public final ExpectedException exception = ExpectedException.none();
 
     @Before
-    public void setUp() throws BrowserNotInstalledException {
+    public void setUp() throws Exception {
         jLineupRunnerFactory = mock(JLineupRunnerFactory.class);
         jLineupRunnerBefore = mock(JLineupRunner.class);
         jLineupRunnerAfter = mock(JLineupRunner.class);
@@ -44,7 +44,7 @@ public class JLineupServiceTest {
     }
 
     @Test
-    public void shouldStartBeforeRun() throws InterruptedException, ExecutionException, BrowserNotInstalledException {
+    public void shouldStartBeforeRun() throws Exception {
 
         //given
         JobConfig jobConfig = JobConfig.exampleConfig();
@@ -60,7 +60,7 @@ public class JLineupServiceTest {
     }
 
     @Test
-    public void shouldStartAfterRun() throws InterruptedException, InvalidRunStateException, RunNotFoundException, ExecutionException, BrowserNotInstalledException {
+    public void shouldStartAfterRun() throws Exception {
 
         //given
         JobConfig jobConfig = JobConfig.exampleConfig();
@@ -78,7 +78,7 @@ public class JLineupServiceTest {
     }
 
     @Test
-    public void shouldContainReportPathInResult() throws ExecutionException, InterruptedException, InvalidRunStateException, RunNotFoundException, BrowserNotInstalledException {
+    public void shouldContainReportPathInResult() throws Exception {
         //given
         JobConfig jobConfig = JobConfig.exampleConfig();
         when(jLineupRunnerBefore.run()).thenReturn(true);

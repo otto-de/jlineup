@@ -4,6 +4,7 @@ import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
+import de.otto.jlineup.exceptions.NoUrlsConfiguredException;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import de.otto.jlineup.report.*;
@@ -22,18 +23,14 @@ public class JLineupRunner {
     private final JobConfig jobConfig;
     private final RunStepConfig runStepConfig;
 
-    public JLineupRunner(JobConfig jobConfig, RunStepConfig runStepConfig) {
+    public JLineupRunner(JobConfig jobConfig, RunStepConfig runStepConfig) throws NoUrlsConfiguredException {
         this.jobConfig = jobConfig;
         this.runStepConfig = runStepConfig;
+
+        validateConfig();
     }
 
     public boolean run() {
-
-        if (jobConfig.urls == null) {
-            LOG.error("No urls are configured in the config.");
-            return false;
-        }
-
         FileService fileService = new FileService(runStepConfig);
         ImageService imageService = new ImageService();
 
@@ -102,5 +99,11 @@ public class JLineupRunner {
 
         LOG.info("JLineupRunner run finished for step '{}'\n", runStepConfig.getStep());
         return true;
+    }
+
+    private void validateConfig() throws NoUrlsConfiguredException {
+        if (jobConfig.urls == null || jobConfig.urls.isEmpty()) {
+            throw new NoUrlsConfiguredException();
+        }
     }
 }

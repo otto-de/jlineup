@@ -3,6 +3,7 @@ package de.otto.jlineup.service;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.exceptions.NoUrlsConfiguredException;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.JLineupRunnerFactory;
 import de.otto.jlineup.web.State;
@@ -43,7 +44,7 @@ public class JLineupService {
         this.executorService = Executors.newFixedThreadPool(jLineupWebProperties.getMaxParallelJobs());
     }
 
-    public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) throws BrowserNotInstalledException {
+    public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) throws BrowserNotInstalledException, NoUrlsConfiguredException {
         String runId = UUID.randomUUID().toString();
         final JLineupRunStatus beforeStatus = runStatusBuilder()
                 .withId(runId)
@@ -52,8 +53,8 @@ public class JLineupService {
                 .withStartTime(Instant.now())
                 .build();
 
-        runs.put(runId, beforeStatus);
         final JLineupRunner jLineupRunner = jLineupRunnerFactory.createBeforeRun(runId, jobConfig);
+        runs.put(runId, beforeStatus);
         runningJobs.incrementAndGet();
 
         CompletableFuture<State> state = supplyAsync(
@@ -79,7 +80,7 @@ public class JLineupService {
         return JLineupRunStatus.copyOfRunStatusBuilder(beforeStatus).withCurrentJobStepFuture(state).build();
     }
 
-    public synchronized JLineupRunStatus startAfterRun(String runId) throws RunNotFoundException, InvalidRunStateException, BrowserNotInstalledException {
+    public synchronized JLineupRunStatus startAfterRun(String runId) throws RunNotFoundException, InvalidRunStateException, BrowserNotInstalledException, NoUrlsConfiguredException {
 
         Optional<JLineupRunStatus> run = getRun(runId);
         if (!run.isPresent()) {
@@ -91,8 +92,8 @@ public class JLineupService {
             throw new InvalidRunStateException(beforeStatus.getId(), beforeStatus.getState(), State.BEFORE_DONE);
         }
 
-        JLineupRunStatus afterStatus = changeState(runId, State.AFTER_PENDING);
         final JLineupRunner jLineupRunner = jLineupRunnerFactory.createAfterRun(runId, beforeStatus.getJobConfig());
+        JLineupRunStatus afterStatus = changeState(runId, State.AFTER_PENDING);
         runningJobs.incrementAndGet();
 
         CompletableFuture<State> state = supplyAsync(
