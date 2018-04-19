@@ -49,14 +49,19 @@ public class Browser implements AutoCloseable {
 
     public enum Type {
         @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
+        @JsonProperty(value = "Firefox")
         FIREFOX,
         @SerializedName(value = "Firefox-Headless", alternate = {"firefox-headless", "FIREFOX_HEADLESS"})
+        @JsonProperty(value = "Firefox-Headless")
         FIREFOX_HEADLESS,
         @SerializedName(value = "Chrome", alternate = {"chrome", "CHROME"})
+        @JsonProperty(value = "Chrome")
         CHROME,
         @SerializedName(value = "Chrome-Headless", alternate = {"chrome-headless", "CHROME_HEADLESS"})
+        @JsonProperty(value = "Chrome-Headless")
         CHROME_HEADLESS,
         @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
+        @JsonProperty(value = "PhantomJS")
         PHANTOMJS;
 
         public boolean isFirefox() {
