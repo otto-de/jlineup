@@ -46,9 +46,7 @@ public class JLineupRunnerFactory {
 
     JobConfig sanitizeJobConfig(JobConfig jobConfig) throws BrowserNotInstalledException {
 
-        List<Browser.Type> installedBrowsers = properties.getInstalledBrowsers();
-
-        if (!installedBrowsers.contains(jobConfig.browser)) {
+        if (!properties.getInstalledBrowsers().contains(jobConfig.browser)) {
             throw new BrowserNotInstalledException(jobConfig.browser);
         }
 
