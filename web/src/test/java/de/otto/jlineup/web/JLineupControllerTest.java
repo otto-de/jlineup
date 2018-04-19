@@ -1,6 +1,7 @@
 package de.otto.jlineup.web;
 
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.service.RunNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Optional;
 
+import static de.otto.jlineup.config.JobConfig.exampleConfig;
 import static de.otto.jlineup.web.JLineupRunStatus.runStatusBuilder;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,7 +61,7 @@ public class JLineupControllerTest {
         when(jLineupService.getRun("someId")).thenReturn(Optional.of(runStatusBuilder()
                 .withId("someId")
                 .withState(State.BEFORE_RUNNING)
-                .withJobConfig(JobConfig.exampleConfig())
+                .withJobConfig(exampleConfig())
                 .build()));
 
         // when
@@ -76,7 +78,7 @@ public class JLineupControllerTest {
     public void shouldStartNewRun() throws Exception {
 
         // given
-        JobConfig jobConfig = JobConfig.exampleConfig();
+        JobConfig jobConfig = exampleConfig();
         JLineupRunStatus run = runStatusBuilder().withId("someNewId").withJobConfig(jobConfig).withState(State.BEFORE_RUNNING).build();
         when(jLineupService.startBeforeRun(any())).thenReturn(run);
 
@@ -102,7 +104,7 @@ public class JLineupControllerTest {
         ResultActions result = mvc
                 .perform(post("/runs")
                         .content("")
-                        .accept(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON));
 
         // then
         result
@@ -113,14 +115,14 @@ public class JLineupControllerTest {
     public void shouldStartAfterRun() throws Exception {
 
         // given
-        JLineupRunStatus run = runStatusBuilder().withId("someRunId").withJobConfig(JobConfig.exampleConfig()).withState(State.AFTER_RUNNING).build();
+        JLineupRunStatus run = runStatusBuilder().withId("someRunId").withJobConfig(exampleConfig()).withState(State.AFTER_RUNNING).build();
         when(jLineupService.startAfterRun("someRunId")).thenReturn(run);
 
         // when
         ResultActions result = mvc
                 .perform(post("/testContextPath/runs/someRunId")
                         .contextPath("/testContextPath")
-                        .accept(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON));
 
         // then
         result
@@ -138,7 +140,7 @@ public class JLineupControllerTest {
         // when
         ResultActions result = mvc
                 .perform(post("/runs/" + runId)
-                        .accept(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON));
 
         // then
         result
@@ -156,7 +158,7 @@ public class JLineupControllerTest {
         // when
         ResultActions result = mvc
                 .perform(post("/runs/" + runId)
-                        .accept(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON));
 
         // then
         result
@@ -164,6 +166,25 @@ public class JLineupControllerTest {
                 .andExpect(content().string(containsString(runId)))
                 .andExpect(content().string(containsString(State.BEFORE_RUNNING.name())))
                 .andExpect(content().string(containsString(State.BEFORE_DONE.name())));
+    }
+
+    @Test
+    public void shouldReturn422ForUnsupportedBrowser() throws Exception {
+
+        // given
+        JobConfig jobConfig = exampleConfig();
+        when(jLineupService.startBeforeRun(jobConfig)).thenThrow(new BrowserNotInstalledException(jobConfig.browser));
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs")
+                        .content(JobConfig.prettyPrint(jobConfig))
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(content().string(containsString(jobConfig.browser.name())));
     }
 
 }

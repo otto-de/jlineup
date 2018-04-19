@@ -1,19 +1,29 @@
 package de.otto.jlineup.web.configuration;
 
+import de.otto.jlineup.browser.Browser;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static de.otto.jlineup.browser.Browser.Type.*;
+
 @ConfigurationProperties(prefix = "jlineup")
 public class JLineupWebProperties {
+
+    public static final int DEFAULT_MAX_PARALLEL_JOBS = 1;
+    public static final int DEFAULT_MAX_THREADS_PER_JOB = 4;
 
     private String workingDirectory = "/tmp/jlineup/";
     private String screenshotsDirectory = "report-{id}";
     private String reportDirectory = "report-{id}";
-    private int maxParallelJobs = 1;
-    private int maxThreadsPerJob = 4;
-    private List<String> installedBrowsers = Arrays.asList("chrome-headless", "firefox-headless", "phantomjs");
+    private int maxParallelJobs = DEFAULT_MAX_PARALLEL_JOBS;
+    private int maxThreadsPerJob = DEFAULT_MAX_THREADS_PER_JOB;
+
+    private List<Browser.Type> installedBrowsers = Arrays.asList(
+            CHROME_HEADLESS,
+            FIREFOX_HEADLESS,
+            PHANTOMJS);
 
     public String getWorkingDirectory() {
         return workingDirectory;
@@ -47,11 +57,11 @@ public class JLineupWebProperties {
         this.maxParallelJobs = maxParallelJobs;
     }
 
-    public List<String> getInstalledBrowsers() {
+    public List<Browser.Type> getInstalledBrowsers() {
         return installedBrowsers;
     }
 
-    public void setInstalledBrowsers(List<String> installedBrowsers) {
+    public void setInstalledBrowsers(List<Browser.Type> installedBrowsers) {
         this.installedBrowsers = installedBrowsers;
     }
 

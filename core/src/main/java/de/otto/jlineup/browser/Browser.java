@@ -91,7 +91,6 @@ public class Browser implements AutoCloseable {
                     .replace("-", "_");
             return Browser.Type.valueOf(browserNameEnum);
         }
-
     }
 
     static final String JS_DOCUMENT_HEIGHT_CALL = "return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );";

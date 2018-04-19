@@ -2,12 +2,15 @@ package de.otto.jlineup.web;
 
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 import static de.otto.jlineup.config.JobConfig.DEFAULT_REPORT_FORMAT;
 
@@ -33,7 +36,7 @@ public class JLineupRunnerFactory {
 
         JobConfig webJobConfig = sanitizeJobConfig(jobConfig);
 
-        return new JLineupRunner(jobConfig, RunStepConfig.jLineupRunConfigurationBuilder()
+        return new JLineupRunner(webJobConfig, RunStepConfig.jLineupRunConfigurationBuilder()
                 .withWorkingDirectory(properties.getWorkingDirectory())
                 .withScreenshotsDirectory(properties.getScreenshotsDirectory().replace("{id}", id))
                 .withReportDirectory(properties.getReportDirectory().replace("{id}", id))
@@ -41,7 +44,13 @@ public class JLineupRunnerFactory {
                 .build());
     }
 
-    private JobConfig sanitizeJobConfig(JobConfig jobConfig) throws BrowserNotInstalledException {
+    JobConfig sanitizeJobConfig(JobConfig jobConfig) throws BrowserNotInstalledException {
+
+        List<Browser.Type> installedBrowsers = properties.getInstalledBrowsers();
+
+        if (!installedBrowsers.contains(jobConfig.browser)) {
+            throw new BrowserNotInstalledException(jobConfig.browser);
+        }
 
         return JobConfig.copyOfBuilder(jobConfig)
                 .withThreads(Math.min(jobConfig.threads, properties.getMaxThreadsPerJob()))

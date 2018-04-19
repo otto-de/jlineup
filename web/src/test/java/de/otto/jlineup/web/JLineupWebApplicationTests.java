@@ -2,6 +2,7 @@ package de.otto.jlineup.web;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.utils.RegexMatcher;
@@ -22,11 +23,13 @@ import java.util.concurrent.TimeUnit;
 
 import static de.otto.jlineup.config.JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME;
 import static de.otto.jlineup.config.JobConfig.configBuilder;
+import static de.otto.jlineup.config.JobConfig.copyOfBuilder;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -82,6 +85,12 @@ public class JLineupWebApplicationTests {
         assertReportExists(finalState2);
     }
 
+    @Test
+    public void shouldFailIfBrowserIsNotConfigured() {
+        JobConfig jobConfig = copyOfBuilder(createTestConfig()).withBrowser(Browser.Type.FIREFOX).build();
+        expectStatusCodeForConfig(jobConfig, UNPROCESSABLE_ENTITY.value());
+    }
+
     private void assertReportExists(JLineupRunStatus finalState) {
         when()
                 .get("/reports/report-" + finalState.getId()+"/report.json")
@@ -114,6 +123,17 @@ public class JLineupWebApplicationTests {
                 .header(HttpHeaders.LOCATION, RegexMatcher.regex("/runs/[a-zA-Z0-9\\-]*"))
                 .and()
                 .extract().header(HttpHeaders.LOCATION);
+    }
+
+    private void expectStatusCodeForConfig(JobConfig jobConfig, int statusCode) {
+        given()
+                .body(jobConfig)
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/runs")
+                .then()
+                .assertThat()
+                .statusCode(statusCode);
     }
 
     private JLineupRunStatus awaitRunState(State expectedState, String location) {

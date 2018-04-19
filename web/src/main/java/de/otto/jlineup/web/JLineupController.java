@@ -69,4 +69,10 @@ public class JLineupController {
                 exception.getId(), exception.getCurrentState(), exception.getExpectedState()), HttpStatus.PRECONDITION_FAILED);
     }
 
+    @ExceptionHandler(BrowserNotInstalledException.class)
+    public ResponseEntity<String> exceptionHandler(final BrowserNotInstalledException exception) {
+        // https://httpstatuses.com/422
+        return new ResponseEntity<>(String.format("Browser %s is not installed or not configured on server side.", exception.getDesiredBrowser().name()), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
 }
