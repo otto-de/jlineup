@@ -21,9 +21,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.TimeUnit;
 
-import static de.otto.jlineup.config.JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME;
-import static de.otto.jlineup.config.JobConfig.configBuilder;
-import static de.otto.jlineup.config.JobConfig.copyOfBuilder;
+import static de.otto.jlineup.config.JobConfig.*;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.is;

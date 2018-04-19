@@ -1,6 +1,5 @@
 package de.otto.jlineup.config;
 
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.browser.BrowserUtilsTest;

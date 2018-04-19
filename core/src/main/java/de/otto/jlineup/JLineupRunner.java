@@ -136,7 +136,6 @@ public class JLineupRunner {
                 throw new ConfigValidationException(String.format("Configured wait for fonts time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitForFontsTime, url));
             }
 
-
             //Check max scroll height
             if (urlConfig.maxScrollHeight <= 0) {
                 throw new ConfigValidationException(String.format("Configured max scroll height (%d) for %s must be negative)", urlConfig.maxScrollHeight, url));
