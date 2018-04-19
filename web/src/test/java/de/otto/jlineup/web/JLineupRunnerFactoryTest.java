@@ -1,6 +1,5 @@
 package de.otto.jlineup.web;
 
-import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
@@ -9,12 +8,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static de.otto.jlineup.browser.Browser.Type.CHROME;
-import static de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS;
-import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_REPORT_FORMAT;
-import static de.otto.jlineup.config.JobConfig.copyOfBuilder;
-import static de.otto.jlineup.config.JobConfig.exampleConfig;
+import static de.otto.jlineup.browser.Browser.Type.*;
+import static de.otto.jlineup.config.JobConfig.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -26,7 +21,8 @@ public class JLineupRunnerFactoryTest {
     @Before
     public void setup() {
         jLineupWebProperties = new JLineupWebProperties();
-        jLineupWebProperties.setInstalledBrowsers(Arrays.asList(CHROME, CHROME_HEADLESS));
+        jLineupWebProperties.setInstalledBrowsers(Arrays.asList(CHROME, CHROME_HEADLESS, PHANTOMJS));
+        jLineupWebProperties.setMaxThreadsPerJob(10);
         jLineupRunnerFactory = new JLineupRunnerFactory(jLineupWebProperties);
     }
 
@@ -61,5 +57,44 @@ public class JLineupRunnerFactoryTest {
 
         //When
         jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
+    }
+
+    @Test
+    public void shouldUseMaxThreadsPerJobIfNoThreadsAreConfigured() throws BrowserNotInstalledException {
+        //Given
+        JobConfig jobConfig = copyOfBuilder(exampleConfig())
+                .withThreads(0)
+                .build();
+        //When
+        JobConfig sanitizedConfig = jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
+
+        //Then
+        assertThat(sanitizedConfig.threads, is(jLineupWebProperties.getMaxThreadsPerJob()));
+    }
+
+    @Test
+    public void shouldUseDefinedNumberOfThreadsIfConfiguredAndBelowMax() throws BrowserNotInstalledException {
+        //Given
+        JobConfig jobConfig = copyOfBuilder(exampleConfig())
+                .withThreads(2)
+                .build();
+        //When
+        JobConfig sanitizedConfig = jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
+
+        //Then
+        assertThat(sanitizedConfig.threads, is(2));
+    }
+
+    @Test
+    public void shouldReduceNumberOfThreadsToMax() throws BrowserNotInstalledException {
+        //Given
+        JobConfig jobConfig = copyOfBuilder(exampleConfig())
+                .withThreads(200)
+                .build();
+        //When
+        JobConfig sanitizedConfig = jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
+
+        //Then
+        assertThat(sanitizedConfig.threads, is(jLineupWebProperties.getMaxThreadsPerJob()));
     }
 }

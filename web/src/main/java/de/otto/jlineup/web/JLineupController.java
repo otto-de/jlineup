@@ -1,5 +1,6 @@
 package de.otto.jlineup.web;
 
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidRunStateException;
@@ -73,6 +74,11 @@ public class JLineupController {
     public ResponseEntity<String> exceptionHandler(final BrowserNotInstalledException exception) {
         // https://httpstatuses.com/422
         return new ResponseEntity<>(String.format("Browser %s is not installed or not configured on server side.", exception.getDesiredBrowser().name()), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @ExceptionHandler(InvalidDefinitionException.class)
+    public ResponseEntity<String> exceptionHandler(final InvalidDefinitionException exception) {
+        return new ResponseEntity<>(exception.getCause().getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
 }

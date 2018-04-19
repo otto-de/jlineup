@@ -53,11 +53,15 @@ public class JLineupRunnerFactory {
         }
 
         return JobConfig.copyOfBuilder(jobConfig)
-                .withThreads(Math.min(jobConfig.threads, properties.getMaxThreadsPerJob()))
+                .withThreads(calculateNumberOfThreads(jobConfig))
                 .withDebug(false)
                 .withLogToFile(false)
                 .withReportFormat(DEFAULT_REPORT_FORMAT)
                 .build();
+    }
+
+    private int calculateNumberOfThreads(JobConfig jobConfig) {
+        return jobConfig.threads == 0 ? properties.getMaxThreadsPerJob() : Math.min(jobConfig.threads, properties.getMaxThreadsPerJob());
     }
 
 }
