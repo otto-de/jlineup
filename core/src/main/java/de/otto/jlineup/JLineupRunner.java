@@ -114,24 +114,32 @@ public class JLineupRunner {
         }
 
         for (Map.Entry<String, UrlConfig> urlConfigEntry : jobConfig.urls.entrySet()) {
+
+            String url = urlConfigEntry.getKey();
             UrlConfig urlConfig = urlConfigEntry.getValue();
+
             //Check browser window widths
             for (Integer width : urlConfig.windowWidths) {
                 if (width < 10 || width > 10000) {
-                    throw new ConfigValidationException(String.format("Configured window width for %s is invalid: %d. Valid values are between 10 and 10000", urlConfigEntry.getKey(), width));
+                    throw new ConfigValidationException(String.format("Configured window width for %s is invalid: %d. Valid values are between 10 and 10000", url, width));
                 }
             }
 
+            //Check timeouts
             if (urlConfig.waitAfterPageLoad > 20 || urlConfig.waitAfterPageLoad < 0) {
-                throw new ConfigValidationException(String.format("Configured wait after page load time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitAfterPageLoad, urlConfigEntry.getKey()));
+                throw new ConfigValidationException(String.format("Configured wait after page load time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitAfterPageLoad, url));
             }
-
             if (urlConfig.waitAfterScroll > 20 || urlConfig.waitAfterScroll < 0) {
-                throw new ConfigValidationException(String.format("Configured wait after scroll time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitAfterScroll, urlConfigEntry.getKey()));
+                throw new ConfigValidationException(String.format("Configured wait after scroll time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitAfterScroll, url));
+            }
+            if (urlConfig.waitForFontsTime > 20 || urlConfig.waitForFontsTime < 0) {
+                throw new ConfigValidationException(String.format("Configured wait for fonts time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitForFontsTime, url));
             }
 
-            if (urlConfig.waitForFontsTime > 20 || urlConfig.waitForFontsTime < 0) {
-                throw new ConfigValidationException(String.format("Configured wait for fonts time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitForFontsTime, urlConfigEntry.getKey()));
+
+            //Check max scroll height
+            if (urlConfig.maxScrollHeight <= 0) {
+                throw new ConfigValidationException(String.format("Configured max scroll height (%d) for %s must be negative)", urlConfig.maxScrollHeight, url));
             }
         }
     }

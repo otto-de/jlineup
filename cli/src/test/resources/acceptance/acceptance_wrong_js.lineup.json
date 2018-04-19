@@ -1,8 +1,8 @@
 {
   "urls": {
-    "https://www.otto.de": {
+    "file://###CWD###/src/test/resources/acceptance/webpage/": {
       "paths": [
-        "/"
+        "test.html"
       ],
       "max-diff": 0.05,
       "resolutions": [

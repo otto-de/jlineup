@@ -80,7 +80,7 @@ public class JLineupCLIAcceptanceTest {
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), containsString("doesnotexist")));
 
-        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_wrong_js.lineup.json"});
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_wrong_js.lineup.json","--replace-in-url###CWD###="+CWD});
     }
 
     @Test
