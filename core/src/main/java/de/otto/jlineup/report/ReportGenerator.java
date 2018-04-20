@@ -1,5 +1,7 @@
 package de.otto.jlineup.report;
 
+import de.otto.jlineup.config.JobConfig;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class ReportGenerator {
 
-    public Report generateReport(Map<String, List<ScreenshotComparisonResult>> screenshotComparisonResultLists) {
+    public Report generateReport(Map<String, List<ScreenshotComparisonResult>> screenshotComparisonResultLists, JobConfig config) {
         List<ScreenshotComparisonResult> resultList = screenshotComparisonResultLists.values().stream().flatMap(List::stream).collect(Collectors.toList());
         final Summary summary = getSummary(resultList);
 
@@ -18,7 +20,7 @@ public class ReportGenerator {
             UrlReport urlReport = new UrlReport(result.getValue(), localSummary);
             urlReports.put(result.getKey(), urlReport);
         }
-        return new Report(summary, urlReports);
+        return new Report(summary, urlReports, config);
     }
 
     private Summary getSummary(List<ScreenshotComparisonResult> resultList) {

@@ -85,7 +85,7 @@ public class ScreenshotsComparator {
                     try {
                         imageBefore = fileService.readScreenshot(beforeFileName);
                     } catch (IIOException e) {
-                        System.err.println("Can't read screenshot of 'before' step. Did you run JLineupRunner with '--step before' parameter before trying to run '--step after' or --compare?");
+                        System.err.println("Can't read screenshot of 'before' step. Did you run JLineup with '--step before' parameter before trying to run '--step after' or --compare?");
                         throw e;
                     }
 

@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.config.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,6 +183,12 @@ public class FileService {
     public void writeHtmlReport(String htmlReport) throws FileNotFoundException {
         try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + "/report.html"))) {
             out.print(htmlReport);
+        }
+    }
+
+    public void writeRunStepMetadata(Step step, String metadata) throws FileNotFoundException {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getScreenshotPath("metadata_" + step + ".json")))) {
+            out.print(metadata);
         }
     }
 }

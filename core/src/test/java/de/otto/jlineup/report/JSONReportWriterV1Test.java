@@ -1,5 +1,6 @@
 package de.otto.jlineup.report;
 
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class JSONReportWriterV1Test {
                 new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum");
         final Summary localSummary = new Summary(false, 0d, 0d);
         final Summary globalSummary = new Summary(false, 0d, 0d);
-        Report report = new Report(globalSummary, singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)));
+        Report report = new Report(globalSummary, singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), JobConfig.exampleConfig());
 
         String expectedString = "[\n" +
                 "  {\n" +

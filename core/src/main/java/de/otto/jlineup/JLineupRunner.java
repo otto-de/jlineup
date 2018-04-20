@@ -62,7 +62,7 @@ public class JLineupRunner {
                 final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
 
                 final ReportGenerator reportGenerator = new ReportGenerator();
-                final Report report = reportGenerator.generateReport(comparisonResults);
+                final Report report = reportGenerator.generateReport(comparisonResults, jobConfig);
 
                 JSONReportWriter jsonReportWriter;
                 if (Utils.shouldUseLegacyReportFormat(jobConfig)) {
@@ -88,7 +88,7 @@ public class JLineupRunner {
                     for (Map.Entry<String, UrlReport> entry : entries) {
                         //Exit with exit code 1 if at least one url report has a bigger difference than configured
                         if (jobConfig.urls != null && entry.getValue().summary.differenceMax > jobConfig.urls.get(entry.getKey()).maxDiff) {
-                            LOG.info("JLineupRunner finished. There was a difference between before and after. Return code is 1.");
+                            LOG.info("JLineup finished. There was a difference between before and after. Return code is 1.");
                             return false;
                         }
                     }
@@ -98,7 +98,7 @@ public class JLineupRunner {
             throw new RuntimeException(e);
         }
 
-        LOG.info("JLineupRunner run finished for step '{}'\n", runStepConfig.getStep());
+        LOG.info("JLineup run finished for step '{}'\n", runStepConfig.getStep());
         return true;
     }
 

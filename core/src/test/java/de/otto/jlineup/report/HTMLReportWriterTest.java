@@ -1,5 +1,6 @@
 package de.otto.jlineup.report;
 
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class HTMLReportWriterTest {
     private Summary localSummary = new Summary(true, 2d, 0.3d);
     private final Map<String, UrlReport> screenshotComparisonResultList =
             singletonMap("test", new UrlReport(screenshotComparisonResults, localSummary));
-    private Report report = new Report(summary, screenshotComparisonResultList);
+    private Report report = new Report(summary, screenshotComparisonResultList, JobConfig.exampleConfig());
 
     @Before
     public void setup() {
