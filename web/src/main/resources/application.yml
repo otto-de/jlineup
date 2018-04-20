@@ -5,6 +5,10 @@ jlineup:
   maxParallelJobs: 1
 
 edison:
-  status:
-    application:
-      description: Takes screenshots of configured webpages and checks for differences
+  application:
+    title: JLineup
+    description: Takes screenshots of webpages and checks for differences
+
+spring:
+  application:
+    name: JLineup

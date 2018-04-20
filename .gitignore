@@ -8,4 +8,7 @@ out
 **/*.log
 build
 classes
+lineup.json
+report
+report/**
 

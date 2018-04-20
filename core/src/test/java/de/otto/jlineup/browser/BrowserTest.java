@@ -25,14 +25,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.config.JobConfig.configBuilder;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -262,13 +260,17 @@ public class BrowserTest {
         final Long viewportHeight = 500L;
         final Long pageHeight = 2000L;
 
-        Date cookieExpiry = new Date();
+        //Set to something without milliseconds (selenium strips it!)
+        Date cookieExpiry = new Date(100000);
+        List<Cookie> expectedCookies = Arrays.asList(
+                new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false),
+                new Cookie("testcookiename2", "testcookievalue2", "anotherCookieurl", "/", cookieExpiry, false),
+                new Cookie("testcookiename3", "testcookievalue3")
+        );
         UrlConfig urlConfig = new UrlConfig(
                 ImmutableList.of("/"),
                 0f,
-                ImmutableList.of(new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false),
-                        new Cookie("testcookiename2", "testcookievalue2", "anotherCookieurl", "/", cookieExpiry, false),
-                        new Cookie("testcookiename3", "testcookievalue3")),
+                expectedCookies,
                 ImmutableMap.of(),
                 ImmutableMap.of("key", "value"),
                 ImmutableMap.of("key", "value"),
@@ -304,17 +306,95 @@ public class BrowserTest {
         verify(webDriverWindowMock, times(3)).setSize(new Dimension(600, 100));
         verify(webDriverMock, times(1)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(5)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
-        verify(webDriverMock, times(1)).get("cookieurl");
-        verify(webDriverMock, times(1)).get("anotherCookieurl");
-        verify(webDriverMock, times(1)).get("testurl");
+        verify(webDriverMock, times(1)).get("http://cookieurl");
+        verify(webDriverMock, times(1)).get("http://anotherCookieurl");
+        verify(webDriverMock, times(1)).get("http://testurl");
         verify(webDriverMock, times(3)).get("testurl/");
         verify(webDriverMock, times(1)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
-        verify(webDriverOptionsMock, times(1)).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false));
-        verify(webDriverOptionsMock, times(1)).addCookie(new org.openqa.selenium.Cookie("testcookiename2", "testcookievalue2", "anotherCookieurl", "/", cookieExpiry, false));
-        verify(webDriverOptionsMock, times(1)).addCookie(new org.openqa.selenium.Cookie("testcookiename3", "testcookievalue3"));
+
+        ArgumentCaptor<org.openqa.selenium.Cookie> cookieCaptor = ArgumentCaptor.forClass(org.openqa.selenium.Cookie.class);
+        verify(webDriverOptionsMock, times(3)).addCookie(cookieCaptor.capture());
+        assertThatCookieContentIsIdentical(cookieCaptor.getAllValues().get(0), expectedCookies.get(0));
+        assertThatCookieContentIsIdentical(cookieCaptor.getAllValues().get(1), expectedCookies.get(1));
+        assertThatCookieContentIsIdentical(cookieCaptor.getAllValues().get(2), expectedCookies.get(2));
+
         verify(webDriverMock, times(1)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(1)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(4)).executeScript(String.format(JS_SCROLL_CALL, 500));
+    }
+
+
+    @Test
+    public void shouldSetCookieOnHttpsDomainIfOneCookieIsMarkedAsSecure() throws Exception {
+        //given
+        final Long viewportHeight = 500L;
+        final Long pageHeight = 2000L;
+
+        //Set to something without milliseconds (selenium strips it!)
+        Date cookieExpiry = new Date(100000);
+        List<Cookie> expectedCookies = Arrays.asList(
+                new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false),
+                new Cookie("testcookiename2", "testcookievalue2", "cookieurl", "/", cookieExpiry, true),
+                new Cookie("testcookiename3", "testcookievalue3", "cookieurl", "/", cookieExpiry, false)
+        );
+
+        UrlConfig urlConfig = new UrlConfig(
+                ImmutableList.of("/"),
+                0f,
+                expectedCookies,
+                ImmutableMap.of(),
+                ImmutableMap.of("key", "value"),
+                ImmutableMap.of("key", "value"),
+                ImmutableList.of(600),
+                5000,
+                0,
+                0,
+                0,
+                3,
+                null,
+                5);
+
+        JobConfig jobConfig = configBuilder()
+                .withBrowser(FIREFOX)
+                .withUrls(ImmutableMap.of("testurl", urlConfig))
+                .withWindowHeight(100)
+                .build();
+        testee.close();
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
+
+        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
+
+        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
+        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/http_url_root_ff3c40c_1001_02002_before.png")));
+        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
+        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
+
+        //when
+        testee.takeScreenshots(ImmutableList.of(screenshotContext));
+
+        //then
+        verify(webDriverWindowMock, times(3)).setSize(new Dimension(600, 100));
+        verify(webDriverMock, times(1)).executeScript(JS_SCROLL_TO_TOP_CALL);
+        verify(webDriverMock, times(5)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
+        verify(webDriverMock, times(1)).get("https://cookieurl");
+        verify(webDriverMock, times(3)).get("testurl/");
+        verify(webDriverMock, times(1)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
+
+        ArgumentCaptor<org.openqa.selenium.Cookie> cookieCaptor = ArgumentCaptor.forClass(org.openqa.selenium.Cookie.class);
+        verify(webDriverOptionsMock, times(3)).addCookie(cookieCaptor.capture());
+        assertThatCookieContentIsIdentical(cookieCaptor.getAllValues().get(0), expectedCookies.get(0));
+        assertThatCookieContentIsIdentical(cookieCaptor.getAllValues().get(1), expectedCookies.get(1));
+        assertThatCookieContentIsIdentical(cookieCaptor.getAllValues().get(2), expectedCookies.get(2));
+    }
+
+    private void assertThatCookieContentIsIdentical(org.openqa.selenium.Cookie cookie, Cookie expectedCookie) {
+        assertThat(cookie.getName(), is(expectedCookie.name));
+        assertThat(cookie.getValue(), is(expectedCookie.value));
+        assertThat(cookie.getDomain(), is(expectedCookie.domain));
+        assertThat(cookie.getPath(), is(expectedCookie.path != null ? expectedCookie.path : "/"));
+        assertThat(cookie.getExpiry(), is(expectedCookie.expiry));
+        assertThat(cookie.isSecure(), is(expectedCookie.secure));
     }
 
     @Test

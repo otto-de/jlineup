@@ -387,16 +387,24 @@ public class Browser implements AutoCloseable {
                 .stream()
                 .collect(groupingBy(cookie -> cookie.domain != null ? cookie.domain : screenshotContext.url));
 
-        cookieByDomain.keySet().forEach(domain -> {
-            localDriver.get(domain);
+        cookieByDomain.forEach((domain, cookies) -> {
+            //Surf to cookie domain
+            boolean secure = cookies.stream().anyMatch(cookie -> cookie.secure);
+            String urlToSetCookie = domain;
+            if (!urlToSetCookie.startsWith("http")) {
+                urlToSetCookie = (secure ? "https://" : "http://") + urlToSetCookie;
+            }
+            localDriver.get(urlToSetCookie);
             checkForErrors(localDriver);
+
+            //Set cookies
             if (jobConfig.browser.isPhantomJS()) {
                 //current phantomjs driver has a bug that prevents selenium's normal way of setting cookies
                 LOG.debug("Setting cookies for PhantomJS");
-                setCookiesPhantomJS(cookieByDomain.get(domain));
+                setCookiesPhantomJS(cookies);
             } else {
                 LOG.debug("Setting cookies");
-                setCookies(cookieByDomain.get(domain));
+                setCookies(cookies);
             }
 
         });
