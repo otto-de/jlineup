@@ -116,7 +116,8 @@ public class JSONReportWriterV2Test {
                 "    \"threads\": 0,\n" +
                 "    \"timeout\": 600,\n" +
                 "    \"debug\": false,\n" +
-                "    \"log-to-file\": false\n" +
+                "    \"log-to-file\": false,\n" +
+                "    \"check-for-errors-in-log\": true\n" +
                 "  }\n" +
                 "}";
 

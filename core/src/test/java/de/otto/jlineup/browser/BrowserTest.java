@@ -22,7 +22,6 @@ import org.openqa.selenium.logging.Logs;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -73,7 +72,7 @@ public class BrowserTest {
     }
 
     @After
-    public void cleanup() throws Exception {
+    public void cleanup() {
         if (testee != null) {
             testee.close();
         }

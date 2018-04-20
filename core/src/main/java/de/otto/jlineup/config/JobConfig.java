@@ -16,7 +16,6 @@ import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
 import java.util.*;
 
 import static de.otto.jlineup.config.Cookie.COOKIE_TIME_FORMAT;
@@ -77,6 +76,9 @@ public final class JobConfig {
     @SerializedName("log-to-file")
     @JsonProperty("log-to-file")
     public final boolean logToFile;
+    @SerializedName("check-for-errors-in-log")
+    @JsonProperty("check-for-errors-in-log")
+    public final boolean checkForErrorsInLog;
 
     private final static Gson gson = new GsonBuilder().setDateFormat(COOKIE_TIME_FORMAT).setPrettyPrinting().create();
 
@@ -97,6 +99,7 @@ public final class JobConfig {
         globalTimeout = builder.globalTimeout;
         debug = builder.debug;
         logToFile = builder.logToFile;
+        checkForErrorsInLog = builder.checkForErrorsInLog;
     }
 
     public static String prettyPrint(JobConfig jobConfig) {
@@ -115,7 +118,8 @@ public final class JobConfig {
                 .withReportFormat(jobConfig.reportFormat)
                 .withGlobalTimeout(jobConfig.globalTimeout)
                 .withDebug(jobConfig.debug)
-                .withLogToFile(jobConfig.logToFile);
+                .withLogToFile(jobConfig.logToFile)
+                .withCheckForErrorsInLog(jobConfig.checkForErrorsInLog);
     }
 
     @Override
@@ -132,6 +136,7 @@ public final class JobConfig {
                 ", globalTimeout=" + globalTimeout +
                 ", debug=" + debug +
                 ", logToFile=" + logToFile +
+                ", checkForErrorsInLog=" + checkForErrorsInLog +
                 '}';
     }
 
@@ -139,38 +144,24 @@ public final class JobConfig {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         JobConfig jobConfig = (JobConfig) o;
-
-        if (pageLoadTimeout != jobConfig.pageLoadTimeout) return false;
-        if (screenshotRetries != jobConfig.screenshotRetries) return false;
-        if (threads != jobConfig.threads) return false;
-        if (globalTimeout != jobConfig.globalTimeout) return false;
-        if (debug != jobConfig.debug) return false;
-        if (logToFile != jobConfig.logToFile) return false;
-        if (urls != null ? !urls.equals(jobConfig.urls) : jobConfig.urls != null) return false;
-        if (browser != jobConfig.browser) return false;
-        if (globalWaitAfterPageLoad != null ? !globalWaitAfterPageLoad.equals(jobConfig.globalWaitAfterPageLoad) : jobConfig.globalWaitAfterPageLoad != null)
-            return false;
-        if (windowHeight != null ? !windowHeight.equals(jobConfig.windowHeight) : jobConfig.windowHeight != null)
-            return false;
-        return reportFormat != null ? reportFormat.equals(jobConfig.reportFormat) : jobConfig.reportFormat == null;
+        return pageLoadTimeout == jobConfig.pageLoadTimeout &&
+                screenshotRetries == jobConfig.screenshotRetries &&
+                threads == jobConfig.threads &&
+                globalTimeout == jobConfig.globalTimeout &&
+                debug == jobConfig.debug &&
+                logToFile == jobConfig.logToFile &&
+                checkForErrorsInLog == jobConfig.checkForErrorsInLog &&
+                Objects.equals(urls, jobConfig.urls) &&
+                browser == jobConfig.browser &&
+                Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) &&
+                Objects.equals(windowHeight, jobConfig.windowHeight) &&
+                Objects.equals(reportFormat, jobConfig.reportFormat);
     }
 
     @Override
     public int hashCode() {
-        int result = urls != null ? urls.hashCode() : 0;
-        result = 31 * result + (browser != null ? browser.hashCode() : 0);
-        result = 31 * result + (globalWaitAfterPageLoad != null ? globalWaitAfterPageLoad.hashCode() : 0);
-        result = 31 * result + pageLoadTimeout;
-        result = 31 * result + (windowHeight != null ? windowHeight.hashCode() : 0);
-        result = 31 * result + (reportFormat != null ? reportFormat.hashCode() : 0);
-        result = 31 * result + screenshotRetries;
-        result = 31 * result + threads;
-        result = 31 * result + globalTimeout;
-        result = 31 * result + (debug ? 1 : 0);
-        result = 31 * result + (logToFile ? 1 : 0);
-        return result;
+        return Objects.hash(urls, browser, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog);
     }
 
     public static JobConfig defaultConfig() {
@@ -186,10 +177,14 @@ public final class JobConfig {
     }
 
     public static JobConfig exampleConfig() {
+        return exampleConfigBuilder().build();
+    }
+
+    public static JobConfig.Builder exampleConfigBuilder() {
         return configBuilder()
                 .withUrls(ImmutableMap.of("http://www.example.com",
                         new UrlConfig(
-                                ImmutableList.of("/","someOtherPath"),
+                                ImmutableList.of("/", "someOtherPath"),
                                 DEFAULT_MAX_DIFF,
                                 ImmutableList.of(
                                         new Cookie("exampleCookieName", "exampleValue", "http://www.example.com", "/", new Date(1000L), true)
@@ -197,7 +192,7 @@ public final class JobConfig {
                                 ImmutableMap.of("live", "www"),
                                 ImmutableMap.of("exampleLocalStorageKey", "value"),
                                 ImmutableMap.of("exampleSessionStorageKey", "value"),
-                                ImmutableList.of(600,800,1000),
+                                ImmutableList.of(600, 800, 1000),
                                 DEFAULT_MAX_SCROLL_HEIGHT,
                                 DEFAULT_WAIT_AFTER_PAGE_LOAD,
                                 DEFAULT_WAIT_AFTER_SCROLL,
@@ -205,9 +200,9 @@ public final class JobConfig {
                                 DEFAULT_WARMUP_BROWSER_CACHE_TIME,
                                 "console.log('This is JavaScript!')",
                                 DEFAULT_WAIT_FOR_FONTS_TIME
-                        )))
-                .build();
+                        )));
     }
+
 
     public static JobConfig readConfig(final String workingDir, final String configFileName) throws FileNotFoundException {
         List<String> searchPaths = new ArrayList<>();
@@ -241,6 +236,7 @@ public final class JobConfig {
         private int globalTimeout = DEFAULT_GLOBAL_TIMEOUT;
         private boolean debug = false;
         private boolean logToFile = false;
+        private boolean checkForErrorsInLog = true;
 
         private Builder() {
         }
@@ -297,6 +293,11 @@ public final class JobConfig {
 
         public Builder withGlobalTimeout(int val) {
             globalTimeout = val;
+            return this;
+        }
+
+        public Builder withCheckForErrorsInLog(boolean val) {
+            checkForErrorsInLog = val;
             return this;
         }
 
