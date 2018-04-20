@@ -87,7 +87,7 @@ public class Main {
                 LOG.info("You specified an explicit URL parameter ({}), any given jobConfig file is ignored! This should only be done for testing purpose.%n", url);
                 LOG.info("Using generated jobConfig:%n%s%n", JobConfig.prettyPrint(jobConfig));
                 LOG.info("You can take this generated jobConfig as base and save it as a text file named 'lineup.json'.");
-                LOG.info("Just add --print-jobConfig parameter to let JLineupRunner print an example jobConfig");
+                LOG.info("Just add --print-jobConfig parameter to let JLineup print an example jobConfig");
             }
         } else {
             try {
@@ -95,7 +95,7 @@ public class Main {
             } catch (FileNotFoundException e) {
                 if (!parameters.isPrintConfig()) {
                     LOG.error(e.getMessage());
-                    LOG.error("Use --help to see the JLineupRunner quick help.");
+                    LOG.error("Use --help to see the JLineup quick help.");
                     throw e;
                 } else {
                     return JobConfig.exampleConfig();
