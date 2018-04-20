@@ -11,10 +11,7 @@ import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -33,7 +30,6 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
@@ -108,6 +104,7 @@ public class Browser implements AutoCloseable {
     private final FileService fileService;
     private final BrowserUtils browserUtils;
     private final RunStepConfig runStepConfig;
+    private final LogErrorChecker logErrorChecker;
 
     /* Every thread has it's own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
     private ExecutorService threadPool;
@@ -122,10 +119,11 @@ public class Browser implements AutoCloseable {
         this.fileService = fileService;
         this.browserUtils = browserUtils;
         this.threadPool = Utils.createThreadPool(jobConfig.threads, "BrowserThread");
+        this.logErrorChecker = new LogErrorChecker();
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         LOG.debug("Closing webdrivers.");
         shutdownCalled.getAndSet(true);
         synchronized (webDrivers) {
@@ -253,7 +251,7 @@ public class Browser implements AutoCloseable {
             //if you set cookies before getting the page once, it will fail
             LOG.info(String.format("Getting root url: %s to set cookies, local and session storage", rootUrl));
             localDriver.get(rootUrl);
-            checkForErrors(localDriver);
+            logErrorChecker.checkForErrors(localDriver, jobConfig);
 
             setLocalStorage(screenshotContext);
             setSessionStorage(screenshotContext);
@@ -271,7 +269,7 @@ public class Browser implements AutoCloseable {
         //Selenium's get() method blocks until the browser/page fires an onload event (files and images referenced in the html have been loaded,
         //but there might be JS calls that load more stuff dynamically afterwards).
         localDriver.get(url);
-        checkForErrors(localDriver);
+        logErrorChecker.checkForErrors(localDriver, jobConfig);
 
         Long pageHeight = getPageHeight();
         final Long viewportHeight = getViewportHeight();
@@ -333,36 +331,6 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    private void checkForErrors(WebDriver driver) {
-        LogEntries logEntries;
-        try {
-            logEntries = driver.manage().logs().get(LogType.BROWSER);
-        } catch (UnsupportedCommandException e) {
-            logEntries = null;
-        }
-        if (logEntries != null) {
-            if (!logEntries.getAll().isEmpty() && logEntries.getAll().get(0).getLevel() == Level.SEVERE) {
-                shutdownCalled.getAndSet(true);
-                throw new WebDriverException(logEntries.getAll().get(0).getMessage());
-            }
-        }
-
-        if (jobConfig.browser.isChrome()) {
-            driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
-            try {
-                WebElement element = driver.findElement(By.xpath("//*[@id=\"main-message\"]/div[2]"));
-                if (element != null && element.getText() != null) {
-                    throw new WebDriverException(element.getText());
-                }
-            } catch (NoSuchElementException e) {
-                //ignore
-            } finally {
-                driver.manage().timeouts().implicitlyWait(DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS, TimeUnit.SECONDS);
-            }
-        }
-
-    }
-
     private void resizeBrowser(WebDriver driver, int width, int height) {
         LOG.debug("Resize browser window to {}x{}", width, height);
         driver.manage().window().setSize(new Dimension(width, height));
@@ -395,7 +363,7 @@ public class Browser implements AutoCloseable {
                 urlToSetCookie = (secure ? "https://" : "http://") + urlToSetCookie;
             }
             localDriver.get(urlToSetCookie);
-            checkForErrors(localDriver);
+            logErrorChecker.checkForErrors(localDriver, jobConfig);
 
             //Set cookies
             if (jobConfig.browser.isPhantomJS()) {
@@ -410,7 +378,7 @@ public class Browser implements AutoCloseable {
         });
     }
 
-    private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) throws Exception {
+    private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) {
         int warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
             final Set<String> browserCacheWarmupMarks = cacheWarmupMarksMap.computeIfAbsent(Thread.currentThread().getName(), k -> initializeCacheWarmupMarks());
@@ -420,7 +388,7 @@ public class Browser implements AutoCloseable {
                 resizeBrowser(driver, maxWidth, jobConfig.windowHeight);
                 LOG.debug("Getting url: {}", url);
                 driver.get(url);
-                checkForErrors(driver);
+                logErrorChecker.checkForErrors(driver, jobConfig);
                 LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
                 browserCacheWarmupMarks.add(url);
                 try {
@@ -441,7 +409,7 @@ public class Browser implements AutoCloseable {
             LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, screenshotContext.windowWidth, jobConfig.windowHeight));
             LOG.debug("Getting url: {}", url);
             driver.get(url);
-            checkForErrors(driver);
+            logErrorChecker.checkForErrors(driver, jobConfig);
             LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
             LOG.debug("Sleeping for {} seconds", warmupTime);
             Thread.sleep(warmupTime * 1000);

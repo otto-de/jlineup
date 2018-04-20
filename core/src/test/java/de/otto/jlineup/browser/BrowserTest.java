@@ -58,7 +58,7 @@ public class BrowserTest {
     private Browser testee;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() {
         initMocks(this);
 
         when(webDriverMock.manage()).thenReturn(webDriverOptionsMock);
@@ -80,25 +80,25 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldGetFirefoxDriver() throws InterruptedException {
+    public void shouldGetFirefoxDriver() {
         final JobConfig jobConfig = configBuilder().withBrowser(FIREFOX).build();
         assertSetDriverType(jobConfig, FirefoxDriver.class);
     }
 
     @Test
-    public void shouldGetChromeDriver() throws InterruptedException {
+    public void shouldGetChromeDriver() {
         final JobConfig jobConfig = configBuilder().withBrowser(CHROME).build();
         assertSetDriverType(jobConfig, ChromeDriver.class);
     }
 
     @Test
-    public void shouldGetChromeDriverForHeadlessChrome() throws Exception {
+    public void shouldGetChromeDriverForHeadlessChrome() {
         final JobConfig jobConfig = configBuilder().withBrowser(CHROME_HEADLESS).build();
         assertSetDriverType(jobConfig, ChromeDriver.class);
     }
 
     @Test
-    public void shouldGetPhantomJSDriver() throws InterruptedException {
+    public void shouldGetPhantomJSDriver() {
         final JobConfig jobConfig = configBuilder().withBrowser(PHANTOMJS).build();
         assertSetDriverType(jobConfig, PhantomJSDriver.class);
     }
@@ -145,7 +145,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldSetCookiesThroughJavascript() throws Exception {
+    public void shouldSetCookiesThroughJavascript() {
         //given
         Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true);
         Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(100000067899L), false);
