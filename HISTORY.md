@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 2.4.1
+* Enhancement: Add jobConfig option `check-for-errors-in-log` to toggle whether jlineup stops on errors in browser log. Default is `true`
+
 ## Release 2.4.0
 * Improvement: Better handling of global timeout
 * Dependency updates
