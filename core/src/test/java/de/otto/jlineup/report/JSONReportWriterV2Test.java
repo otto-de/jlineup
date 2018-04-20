@@ -1,5 +1,7 @@
 package de.otto.jlineup.report;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import org.junit.Before;
@@ -7,8 +9,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.Collections;
 
+import static de.otto.jlineup.config.Cookie.COOKIE_TIME_FORMAT;
+import static de.otto.jlineup.config.JobConfig.exampleConfig;
 import static java.util.Collections.singletonList;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -32,7 +38,7 @@ public class JSONReportWriterV2Test {
                 new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum");
         final Summary globalSummary = new Summary(false, 0d, 0d);
         final Summary localSummary = new Summary(false, 0d, 0d);
-        Report report = new Report(globalSummary, Collections.singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), JobConfig.exampleConfig());
+        Report report = new Report(globalSummary, Collections.singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), exampleConfig());
 
         String expectedString = "{\n" +
                 "  \"summary\": {\n" +
@@ -74,7 +80,7 @@ public class JSONReportWriterV2Test {
                 "            \"value\": \"exampleValue\",\n" +
                 "            \"domain\": \"http://www.example.com\",\n" +
                 "            \"path\": \"/\",\n" +
-                "            \"expiry\": \"Jan 1, 1970 1:00:01 AM\",\n" +
+                "            \"expiry\": "+ new GsonBuilder().setDateFormat(COOKIE_TIME_FORMAT).create().toJson(new Date(1000L)) +",\n" +
                 "            \"secure\": true\n" +
                 "          }\n" +
                 "        ],\n" +

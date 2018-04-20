@@ -192,7 +192,7 @@ public final class JobConfig {
                                 ImmutableList.of("/","someOtherPath"),
                                 DEFAULT_MAX_DIFF,
                                 ImmutableList.of(
-                                        new Cookie("exampleCookieName", "exampleValue", "http://www.example.com", "/", Date.from(Instant.ofEpochMilli(1000L)), true)
+                                        new Cookie("exampleCookieName", "exampleValue", "http://www.example.com", "/", new Date(1000L), true)
                                 ),
                                 ImmutableMap.of("live", "www"),
                                 ImmutableMap.of("exampleLocalStorageKey", "value"),
