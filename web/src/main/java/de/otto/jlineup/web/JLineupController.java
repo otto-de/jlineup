@@ -53,11 +53,9 @@ public class JLineupController {
     @GetMapping("/runs/{runId}")
     public ResponseEntity<JLineupRunStatus> getRun(@PathVariable String runId) {
         Optional<JLineupRunStatus> run = jLineupService.getRun(runId);
-        if (run.isPresent()) {
-            return new ResponseEntity<>(run.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return run
+                .map(jLineupRunStatus -> new ResponseEntity<>(jLineupRunStatus, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @ExceptionHandler(RunNotFoundException.class)
