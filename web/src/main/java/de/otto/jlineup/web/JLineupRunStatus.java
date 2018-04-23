@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
+
 @JsonDeserialize(builder = JLineupRunStatus.Builder.class)
 public class JLineupRunStatus {
 
@@ -174,11 +176,11 @@ public class JLineupRunStatus {
         }
 
         public String getHtmlUrl() {
-            return htmlUrl;
+            return fromCurrentContextPath().path(htmlUrl).build().toString();
         }
 
         public String getJsonUrl() {
-            return jsonUrl;
+            return fromCurrentContextPath().path(jsonUrl).build().toString();
         }
 
         public static JLineupRunStatus.Reports.Builder reportsBuilder() {

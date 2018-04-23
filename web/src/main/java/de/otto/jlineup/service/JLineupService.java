@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static de.otto.jlineup.web.JLineupRunStatus.copyOfRunStatusBuilder;
 import static de.otto.jlineup.web.JLineupRunStatus.runStatusBuilder;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
 
 @Service
 public class JLineupService {
