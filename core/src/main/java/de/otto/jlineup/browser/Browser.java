@@ -370,6 +370,9 @@ public class Browser implements AutoCloseable {
         boolean secure = cookies.stream().anyMatch(cookie -> cookie.secure);
         String urlToSetCookie = domain;
         if (!urlToSetCookie.startsWith("http")) {
+            if (urlToSetCookie.startsWith(".")) {
+                urlToSetCookie = urlToSetCookie.substring(1);
+            }
             urlToSetCookie = (secure ? "https://" : "http://") + urlToSetCookie;
         }
         localDriver.get(urlToSetCookie);
