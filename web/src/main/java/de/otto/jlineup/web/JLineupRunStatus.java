@@ -176,11 +176,19 @@ public class JLineupRunStatus {
         }
 
         public String getHtmlUrl() {
-            return fromCurrentContextPath().path(htmlUrl).build().toString();
+            try {
+                return fromCurrentContextPath().path(htmlUrl).build().toString();
+            } catch (IllegalStateException e) {
+                return htmlUrl;
+            }
         }
 
         public String getJsonUrl() {
-            return fromCurrentContextPath().path(jsonUrl).build().toString();
+            try {
+                return fromCurrentContextPath().path(jsonUrl).build().toString();
+            } catch (IllegalStateException e) {
+                return jsonUrl;
+            }
         }
 
         public static JLineupRunStatus.Reports.Builder reportsBuilder() {
