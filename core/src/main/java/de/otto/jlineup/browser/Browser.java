@@ -9,8 +9,8 @@ import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
-import org.openqa.selenium.*;
 import org.openqa.selenium.Dimension;
+import org.openqa.selenium.*;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
@@ -349,33 +350,40 @@ public class Browser implements AutoCloseable {
                 || (screenshotContext.urlConfig.sessionStorage != null && screenshotContext.urlConfig.sessionStorage.size() > 0));
     }
 
-
     private void setCookies(ScreenshotContext screenshotContext, WebDriver localDriver) {
-        Map<String, List<Cookie>> cookieByDomain = screenshotContext.urlConfig.cookies
+        //First: Set cookies on different domains which are explicitly set
+        Map<String, List<Cookie>> cookiesByDomainDifferentFromDomainToScreenshot = screenshotContext.urlConfig.cookies
                 .stream()
-                .collect(groupingBy(cookie -> cookie.domain != null ? cookie.domain : screenshotContext.url));
+                .filter(cookie -> cookie.domain != null)
+                .collect(groupingBy(cookie -> cookie.domain));
 
-        cookieByDomain.forEach((domain, cookies) -> {
-            //Surf to cookie domain
-            boolean secure = cookies.stream().anyMatch(cookie -> cookie.secure);
-            String urlToSetCookie = domain;
-            if (!urlToSetCookie.startsWith("http")) {
-                urlToSetCookie = (secure ? "https://" : "http://") + urlToSetCookie;
-            }
-            localDriver.get(urlToSetCookie);
-            logErrorChecker.checkForErrors(localDriver, jobConfig);
-
-            //Set cookies
-            if (jobConfig.browser.isPhantomJS()) {
-                //current phantomjs driver has a bug that prevents selenium's normal way of setting cookies
-                LOG.debug("Setting cookies for PhantomJS");
-                setCookiesPhantomJS(cookies);
-            } else {
-                LOG.debug("Setting cookies");
-                setCookies(cookies);
-            }
-
+        cookiesByDomainDifferentFromDomainToScreenshot.forEach((domain, cookies) -> {
+            setCookiesForDomain(localDriver, domain, cookies);
         });
+
+        //Second: Set my cookies on same domain
+        List<Cookie> cookiesForSameDomain = screenshotContext.urlConfig.cookies.stream().filter(cookie -> cookie.domain == null).collect(Collectors.toList());
+        setCookiesForDomain(localDriver, screenshotContext.url, cookiesForSameDomain);
+    }
+
+    private void setCookiesForDomain(WebDriver localDriver, String domain, List<Cookie> cookies) {
+        boolean secure = cookies.stream().anyMatch(cookie -> cookie.secure);
+        String urlToSetCookie = domain;
+        if (!urlToSetCookie.startsWith("http")) {
+            urlToSetCookie = (secure ? "https://" : "http://") + urlToSetCookie;
+        }
+        localDriver.get(urlToSetCookie);
+        logErrorChecker.checkForErrors(localDriver, jobConfig);
+
+        //Set cookies
+        if (jobConfig.browser.isPhantomJS()) {
+            //current phantomjs driver has a bug that prevents selenium's normal way of setting cookies
+            LOG.debug("Setting cookies for PhantomJS");
+            setCookiesPhantomJS(cookies);
+        } else {
+            LOG.debug("Setting cookies");
+            setCookies(cookies);
+        }
     }
 
     private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) {
