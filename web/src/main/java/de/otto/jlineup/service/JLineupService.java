@@ -60,12 +60,8 @@ public class JLineupService {
         CompletableFuture<State> state = supplyAsync(
                 () -> {
                     changeState(runId, State.BEFORE_RUNNING);
-                    boolean runSucceeded = jLineupRunner.run();
-                    if (runSucceeded) {
-                        return State.BEFORE_DONE;
-                    } else {
-                        return State.ERROR;
-                    }
+                    jLineupRunner.run();
+                    return State.BEFORE_DONE;
                 }, executorService)
                 .exceptionally(ex -> {
                     LOG.error("Error in before runStep.", ex);

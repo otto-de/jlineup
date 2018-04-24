@@ -179,7 +179,7 @@ public class Browser implements AutoCloseable {
             LOG.error("Threadpool ran into timeout.");
             throw new TimeoutException("Global timeout of " + jobConfig.globalTimeout + " seconds was reached.");
         } else {
-            LOG.info("Threadpool terminated.");
+            LOG.debug("Threadpool terminated.");
         }
 
         //Get and propagate possible exceptions

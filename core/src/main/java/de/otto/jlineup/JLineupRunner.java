@@ -51,8 +51,7 @@ public class JLineupRunner {
             try (Browser browser = new Browser(runStepConfig, jobConfig, fileService, browserUtils)) {
                 browser.takeScreenshots();
             } catch (Exception e) {
-                LOG.error("JLineup Browser Exception!", e);
-                return false;
+                throw new RuntimeException(e);
             }
         }
 

@@ -72,10 +72,16 @@ public class Main {
             System.exit(1);
         }
 
-        boolean runSucceeded = jLineupRunner.run();
-        if (!runSucceeded) {
+        try {
+            boolean runSucceeded = jLineupRunner.run();
+            if (!runSucceeded) {
+                System.exit(1);
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(),e);
             System.exit(1);
         }
+
     }
 
     private static JobConfig buildConfig(CommandLineParameters parameters) throws FileNotFoundException {

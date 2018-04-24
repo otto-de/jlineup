@@ -9,5 +9,5 @@ public enum State {
     FINISHED_WITHOUT_DIFFERENCES,
     FINISHED_WITH_DIFFERENCES,
     ERROR,
-    DEAD
+    DEAD;
 }
