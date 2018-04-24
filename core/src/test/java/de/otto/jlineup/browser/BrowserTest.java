@@ -26,6 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.config.JobConfig.configBuilder;
@@ -64,8 +65,8 @@ public class BrowserTest {
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
         when(webDriverOptionsMock.logs()).thenReturn(webDriverLogs);
-        when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class))).thenReturn(webDriverMock);
-        when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), anyInt())).thenReturn(webDriverMock);
+        when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class))).thenReturn(webDriverMock);
+        when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class), anyInt())).thenReturn(webDriverMock);
         JobConfig jobConfig = configBuilder().build();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
         testee.initializeWebDriver();
@@ -106,7 +107,7 @@ public class BrowserTest {
         WebDriver driver = null;
         BrowserUtils realBrowserUtils = new BrowserUtils();
         try {
-            driver = realBrowserUtils.getWebDriverByConfig(jobConfig);
+            driver = realBrowserUtils.getWebDriverByConfig(jobConfig, jLineupRunConfigurationBuilder().build());
             assertTrue(driverClass.isInstance(driver));
         } finally {
             if (driver != null) {

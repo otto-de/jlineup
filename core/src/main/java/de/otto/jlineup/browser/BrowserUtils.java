@@ -14,6 +14,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class BrowserUtils {
+
+    private final static Logger LOG = LoggerFactory.getLogger(BrowserUtils.class);
 
     public static String buildUrl(String url, String path, final Map<String, String> envMapping) {
         if (envMapping != null && !envMapping.isEmpty()) {
@@ -49,26 +53,30 @@ public class BrowserUtils {
         return url + path;
     }
 
-    synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig) {
-        return getWebDriverByConfig(jobConfig, JobConfig.DEFAULT_WINDOW_WIDTH);
+    synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig) {
+        return getWebDriverByConfig(jobConfig, runStepConfig, JobConfig.DEFAULT_WINDOW_WIDTH);
     }
 
-    synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, int width) {
+    synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig, int width) {
         WebDriver driver;
         switch (jobConfig.browser) {
             case FIREFOX:
                 FirefoxDriverManager.getInstance().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
                 firefoxOptions.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
+                firefoxOptions.addArguments(runStepConfig.getFirefoxParameters());
+                LOG.debug("Creating firefox with options: {}", firefoxOptions.toString());
                 driver = new FirefoxDriver(firefoxOptions);
                 break;
             case FIREFOX_HEADLESS:
-                FirefoxDriverManager.getInstance().setup();
+                FirefoxDriverManager.getInstance().forceCache().setup();
                 FirefoxOptions firefoxOptionsForHeadless = new FirefoxOptions();
                 //Headless parameter is supported with Firefox >= 55
                 firefoxOptionsForHeadless.addArguments("--headless");
                 firefoxOptionsForHeadless.addArguments("-width", width + "" , "-height", jobConfig.windowHeight + "");
+                firefoxOptionsForHeadless.addArguments(runStepConfig.getFirefoxParameters());
                 firefoxOptionsForHeadless.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
+                LOG.debug("Creating headless firefox with options: {}", firefoxOptionsForHeadless.toString());
                 driver = new FirefoxDriver(firefoxOptionsForHeadless);
                 break;
             case CHROME:
@@ -76,14 +84,18 @@ public class BrowserUtils {
                 ChromeOptions options = new ChromeOptions();
                 //To work in a headless env, this is needed
                 options.addArguments("--no-sandbox");
+                options.addArguments(runStepConfig.getChromeParameters());
+                LOG.debug("Creating chrome with options: {}", options.toString());
                 driver = new ChromeDriver(options);
                 break;
             case CHROME_HEADLESS:
-                ChromeDriverManager.getInstance().setup();
+                ChromeDriverManager.getInstance().forceCache().setup();
                 ChromeOptions options_headless = new ChromeOptions();
                 //To work in a headless env, this is needed
                 options_headless.addArguments("--no-sandbox","--headless","--disable-gpu","--use-spdy=off");
                 options_headless.addArguments("--window-size=" + width + "," + jobConfig.windowHeight);
+                options_headless.addArguments(runStepConfig.getChromeParameters());
+                LOG.debug("Creating headless chrome with options: {}", options_headless.toString());
                 driver = new ChromeDriver(options_headless);
                 break;
             case PHANTOMJS:

@@ -612,14 +612,14 @@ public class Browser implements AutoCloseable {
 
     private WebDriver createDriver() {
         shutdownCalled.get();
-        final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig);
+        final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, runStepConfig);
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
         LOG.debug("Adding webdriver for thread {} ({})", Thread.currentThread().getName(), driver.getClass().getCanonicalName());
         return driver;
     }
 
     private WebDriver createDriverWithWidth(int width) {
-        final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, width);
+        final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, runStepConfig, width);
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
         LOG.debug("Adding webdriver for thread {} with width {} ({})", Thread.currentThread().getName(), width, driver.getClass().getCanonicalName());
         return driver;

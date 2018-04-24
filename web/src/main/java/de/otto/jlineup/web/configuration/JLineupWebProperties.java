@@ -4,9 +4,11 @@ import de.otto.jlineup.browser.Browser;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static de.otto.jlineup.browser.Browser.Type.*;
+import static java.util.Collections.emptyList;
 
 @ConfigurationProperties(prefix = "jlineup")
 public class JLineupWebProperties {
@@ -19,6 +21,9 @@ public class JLineupWebProperties {
     private String reportDirectory = "report-{id}";
     private int maxParallelJobs = DEFAULT_MAX_PARALLEL_JOBS;
     private int maxThreadsPerJob = DEFAULT_MAX_THREADS_PER_JOB;
+
+    private List<String> chromeLaunchParameters = emptyList();
+    private List<String> firefoxLaunchParameters = emptyList();
 
     private List<Browser.Type> installedBrowsers = Arrays.asList(
             CHROME_HEADLESS,
@@ -71,5 +76,21 @@ public class JLineupWebProperties {
 
     public void setMaxThreadsPerJob(int maxThreadsPerJob) {
         this.maxThreadsPerJob = maxThreadsPerJob;
+    }
+
+    public List<String> getChromeLaunchParameters() {
+        return chromeLaunchParameters;
+    }
+
+    public List<String> getFirefoxLaunchParameters() {
+        return firefoxLaunchParameters;
+    }
+
+    public void setFirefoxLaunchParameters(List<String> firefoxLaunchParameters) {
+        this.firefoxLaunchParameters = firefoxLaunchParameters;
+    }
+
+    public void setChromeLaunchParameters(List<String> chromeLaunchParameters) {
+        this.chromeLaunchParameters = chromeLaunchParameters;
     }
 }
