@@ -1,7 +1,11 @@
 package de.otto.jlineup.browser;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.Utils;
+import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
@@ -21,7 +25,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static com.google.common.collect.ImmutableMap.of;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,7 +32,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = FakeWebServer.class)
+@ContextConfiguration(classes = FakeWebServerController.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class BrowserIntegrationTest {
 
@@ -41,6 +44,8 @@ public class BrowserIntegrationTest {
     @Before
     public void setup() throws IOException {
         tempDirectory = Files.createTempDirectory("jlineup-browser-integration-test");
+        Utils.setLogLevelToDebug();
+        Utils.setLogLevelToDebug();
     }
 
     @After
@@ -121,6 +126,22 @@ public class BrowserIntegrationTest {
         //no Exception
     }
 
+    @Test
+    public void shouldNotAppendSlashToDomain() throws ConfigValidationException {
+        UrlConfig urlConfig = UrlConfig.urlConfigBuilder().withCookie(new Cookie("CookieName", "CookieValue")).build();
+        JobConfig jobConfig = localTestConfig("params?param1=1&param2=2", Browser.Type.CHROME_HEADLESS, true, urlConfig);
+        runJLineup(jobConfig, Step.before);
+    }
+
+    @Test
+    public void shouldSetCookieOnCorrectPath() throws ConfigValidationException {
+        UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
+                .withCookie(new Cookie("CookieName", "CookieValue"))
+                .withPaths(ImmutableList.of("/")).build();
+        JobConfig jobConfig = localTestConfig("somerootpath/somevalidsubpath", Browser.Type.CHROME_HEADLESS, true, urlConfig);
+        runJLineup(jobConfig, Step.before);
+    }
+
     private void runJLineup(JobConfig jobConfig, Step step) throws ConfigValidationException {
 
         new JLineupRunner(jobConfig,
@@ -132,7 +153,11 @@ public class BrowserIntegrationTest {
     }
 
     private JobConfig localTestConfig(String endpoint, Browser.Type browser, boolean checkForErrors) {
-        return JobConfig.configBuilder().withCheckForErrorsInLog(checkForErrors).withUrls(of("http://localhost:" + port + "/" + endpoint, new UrlConfig())).withBrowser(browser).build();
+        return localTestConfig(endpoint, browser, checkForErrors, new UrlConfig());
+    }
+
+    private JobConfig localTestConfig(String endpoint, Browser.Type browser, boolean checkForErrors, UrlConfig urlConfig) {
+        return JobConfig.configBuilder().withCheckForErrorsInLog(checkForErrors).withUrls(ImmutableMap.of("http://localhost:" + port + "/" + endpoint, urlConfig)).withBrowser(browser).build();
     }
 
 }

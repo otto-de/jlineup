@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
+
 public class BrowserUtils {
 
     private final static Logger LOG = LoggerFactory.getLogger(BrowserUtils.class);
@@ -42,13 +44,13 @@ public class BrowserUtils {
 
     static String buildUrl(String url, String path) {
         if (path == null) {
-            path = "/";
+            path = DEFAULT_PATH;
         }
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        if (!url.endsWith("/")) {
+        if (!url.endsWith("/") && !path.equals("") && !path.startsWith("/")) {
             url = url + "/";
+        }
+        if (url.endsWith("/") && path.startsWith("/")) {
+            path = path.substring(1);
         }
         return url + path;
     }

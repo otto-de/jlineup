@@ -61,8 +61,10 @@ public class Utils {
     }
 
     public static void setLogLevelToDebug() {
-        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-        root.setLevel(Level.DEBUG);
+        //ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        //root.setLevel(Level.DEBUG);
+        ch.qos.logback.classic.Logger otto = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("de.otto");
+        otto.setLevel(Level.DEBUG);
     }
 
     public static void logToFile(String workingDir) {

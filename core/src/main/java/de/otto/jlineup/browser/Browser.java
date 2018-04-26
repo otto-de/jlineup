@@ -235,7 +235,7 @@ public class Browser implements AutoCloseable {
         }
 
         final String url = buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
-        final String rootUrl = buildUrl(screenshotContext.url, "/", screenshotContext.urlConfig.envMapping);
+        final String rootUrl = buildUrl(screenshotContext.url, "", screenshotContext.urlConfig.envMapping);
 
         if (areThereCookies(screenshotContext)) {
             //set cookies and local storage
@@ -245,10 +245,11 @@ public class Browser implements AutoCloseable {
         if (isThereStorage(screenshotContext)) {
             //get root page from url to be able to set cookies afterwards
             //if you set cookies before getting the page once, it will fail
-            LOG.info(String.format("Getting root url: %s to set cookies, local and session storage", rootUrl));
-            localDriver.get(rootUrl);
-            logErrorChecker.checkForErrors(localDriver, jobConfig);
-
+            if (!localDriver.getCurrentUrl().equals(rootUrl)){
+                LOG.info(String.format("Getting root url: %s to set local and session storage", rootUrl));
+                localDriver.get(rootUrl);
+                logErrorChecker.checkForErrors(localDriver, jobConfig);
+            }
             setLocalStorage(screenshotContext);
             setSessionStorage(screenshotContext);
         }
@@ -361,7 +362,7 @@ public class Browser implements AutoCloseable {
         setCookiesForDomain(localDriver, screenshotContext.url, cookiesForSameDomain);
     }
 
-    private void setCookiesForDomain(WebDriver localDriver, String domain, List<Cookie> cookies) {
+    private void setCookiesForDomain(WebDriver driver, String domain, List<Cookie> cookies) {
         boolean secure = cookies.stream().anyMatch(cookie -> cookie.secure);
         String urlToSetCookie = domain;
         if (!urlToSetCookie.startsWith("http")) {
@@ -370,8 +371,9 @@ public class Browser implements AutoCloseable {
             }
             urlToSetCookie = (secure ? "https://" : "http://") + urlToSetCookie;
         }
-        localDriver.get(urlToSetCookie);
-        logErrorChecker.checkForErrors(localDriver, jobConfig);
+        LOG.debug("Going to {} to set cookies.", urlToSetCookie);
+        driver.get(urlToSetCookie);
+        logErrorChecker.checkForErrors(driver, jobConfig);
 
         //Set cookies
         if (jobConfig.browser.isPhantomJS()) {

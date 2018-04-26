@@ -221,15 +221,17 @@ public class BrowserTest {
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
-                .withUrls(ImmutableMap.of("testurl", urlConfig))
+                .withUrls(ImmutableMap.of("http://testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
+
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
-        ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", 800, true, urlConfig);
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", 600, true, urlConfig);
+        ScreenshotContext screenshotContext2 = ScreenshotContext.of("http://testurl", "/", 800, true, urlConfig);
 
+        when(webDriverMock.getCurrentUrl()).thenReturn("http://testurl");
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/http_url_root_ff3c40c_1001_02002_before.png")));
@@ -245,12 +247,16 @@ public class BrowserTest {
         verify(webDriverMock, times(2)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(2)).executeScript("testJS();");
         verify(webDriverMock, times(10)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
-        verify(webDriverMock, times(5)).get("testurl/");
+        //Two times the cookie -> goes to url
+        verify(webDriverMock, times(2)).get("http://testurl");
+        //One time cache warmup, then the two calls for the two contexts with full url + subpath
+        verify(webDriverMock, times(3)).get("http://testurl/");
         verify(webDriverMock, times(2)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
         verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(8)).executeScript(String.format(JS_SCROLL_CALL, 500));
+
     }
 
 
@@ -285,14 +291,15 @@ public class BrowserTest {
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
-                .withUrls(ImmutableMap.of("testurl", urlConfig))
+                .withUrls(ImmutableMap.of("http://testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", 600, true, urlConfig);
 
+        when(webDriverMock.getCurrentUrl()).thenReturn("http://testurl");
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/http_url_root_ff3c40c_1001_02002_before.png")));
@@ -309,7 +316,7 @@ public class BrowserTest {
         verify(webDriverMock, times(1)).get("http://cookieurl");
         verify(webDriverMock, times(1)).get("http://anotherCookieurl");
         verify(webDriverMock, times(1)).get("http://testurl");
-        verify(webDriverMock, times(3)).get("testurl/");
+        verify(webDriverMock, times(2)).get("http://testurl/");
         verify(webDriverMock, times(1)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
 
         ArgumentCaptor<org.openqa.selenium.Cookie> cookieCaptor = ArgumentCaptor.forClass(org.openqa.selenium.Cookie.class);
@@ -356,14 +363,15 @@ public class BrowserTest {
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
-                .withUrls(ImmutableMap.of("testurl", urlConfig))
+                .withUrls(ImmutableMap.of("http://testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", 600, true, urlConfig);
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", 600, true, urlConfig);
 
+        when(webDriverMock.getCurrentUrl()).thenReturn("http://cookieurl");
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/http_url_root_ff3c40c_1001_02002_before.png")));
@@ -378,7 +386,7 @@ public class BrowserTest {
         verify(webDriverMock, times(1)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(5)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         verify(webDriverMock, times(1)).get("https://cookieurl");
-        verify(webDriverMock, times(3)).get("testurl/");
+        verify(webDriverMock, times(2)).get("http://testurl/");
         verify(webDriverMock, times(1)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
 
         ArgumentCaptor<org.openqa.selenium.Cookie> cookieCaptor = ArgumentCaptor.forClass(org.openqa.selenium.Cookie.class);

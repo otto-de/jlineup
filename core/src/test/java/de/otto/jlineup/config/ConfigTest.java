@@ -47,7 +47,7 @@ public class ConfigTest {
         assertThat(jobConfig.browser.isPhantomJS(), is(true));
         assertThat(jobConfig.windowHeight, is(800));
         assertThat(jobConfig.urls.get("https://www.otto.de").windowWidths, is(ImmutableList.of(800)));
-        assertThat(jobConfig.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/")));
+        assertThat(jobConfig.urls.get("https://www.otto.de").paths, is(ImmutableList.of("")));
         assertThat(jobConfig.globalWaitAfterPageLoad, is(0F));
         assertThat(jobConfig.pageLoadTimeout, is(120));
         assertThat(jobConfig.screenshotRetries, is(0));

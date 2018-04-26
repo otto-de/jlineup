@@ -48,6 +48,12 @@ public class BrowserUtilsTest {
     }
 
     @Test
+    public void shouldNotAddSlashWhenNoneIsConfigured() {
+        final String url = buildUrl("lalal?lo=1", "");
+        assertThat(url, is("lalal?lo=1"));
+    }
+
+    @Test
     public void shouldGenerateScreenshotsParameters() throws FileNotFoundException, JLineupException {
         //given
         JobConfig jobConfig = JobConfig.readConfig(".", "src/test/resources/lineup_test.json");
