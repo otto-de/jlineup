@@ -92,7 +92,7 @@ public class BrowserUtils {
                 ChromeDriverManager.getInstance().forceCache().setup();
                 ChromeOptions options_headless = new ChromeOptions();
                 //To work in a headless env, this is needed
-                options_headless.addArguments("--no-sandbox","--headless","--disable-gpu","--use-spdy=off");
+                options_headless.addArguments("--no-sandbox","--headless","--disable-gpu");
                 options_headless.addArguments("--window-size=" + width + "," + jobConfig.windowHeight);
                 options_headless.addArguments(runStepConfig.getChromeParameters());
                 LOG.debug("Creating headless chrome with options: {}", options_headless.toString());
