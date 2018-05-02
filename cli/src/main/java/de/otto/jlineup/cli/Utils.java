@@ -6,6 +6,7 @@ import de.otto.jlineup.config.JobConfig;
 import java.io.FileNotFoundException;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
 public class Utils {
@@ -21,6 +22,8 @@ public class Utils {
                 .withReportDirectory(commandLineParameters.getReportDirectory())
                 .withStep(commandLineParameters.getStep())
                 .withUrlReplacements(firstNonNull(commandLineParameters.getUrlReplacements(), emptyMap()))
+                .withChromeParameters(firstNonNull(commandLineParameters.getChromeParameters(), emptyList()))
+                .withFirefoxParameters(firstNonNull(commandLineParameters.getFirefoxParameters(), emptyList()))
                 .build();
     }
 

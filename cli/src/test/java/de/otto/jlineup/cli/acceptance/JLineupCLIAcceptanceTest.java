@@ -112,9 +112,11 @@ public class JLineupCLIAcceptanceTest {
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--url","file://"+ CWD +"/src/test/resources/acceptance/webpage/test.html"});
     }
 
+
+
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_WithChrome() throws Exception {
-        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_chrome.lineup.json","--replace-in-url###CWD###="+CWD," --step","before"});
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_chrome.lineup.json","--replace-in-url###CWD###="+CWD, "--step","before"});
         Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_chrome.lineup.json","--replace-in-url###CWD###="+CWD ,"--step","after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
@@ -131,9 +133,15 @@ public class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    public void shouldPassCommandLineParametersToChrome() throws Exception {
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_chrome.lineup.json","--replace-in-url###CWD###="+CWD,"--step","before","--chrome-parameter","--user-agent=\"fakeuseragent\""});
+        assertThat(systemOutCaptor.toString(), containsString("User agent: \"fakeuseragent\""));
+    }
+
+    @Test
     public void shouldRenderLogoTheSame_WithChrome() throws Exception {
-        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_chrome_svg.lineup.json","--replace-in-url###CWD###="+CWD," --step","before"});
-        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_chrome_svg.lineup.json","--replace-in-url###CWD###="+CWD ,"--step","after"});
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_chrome_svg.lineup.json","--replace-in-url###CWD###="+CWD, "--step","before"});
+        Main.main(new String[]{"--working-dir",tempDirectory.toString(),"--config","src/test/resources/acceptance/acceptance_chrome_svg.lineup.json","--replace-in-url###CWD###="+CWD, "--step","after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));

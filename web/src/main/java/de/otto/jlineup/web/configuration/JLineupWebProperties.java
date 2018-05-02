@@ -4,7 +4,6 @@ import de.otto.jlineup.browser.Browser;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static de.otto.jlineup.browser.Browser.Type.*;

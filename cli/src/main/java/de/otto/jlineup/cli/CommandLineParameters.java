@@ -4,9 +4,7 @@ import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.Parameter;
 import de.otto.jlineup.config.Step;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class CommandLineParameters {
 
@@ -42,6 +40,12 @@ public class CommandLineParameters {
 
     @Parameter(names = {"--version", "-v"}, description = "Prints version information.")
     private boolean version = false;
+
+    @Parameter(names = {"--chrome-parameter"}, description = "Additional command line parameters for spawned chrome processes. Example: --chrome-parameter \"--use-shm=false\"")
+    private List<String> chromeParameters = Collections.emptyList();
+
+    @Parameter(names = {"--firefox-parameter"}, description = "Additional command line parameters for spawned firefox processes.")
+    private List<String> firefoxParameters = Collections.emptyList();
 
     @DynamicParameter(names = {"--replace-in-url", "-R"}, description = "The given keys are replaced with the corresponding values in all urls that are tested.")
     private Map<String, String> urlReplacements = new HashMap<>();
@@ -153,4 +157,11 @@ public class CommandLineParameters {
         return version;
     }
 
+    public List<String> getChromeParameters() {
+        return chromeParameters;
+    }
+
+    public List<String> getFirefoxParameters() {
+        return firefoxParameters;
+    }
 }
