@@ -7,6 +7,7 @@ import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.ChromeDriverManager;
 import io.github.bonigarcia.wdm.FirefoxDriverManager;
 import io.github.bonigarcia.wdm.PhantomJsDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -61,50 +62,32 @@ public class BrowserUtils {
 
     synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig, int width) {
         WebDriver driver;
-        switch (jobConfig.browser) {
-            case FIREFOX:
-                FirefoxDriverManager.getInstance().setup();
-                FirefoxOptions firefoxOptions = new FirefoxOptions();
-                firefoxOptions.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
-                firefoxOptions.addArguments(runStepConfig.getFirefoxParameters());
-                LOG.debug("Creating firefox with options: {}", firefoxOptions.toString());
-                driver = new FirefoxDriver(firefoxOptions);
-                break;
-            case FIREFOX_HEADLESS:
-                FirefoxDriverManager.getInstance().forceCache().setup();
-                FirefoxOptions firefoxOptionsForHeadless = new FirefoxOptions();
-                //Headless parameter is supported with Firefox >= 55
-                firefoxOptionsForHeadless.addArguments("--headless");
-                firefoxOptionsForHeadless.addArguments("-width", width + "" , "-height", jobConfig.windowHeight + "");
-                firefoxOptionsForHeadless.addArguments(runStepConfig.getFirefoxParameters());
-                firefoxOptionsForHeadless.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
-                LOG.debug("Creating headless firefox with options: {}", firefoxOptionsForHeadless.toString());
-                driver = new FirefoxDriver(firefoxOptionsForHeadless);
-                break;
-            case CHROME:
-                ChromeDriverManager.getInstance().setup();
-                ChromeOptions options = new ChromeOptions();
-                //To work in a headless env, this is needed
-                options.addArguments("--no-sandbox");
-                options.addArguments(runStepConfig.getChromeParameters());
-                LOG.debug("Creating chrome with options: {}", options.toString());
-                driver = new ChromeDriver(options);
-                break;
-            case CHROME_HEADLESS:
-                ChromeDriverManager.getInstance().forceCache().setup();
-                ChromeOptions options_headless = new ChromeOptions();
-                //To work in a headless env, this is needed
-                options_headless.addArguments("--no-sandbox","--headless","--disable-gpu");
-                options_headless.addArguments("--window-size=" + width + "," + jobConfig.windowHeight);
-                options_headless.addArguments(runStepConfig.getChromeParameters());
-                LOG.debug("Creating headless chrome with options: {}", options_headless.toString());
-                driver = new ChromeDriver(options_headless);
-                break;
-            case PHANTOMJS:
-            default:
-                PhantomJsDriverManager.getInstance().setup();
-                driver = new PhantomJSDriver();
-                break;
+        if (jobConfig.browser.isFirefox()) {
+            WebDriverManager.firefoxdriver().forceCache().setup();
+            FirefoxOptions options = new FirefoxOptions();
+            options.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
+            options.addArguments(runStepConfig.getFirefoxParameters());
+            if (jobConfig.browser.isHeadless()) {
+                options.addArguments("--headless");
+                options.addArguments("-width", width + "" , "-height", jobConfig.windowHeight + "");
+            }
+            LOG.debug("Creating firefox with options: {}", options.toString());
+            driver = new FirefoxDriver(options);
+        } else if (jobConfig.browser.isChrome()) {
+            WebDriverManager.chromedriver().forceCache().setup();
+            ChromeOptions options = new ChromeOptions();
+            //To work in a headless env, this is needed
+            options.addArguments("--no-sandbox");
+            options.addArguments(runStepConfig.getChromeParameters());
+            if (jobConfig.browser.isHeadless()) {
+                options.addArguments("--headless","--disable-gpu");
+                options.addArguments("--window-size=" + width + "," + jobConfig.windowHeight);
+            }
+            LOG.debug("Creating chrome with options: {}", options.toString());
+            driver = new ChromeDriver(options);
+        } else {
+            WebDriverManager.phantomjs().forceCache().setup();
+            driver = new PhantomJSDriver();
         }
         driver.manage().timeouts().pageLoadTimeout(jobConfig.pageLoadTimeout, TimeUnit.SECONDS);
         return driver;

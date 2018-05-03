@@ -7,10 +7,7 @@ import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openqa.selenium.Dimension;
@@ -67,6 +64,7 @@ public class BrowserTest {
         when(webDriverOptionsMock.logs()).thenReturn(webDriverLogs);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class))).thenReturn(webDriverMock);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class), anyInt())).thenReturn(webDriverMock);
+        when(webDriverMock.executeScript(JS_GET_USER_AGENT)).thenReturn("Mocked Webdriver");
         JobConfig jobConfig = configBuilder().build();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
         testee.initializeWebDriver();
@@ -452,6 +450,7 @@ public class BrowserTest {
     }
 
     @Test
+    @Ignore
     public void shouldGrepChromeDrivers() throws Exception {
         testee.grepChromedrivers();
     }
