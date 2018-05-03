@@ -8,16 +8,23 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
 import org.junit.Test;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
 import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
+import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
+import static de.otto.jlineup.config.JobConfig.configBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class BrowserUtilsTest {
 
@@ -98,11 +105,48 @@ public class BrowserUtilsTest {
     }
 
     public static UrlConfig getExpectedUrlConfigForOttoDe() {
-        return new UrlConfig(ImmutableList.of("/","multimedia"), 0.05f, ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600,800,1200),50000,2, 1, 0,3, "console.log('Moin!');", 0);
+        return new UrlConfig(ImmutableList.of("/", "multimedia"), 0.05f, ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600, 800, 1200), 50000, 2, 1, 0, 3, "console.log('Moin!');", 0);
     }
 
     public static UrlConfig getExpectedUrlConfigForGoogleDe() {
         return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1200), 100000, 0, 0, 0, 0, null, 0);
+    }
+
+    @Test
+    public void shouldGetFirefoxDriver() {
+        final JobConfig jobConfig = configBuilder().withBrowser(FIREFOX).build();
+        assertSetDriverType(jobConfig, FirefoxDriver.class);
+    }
+
+    @Test
+    public void shouldGetChromeDriver() {
+        final JobConfig jobConfig = configBuilder().withBrowser(CHROME).build();
+        assertSetDriverType(jobConfig, ChromeDriver.class);
+    }
+
+    @Test
+    public void shouldGetChromeDriverForHeadlessChrome() {
+        final JobConfig jobConfig = configBuilder().withBrowser(CHROME_HEADLESS).build();
+        assertSetDriverType(jobConfig, ChromeDriver.class);
+    }
+
+    @Test
+    public void shouldGetPhantomJSDriver() {
+        final JobConfig jobConfig = configBuilder().withBrowser(PHANTOMJS).build();
+        assertSetDriverType(jobConfig, PhantomJSDriver.class);
+    }
+
+    private void assertSetDriverType(JobConfig jobConfig, Class<? extends WebDriver> driverClass) {
+        WebDriver driver = null;
+        BrowserUtils realBrowserUtils = new BrowserUtils();
+        try {
+            driver = realBrowserUtils.getWebDriverByConfig(jobConfig, jLineupRunConfigurationBuilder().build());
+            assertTrue(driverClass.isInstance(driver));
+        } finally {
+            if (driver != null) {
+                driver.quit();
+            }
+        }
     }
 
 }

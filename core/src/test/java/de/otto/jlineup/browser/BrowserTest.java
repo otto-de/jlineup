@@ -13,19 +13,16 @@ import org.mockito.Mock;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.logging.Logs;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
-import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.browser.Browser.*;
-import static de.otto.jlineup.browser.Browser.Type.*;
+import static de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS;
+import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
 import static de.otto.jlineup.config.JobConfig.configBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -74,43 +71,6 @@ public class BrowserTest {
     public void cleanup() {
         if (testee != null) {
             testee.close();
-        }
-    }
-
-    @Test
-    public void shouldGetFirefoxDriver() {
-        final JobConfig jobConfig = configBuilder().withBrowser(FIREFOX).build();
-        assertSetDriverType(jobConfig, FirefoxDriver.class);
-    }
-
-    @Test
-    public void shouldGetChromeDriver() {
-        final JobConfig jobConfig = configBuilder().withBrowser(CHROME).build();
-        assertSetDriverType(jobConfig, ChromeDriver.class);
-    }
-
-    @Test
-    public void shouldGetChromeDriverForHeadlessChrome() {
-        final JobConfig jobConfig = configBuilder().withBrowser(CHROME_HEADLESS).build();
-        assertSetDriverType(jobConfig, ChromeDriver.class);
-    }
-
-    @Test
-    public void shouldGetPhantomJSDriver() {
-        final JobConfig jobConfig = configBuilder().withBrowser(PHANTOMJS).build();
-        assertSetDriverType(jobConfig, PhantomJSDriver.class);
-    }
-
-    private void assertSetDriverType(JobConfig jobConfig, Class<? extends WebDriver> driverClass) {
-        WebDriver driver = null;
-        BrowserUtils realBrowserUtils = new BrowserUtils();
-        try {
-            driver = realBrowserUtils.getWebDriverByConfig(jobConfig, jLineupRunConfigurationBuilder().build());
-            assertTrue(driverClass.isInstance(driver));
-        } finally {
-            if (driver != null) {
-                driver.quit();
-            }
         }
     }
 
