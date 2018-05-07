@@ -17,9 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.lang.invoke.MethodHandles.lookup;
+
 public class JLineupRunner {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JLineupRunner.class);
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     private final JobConfig jobConfig;
     private final RunStepConfig runStepConfig;

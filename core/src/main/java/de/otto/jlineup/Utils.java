@@ -16,9 +16,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.lang.invoke.MethodHandles.lookup;
+
 public class Utils {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Utils.class);
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     private final static AtomicInteger threadCounter = new AtomicInteger();
 

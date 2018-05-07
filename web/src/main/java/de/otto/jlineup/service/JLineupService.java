@@ -24,13 +24,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.otto.jlineup.web.JLineupRunStatus.copyOfRunStatusBuilder;
 import static de.otto.jlineup.web.JLineupRunStatus.runStatusBuilder;
+import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
 
 @Service
 public class JLineupService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JLineupService.class);
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     private final ConcurrentHashMap<String, JLineupRunStatus> runs = new ConcurrentHashMap<>();
     private final ExecutorService executorService;

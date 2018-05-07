@@ -14,10 +14,11 @@ import java.io.FileNotFoundException;
 
 import static de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfiguration;
 import static de.otto.jlineup.cli.Utils.readConfig;
+import static java.lang.invoke.MethodHandles.lookup;
 
 public class Main {
 
-    public final static Logger LOG = LoggerFactory.getLogger(Main.class);
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     public static void main(String[] args) {
 

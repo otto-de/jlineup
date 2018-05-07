@@ -11,10 +11,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static java.lang.invoke.MethodHandles.lookup;
+
 @Configuration
 public class ResourceConfiguration implements WebMvcConfigurer {
 
-    public final static Logger LOG = LoggerFactory.getLogger(ResourceConfiguration.class);
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     @Autowired
     private JLineupWebProperties properties;

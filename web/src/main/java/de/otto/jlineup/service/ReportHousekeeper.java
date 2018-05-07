@@ -13,12 +13,14 @@ import java.time.Instant;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static java.lang.invoke.MethodHandles.lookup;
+
 public class ReportHousekeeper {
 
     private static final int DELETE_REPORTS_AFTER_DAYS = 7;
     private static final int ONE_HOUR_IN_MILLIS = 60 * 60 * 1000;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ReportHousekeeper.class);
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     private final Path path;
 

@@ -17,10 +17,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import static de.otto.jlineup.file.FileUtils.clearDirectory;
+import static java.lang.invoke.MethodHandles.lookup;
 
 public class FileService {
 
-    public final static Logger LOG = LoggerFactory.getLogger(FileService.class);
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     public static final String BEFORE = "before";
     public static final String AFTER = "after";

@@ -20,10 +20,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.file.FileService.*;
+import static java.lang.invoke.MethodHandles.lookup;
 
 public class ScreenshotsComparator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ScreenshotsComparator.class);
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     private static final String BEFORE_MATCHER = DIVIDER + BEFORE + PNG_EXTENSION;
     private static final String AFTER_MATCHER = DIVIDER + AFTER + PNG_EXTENSION;
