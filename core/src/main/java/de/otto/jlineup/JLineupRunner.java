@@ -76,12 +76,12 @@ public class JLineupRunner {
 
                 final Set<Map.Entry<String, UrlReport>> entries = report.screenshotComparisonsForUrl.entrySet();
                 for (Map.Entry<String, UrlReport> entry : entries) {
-                    LOG.info("Sum of screenshot differences for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceSum + " (" + Math.round(entry.getValue().summary.differenceSum * 100d) + " %)");
-                    LOG.info("Max difference of a single screenshot for " + entry.getKey() + ":\n" + entry.getValue().summary.differenceMax + " (" + Math.round(entry.getValue().summary.differenceMax * 100d) + " %)");
+                    LOG.info("Sum of screenshot differences for " + entry.getKey() + ":" + entry.getValue().summary.differenceSum + " (" + Math.round(entry.getValue().summary.differenceSum * 100d) + " %)");
+                    LOG.info("Max difference of a single screenshot for " + entry.getKey() + ":" + entry.getValue().summary.differenceMax + " (" + Math.round(entry.getValue().summary.differenceMax * 100d) + " %)");
                 }
 
-                LOG.info("Sum of overall screenshot differences:\n" + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
-                LOG.info("Max difference of a single screenshot:\n" + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
+                LOG.info("Sum of overall screenshot differences: " + report.summary.differenceSum + " (" + Math.round(report.summary.differenceSum * 100d) + " %)");
+                LOG.info("Max difference of a single screenshot: " + report.summary.differenceMax + " (" + Math.round(report.summary.differenceMax * 100d) + " %)");
 
                 if (!Utils.shouldUseLegacyReportFormat(jobConfig)) {
                     for (Map.Entry<String, UrlReport> entry : entries) {
