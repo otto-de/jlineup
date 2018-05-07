@@ -245,8 +245,8 @@ public class JLineupCLIAcceptanceTest {
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
 
-        assertThat(systemOutCaptor.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/:\n0.0 (0 %)"));
-        assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences:\n0.0 (0 %)"));
+        assertThat(systemOutCaptor.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/: 0.0 (0 %)"));
+        assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences: 0.0 (0 %)"));
         assertThat(systemOutCaptor.toString(), CoreMatchers.not(containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.")));
     }
 
