@@ -35,11 +35,13 @@ import java.util.stream.Collectors;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
 import static de.otto.jlineup.file.FileService.BEFORE;
+import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.stream.Collectors.groupingBy;
 
 public class Browser implements AutoCloseable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Browser.class);
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
+
     public static final int THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
     public static final int DEFAULT_SLEEP_AFTER_SCROLL_MILLIS = 50;
     public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;

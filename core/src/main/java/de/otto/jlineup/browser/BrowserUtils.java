@@ -4,9 +4,6 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
-import io.github.bonigarcia.wdm.ChromeDriverManager;
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
-import io.github.bonigarcia.wdm.PhantomJsDriverManager;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -25,10 +22,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
+import static java.lang.invoke.MethodHandles.lookup;
 
 public class BrowserUtils {
 
-    private final static Logger LOG = LoggerFactory.getLogger(BrowserUtils.class);
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     public static String buildUrl(String url, String path, final Map<String, String> envMapping) {
         if (envMapping != null && !envMapping.isEmpty()) {

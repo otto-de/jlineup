@@ -90,8 +90,8 @@ public class Main {
             String url = BrowserUtils.prependHTTPIfNotThereAndToLowerCase(parameters.getUrl());
             jobConfig = JobConfig.defaultConfig(url);
             if (!parameters.isPrintConfig()) {
-                LOG.info("You specified an explicit URL parameter ({}), any given jobConfig file is ignored! This should only be done for testing purpose.%n", url);
-                LOG.info("Using generated jobConfig:%n%s%n", JobConfig.prettyPrint(jobConfig));
+                LOG.info("You specified an explicit URL parameter ({}), any given jobConfig file is ignored! This should only be done for testing purpose.", url);
+                LOG.info("Using generated jobConfig:\n {}", JobConfig.prettyPrint(jobConfig));
                 LOG.info("You can take this generated jobConfig as base and save it as a text file named 'lineup.json'.");
                 LOG.info("Just add --print-jobConfig parameter to let JLineup print an example jobConfig");
             }
