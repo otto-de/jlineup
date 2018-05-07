@@ -63,24 +63,26 @@ public class BrowserUtils {
     synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig, int width) {
         WebDriver driver;
         if (jobConfig.browser.isFirefox()) {
-            WebDriverManager.firefoxdriver().forceCache().setup();
+            WebDriverManager.firefoxdriver().setup();
             FirefoxOptions options = new FirefoxOptions();
             options.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
             options.addArguments(runStepConfig.getFirefoxParameters());
             if (jobConfig.browser.isHeadless()) {
-                options.addArguments("--headless");
+                options.setHeadless(true);
                 options.addArguments("-width", width + "" , "-height", jobConfig.windowHeight + "");
             }
+
             LOG.debug("Creating firefox with options: {}", options.toString());
             driver = new FirefoxDriver(options);
         } else if (jobConfig.browser.isChrome()) {
-            WebDriverManager.chromedriver().forceCache().setup();
+            WebDriverManager.chromedriver().setup();
             ChromeOptions options = new ChromeOptions();
+
             //To work in a headless env, this is needed
             options.addArguments("--no-sandbox");
             options.addArguments(runStepConfig.getChromeParameters());
             if (jobConfig.browser.isHeadless()) {
-                options.addArguments("--headless","--disable-gpu");
+                options.setHeadless(true);
                 options.addArguments("--window-size=" + width + "," + jobConfig.windowHeight);
             }
             LOG.debug("Creating chrome with options: {}", options.toString());
