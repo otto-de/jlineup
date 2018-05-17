@@ -1,0 +1,42 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/head  :: head" />
+
+<body>
+
+<div th:replace="fragments/navigation  :: navigation" />
+
+
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Job Overview</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Status</th>
+                    <th>Duration</th>
+                    <th>Url</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="report : ${reportList}">
+                    <td th:text="${report.id}">42</td>
+                    <td th:text="${report.state}">OK</td>
+                    <td th:text="${report.duration}">10:20:30</td>
+                    <td><a th:if="${report.reportUrl != null}" th:href="${report.reportUrl}">Report</a></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(reportList)}"><td colspan="4">No Reports</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<span th:replace="fragments/footer :: footer" />
+
+</body>
+</html>
