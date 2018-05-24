@@ -16,7 +16,7 @@ public class NavigationConfiguration {
     public NavigationConfiguration(final NavBar mainNavBar,
                                    final EdisonApplicationProperties  properties) {
         mainNavBar.register(navBarItem(0, "Status", String.format("%s/status", properties.getManagement().getBasePath())));
-        mainNavBar.register(navBarItem(1, "Reports", "/reports"));
+        mainNavBar.register(navBarItem(1, "Reports", String.format("%s/reports", properties.getManagement().getBasePath())));
     }
 }
 

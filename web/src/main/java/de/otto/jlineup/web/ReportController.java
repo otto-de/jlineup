@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -38,13 +39,14 @@ public class ReportController {
         }};
     }
 
-    private String getDurationAsString(JLineupRunStatus status) {
+    private static String getDurationAsString(JLineupRunStatus status) {
         Instant endTime = status.getEndTime().orElse(Instant.now());
         Instant startTime = status.getStartTime();
         return DurationFormatUtils.formatDurationHMS(Duration.between(startTime, endTime).toMillis());
     }
 
-    public class Report {
+    public static class Report {
+
         private String id;
         private String reportUrl;
         private String duration;
@@ -88,6 +90,33 @@ public class ReportController {
 
         public void setState(State state) {
             this.state = state;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Report report = (Report) o;
+            return Objects.equals(id, report.id) &&
+                    Objects.equals(reportUrl, report.reportUrl) &&
+                    Objects.equals(duration, report.duration) &&
+                    state == report.state;
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(id, reportUrl, duration, state);
+        }
+
+        @Override
+        public String toString() {
+            return "Report{" +
+                    "id='" + id + '\'' +
+                    ", reportUrl='" + reportUrl + '\'' +
+                    ", duration='" + duration + '\'' +
+                    ", state=" + state +
+                    '}';
         }
     }
 }

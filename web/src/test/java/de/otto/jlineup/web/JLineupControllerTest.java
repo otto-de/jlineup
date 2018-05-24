@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import static de.otto.jlineup.config.JobConfig.exampleConfig;
@@ -73,6 +74,31 @@ public class JLineupControllerTest {
 
         // then
         result.andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldIncludeLinksWithContextPath() throws Exception {
+        // given
+        Instant startTime = Instant.ofEpochMilli(1000);
+        when(jLineupService.getRun("someId")).thenReturn(Optional.of(runStatusBuilder()
+                .withId("someId")
+                .withState(State.FINISHED_WITHOUT_DIFFERENCES)
+                .withJobConfig(exampleConfig())
+                .withReports(JLineupRunStatus.Reports.reportsBuilder().withHtmlUrl("/htmlReport/report.html").withJsonUrl("/jsonReport/report.json").build())
+                .withStartTime(startTime)
+                .build()));
+
+        // when
+        ResultActions result = mvc
+                .perform(get("/testContextPath/runs/someId")
+                        .contextPath("/testContextPath")
+                        .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isOk());
+        result.andExpect(content().string(
+                "{\"id\":\"someId\",\"state\":\"FINISHED_WITHOUT_DIFFERENCES\",\"startTime\":1.000000000,\"endTime\":null,\"reports\":{\"htmlUrl\":\"http://localhost/testContextPath/htmlReport/report.html\",\"jsonUrl\":\"http://localhost/testContextPath/jsonReport/report.json\"}}"
+        ));
     }
 
     @Test

@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.ModelResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,10 +33,14 @@ import java.util.Objects;
 import static de.otto.jlineup.config.JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME;
 import static de.otto.jlineup.config.JobConfig.configBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
@@ -58,54 +63,73 @@ public class ReportControllerTest {
 
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(wac)
-                .defaultRequest(MockMvcRequestBuilders
-                        .get("/")
-                        .contextPath("/some-microservice"))
+                .defaultRequest(get("/")
+                        .contextPath("/jlineup-ctxpath"))
                 .build();
     }
 
     @Test
     public void shouldGetReportsPageWithOrderedReports() throws Exception {
 
-        //given: some lineupstatus
+        //given
         Instant now = Instant.now();
-        when(jLineupService.getRunStatus()).thenReturn(ImmutableList.of(
-                JLineupRunStatus.runStatusBuilder()
-                        .withStartTime(now.minus(5, ChronoUnit.HOURS))
-                        .withEndTime(now.plus(1, ChronoUnit.HOURS))
-                        .withState(State.FINISHED_WITHOUT_DIFFERENCES)
-                        .withId("someOldId")
-                        .withReports(JLineupRunStatus.Reports.reportsBuilder().withHtmlUrl("reportHtmlUrl").build())
-                        .withJobConfig(createJobConfigWithUrl("www.sample0.de"))
-                        .build(),
-                JLineupRunStatus.runStatusBuilder()
-                        .withStartTime(now)
-                        .withEndTime(now.plus(1, ChronoUnit.HOURS))
-                        .withState(State.FINISHED_WITHOUT_DIFFERENCES)
-                        .withId("someId")
-                        .withReports(JLineupRunStatus.Reports.reportsBuilder().withHtmlUrl("reportHtmlUrl").build())
-                        .withJobConfig(createJobConfigWithUrl("www.sample1.de"))
-                        .build(),
-                JLineupRunStatus.runStatusBuilder()
-                        .withStartTime(now.minus(1, ChronoUnit.HOURS))
-                        .withEndTime(now.plus(1, ChronoUnit.HOURS))
-                        .withState(State.AFTER_RUNNING)
-                        .withId("someOtherId")
-                        .withJobConfig(createJobConfigWithUrl("www.other1.de"))
-                        .build()
 
+        JLineupRunStatus runStatus1 = JLineupRunStatus.runStatusBuilder()
+                .withStartTime(now.minus(5, ChronoUnit.HOURS))
+                .withEndTime(now.plus(1, ChronoUnit.HOURS))
+                .withState(State.FINISHED_WITHOUT_DIFFERENCES)
+                .withId("someOldId")
+                .withReports(JLineupRunStatus.Reports.reportsBuilder().withHtmlUrl("/reportHtmlUrl").build())
+                .withJobConfig(createJobConfigWithUrl("www.sample0.de"))
+                .build();
+
+        JLineupRunStatus runStatus2 = JLineupRunStatus.runStatusBuilder()
+                .withStartTime(now)
+                .withEndTime(now.plus(1, ChronoUnit.HOURS))
+                .withState(State.FINISHED_WITHOUT_DIFFERENCES)
+                .withId("someId")
+                .withReports(JLineupRunStatus.Reports.reportsBuilder().withHtmlUrl("/reportHtmlUrl").build())
+                .withJobConfig(createJobConfigWithUrl("www.sample1.de"))
+                .build();
+
+        JLineupRunStatus runStatus3 = JLineupRunStatus.runStatusBuilder()
+                .withStartTime(now.minus(1, ChronoUnit.HOURS))
+                .withEndTime(now.plus(1, ChronoUnit.HOURS))
+                .withState(State.AFTER_RUNNING)
+                .withId("someOtherId")
+                .withJobConfig(createJobConfigWithUrl("www.other1.de"))
+                .build();
+
+        when(jLineupService.getRunStatus()).thenReturn(ImmutableList.of(
+                runStatus1,
+                runStatus2,
+                runStatus3
         ));
 
-        //when: the page is requested
-        MockHttpServletResponse response = mockMvc.perform(MockMvcRequestBuilders.get("/some-microservice/internal/reports").accept(MediaType.TEXT_HTML)).andReturn().getResponse();
 
-        ModelAndView modelAndView = mockMvc.perform(MockMvcRequestBuilders.get("/some-microservice/internal/reports").accept(MediaType.TEXT_HTML))
+
+        //when
+        ModelAndView modelAndView = mockMvc.perform(get("/jlineup-ctxpath/internal/reports").contextPath("/jlineup-ctxpath").accept(MediaType.TEXT_HTML))
+
+        //then
                 .andExpect(status().isOk())
                 .andExpect(view().name("reports"))
-                .andExpect(model().attributeExists("reportList")).andReturn().getModelAndView();
+                .andExpect(model().attributeExists("reportList"))
+                .andExpect(model().attribute("reportList", hasSize(3)))
+                .andExpect(model().attribute("reportList", is(
+                        ImmutableList.of(
+                                new ReportController.Report(runStatus2),
+                                new ReportController.Report(runStatus3),
+                                new ReportController.Report(runStatus1)
+                        )
+                )))
+                .andExpect(content().string(containsString("AFTER_RUNNING")))
+                .andExpect(content().string(containsString("FINISHED_WITHOUT_DIFFERENCES")))
+                .andExpect(content().string(containsString("someOldId")))
+                .andExpect(content().string(containsString("someId")))
+                .andExpect(content().string(containsString("someOtherId")))
+                .andReturn().getModelAndView();
 
-        //then: the reportlist must be sorted and valid
-        assertThat(Objects.requireNonNull(modelAndView).getModelMap(), isNotNull());
         @SuppressWarnings("unchecked")
         List<ReportController.Report> reportList = (List<ReportController.Report>)modelAndView.getModelMap().get("reportList");
 
@@ -115,6 +139,7 @@ public class ReportControllerTest {
         assertThat(reportList.get(1).getDuration(), is("02:00:00.000"));
         assertThat(reportList.get(2).getId(), is("someOldId"));
         assertThat(reportList.get(2).getDuration(), is("06:00:00.000"));
+
     }
 
     private JobConfig createJobConfigWithUrl(String url) {

@@ -1,6 +1,7 @@
 package de.otto.jlineup.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.otto.jlineup.config.JobConfig;
 
@@ -175,7 +176,8 @@ public class JLineupRunStatus {
             this.jsonUrl = builder.jsonUrl;
         }
 
-        public String getHtmlUrl() {
+        @JsonProperty("htmlUrl")
+        public String getHtmlUrlFromCurrentContext() {
             try {
                 return fromCurrentContextPath().path(htmlUrl).build().toString();
             } catch (IllegalStateException e) {
@@ -183,12 +185,23 @@ public class JLineupRunStatus {
             }
         }
 
-        public String getJsonUrl() {
+        @JsonProperty("jsonUrl")
+        public String getJsonUrlFromCurrentContext() {
             try {
                 return fromCurrentContextPath().path(jsonUrl).build().toString();
             } catch (IllegalStateException e) {
                 return jsonUrl;
             }
+        }
+
+        @JsonIgnore
+        public String getHtmlUrl() {
+            return htmlUrl;
+        }
+
+        @JsonIgnore
+        public String getJsonUrl() {
+            return jsonUrl;
         }
 
         public static JLineupRunStatus.Reports.Builder reportsBuilder() {

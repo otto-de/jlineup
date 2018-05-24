@@ -1,2 +1,6 @@
 jlineup:
   installedBrowsers: chrome, chrome-headless, PhantomJS
+
+server:
+  servlet:
+    context-path: /jlineup-test-contextpath

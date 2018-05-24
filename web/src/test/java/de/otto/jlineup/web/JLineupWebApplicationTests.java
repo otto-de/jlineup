@@ -38,6 +38,9 @@ public class JLineupWebApplicationTests {
     @Value("${local.server.port}")
     private Integer port;
 
+    @Value("${server.servlet.context-path}")
+    private String contextPath;
+
     @Before
     public void setUp() {
         RestAssured.port = port;
@@ -91,7 +94,7 @@ public class JLineupWebApplicationTests {
 
     private void assertReportExists(JLineupRunStatus finalState) {
         when()
-                .get("/reports/report-" + finalState.getId()+"/report.json")
+                .get(contextPath + "/reports/report-" + finalState.getId()+"/report.json")
         .then()
                 .assertThat()
                 .body("summary.differenceMax", is(0.0f));
@@ -102,11 +105,11 @@ public class JLineupWebApplicationTests {
                 .body(jobConfig)
                 .contentType(ContentType.JSON)
             .when()
-                .post("/runs")
+                .post(contextPath + "/runs")
             .then()
                 .assertThat()
                 .statusCode(ACCEPTED.value())
-                .header(HttpHeaders.LOCATION, RegexMatcher.regex("/runs/[a-zA-Z0-9\\-]*"))
+                .header(HttpHeaders.LOCATION, RegexMatcher.regex(contextPath + "/runs/[a-zA-Z0-9\\-]*"))
                 .and()
                 .extract().header(HttpHeaders.LOCATION);
     }
@@ -118,7 +121,7 @@ public class JLineupWebApplicationTests {
             .then()
                 .assertThat()
                 .statusCode(ACCEPTED.value())
-                .header(HttpHeaders.LOCATION, RegexMatcher.regex("/runs/[a-zA-Z0-9\\-]*"))
+                .header(HttpHeaders.LOCATION, RegexMatcher.regex(contextPath + "/runs/[a-zA-Z0-9\\-]*"))
                 .and()
                 .extract().header(HttpHeaders.LOCATION);
     }
@@ -128,7 +131,7 @@ public class JLineupWebApplicationTests {
                 .body(jobConfig)
                 .contentType(ContentType.JSON)
                 .when()
-                .post("/runs")
+                .post(contextPath + "/runs")
                 .then()
                 .assertThat()
                 .statusCode(statusCode);
