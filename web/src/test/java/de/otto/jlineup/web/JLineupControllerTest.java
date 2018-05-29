@@ -1,5 +1,6 @@
 package de.otto.jlineup.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.exceptions.ConfigValidationException;
 import de.otto.jlineup.service.BrowserNotInstalledException;
@@ -8,8 +9,14 @@ import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.service.RunNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
+import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -28,18 +35,27 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
+@RunWith(SpringRunner.class)
+@JsonTest
+@AutoConfigureJsonTesters
 public class JLineupControllerTest {
 
     @Mock
     private JLineupService jLineupService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private MockMvc mvc;
 
     @Before
     public void setUp() {
         initMocks(this);
+        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new
+                MappingJackson2HttpMessageConverter();
+        mappingJackson2HttpMessageConverter.setObjectMapper(objectMapper);
         JLineupController jLineupController = new JLineupController(jLineupService);
-        mvc = standaloneSetup(jLineupController).build();
+        mvc = standaloneSetup(jLineupController).setMessageConverters(mappingJackson2HttpMessageConverter).build();
     }
 
     @Test
@@ -97,7 +113,7 @@ public class JLineupControllerTest {
         // then
         result.andExpect(status().isOk());
         result.andExpect(content().string(
-                "{\"id\":\"someId\",\"state\":\"FINISHED_WITHOUT_DIFFERENCES\",\"startTime\":1.000000000,\"endTime\":null,\"reports\":{\"htmlUrl\":\"http://localhost/testContextPath/htmlReport/report.html\",\"jsonUrl\":\"http://localhost/testContextPath/jsonReport/report.json\"}}"
+                "{\"id\":\"someId\",\"state\":\"FINISHED_WITHOUT_DIFFERENCES\",\"startTime\":\"1970-01-01T00:00:01Z\",\"endTime\":null,\"reports\":{\"htmlUrl\":\"http://localhost/testContextPath/htmlReport/report.html\",\"jsonUrl\":\"http://localhost/testContextPath/jsonReport/report.json\"}}"
         ));
     }
 
@@ -230,7 +246,7 @@ public class JLineupControllerTest {
         // then
         result
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string("Validation message"));
+                .andExpect(content().string("\"Validation message\""));
     }
 
 }
