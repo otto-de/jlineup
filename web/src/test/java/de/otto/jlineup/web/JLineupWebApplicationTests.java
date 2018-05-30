@@ -94,8 +94,11 @@ public class JLineupWebApplicationTests {
 
     private void assertReportExists(JLineupRunStatus finalState) {
         when()
-                .get(contextPath + "/reports/report-" + finalState.getId()+"/report.json")
-        .then()
+                .get(contextPath + "/reports/report-" + finalState.getId() + "/report.json")
+                .then()
+                .assertThat()
+                .statusCode(200)
+                .and()
                 .assertThat()
                 .body("summary.differenceMax", is(0.0f));
     }
@@ -104,9 +107,9 @@ public class JLineupWebApplicationTests {
         return given()
                 .body(jobConfig)
                 .contentType(ContentType.JSON)
-            .when()
+                .when()
                 .post(contextPath + "/runs")
-            .then()
+                .then()
                 .assertThat()
                 .statusCode(ACCEPTED.value())
                 .header(HttpHeaders.LOCATION, RegexMatcher.regex(contextPath + "/runs/[a-zA-Z0-9\\-]*"))
@@ -116,9 +119,9 @@ public class JLineupWebApplicationTests {
 
     private String startAfterRun(String location) {
         return given()
-            .when()
+                .when()
                 .post(location)
-            .then()
+                .then()
                 .assertThat()
                 .statusCode(ACCEPTED.value())
                 .header(HttpHeaders.LOCATION, RegexMatcher.regex(contextPath + "/runs/[a-zA-Z0-9\\-]*"))
