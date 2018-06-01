@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletContext;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
@@ -55,7 +56,7 @@ public class ReportController {
         public Report(JLineupRunStatus lineupRunStatus) {
             this.id = lineupRunStatus.getId();
             this.reportUrl = lineupRunStatus.getReports() != null ?
-                    lineupRunStatus.getReports().getHtmlUrl() : null;
+                    lineupRunStatus.getReports().getHtmlUrlFromCurrentContext() : null;
             this.duration = getDurationAsString(lineupRunStatus);
             this.state = lineupRunStatus.getState();
         }
