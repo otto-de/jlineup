@@ -21,6 +21,12 @@ public class JLineupRunStatus {
     private final Instant endTime;
     private final Reports reports;
 
+    /*
+    private final Phase phase;
+    private final Step step;
+    private final Result result;
+    */
+
     @JsonIgnore
     private final CompletableFuture<State> currentJobStepFuture;
     @JsonIgnore
