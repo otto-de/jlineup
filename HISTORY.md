@@ -1,5 +1,12 @@
 # JLineup Release History
 
+## Release 3.0.0-rc2
+* Fix pom artifactIds (this helps if you try to download JLineup via Maven/Gradle)
+
+## Release 3.0.0-rc1
+* Major Refactoring
+* JLineup can run as web service now
+
 ## Release 2.4.1
 * Enhancement: Add jobConfig option `check-for-errors-in-log` to toggle whether jlineup stops on errors in browser log. Default is `true`
 

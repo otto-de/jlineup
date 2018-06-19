@@ -36,9 +36,9 @@ to get some idea how to use it.
 
 ## Browser compatibility
 
-JLineup 2.4.0 was tested successfully with
+JLineup 3.0.0-rc2 was tested successfully with
 
-* Chrome 64.x
+* Chrome 67.x
 * Firefox 60.x (nightly)
 * PhantomJS 2.1.1 (auto-downloaded by JLineup if not installed)
         
