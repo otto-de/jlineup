@@ -26,13 +26,13 @@ Credit for Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
 
 ## Howto
 
-JLineup CLI comes as executable Java Archive.
+JLineup CLI comes as executable Java Archive. You need a working Java 8 Runtime Environment on your system. 
 
 Open a terminal and download it like this:
 
     wget https://oss.sonatype.org/service/local/artifact/maven/redirect\?r\=releases\&g\=de.otto\&a\=jlineup-cli\&v\=3.0.0-rc2\&e\=jar -O jlineup.jar
 
-You need a working Java 8 Runtime Environment on your system. Then type
+Then type
 
     java -jar jlineup.jar --help
   
