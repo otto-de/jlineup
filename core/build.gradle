@@ -138,5 +138,6 @@ static String runCommand(command) {
     if (errorlevel != 0) {
         throw new RuntimeException("exec failed on command: '${command}' with errorlevel ${errorlevel}".toString())
     }
+    //System.err.println("Git Hash: " + out.toString().trim())
     out.toString().trim()
 }
