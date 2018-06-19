@@ -1,0 +1,13 @@
+//
+// Run with `./gradlew -b test.gradle dependencies` to check correctly released poms for JLineup
+//
+apply plugin: 'java'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    runtime "de.otto:jlineup:+"
+}
