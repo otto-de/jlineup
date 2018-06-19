@@ -97,6 +97,7 @@ uploadArchives {
                 }
             }
 
+            pom.artifactId = "jlineup-core"
             pom.project {
                 name 'JLineup Core'
                 packaging 'jar'

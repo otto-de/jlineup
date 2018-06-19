@@ -83,6 +83,7 @@ uploadArchives {
                 }
             }
 
+            pom.artifactId = "jlineup-cli"
             pom.project {
                 name 'JLineup Command Line Interface'
                 packaging 'jar'

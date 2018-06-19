@@ -72,6 +72,7 @@ uploadArchives {
                 }
             }
 
+            pom.artifactId = "jlineup-web"
             pom.project {
                 name 'JLineup Webservice'
                 packaging 'jar'
