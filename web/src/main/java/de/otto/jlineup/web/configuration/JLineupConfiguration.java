@@ -1,6 +1,6 @@
 package de.otto.jlineup.web.configuration;
 
-import de.otto.jlineup.service.ReportHousekeeper;
+import de.otto.jlineup.service.Housekeeper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,8 +10,8 @@ import java.nio.file.Paths;
 public class JLineupConfiguration {
 
     @Bean
-    public ReportHousekeeper reportHousekeeper(JLineupWebProperties properties) {
-        return new ReportHousekeeper(Paths.get(properties.getWorkingDirectory()));
+    public Housekeeper houseKeeper(JLineupWebProperties properties) {
+        return new Housekeeper(Paths.get(properties.getWorkingDirectory()));
     }
 
 }
