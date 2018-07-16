@@ -9,6 +9,14 @@ import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Point;
@@ -210,6 +218,11 @@ public class Browser implements AutoCloseable {
     private AtomicBoolean printVersion = new AtomicBoolean(true);
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws Exception {
+
+        /* TODO [WIP]
+        JLineupHttpClient jLineupHttpClient = new JLineupHttpClient();
+        jLineupHttpClient.checkPageAccessibility(screenshotContext);
+        */
 
         boolean headlessRealBrowser = jobConfig.browser.isHeadlessRealBrowser();
         final WebDriver localDriver;
