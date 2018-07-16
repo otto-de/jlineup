@@ -3,6 +3,7 @@ package de.otto.jlineup.report;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.config.HttpCheckConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
@@ -46,7 +47,7 @@ public class ScreenshotsComparatorTest {
         jobConfig = configBuilder()
                 .withUrls(ImmutableMap.of(
                         "http://url",
-                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5)))
+                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig())))
                 .withWindowHeight(WINDOW_HEIGHT)
                 .build();
 

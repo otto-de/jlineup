@@ -13,6 +13,11 @@ import java.util.Map;
 @SpringBootApplication(scanBasePackages = {"de.otto.jlineup"})
 public class FakeWebServerController {
 
+    @GetMapping("/200")
+    public ResponseEntity<String> get200() {
+        return new ResponseEntity<>("This is 200!", HttpStatus.OK);
+    }
+
     @GetMapping("/403")
     public ResponseEntity<String> get403() {
         return new ResponseEntity<>("This is 403!", HttpStatus.FORBIDDEN);

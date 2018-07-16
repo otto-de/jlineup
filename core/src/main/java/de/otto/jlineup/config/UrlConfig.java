@@ -70,6 +70,10 @@ public class UrlConfig {
     @JsonProperty("javascript")
     public final String javaScript;
 
+    @SerializedName("http-check")
+    @JsonProperty("http-check")
+    public final HttpCheckConfig httpCheck;
+
     //Default constructor for GSON
     public UrlConfig() {
         this.paths = of(DEFAULT_PATH);
@@ -86,9 +90,10 @@ public class UrlConfig {
         this.warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
         this.javaScript = null;
         this.waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
+        this.httpCheck = new HttpCheckConfig();
     }
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime, HttpCheckConfig httpCheck) {
         this.paths = paths != null ? paths : of(DEFAULT_PATH);
         this.windowWidths = windowWidths != null ? windowWidths : of(DEFAULT_WINDOW_WIDTH);
         this.maxDiff = maxDiff;
@@ -103,6 +108,7 @@ public class UrlConfig {
         this.warmupBrowserCacheTime = warmupBrowserCacheTime;
         this.javaScript = javaScript;
         this.waitForFontsTime = waitForFontsTime;
+        this.httpCheck = httpCheck;
     }
 
     private UrlConfig(Builder builder) {
@@ -120,10 +126,11 @@ public class UrlConfig {
         warmupBrowserCacheTime = builder.warmupBrowserCacheTime;
         waitForFontsTime = builder.waitForFontsTime;
         javaScript = builder.javaScript;
+        httpCheck = builder.httpCheck;
     }
 
     public static Builder urlConfigBuilder() {
-        return new Builder();
+        return new Builder().withHttpCheck(new HttpCheckConfig());
     }
 
     public static Builder newBuilder(UrlConfig copy) {
@@ -142,6 +149,7 @@ public class UrlConfig {
         builder.warmupBrowserCacheTime = copy.warmupBrowserCacheTime;
         builder.waitForFontsTime = copy.waitForFontsTime;
         builder.javaScript = copy.javaScript;
+        builder.httpCheck = copy.httpCheck;
         return builder;
     }
 
@@ -162,6 +170,7 @@ public class UrlConfig {
                 ", warmupBrowserCacheTime=" + warmupBrowserCacheTime +
                 ", waitForFontsTime=" + waitForFontsTime +
                 ", javaScript='" + javaScript + '\'' +
+                ", httpCheck=" + httpCheck +
                 '}';
     }
 
@@ -183,14 +192,15 @@ public class UrlConfig {
                 Objects.equals(localStorage, urlConfig.localStorage) &&
                 Objects.equals(sessionStorage, urlConfig.sessionStorage) &&
                 Objects.equals(windowWidths, urlConfig.windowWidths) &&
-                Objects.equals(javaScript, urlConfig.javaScript);
+                Objects.equals(javaScript, urlConfig.javaScript) &&
+                Objects.equals(httpCheck, urlConfig.httpCheck);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript);
-    }
 
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck);
+    }
 
     public static final class Builder {
 
@@ -208,6 +218,7 @@ public class UrlConfig {
         private int warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
         private int waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
         private String javaScript;
+        private HttpCheckConfig httpCheck;
 
         private Builder() {
         }
@@ -234,6 +245,11 @@ public class UrlConfig {
 
         public Builder withEnvMapping(Map<String, String> val) {
             envMapping = val;
+            return this;
+        }
+
+        public Builder withHttpCheck(HttpCheckConfig val) {
+            httpCheck = val;
             return this;
         }
 

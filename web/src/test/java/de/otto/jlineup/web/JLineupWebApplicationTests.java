@@ -3,6 +3,7 @@ package de.otto.jlineup.web;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.browser.Browser;
+import de.otto.jlineup.config.HttpCheckConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.utils.RegexMatcher;
@@ -170,7 +171,8 @@ public class JLineupWebApplicationTests {
                                 0,
                                 DEFAULT_WARMUP_BROWSER_CACHE_TIME,
                                 null,
-                                0
+                                0,
+                                new HttpCheckConfig()
                         )))
                 .build();
     }

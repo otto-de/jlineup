@@ -2,6 +2,7 @@ package de.otto.jlineup.web;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import de.otto.jlineup.config.HttpCheckConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.service.JLineupService;
@@ -149,7 +150,8 @@ public class ReportControllerTest {
                                 0,
                                 DEFAULT_WARMUP_BROWSER_CACHE_TIME,
                                 null,
-                                0
+                                0,
+                                new HttpCheckConfig()
                         )))
                 .build();
 

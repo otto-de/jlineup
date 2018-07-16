@@ -79,6 +79,9 @@ public final class JobConfig {
     @SerializedName("check-for-errors-in-log")
     @JsonProperty("check-for-errors-in-log")
     public final boolean checkForErrorsInLog;
+    @SerializedName("http-check")
+    @JsonProperty("http-check")
+    public final HttpCheckConfig httpCheck;
 
     private final static Gson gson = new GsonBuilder().setDateFormat(COOKIE_TIME_FORMAT).setPrettyPrinting().create();
 
@@ -100,6 +103,7 @@ public final class JobConfig {
         debug = builder.debug;
         logToFile = builder.logToFile;
         checkForErrorsInLog = builder.checkForErrorsInLog;
+        httpCheck = builder.httpCheck;
     }
 
     public static String prettyPrint(JobConfig jobConfig) {
@@ -109,6 +113,7 @@ public final class JobConfig {
     public static Builder copyOfBuilder(JobConfig jobConfig) {
         return configBuilder()
                 .withUrls(jobConfig.urls)
+                .withHttpCheck(jobConfig.httpCheck)
                 .withBrowser(jobConfig.browser)
                 .withGlobalWaitAfterPageLoad(jobConfig.globalWaitAfterPageLoad)
                 .withPageLoadTimeout(jobConfig.pageLoadTimeout)
@@ -126,6 +131,7 @@ public final class JobConfig {
     public String toString() {
         return "JobConfig{" +
                 "urls=" + urls +
+                ", httpCheck=" + httpCheck +
                 ", browser=" + browser +
                 ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
                 ", pageLoadTimeout=" + pageLoadTimeout +
@@ -199,7 +205,8 @@ public final class JobConfig {
                                 DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL,
                                 DEFAULT_WARMUP_BROWSER_CACHE_TIME,
                                 "console.log('This is JavaScript!')",
-                                DEFAULT_WAIT_FOR_FONTS_TIME
+                                DEFAULT_WAIT_FOR_FONTS_TIME,
+                                new HttpCheckConfig()
                         )));
     }
 
@@ -237,6 +244,7 @@ public final class JobConfig {
         private boolean debug = false;
         private boolean logToFile = false;
         private boolean checkForErrorsInLog = true;
+        public HttpCheckConfig httpCheck = new HttpCheckConfig();
 
         private Builder() {
         }
@@ -298,6 +306,11 @@ public final class JobConfig {
 
         public Builder withCheckForErrorsInLog(boolean val) {
             checkForErrorsInLog = val;
+            return this;
+        }
+
+        public Builder withHttpCheck(HttpCheckConfig val) {
+            httpCheck = val;
             return this;
         }
 

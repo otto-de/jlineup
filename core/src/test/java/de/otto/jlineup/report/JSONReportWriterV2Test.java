@@ -40,6 +40,7 @@ public class JSONReportWriterV2Test {
         final Summary localSummary = new Summary(false, 0d, 0d);
         Report report = new Report(globalSummary, Collections.singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), exampleConfig());
 
+        //language=JSON
         String expectedString = "{\n" +
                 "  \"summary\": {\n" +
                 "    \"error\": false,\n" +
@@ -80,7 +81,7 @@ public class JSONReportWriterV2Test {
                 "            \"value\": \"exampleValue\",\n" +
                 "            \"domain\": \"http://www.example.com\",\n" +
                 "            \"path\": \"/\",\n" +
-                "            \"expiry\": "+ new GsonBuilder().setDateFormat(COOKIE_TIME_FORMAT).create().toJson(new Date(1000L)) +",\n" +
+                "            \"expiry\": " + new GsonBuilder().setDateFormat(COOKIE_TIME_FORMAT).create().toJson(new Date(1000L)) + ",\n" +
                 "            \"secure\": true\n" +
                 "          }\n" +
                 "        ],\n" +
@@ -104,7 +105,10 @@ public class JSONReportWriterV2Test {
                 "        \"wait-for-no-animation-after-scroll\": 0.0,\n" +
                 "        \"warmup-browser-cache-time\": 0,\n" +
                 "        \"wait-for-fonts-time\": 0,\n" +
-                "        \"javascript\": \"console.log(\\u0027This is JavaScript!\\u0027)\"\n" +
+                "        \"javascript\": \"console.log(\\u0027This is JavaScript!\\u0027)\",\n" +
+                "        \"http-check\": {\n" +
+                "          \"enabled\": false\n" +
+                "        }\n" +
                 "      }\n" +
                 "    },\n" +
                 "    \"browser\": \"PhantomJS\",\n" +
@@ -117,7 +121,10 @@ public class JSONReportWriterV2Test {
                 "    \"timeout\": 600,\n" +
                 "    \"debug\": false,\n" +
                 "    \"log-to-file\": false,\n" +
-                "    \"check-for-errors-in-log\": true\n" +
+                "    \"check-for-errors-in-log\": true,\n" +
+                "    \"http-check\": {\n" +
+                "      \"enabled\": false\n" +
+                "    }\n" +
                 "  }\n" +
                 "}";
 

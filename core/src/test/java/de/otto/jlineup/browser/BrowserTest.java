@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.Cookie;
+import de.otto.jlineup.config.HttpCheckConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
@@ -175,7 +176,8 @@ public class BrowserTest {
                 0,
                 3,
                 "testJS();",
-                5);
+                5,
+                new HttpCheckConfig());
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
@@ -245,7 +247,8 @@ public class BrowserTest {
                 0,
                 3,
                 null,
-                5);
+                5,
+                new HttpCheckConfig());
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
@@ -317,7 +320,8 @@ public class BrowserTest {
                 0,
                 3,
                 null,
-                5);
+                5,
+                new HttpCheckConfig());
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
@@ -383,7 +387,8 @@ public class BrowserTest {
                 0,
                 3,
                 null,
-                5);
+                5,
+                new HttpCheckConfig());
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(CHROME_HEADLESS)

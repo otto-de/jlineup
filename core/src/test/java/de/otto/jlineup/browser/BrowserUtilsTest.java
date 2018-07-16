@@ -3,10 +3,7 @@ package de.otto.jlineup.browser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.config.Cookie;
-import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
-import de.otto.jlineup.config.UrlConfig;
+import de.otto.jlineup.config.*;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -105,11 +102,11 @@ public class BrowserUtilsTest {
     }
 
     public static UrlConfig getExpectedUrlConfigForOttoDe() {
-        return new UrlConfig(ImmutableList.of("/", "multimedia"), 0.05f, ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600, 800, 1200), 50000, 2, 1, 0, 3, "console.log('Moin!');", 0);
+        return new UrlConfig(ImmutableList.of("/", "multimedia"), 0.05f, ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600, 800, 1200), 50000, 2, 1, 0, 3, "console.log('Moin!');", 0, new HttpCheckConfig());
     }
 
     public static UrlConfig getExpectedUrlConfigForGoogleDe() {
-        return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1200), 100000, 0, 0, 0, 0, null, 0);
+        return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1200), 100000, 0, 0, 0, 0, null, 0, new HttpCheckConfig());
     }
 
     @Test

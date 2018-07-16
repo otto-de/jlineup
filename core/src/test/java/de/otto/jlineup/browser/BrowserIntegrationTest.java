@@ -5,10 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
-import de.otto.jlineup.config.Cookie;
-import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
-import de.otto.jlineup.config.UrlConfig;
+import de.otto.jlineup.config.*;
 import de.otto.jlineup.exceptions.ConfigValidationException;
 import de.otto.jlineup.file.FileUtils;
 import org.junit.After;
@@ -28,6 +25,7 @@ import java.nio.file.Path;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @ActiveProfiles("test")
@@ -150,6 +148,47 @@ public class BrowserIntegrationTest {
                 .withPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("somerootpath/somevalidsubpath", Browser.Type.CHROME_HEADLESS, true, urlConfig);
         runJLineup(jobConfig, Step.before);
+    }
+
+    @Test
+    public void shouldCheckHttpStatusCodeError() {
+        UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
+                .withHttpCheck(new HttpCheckConfig(true))
+                .withPaths(ImmutableList.of("/")).build();
+        JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, false, urlConfig);
+        try {
+            runJLineup(jobConfig, Step.before);
+            fail();
+        } catch (Exception e) {
+            assertThat(e.getCause().getCause().getCause().getMessage(), containsString("Accessibility check"));
+            assertThat(e.getCause().getCause().getCause().getMessage(), containsString("returned status code 500"));
+        }
+    }
+
+    @Test
+    public void shouldCheckCustomHttpStatusCodes() throws ConfigValidationException {
+        UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
+                .withHttpCheck(new HttpCheckConfig(true, ImmutableList.of(304)))
+                .withPaths(ImmutableList.of("/")).build();
+        JobConfig jobConfig = localTestConfig("200", Browser.Type.CHROME_HEADLESS, false, urlConfig);
+        try {
+            runJLineup(jobConfig, Step.before);
+            fail();
+        } catch (Exception e) {
+            assertThat(e.getCause().getCause().getCause().getMessage(), containsString("Accessibility check"));
+            assertThat(e.getCause().getCause().getCause().getMessage(), containsString("returned status code 200"));
+        }
+    }
+
+
+    @Test
+    public void shouldNotCheckHttpStatusCodeErrorIfNotConfigured() throws ConfigValidationException {
+        UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
+                .withHttpCheck(new HttpCheckConfig(false))
+                .withPaths(ImmutableList.of("/")).build();
+        JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, false, urlConfig);
+        runJLineup(jobConfig, Step.before);
+        //no exception
     }
 
     private void runJLineup(JobConfig jobConfig, Step step) throws ConfigValidationException {

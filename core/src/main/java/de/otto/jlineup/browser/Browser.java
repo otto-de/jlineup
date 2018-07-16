@@ -9,14 +9,6 @@ import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Point;
@@ -219,10 +211,10 @@ public class Browser implements AutoCloseable {
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws Exception {
 
-        /* TODO [WIP]
-        JLineupHttpClient jLineupHttpClient = new JLineupHttpClient();
-        jLineupHttpClient.checkPageAccessibility(screenshotContext);
-        */
+        if (screenshotContext.urlConfig.httpCheck.isEnabled() || jobConfig.httpCheck.isEnabled()) {
+            JLineupHttpClient jLineupHttpClient = new JLineupHttpClient();
+            jLineupHttpClient.checkPageAccessibility(screenshotContext, jobConfig);
+        }
 
         boolean headlessRealBrowser = jobConfig.browser.isHeadlessRealBrowser();
         final WebDriver localDriver;
@@ -260,7 +252,7 @@ public class Browser implements AutoCloseable {
         if (isThereStorage(screenshotContext)) {
             //get root page from url to be able to set cookies afterwards
             //if you set cookies before getting the page once, it will fail
-            if (!localDriver.getCurrentUrl().equals(rootUrl)){
+            if (!localDriver.getCurrentUrl().equals(rootUrl)) {
                 LOG.info(String.format("Getting root url: %s to set local and session storage", rootUrl));
                 localDriver.get(rootUrl);
                 logErrorChecker.checkForErrors(localDriver, jobConfig);
