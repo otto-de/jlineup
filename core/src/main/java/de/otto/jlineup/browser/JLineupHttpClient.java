@@ -19,6 +19,7 @@ import java.net.URL;
 import java.util.List;
 
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
+import static de.otto.jlineup.config.HttpCheckConfig.DEFAULT_ALLOWED_CODES;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.net.InetAddress.getByName;
 
@@ -49,10 +50,16 @@ class JLineupHttpClient {
 
             HttpResponse response = client.execute(request);
             int statusCode = response.getStatusLine().getStatusCode();
-            if (!httpCheck.getAllowedCodes().contains(statusCode)) {
+
+            List<Integer> allowedCodes = httpCheck.getAllowedCodes();
+            if (allowedCodes == null) {
+                allowedCodes = DEFAULT_ALLOWED_CODES;
+            }
+
+            if (!allowedCodes.contains(statusCode)) {
                 throw new JLineupException("Accessibility check of " + request.getURI() + " returned status code " + statusCode);
             } else {
-                LOG.debug("Accessibility of {} checked and OK!", request.getURI());
+                LOG.debug("Accessibility of {} checked and considered good! Return code was: {}", request.getURI(), statusCode);
             }
         }
     }

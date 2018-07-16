@@ -4,16 +4,28 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.IntStream;
 
-import static java.util.stream.Collectors.toList;
-import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.apache.http.HttpStatus.SC_TEMPORARY_REDIRECT;
+import static org.apache.http.HttpStatus.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HttpCheckConfig {
+
+    public static final List<Integer> DEFAULT_ALLOWED_CODES = Arrays.asList(
+            SC_OK,
+            SC_ACCEPTED,
+            SC_NO_CONTENT,
+            SC_RESET_CONTENT,
+            SC_PARTIAL_CONTENT,
+            SC_MOVED_PERMANENTLY,
+            SC_MOVED_TEMPORARILY,
+            SC_SEE_OTHER,
+            SC_NOT_MODIFIED,
+            SC_TEMPORARY_REDIRECT,
+            308
+    );
 
     private final boolean enabled;
 
@@ -23,7 +35,7 @@ public class HttpCheckConfig {
 
     public HttpCheckConfig(boolean enabled, List<Integer> allowedCodes) {
         this.enabled = enabled;
-        this.allowedCodes = allowedCodes;
+        this.allowedCodes = allowedCodes == null ? DEFAULT_ALLOWED_CODES : allowedCodes;
     }
 
     public HttpCheckConfig() {
@@ -33,7 +45,7 @@ public class HttpCheckConfig {
 
     public HttpCheckConfig(boolean enabled) {
         this.enabled = enabled;
-        this.allowedCodes = IntStream.range(SC_CREATED, SC_TEMPORARY_REDIRECT).boxed().collect(toList());
+        this.allowedCodes = DEFAULT_ALLOWED_CODES;
     }
 
     @Override
