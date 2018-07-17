@@ -7,6 +7,7 @@ import de.otto.jlineup.config.JobConfig;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.cookie.ClientCookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -77,6 +78,7 @@ class JLineupHttpClient {
     private void addCookiesToStore(List<Cookie> cookies, CookieStore cookieStore, String domain) {
         for (Cookie cookie : cookies) {
             BasicClientCookie apacheCookie = new BasicClientCookie(cookie.name, cookie.value);
+            apacheCookie.setAttribute(ClientCookie.DOMAIN_ATTR, "true");
             if (cookie.domain != null) {
                 apacheCookie.setDomain(cookie.domain);
             } else {
