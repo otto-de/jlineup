@@ -65,7 +65,7 @@ public class JLineupService {
                     return State.BEFORE_DONE;
                 }, executorService)
                 .exceptionally(ex -> {
-                    LOG.error("Error in before runStep.", ex);
+                    //LOG.error("Error in before runStep.", ex);
                     return State.ERROR;
                 })
                 .thenApply(st -> {

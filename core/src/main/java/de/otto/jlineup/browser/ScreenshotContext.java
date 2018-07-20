@@ -2,23 +2,27 @@ package de.otto.jlineup.browser;
 
 import de.otto.jlineup.config.UrlConfig;
 
+import java.util.Objects;
+
 public final class ScreenshotContext {
     public final String url;
     public final String urlSubPath;
     public final int windowWidth;
     public final boolean before;
     public final UrlConfig urlConfig;
+    public final String fullPathOfReportDir;
 
-    ScreenshotContext(String url, String urlSubPath, int windowWidth, boolean before, UrlConfig urlConfig) {
+    ScreenshotContext(String url, String urlSubPath, int windowWidth, boolean before, UrlConfig urlConfig, String fullPathOfReportDir) {
         this.url = url;
         this.urlSubPath = urlSubPath;
         this.windowWidth = windowWidth;
         this.before = before;
         this.urlConfig = urlConfig;
+        this.fullPathOfReportDir = fullPathOfReportDir;
     }
 
     public static ScreenshotContext of(String url, String path, int windowWidth, boolean before, UrlConfig urlConfig) {
-        return new ScreenshotContext(url, path, windowWidth, before, urlConfig);
+        return new ScreenshotContext(url, path, windowWidth, before, urlConfig, null);
     }
 
     @Override
@@ -29,6 +33,7 @@ public final class ScreenshotContext {
                 ", windowWidth=" + windowWidth +
                 ", before=" + before +
                 ", urlConfig=" + urlConfig +
+                ", fullPathOfReportDir='" + fullPathOfReportDir + '\'' +
                 '}';
     }
 
@@ -36,23 +41,19 @@ public final class ScreenshotContext {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         ScreenshotContext that = (ScreenshotContext) o;
-
-        if (windowWidth != that.windowWidth) return false;
-        if (before != that.before) return false;
-        if (url != null ? !url.equals(that.url) : that.url != null) return false;
-        if (urlSubPath != null ? !urlSubPath.equals(that.urlSubPath) : that.urlSubPath != null) return false;
-        return urlConfig != null ? urlConfig.equals(that.urlConfig) : that.urlConfig == null;
+        return windowWidth == that.windowWidth &&
+                before == that.before &&
+                Objects.equals(url, that.url) &&
+                Objects.equals(urlSubPath, that.urlSubPath) &&
+                Objects.equals(urlConfig, that.urlConfig) &&
+                Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir);
     }
 
     @Override
     public int hashCode() {
-        int result = url != null ? url.hashCode() : 0;
-        result = 31 * result + (urlSubPath != null ? urlSubPath.hashCode() : 0);
-        result = 31 * result + windowWidth;
-        result = 31 * result + (before ? 1 : 0);
-        result = 31 * result + (urlConfig != null ? urlConfig.hashCode() : 0);
-        return result;
+
+        return Objects.hash(url, urlSubPath, windowWidth, before, urlConfig, fullPathOfReportDir);
     }
+
 }

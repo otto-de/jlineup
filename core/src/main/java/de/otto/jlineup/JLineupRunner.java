@@ -11,17 +11,22 @@ import de.otto.jlineup.image.ImageService;
 import de.otto.jlineup.report.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
 import static java.lang.invoke.MethodHandles.lookup;
 
 public class JLineupRunner {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
+
+    public static final String REPORT_LOG_NAME_KEY = "reportlogname";
+    public static final String LOGFILE_NAME = "jlineup.log";
 
     private final JobConfig jobConfig;
     private final RunStepConfig runStepConfig;
@@ -34,6 +39,7 @@ public class JLineupRunner {
     }
 
     public boolean run() {
+
         FileService fileService = new FileService(runStepConfig);
         ImageService imageService = new ImageService();
 
@@ -47,6 +53,9 @@ public class JLineupRunner {
                 throw new RuntimeException(e);
             }
         }
+
+        MDC.put(REPORT_LOG_NAME_KEY, getFullPathOfReportDir(runStepConfig) + "/" + LOGFILE_NAME);
+        LOG.info("JLineup run started for step '{}'", runStepConfig.getStep());
 
         if (runStepConfig.getStep() == Step.before || runStepConfig.getStep() == Step.after) {
             BrowserUtils browserUtils = new BrowserUtils();
@@ -99,7 +108,8 @@ public class JLineupRunner {
             throw new RuntimeException(e);
         }
 
-        LOG.info("JLineup run finished for step '{}'\n", runStepConfig.getStep());
+        LOG.info("JLineup run finished for step '{}'", runStepConfig.getStep());
+        MDC.remove(REPORT_LOG_NAME_KEY);
         return true;
     }
 

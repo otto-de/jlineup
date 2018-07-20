@@ -15,6 +15,7 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -112,11 +113,15 @@ public class BrowserUtils {
                         resolutions.stream()
                                 .map(windowWidth ->
                                         new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getKey()), path, windowWidth,
-                                                runStepConfig.getStep() == Step.before, urlConfigEntry.getValue()))
+                                                runStepConfig.getStep() == Step.before, urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig)))
                                 .collect(Collectors.toList()));
             }
         }
         return screenshotContextList;
+    }
+
+    public static String getFullPathOfReportDir(RunStepConfig runStepConfig) {
+        return Paths.get(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory()).toAbsolutePath().toString();
     }
 
     public static String prepareDomain(final RunStepConfig runStepConfig, final String url) {

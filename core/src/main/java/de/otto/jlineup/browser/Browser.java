@@ -16,6 +16,7 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -32,6 +33,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static de.otto.jlineup.JLineupRunner.LOGFILE_NAME;
+import static de.otto.jlineup.JLineupRunner.REPORT_LOG_NAME_KEY;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.file.FileService.AFTER;
 import static de.otto.jlineup.file.FileService.BEFORE;
@@ -154,29 +157,33 @@ public class Browser implements AutoCloseable {
 
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             final Future<?> takeScreenshotsResult = threadPool.submit(() -> {
+                //This activates the sifting appender in logback.xml to have a log in the report dir.
+                MDC.put(REPORT_LOG_NAME_KEY, screenshotContext.fullPathOfReportDir + "/" + LOGFILE_NAME);
                 try {
                     tryToTakeScreenshotsForContextNTimes(screenshotContext, jobConfig.screenshotRetries);
                 } catch (Exception e) {
                     //There was an error, prevent pool from taking more tasks and let run fail
-                    LOG.error("Exception in Browser thread while taking screenshot.", e);
+                    LOG.error("Exception in Browser thread while browsing to '" + screenshotContext.url + "'.", e);
                     threadPool.shutdownNow();
                     throw new WebDriverException("Exception in Browser thread", e);
+                } finally {
+                    MDC.remove(REPORT_LOG_NAME_KEY);
                 }
             });
             screenshotResults.put(screenshotContext, takeScreenshotsResult);
             //submit screenshots to the browser with a slight delay, so not all instances open up in complete sync
             Thread.sleep(THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS);
         }
-        LOG.debug("Shutting down threadpool.");
+        LOG.debug("All tasks have been sent to browser thread pool. Queuing shutdown.");
         threadPool.shutdown();
-        LOG.debug("Threadpool shutdown finished. Awaiting termination.");
+        LOG.debug("Browser thread pool shutdown queued. Doing work and awaiting termination. The global timeout is {}", jobConfig.globalTimeout);
         boolean notRanIntoTimeout = threadPool.awaitTermination(jobConfig.globalTimeout, TimeUnit.SECONDS);
 
         if (!notRanIntoTimeout) {
-            LOG.error("Threadpool ran into timeout.");
-            throw new TimeoutException("Global timeout of " + jobConfig.globalTimeout + " seconds was reached.");
+            LOG.error("Browser thread pool ran into timeout.");
+            throw new TimeoutException("Global timeout of " + jobConfig.globalTimeout + " seconds was reached. Set or increase globalTimeout variable in config to change default.");
         } else {
-            LOG.debug("Threadpool terminated.");
+            LOG.debug("Browser thread pool terminated successfully.");
         }
 
         //Get and propagate possible exceptions
