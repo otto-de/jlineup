@@ -26,7 +26,6 @@ import static de.otto.jlineup.web.JLineupRunStatus.copyOfRunStatusBuilder;
 import static de.otto.jlineup.web.JLineupRunStatus.runStatusBuilder;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
-import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
 
 @Service
 public class JLineupService {
@@ -119,6 +118,13 @@ public class JLineupService {
     private JLineupRunStatus changeState(String runId, State state) {
         JLineupRunStatus runStatus = runs.get(runId);
         JLineupRunStatus.Builder runStatusBuilder = copyOfRunStatusBuilder(runStatus).withState(state);
+
+        if (state == State.BEFORE_RUNNING) {
+            runStatusBuilder.withReports(JLineupRunStatus.Reports.reportsBuilder()
+                    .withLogUrl("/reports/report-" + runId + "/jlineup.log")
+                    .build());
+        }
+
         if (state == State.FINISHED_WITH_DIFFERENCES
                 || state == State.FINISHED_WITHOUT_DIFFERENCES
                 || state == State.ERROR
@@ -127,8 +133,10 @@ public class JLineupService {
             runStatusBuilder.withReports(JLineupRunStatus.Reports.reportsBuilder()
                     .withHtmlUrl("/reports/report-" + runId + "/report.html")
                     .withJsonUrl("/reports/report-" + runId + "/report.json")
+                    .withLogUrl("/reports/report-" + runId + "/jlineup.log")
                     .build());
         }
+
         JLineupRunStatus newStatus = runStatusBuilder.build();
         runs.put(runId, newStatus);
         return newStatus;

@@ -121,6 +121,9 @@ public class BrowserUtils {
     }
 
     public static String getFullPathOfReportDir(RunStepConfig runStepConfig) {
+        if (runStepConfig.getReportDirectory() == null) {
+            return null;
+        }
         return Paths.get(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory()).toAbsolutePath().toString();
     }
 

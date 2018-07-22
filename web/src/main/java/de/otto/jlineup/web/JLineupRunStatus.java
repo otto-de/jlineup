@@ -79,7 +79,8 @@ public class JLineupRunStatus {
                 .withId(jLineupRunStatus.getId())
                 .withJobConfig(jLineupRunStatus.getJobConfig())
                 .withState(jLineupRunStatus.getState())
-                .withStartTime(jLineupRunStatus.getStartTime());
+                .withStartTime(jLineupRunStatus.getStartTime())
+                .withReports(jLineupRunStatus.getReports());
         jLineupRunStatus.getEndTime().ifPresent(builder::withEndTime);
         jLineupRunStatus.getCurrentJobStepFuture().ifPresent(builder::withCurrentJobStepFuture);
         return builder;
@@ -176,14 +177,19 @@ public class JLineupRunStatus {
 
         private final String htmlUrl;
         private final String jsonUrl;
+        private final String logUrl;
 
         public Reports(Builder builder) {
             this.htmlUrl = builder.htmlUrl;
             this.jsonUrl = builder.jsonUrl;
+            this.logUrl = builder.logUrl;
         }
 
         @JsonProperty("htmlUrl")
         public String getHtmlUrlFromCurrentContext() {
+            if (htmlUrl == null) {
+                return null;
+            }
             try {
                 return fromCurrentContextPath().path(htmlUrl).build().toString();
             } catch (IllegalStateException e) {
@@ -193,10 +199,25 @@ public class JLineupRunStatus {
 
         @JsonProperty("jsonUrl")
         public String getJsonUrlFromCurrentContext() {
+            if (jsonUrl == null) {
+                return null;
+            }
             try {
                 return fromCurrentContextPath().path(jsonUrl).build().toString();
             } catch (IllegalStateException e) {
                 return jsonUrl;
+            }
+        }
+
+        @JsonProperty("logUrl")
+        public String getLogUrlFromCurrentContext() {
+            if (logUrl == null) {
+                return null;
+            }
+            try {
+                return fromCurrentContextPath().path(logUrl).build().toString();
+            } catch (IllegalStateException e) {
+                return logUrl;
             }
         }
 
@@ -210,6 +231,11 @@ public class JLineupRunStatus {
             return jsonUrl;
         }
 
+        @JsonIgnore
+        public String getLogUrl() {
+            return logUrl;
+        }
+
         public static JLineupRunStatus.Reports.Builder reportsBuilder() {
             return new Reports.Builder();
         }
@@ -219,6 +245,7 @@ public class JLineupRunStatus {
             return "Reports{" +
                     "htmlUrl='" + htmlUrl + '\'' +
                     ", jsonUrl='" + jsonUrl + '\'' +
+                    ", logUrl='" + logUrl + '\'' +
                     '}';
         }
 
@@ -228,19 +255,21 @@ public class JLineupRunStatus {
             if (o == null || getClass() != o.getClass()) return false;
             Reports reports = (Reports) o;
             return Objects.equals(htmlUrl, reports.htmlUrl) &&
-                    Objects.equals(jsonUrl, reports.jsonUrl);
+                    Objects.equals(jsonUrl, reports.jsonUrl) &&
+                    Objects.equals(logUrl, reports.logUrl);
         }
 
         @Override
         public int hashCode() {
 
-            return Objects.hash(htmlUrl, jsonUrl);
+            return Objects.hash(htmlUrl, jsonUrl, logUrl);
         }
 
         public static final class Builder {
 
             private String htmlUrl;
             private String jsonUrl;
+            private String logUrl;
 
             public JLineupRunStatus.Reports.Builder withHtmlUrl(String htmlUrl) {
                 this.htmlUrl = htmlUrl;
@@ -249,6 +278,12 @@ public class JLineupRunStatus {
 
             public JLineupRunStatus.Reports.Builder withJsonUrl(String jsonUrl) {
                 this.jsonUrl = jsonUrl;
+                return this;
+            }
+
+
+            public JLineupRunStatus.Reports.Builder withLogUrl(String logUrl) {
+                this.logUrl = logUrl;
                 return this;
             }
 

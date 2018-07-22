@@ -100,7 +100,11 @@ public class JLineupControllerTest {
                 .withId("someId")
                 .withState(State.FINISHED_WITHOUT_DIFFERENCES)
                 .withJobConfig(exampleConfig())
-                .withReports(JLineupRunStatus.Reports.reportsBuilder().withHtmlUrl("/htmlReport/report.html").withJsonUrl("/jsonReport/report.json").build())
+                .withReports(JLineupRunStatus.Reports.reportsBuilder()
+                        .withHtmlUrl("/htmlReport/report.html")
+                        .withJsonUrl("/jsonReport/report.json")
+                        .withLogUrl("/log/log.log")
+                        .build())
                 .withStartTime(startTime)
                 .build()));
 
@@ -113,7 +117,7 @@ public class JLineupControllerTest {
         // then
         result.andExpect(status().isOk());
         result.andExpect(content().string(
-                "{\"id\":\"someId\",\"state\":\"FINISHED_WITHOUT_DIFFERENCES\",\"startTime\":\"1970-01-01T00:00:01Z\",\"endTime\":null,\"reports\":{\"htmlUrl\":\"http://localhost/testContextPath/htmlReport/report.html\",\"jsonUrl\":\"http://localhost/testContextPath/jsonReport/report.json\"}}"
+                "{\"id\":\"someId\",\"state\":\"FINISHED_WITHOUT_DIFFERENCES\",\"startTime\":\"1970-01-01T00:00:01Z\",\"endTime\":null,\"reports\":{\"htmlUrl\":\"http://localhost/testContextPath/htmlReport/report.html\",\"jsonUrl\":\"http://localhost/testContextPath/jsonReport/report.json\",\"logUrl\":\"http://localhost/testContextPath/log/log.log\"}}"
         ));
     }
 

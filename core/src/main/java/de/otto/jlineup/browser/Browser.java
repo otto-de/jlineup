@@ -230,12 +230,7 @@ public class Browser implements AutoCloseable {
         } else localDriver = initializeWebDriver();
 
         if (printVersion.getAndSet(false)) {
-            System.out.println(
-                    "\n\n" +
-                            "====================================================\n" +
-                            "User agent: " + getBrowserAndVersion() + "\n" +
-                            "====================================================\n" +
-                            "\n");
+            LOG.info("User agent: " + getBrowserAndVersion());
         }
 
         //No need to move the mouse out of the way for headless browsers, but this avoids hovering links in other browsers

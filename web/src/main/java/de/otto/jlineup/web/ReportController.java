@@ -50,13 +50,17 @@ public class ReportController {
 
         private String id;
         private String reportUrl;
+        private String logUrl;
         private String duration;
+        private String urls;
         private State state;
 
         public Report(JLineupRunStatus lineupRunStatus) {
             this.id = lineupRunStatus.getId();
             this.reportUrl = lineupRunStatus.getReports() != null ?
                     lineupRunStatus.getReports().getHtmlUrlFromCurrentContext() : null;
+            this.logUrl = lineupRunStatus.getReports() != null ?
+                    lineupRunStatus.getReports().getLogUrlFromCurrentContext() : null;
             this.duration = getDurationAsString(lineupRunStatus);
             this.state = lineupRunStatus.getState();
         }
@@ -93,21 +97,12 @@ public class ReportController {
             this.state = state;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Report report = (Report) o;
-            return Objects.equals(id, report.id) &&
-                    Objects.equals(reportUrl, report.reportUrl) &&
-                    Objects.equals(duration, report.duration) &&
-                    state == report.state;
+        public String getLogUrl() {
+            return logUrl;
         }
 
-        @Override
-        public int hashCode() {
-
-            return Objects.hash(id, reportUrl, duration, state);
+        public void setLogUrl(String logUrl) {
+            this.logUrl = logUrl;
         }
 
         @Override
@@ -115,9 +110,29 @@ public class ReportController {
             return "Report{" +
                     "id='" + id + '\'' +
                     ", reportUrl='" + reportUrl + '\'' +
+                    ", logUrl='" + logUrl + '\'' +
                     ", duration='" + duration + '\'' +
                     ", state=" + state +
                     '}';
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Report report = (Report) o;
+            return Objects.equals(id, report.id) &&
+                    Objects.equals(reportUrl, report.reportUrl) &&
+                    Objects.equals(logUrl, report.logUrl) &&
+                    Objects.equals(duration, report.duration) &&
+                    state == report.state;
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(id, reportUrl, logUrl, duration, state);
+        }
+
     }
 }
