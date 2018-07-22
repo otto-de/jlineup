@@ -3,11 +3,12 @@ package de.otto.jlineup.web;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.UrlConfig;
 
 import java.time.Instant;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
@@ -60,6 +61,14 @@ public class JLineupRunStatus {
 
     public Optional<Instant> getEndTime() {
         return Optional.ofNullable(endTime);
+    }
+
+    @JsonIgnore
+    public List<String> getUrls() {
+        List<String> urls = new ArrayList<>();
+        Set<Map.Entry<String, UrlConfig>> urlMap = this.jobConfig.urls.entrySet();
+        urlMap.forEach(urlMapEntry -> urlMapEntry.getValue().paths.forEach(path -> urls.add(BrowserUtils.buildUrl(urlMapEntry.getKey(), path, urlMapEntry.getValue().envMapping))));
+        return urls;
     }
 
     public Optional<CompletableFuture<State>> getCurrentJobStepFuture() {

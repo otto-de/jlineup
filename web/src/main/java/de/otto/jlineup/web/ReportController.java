@@ -11,6 +11,7 @@ import javax.servlet.ServletContext;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
@@ -52,11 +53,12 @@ public class ReportController {
         private String reportUrl;
         private String logUrl;
         private String duration;
-        private String urls;
+        private List<String> urls;
         private State state;
 
         public Report(JLineupRunStatus lineupRunStatus) {
             this.id = lineupRunStatus.getId();
+            this.urls = lineupRunStatus.getUrls();
             this.reportUrl = lineupRunStatus.getReports() != null ?
                     lineupRunStatus.getReports().getHtmlUrlFromCurrentContext() : null;
             this.logUrl = lineupRunStatus.getReports() != null ?
@@ -105,6 +107,14 @@ public class ReportController {
             this.logUrl = logUrl;
         }
 
+        public List<String> getUrls() {
+            return urls;
+        }
+
+        public void setUrls(List<String> urls) {
+            this.urls = urls;
+        }
+
         @Override
         public String toString() {
             return "Report{" +
@@ -112,6 +122,7 @@ public class ReportController {
                     ", reportUrl='" + reportUrl + '\'' +
                     ", logUrl='" + logUrl + '\'' +
                     ", duration='" + duration + '\'' +
+                    ", urls=" + urls +
                     ", state=" + state +
                     '}';
         }
@@ -125,13 +136,14 @@ public class ReportController {
                     Objects.equals(reportUrl, report.reportUrl) &&
                     Objects.equals(logUrl, report.logUrl) &&
                     Objects.equals(duration, report.duration) &&
+                    Objects.equals(urls, report.urls) &&
                     state == report.state;
         }
 
         @Override
         public int hashCode() {
 
-            return Objects.hash(id, reportUrl, logUrl, duration, state);
+            return Objects.hash(id, reportUrl, logUrl, duration, urls, state);
         }
 
     }
