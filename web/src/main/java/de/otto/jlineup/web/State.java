@@ -1,13 +1,23 @@
 package de.otto.jlineup.web;
 
 public enum State {
-    BEFORE_PENDING,
-    BEFORE_RUNNING,
-    BEFORE_DONE,
-    AFTER_PENDING,
-    AFTER_RUNNING,
-    FINISHED_WITHOUT_DIFFERENCES,
-    FINISHED_WITH_DIFFERENCES,
-    ERROR,
-    DEAD;
+    BEFORE_PENDING("'before' pending"),
+    BEFORE_RUNNING("'before' running"),
+    BEFORE_DONE("'before' done"),
+    AFTER_PENDING("'after' pending"),
+    AFTER_RUNNING("'after' running"),
+    FINISHED_WITHOUT_DIFFERENCES("finished without differences"),
+    FINISHED_WITH_DIFFERENCES("finished with differences"),
+    ERROR("error"),
+    DEAD("dead");
+
+    private final String humanReadableName;
+
+    State(String humanReadableName) {
+        this.humanReadableName = humanReadableName;
+    }
+
+    public String getHumanReadableName() {
+        return humanReadableName;
+    }
 }

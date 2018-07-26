@@ -11,10 +11,8 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
@@ -102,8 +100,8 @@ public class ReportController {
             this.duration = duration;
         }
 
-        public State getState() {
-            return state;
+        public String getState() {
+            return state.getHumanReadableName();
         }
 
         public void setState(State state) {
