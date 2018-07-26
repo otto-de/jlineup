@@ -124,12 +124,12 @@ public class ReportControllerTest {
         List<ReportController.Report> reportList = (List<ReportController.Report>)modelAndView.getModelMap().get("reportList");
 
         assertThat(reportList.get(0).getId(), is("someId"));
-        assertThat(reportList.get(0).getDuration(), is("01:00:00.000"));
+        assertThat(reportList.get(0).getDuration(), is("01:00:00"));
         assertThat(reportList.get(0).getReportUrl(), is("http://localhost/jlineup-ctxpath/reportHtmlUrl"));
         assertThat(reportList.get(1).getId(), is("someOtherId"));
-        assertThat(reportList.get(1).getDuration(), is("02:00:00.000"));
+        assertThat(reportList.get(1).getDuration(), is("02:00:00"));
         assertThat(reportList.get(2).getId(), is("someOldId"));
-        assertThat(reportList.get(2).getDuration(), is("06:00:00.000"));
+        assertThat(reportList.get(2).getDuration(), is("06:00:00"));
 
     }
 

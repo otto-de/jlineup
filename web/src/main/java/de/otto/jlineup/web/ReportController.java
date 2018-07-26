@@ -7,11 +7,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.ServletContext;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
@@ -21,6 +24,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class ReportController {
 
     private JLineupService jLineupService;
+
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm").withZone(ZoneId.systemDefault());
 
     @Autowired
     public ReportController(JLineupService jLineupService) {
@@ -44,7 +49,11 @@ public class ReportController {
     private static String getDurationAsString(JLineupRunStatus status) {
         Instant endTime = status.getEndTime().orElse(Instant.now());
         Instant startTime = status.getStartTime();
-        return DurationFormatUtils.formatDurationHMS(Duration.between(startTime, endTime).toMillis());
+        return DurationFormatUtils.formatDuration(Duration.between(startTime, endTime).toMillis(), "HH:mm:ss");
+    }
+
+    private static String formatTime(Instant time) {
+        return dateTimeFormatter.format(time);
     }
 
     public static class Report {
@@ -53,6 +62,7 @@ public class ReportController {
         private String reportUrl;
         private String logUrl;
         private String duration;
+        private String startTime;
         private List<String> urls;
         private State state;
 
@@ -64,6 +74,7 @@ public class ReportController {
             this.logUrl = lineupRunStatus.getReports() != null ?
                     lineupRunStatus.getReports().getLogUrlFromCurrentContext() : null;
             this.duration = getDurationAsString(lineupRunStatus);
+            this.startTime = formatTime(lineupRunStatus.getStartTime());
             this.state = lineupRunStatus.getState();
         }
 
@@ -107,6 +118,14 @@ public class ReportController {
             this.logUrl = logUrl;
         }
 
+        public String getStartTime() {
+            return startTime;
+        }
+
+        public void setStartTime(String startTime) {
+            this.startTime = startTime;
+        }
+
         public List<String> getUrls() {
             return urls;
         }
@@ -122,6 +141,7 @@ public class ReportController {
                     ", reportUrl='" + reportUrl + '\'' +
                     ", logUrl='" + logUrl + '\'' +
                     ", duration='" + duration + '\'' +
+                    ", startTime='" + startTime + '\'' +
                     ", urls=" + urls +
                     ", state=" + state +
                     '}';
@@ -136,6 +156,7 @@ public class ReportController {
                     Objects.equals(reportUrl, report.reportUrl) &&
                     Objects.equals(logUrl, report.logUrl) &&
                     Objects.equals(duration, report.duration) &&
+                    Objects.equals(startTime, report.startTime) &&
                     Objects.equals(urls, report.urls) &&
                     state == report.state;
         }
@@ -143,7 +164,7 @@ public class ReportController {
         @Override
         public int hashCode() {
 
-            return Objects.hash(id, reportUrl, logUrl, duration, urls, state);
+            return Objects.hash(id, reportUrl, logUrl, duration, startTime, urls, state);
         }
 
     }

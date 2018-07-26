@@ -19,21 +19,23 @@
                     <th>ID</th>
                     <th>Urls</th>
                     <th>Status</th>
+                    <th>Start</th>
                     <th>Duration</th>
-                    <th>Report</th>
-                    <th>Log</th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="report : ${reportList}">
                     <td th:text="${report.id}">42</td>
-                    <td th:text="${#strings.listJoin(report.urls, '<br/>')}"></td>
+                    <td th:utext="${#strings.listJoin(report.urls, '<br/>')}"></td>
                     <td th:text="${report.state}">OK</td>
+                    <td th:text="${report.startTime}">2018-09-09T20:00:00.000Z</td>
                     <td th:text="${report.duration}">10:20:30</td>
-                    <td><a th:if="${report.reportUrl != null}" th:href="${report.reportUrl}" target="_blank">Report</a></td>
-                    <td><a th:if="${report.logUrl != null}" th:href="${report.logUrl}" target="_blank">Log</a></td>
+                    <td><a th:if="${report.reportUrl != null}" th:href="${report.reportUrl}" target="_blank" class="btn btn-primary" role="button">Report</a></td>
+                    <td><a th:if="${report.logUrl != null}" th:href="${report.logUrl}" target="_blank"class="btn btn-info" role="button">Log</a></td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(reportList)}"><td colspan="6">No runs since start.</td></tr>
+                <tr th:if="${#lists.isEmpty(reportList)}"><td colspan="7">No runs since start.</td></tr>
                 </tbody>
             </table>
         </div>

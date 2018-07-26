@@ -125,10 +125,12 @@ public class JLineupService {
                     .build());
         }
 
+        if (state == State.ERROR || state == State.DEAD) {
+            runStatusBuilder.withEndTime(Instant.now());
+        }
+
         if (state == State.FINISHED_WITH_DIFFERENCES
-                || state == State.FINISHED_WITHOUT_DIFFERENCES
-                || state == State.ERROR
-                || state == State.DEAD) {
+                || state == State.FINISHED_WITHOUT_DIFFERENCES) {
             runStatusBuilder.withEndTime(Instant.now());
             runStatusBuilder.withReports(JLineupRunStatus.Reports.reportsBuilder()
                     .withHtmlUrl("/reports/report-" + runId + "/report.html")
