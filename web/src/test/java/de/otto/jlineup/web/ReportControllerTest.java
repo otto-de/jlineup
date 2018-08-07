@@ -114,7 +114,7 @@ public class ReportControllerTest {
 //                        )
 //                )))
 //                .andExpect(content().string(containsString("AFTER_RUNNING")))
-                .andExpect(content().string(containsString("FINISHED_WITHOUT_DIFFERENCES")))
+                .andExpect(content().string(containsString("finished without differences")))
                 .andExpect(content().string(containsString("someOldId")))
                 .andExpect(content().string(containsString("someId")))
                 .andExpect(content().string(containsString("someOtherId")))
