@@ -1,6 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.3.RELEASE'
+        springBootVersion = '2.0.4.RELEASE'
+        springVersion = '5.0.8.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -9,6 +10,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath 'org.owasp:dependency-check-gradle:3.3.1'
     }
 }
 
@@ -26,6 +28,7 @@ repositories {
 }
 
 apply plugin: 'io.codearte.nexus-staging'
+apply plugin: 'org.owasp.dependencycheck'
 
 nexusStaging {
     username = sonatypeUsername

@@ -4,6 +4,8 @@ dependencies {
     compile project(":core")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
+    //this pulls spring context support to 5.0.8 because metrics lib in edison core is pulling it to 5.0.2
+    compile("org.springframework:spring-context-support:${springVersion}")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.6")
     compile("de.otto.edison:edison-core:2.0.0-m1")
 
