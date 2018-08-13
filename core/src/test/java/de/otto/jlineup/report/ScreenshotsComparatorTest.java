@@ -47,7 +47,7 @@ public class ScreenshotsComparatorTest {
         jobConfig = configBuilder()
                 .withUrls(ImmutableMap.of(
                         "http://url",
-                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig())))
+                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(),0)))
                 .withWindowHeight(WINDOW_HEIGHT)
                 .build();
 
@@ -106,7 +106,7 @@ public class ScreenshotsComparatorTest {
 
 
         BufferedImage differenceBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
-        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d));
+        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, ImageService.DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d));
 
         when(fileService.writeScreenshot(differenceBuffer, "http://url", "/", 1001, 2002, "DIFFERENCE")).thenReturn("http_url_root_ff3c40c_1001_02002_DIFFERENCE.png");
 

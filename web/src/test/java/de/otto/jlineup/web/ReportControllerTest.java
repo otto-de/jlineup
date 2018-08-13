@@ -151,7 +151,8 @@ public class ReportControllerTest {
                                 DEFAULT_WARMUP_BROWSER_CACHE_TIME,
                                 null,
                                 0,
-                                new HttpCheckConfig()
+                                new HttpCheckConfig(),
+                                0
                         )))
                 .build();
 

@@ -38,6 +38,22 @@ public class ImageServiceTest {
     }
 
     @Test
+    public void shouldIgnoreSlightDifferencesInColorSpace() throws IOException {
+        //given
+        final int viewportHeight = 800;
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_after.png"));
+        //final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_DIFFERENCE_reference.png"));
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 1);
+
+        //then
+        assertThat(result.getDifference(), is(0.0));
+        //assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
+    }
+
+    @Test
     public void shouldGenerateDifferenceImageFromScreenshotsWithDifferentSizes() throws IOException {
         //given
         final int viewportHeight = 800;

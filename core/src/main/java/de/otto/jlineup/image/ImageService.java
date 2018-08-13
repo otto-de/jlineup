@@ -16,7 +16,7 @@ public class ImageService {
     public static final int SAME_COLOR = Color.BLACK.getRGB();
     public static final int HIGHLIGHT_COLOR = Color.WHITE.getRGB();
     public static final int DIFFERENT_SIZE_COLOR = Color.GRAY.getRGB();
-    public static final int PIXEL_DIFFERENCE_THRESHOLD = 0;
+    public static final int DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD = 0;
 
     public static class ImageComparisonResult {
         private final BufferedImage differenceImage;
@@ -37,6 +37,10 @@ public class ImageService {
     }
 
     public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight) {
+        return this.compareImages(image1, image2, viewportHeight, DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD);
+    }
+
+    public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight, int pixelColorDifferenceThreshold) {
 
         if (image1 == null || image2 == null) throw new NullPointerException("Can't compare null imagebuffers");
 
@@ -74,15 +78,12 @@ public class ImageService {
         final int[] differenceImagePixels = new int[maxPixelCount];
         //i1 and i2 are the indices in the image pixel arrays of image1pixels and image2pixels
         //iD is the index of the differenceSum image
-        for (int i1=0, i2=0, iD=0; iD < maxPixelCount;) {
+        for (int i1 = 0, i2 = 0, iD = 0; iD < maxPixelCount; ) {
             //mark same pixels with same_color and different pixels in highlight_color
-            if (image1Pixels[i1] != image2Pixels[i2]) {
-                if (getPixelDifference(image1Pixels[i1], image2Pixels[i2]) > PIXEL_DIFFERENCE_THRESHOLD) {
-                    differenceImagePixels[iD] = HIGHLIGHT_COLOR;
-                    diffPixelCounter++;
-                } else {
-                    differenceImagePixels[iD] = SAME_COLOR;
-                }
+            if (image1Pixels[i1] != image2Pixels[i2] &&
+                    getMaxColorDifference(image1Pixels[i1], image2Pixels[i2]) > pixelColorDifferenceThreshold) {
+                differenceImagePixels[iD] = HIGHLIGHT_COLOR;
+                diffPixelCounter++;
             } else {
                 differenceImagePixels[iD] = SAME_COLOR;
             }
@@ -95,14 +96,14 @@ public class ImageService {
             //move index of other picture to end of line and mark pixels
             //with different_size_color
             if (width1 < width2 && i1 % minWidth == 0) {
-                while(i2 % maxWidth != 0) {
+                while (i2 % maxWidth != 0) {
                     i2++;
                     differenceImagePixels[iD] = DIFFERENT_SIZE_COLOR;
                     diffPixelCounter++;
                     iD++;
                 }
             } else if (width2 < width1 && i2 % minWidth == 0) {
-                while(i1 % maxWidth != 0) {
+                while (i1 % maxWidth != 0) {
                     i1++;
                     differenceImagePixels[iD] = DIFFERENT_SIZE_COLOR;
                     diffPixelCounter++;
@@ -116,8 +117,8 @@ public class ImageService {
             //that neither exist in img1 nor in img2 as same_color
             //(both images don't exist in that area, so they are the same there ;))
             if (i1 == minPixelCount || i2 == minPixelCount) {
-                while(iD < maxPixelCount) {
-                    if (iD % maxWidth < minWidth){
+                while (iD < maxPixelCount) {
+                    if (iD % maxWidth < minWidth) {
                         differenceImagePixels[iD] = DIFFERENT_SIZE_COLOR;
                         diffPixelCounter++;
                     } else {
@@ -136,27 +137,28 @@ public class ImageService {
         return new ImageComparisonResult(out, difference);
     }
 
-    private int getPixelDifference(int pixelA, int pixelB) {
+    private int getMaxColorDifference(int pixelA, int pixelB) {
         final int[] argbA = getARGB(pixelA);
         final int[] argbB = getARGB(pixelB);
 
-        int diff = 0;
-        for (int i=0; i<argbA.length; i++) {
-            diff += Math.abs(argbA[i] - argbB[i]);
+        int max = 0;
+        for (int i = 0; i < argbA.length; i++) {
+            max = Math.max(max, Math.abs(argbA[i] - argbB[i]));
         }
-        return diff;
+        if (max > 0) {
+            return max;
+        }
+        return max;
     }
 
     private int[] getARGB(int pixel) {
 
-        int rgb = pixel;
+        int alpha = (pixel >> 24) & 0xFF;
+        int red = (pixel >> 16) & 0xFF;
+        int green = (pixel >> 8) & 0xFF;
+        int blue = (pixel) & 0xFF;
 
-        int alpha = (rgb >> 24) & 0xFF;
-        int red =   (rgb >> 16) & 0xFF;
-        int green = (rgb >>  8) & 0xFF;
-        int blue =  (rgb      ) & 0xFF;
-
-        return new int[] {alpha, red, green, blue };
+        return new int[]{alpha, red, green, blue};
     }
 
     //Helper function to compare two BufferedImage instances (BufferedImage doesn't override equals())
@@ -198,8 +200,7 @@ public class ImageService {
                     return false;
                 }
             }
-        }
-        else {
+        } else {
             return false;
         }
         return true;

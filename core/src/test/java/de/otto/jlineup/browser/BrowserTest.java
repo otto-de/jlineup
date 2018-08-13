@@ -177,7 +177,8 @@ public class BrowserTest {
                 3,
                 "testJS();",
                 5,
-                new HttpCheckConfig());
+                new HttpCheckConfig(),
+                0);
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
@@ -248,7 +249,8 @@ public class BrowserTest {
                 3,
                 null,
                 5,
-                new HttpCheckConfig());
+                new HttpCheckConfig(),
+                0);
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
@@ -321,7 +323,8 @@ public class BrowserTest {
                 3,
                 null,
                 5,
-                new HttpCheckConfig());
+                new HttpCheckConfig(),
+                0);
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
@@ -388,7 +391,8 @@ public class BrowserTest {
                 3,
                 null,
                 5,
-                new HttpCheckConfig());
+                new HttpCheckConfig(),
+                0);
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(CHROME_HEADLESS)

@@ -108,7 +108,8 @@ public class JSONReportWriterV2Test {
                 "        \"javascript\": \"console.log(\\u0027This is JavaScript!\\u0027)\",\n" +
                 "        \"http-check\": {\n" +
                 "          \"enabled\": false\n" +
-                "        }\n" +
+                "        },\n" +
+                "        \"max-color-diff-per-pixel\": 1\n" +
                 "      }\n" +
                 "    },\n" +
                 "    \"browser\": \"PhantomJS\",\n" +

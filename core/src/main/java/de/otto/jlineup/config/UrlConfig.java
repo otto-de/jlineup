@@ -3,7 +3,6 @@ package de.otto.jlineup.config;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Collections;
@@ -74,6 +73,10 @@ public class UrlConfig {
     @JsonProperty("http-check")
     public final HttpCheckConfig httpCheck;
 
+    @SerializedName("max-color-diff-per-pixel")
+    @JsonProperty("max-color-diff-per-pixel")
+    public final int maxColorDiffPerPixel;
+
     //Default constructor for GSON
     public UrlConfig() {
         this.paths = of(DEFAULT_PATH);
@@ -91,9 +94,10 @@ public class UrlConfig {
         this.javaScript = null;
         this.waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
         this.httpCheck = new HttpCheckConfig();
+        this.maxColorDiffPerPixel = DEFAULT_MAX_COLOR_DIFF_PER_PIXEL;
     }
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime, HttpCheckConfig httpCheck) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime, HttpCheckConfig httpCheck, int maxColorDiffPerPixel) {
         this.paths = paths != null ? paths : of(DEFAULT_PATH);
         this.windowWidths = windowWidths != null ? windowWidths : of(DEFAULT_WINDOW_WIDTH);
         this.maxDiff = maxDiff;
@@ -109,6 +113,7 @@ public class UrlConfig {
         this.javaScript = javaScript;
         this.waitForFontsTime = waitForFontsTime;
         this.httpCheck = httpCheck;
+        this.maxColorDiffPerPixel = maxColorDiffPerPixel;
     }
 
     private UrlConfig(Builder builder) {
@@ -127,6 +132,7 @@ public class UrlConfig {
         waitForFontsTime = builder.waitForFontsTime;
         javaScript = builder.javaScript;
         httpCheck = builder.httpCheck;
+        maxColorDiffPerPixel = builder.maxColorDiffPerPixel;
     }
 
     public static Builder urlConfigBuilder() {
@@ -150,6 +156,7 @@ public class UrlConfig {
         builder.waitForFontsTime = copy.waitForFontsTime;
         builder.javaScript = copy.javaScript;
         builder.httpCheck = copy.httpCheck;
+        builder.maxColorDiffPerPixel = copy.maxColorDiffPerPixel;
         return builder;
     }
 
@@ -171,6 +178,7 @@ public class UrlConfig {
                 ", waitForFontsTime=" + waitForFontsTime +
                 ", javaScript='" + javaScript + '\'' +
                 ", httpCheck=" + httpCheck +
+                ", maxColorDiffPerPixel=" + maxColorDiffPerPixel +
                 '}';
     }
 
@@ -186,6 +194,7 @@ public class UrlConfig {
                 Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 &&
                 warmupBrowserCacheTime == urlConfig.warmupBrowserCacheTime &&
                 waitForFontsTime == urlConfig.waitForFontsTime &&
+                maxColorDiffPerPixel == urlConfig.maxColorDiffPerPixel &&
                 Objects.equals(paths, urlConfig.paths) &&
                 Objects.equals(cookies, urlConfig.cookies) &&
                 Objects.equals(envMapping, urlConfig.envMapping) &&
@@ -199,7 +208,7 @@ public class UrlConfig {
     @Override
     public int hashCode() {
 
-        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck);
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, maxColorDiffPerPixel);
     }
 
     public static final class Builder {
@@ -219,6 +228,7 @@ public class UrlConfig {
         private int waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
         private String javaScript;
         private HttpCheckConfig httpCheck;
+        private int maxColorDiffPerPixel = DEFAULT_MAX_COLOR_DIFF_PER_PIXEL;
 
         private Builder() {
         }
@@ -300,6 +310,11 @@ public class UrlConfig {
 
         public Builder withJavaScript(String val) {
             javaScript = val;
+            return this;
+        }
+
+        public Builder withMaxColorDiffPerPixel(int val) {
+            maxColorDiffPerPixel = val;
             return this;
         }
 
