@@ -145,9 +145,6 @@ public class ImageService {
         for (int i = 0; i < argbA.length; i++) {
             max = Math.max(max, Math.abs(argbA[i] - argbB[i]));
         }
-        if (max > 0) {
-            return max;
-        }
         return max;
     }
 
