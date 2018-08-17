@@ -103,10 +103,14 @@ public class ScreenshotsComparator {
                     if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
                         differenceImageFileName = Paths.get(fileService.writeScreenshot(imageComparisonResult.getDifferenceImage().orElse(null), url, path, windowWidth, yPosition, "DIFFERENCE")).getFileName().toString();
                     }
-                    screenshotComparisonResults.add(new ScreenshotComparisonResult(fullUrlWithPath, windowWidth, yPosition, imageComparisonResult.getDifference(),
+                    screenshotComparisonResults.add(new ScreenshotComparisonResult(fullUrlWithPath,
+                            windowWidth,
+                            yPosition,
+                            imageComparisonResult.getDifference(),
                             buildRelativePathFromReportDir(beforeFileName),
                             buildRelativePathFromReportDir(afterFileName),
-                            buildRelativePathFromReportDir(differenceImageFileName)));
+                            buildRelativePathFromReportDir(differenceImageFileName),
+                            imageComparisonResult.getMaxSingleColorDifference()));
                 }
 
                 addMissingBeforeFilesToResults(screenshotComparisonResults, fullUrlWithPath, afterFileNamesWithNoBeforeFile);

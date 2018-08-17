@@ -14,13 +14,15 @@
         1511,
         1512,
         1513,
-        1514
+        1514,
+        1515
       ],
       "max-color-diff-per-pixel": 0,
-      "wait-after-page-load" : 0
+      "wait-after-page-load": 1,
+      "warmup-browser-cache-time": 2
     }
   },
   "report-format" : 2,
-  "threads" : 1,
+  "threads" : 3,
   "browser" : "chrome-headless"
 }

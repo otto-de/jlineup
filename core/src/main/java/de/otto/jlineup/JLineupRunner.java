@@ -148,8 +148,8 @@ public class JLineupRunner {
             }
 
             //Check max scroll height
-            if (urlConfig.maxScrollHeight <= 0) {
-                throw new ConfigValidationException(String.format("Configured max scroll height (%d) for %s must be negative)", urlConfig.maxScrollHeight, url));
+            if (urlConfig.maxScrollHeight < 0) {
+                throw new ConfigValidationException(String.format("Configured max scroll height (%d) for %s must not be negative)", urlConfig.maxScrollHeight, url));
             }
         }
     }

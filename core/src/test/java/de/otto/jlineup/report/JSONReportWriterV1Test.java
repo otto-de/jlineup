@@ -28,7 +28,7 @@ public class JSONReportWriterV1Test {
     public void shouldWriteComparisonReportAsJson() throws Exception {
 
         ScreenshotComparisonResult screenshotComparisonResult =
-                new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum");
+                new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceImageFileName", 0);
         final Summary localSummary = new Summary(false, 0d, 0d);
         final Summary globalSummary = new Summary(false, 0d, 0d);
         Report report = new Report(globalSummary, singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), JobConfig.exampleConfig());
@@ -41,7 +41,8 @@ public class JSONReportWriterV1Test {
                 "    \"difference\": 0.0,\n" +
                 "    \"screenshotBeforeFileName\": \"before\",\n" +
                 "    \"screenshotAfterFileName\": \"after\",\n" +
-                "    \"differenceImageFileName\": \"differenceSum\"\n" +
+                "    \"differenceImageFileName\": \"differenceImageFileName\",\n" +
+                "    \"maxSingleColorDifference\": 0\n" +
                 "  }\n" +
                 "]";
 

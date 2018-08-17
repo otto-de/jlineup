@@ -1,5 +1,7 @@
 package de.otto.jlineup.report;
 
+import java.util.Objects;
+
 public class ScreenshotComparisonResult {
 
     public final String url;
@@ -9,8 +11,9 @@ public class ScreenshotComparisonResult {
     public final String screenshotBeforeFileName;
     public final String screenshotAfterFileName;
     public final String differenceImageFileName;
+    public final int maxSingleColorDifference;
 
-    public ScreenshotComparisonResult(String url, int width, int verticalScrollPosition, double difference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName) {
+    public ScreenshotComparisonResult(String url, int width, int verticalScrollPosition, double difference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName, int maxSingleColorDifference) {
         this.url = url;
         this.width = width;
         this.verticalScrollPosition = verticalScrollPosition;
@@ -18,48 +21,36 @@ public class ScreenshotComparisonResult {
         this.screenshotBeforeFileName = screenshotBeforeFileName;
         this.screenshotAfterFileName = screenshotAfterFileName;
         this.differenceImageFileName = differenceImageFileName;
+        this.maxSingleColorDifference = maxSingleColorDifference;
     }
 
     public static ScreenshotComparisonResult noBeforeImageComparisonResult(String url, int width, int verticalScrollPosition, String screenshotAfterFileName) {
-        return new ScreenshotComparisonResult(url, width, verticalScrollPosition, 1d, null, screenshotAfterFileName, null);
+        return new ScreenshotComparisonResult(url, width, verticalScrollPosition, 1d, null, screenshotAfterFileName, null, 0);
     }
 
     public static ScreenshotComparisonResult noAfterImageComparisonResult(String url, int width, int verticalScrollPosition, String screenshotBeforeFileName) {
-        return new ScreenshotComparisonResult(url, width, verticalScrollPosition, 1d, screenshotBeforeFileName, null, null);
+        return new ScreenshotComparisonResult(url, width, verticalScrollPosition, 1d, screenshotBeforeFileName, null, null, 0);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         ScreenshotComparisonResult that = (ScreenshotComparisonResult) o;
-
-        if (width != that.width) return false;
-        if (verticalScrollPosition != that.verticalScrollPosition) return false;
-        if (Double.compare(that.difference, difference) != 0) return false;
-        if (url != null ? !url.equals(that.url) : that.url != null) return false;
-        if (screenshotBeforeFileName != null ? !screenshotBeforeFileName.equals(that.screenshotBeforeFileName) : that.screenshotBeforeFileName != null)
-            return false;
-        if (screenshotAfterFileName != null ? !screenshotAfterFileName.equals(that.screenshotAfterFileName) : that.screenshotAfterFileName != null)
-            return false;
-        return differenceImageFileName != null ? differenceImageFileName.equals(that.differenceImageFileName) : that.differenceImageFileName == null;
-
+        return width == that.width &&
+                verticalScrollPosition == that.verticalScrollPosition &&
+                Double.compare(that.difference, difference) == 0 &&
+                maxSingleColorDifference == that.maxSingleColorDifference &&
+                Objects.equals(url, that.url) &&
+                Objects.equals(screenshotBeforeFileName, that.screenshotBeforeFileName) &&
+                Objects.equals(screenshotAfterFileName, that.screenshotAfterFileName) &&
+                Objects.equals(differenceImageFileName, that.differenceImageFileName);
     }
 
     @Override
     public int hashCode() {
-        int result;
-        long temp;
-        result = url != null ? url.hashCode() : 0;
-        result = 31 * result + width;
-        result = 31 * result + verticalScrollPosition;
-        temp = Double.doubleToLongBits(difference);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + (screenshotBeforeFileName != null ? screenshotBeforeFileName.hashCode() : 0);
-        result = 31 * result + (screenshotAfterFileName != null ? screenshotAfterFileName.hashCode() : 0);
-        result = 31 * result + (differenceImageFileName != null ? differenceImageFileName.hashCode() : 0);
-        return result;
+
+        return Objects.hash(url, width, verticalScrollPosition, difference, screenshotBeforeFileName, screenshotAfterFileName, differenceImageFileName, maxSingleColorDifference);
     }
 
     @Override
@@ -68,10 +59,11 @@ public class ScreenshotComparisonResult {
                 "url='" + url + '\'' +
                 ", width=" + width +
                 ", verticalScrollPosition=" + verticalScrollPosition +
-                ", differenceSum=" + difference +
+                ", difference=" + difference +
                 ", screenshotBeforeFileName='" + screenshotBeforeFileName + '\'' +
                 ", screenshotAfterFileName='" + screenshotAfterFileName + '\'' +
                 ", differenceImageFileName='" + differenceImageFileName + '\'' +
+                ", maxSingleColorDifference=" + maxSingleColorDifference +
                 '}';
     }
 }

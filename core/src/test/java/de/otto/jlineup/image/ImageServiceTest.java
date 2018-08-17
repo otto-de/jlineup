@@ -1,6 +1,7 @@
 package de.otto.jlineup.image;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -50,6 +51,24 @@ public class ImageServiceTest {
 
         //then
         assertThat(result.getDifference(), is(0.0));
+        assertThat(result.getMaxSingleColorDifference(), is(1));
+        //assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
+    }
+
+    @Test
+    @Ignore //Logo is really different :(
+    public void shouldIgnoreChangeInOttoLogo() throws IOException {
+        //given
+        final int viewportHeight = 800;
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_after.png"));
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 1);
+
+        //then
+        //assertThat(result.getDifference(), is(0.0));
+        assertThat(result.getMaxSingleColorDifference(), is(1));
         //assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
     }
 

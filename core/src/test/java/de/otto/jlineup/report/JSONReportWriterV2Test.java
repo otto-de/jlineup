@@ -1,8 +1,6 @@
 package de.otto.jlineup.report;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.sql.Date;
-import java.time.Instant;
 import java.util.Collections;
 
 import static de.otto.jlineup.config.Cookie.COOKIE_TIME_FORMAT;
@@ -35,7 +32,7 @@ public class JSONReportWriterV2Test {
     public void shouldWriteComparisonReportAsJson() throws Exception {
 
         ScreenshotComparisonResult screenshotComparisonResult =
-                new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum");
+                new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceImageFileName", 0);
         final Summary globalSummary = new Summary(false, 0d, 0d);
         final Summary localSummary = new Summary(false, 0d, 0d);
         Report report = new Report(globalSummary, Collections.singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), exampleConfig());
@@ -57,7 +54,8 @@ public class JSONReportWriterV2Test {
                 "          \"difference\": 0.0,\n" +
                 "          \"screenshotBeforeFileName\": \"before\",\n" +
                 "          \"screenshotAfterFileName\": \"after\",\n" +
-                "          \"differenceImageFileName\": \"differenceSum\"\n" +
+                "          \"differenceImageFileName\": \"differenceImageFileName\",\n" +
+                "          \"maxSingleColorDifference\": 0\n" +
                 "        }\n" +
                 "      ],\n" +
                 "      \"summary\": {\n" +

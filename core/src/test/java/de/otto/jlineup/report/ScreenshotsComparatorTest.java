@@ -86,7 +86,8 @@ public class ScreenshotsComparatorTest {
                         0.1337,
                         "screenshots/http_url_root_ff3c40c_1001_02002_before.png",
                         "screenshots/http_url_root_ff3c40c_1001_02002_after.png",
-                        "screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE.png"),
+                        "screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE.png",
+                        10),
                 ScreenshotComparisonResult.noBeforeImageComparisonResult(
                         "http://url/",
                         1001,
@@ -106,7 +107,7 @@ public class ScreenshotsComparatorTest {
 
 
         BufferedImage differenceBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
-        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, ImageService.DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d));
+        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, ImageService.DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10));
 
         when(fileService.writeScreenshot(differenceBuffer, "http://url", "/", 1001, 2002, "DIFFERENCE")).thenReturn("http_url_root_ff3c40c_1001_02002_DIFFERENCE.png");
 

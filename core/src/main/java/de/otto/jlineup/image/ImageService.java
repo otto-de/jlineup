@@ -21,10 +21,12 @@ public class ImageService {
     public static class ImageComparisonResult {
         private final BufferedImage differenceImage;
         private final double difference;
+        private final int maxSingleColorDifference;
 
-        public ImageComparisonResult(BufferedImage differenceImage, double difference) {
+        public ImageComparisonResult(BufferedImage differenceImage, double difference, int maxSingleColorDifference) {
             this.differenceImage = differenceImage;
             this.difference = difference;
+            this.maxSingleColorDifference = maxSingleColorDifference;
         }
 
         public Optional<BufferedImage> getDifferenceImage() {
@@ -33,6 +35,10 @@ public class ImageService {
 
         public double getDifference() {
             return difference;
+        }
+
+        public int getMaxSingleColorDifference() {
+            return maxSingleColorDifference;
         }
     }
 
@@ -45,7 +51,7 @@ public class ImageService {
         if (image1 == null || image2 == null) throw new NullPointerException("Can't compare null imagebuffers");
 
         if (bufferedImagesEqualQuick(image1, image2)) {
-            return new ImageComparisonResult(null, 0);
+            return new ImageComparisonResult(null, 0, 0);
         }
 
         // cache image widths and heights
@@ -76,6 +82,7 @@ public class ImageService {
         // compare img1 to img2, pixel by pixel. If different, highlight differenceSum image pixel
         int diffPixelCounter = 0;
         final int[] differenceImagePixels = new int[maxPixelCount];
+        int maxSingleColorDifference = 0;
         //i1 and i2 are the indices in the image pixel arrays of image1pixels and image2pixels
         //iD is the index of the differenceSum image
         for (int i1 = 0, i2 = 0, iD = 0; iD < maxPixelCount; ) {
@@ -87,6 +94,7 @@ public class ImageService {
             } else {
                 differenceImagePixels[iD] = SAME_COLOR;
             }
+            maxSingleColorDifference = Math.max(maxSingleColorDifference, getMaxColorDifference(image1Pixels[i1], image2Pixels[i2]));
             //advance all indices
             i1++;
             i2++;
@@ -134,7 +142,7 @@ public class ImageService {
         // save differenceImagePixels to a new BufferedImage
         final BufferedImage out = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
         out.setRGB(0, 0, maxWidth, maxHeight, differenceImagePixels, 0, maxWidth);
-        return new ImageComparisonResult(out, difference);
+        return new ImageComparisonResult(out, difference, maxSingleColorDifference);
     }
 
     private int getMaxColorDifference(int pixelA, int pixelB) {

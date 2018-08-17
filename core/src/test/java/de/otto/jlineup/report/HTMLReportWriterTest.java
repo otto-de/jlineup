@@ -26,7 +26,7 @@ public class HTMLReportWriterTest {
     @Mock
     private FileService fileServiceMock;
 
-    private final List<ScreenshotComparisonResult> screenshotComparisonResults = singletonList(new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum"));
+    private final List<ScreenshotComparisonResult> screenshotComparisonResults = singletonList(new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum", 0));
     private Summary summary = new Summary(true, 1d, 0.5d);
     private Summary localSummary = new Summary(true, 2d, 0.3d);
     private final Map<String, UrlReport> screenshotComparisonResultList =
@@ -40,7 +40,7 @@ public class HTMLReportWriterTest {
     }
 
     @Test
-    public void shouldRenderHTMLReport() throws Exception {
+    public void shouldRenderHTMLReport() {
 
         String n = System.getProperty("line.separator");
 
