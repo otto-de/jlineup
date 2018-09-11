@@ -27,7 +27,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="report : ${reportList}">
-                    <td th:text="${report.id}">42</td>
+                    <td><div th:text="${report.id}">42</div><div th:if="${report.name != null}" th:text="'(' + ${report.name} + ')'"></div></td>
                     <td><pre style="white-space: pre-line;" th:utext="${#strings.listJoin(report.urls, '<br/>')}">https://www.verylongurl.com/some/cool/path<br />https://www.anotherurl.com/bla/blub/bluuub/loooooooooooooooooong/loooooooooooooooooonger</pre></td>
                     <td th:text="${report.state}">OK</td>
                     <td th:text="${report.startTime}">2018-09-09T20:00:00.000Z</td>

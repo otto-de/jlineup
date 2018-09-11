@@ -57,6 +57,7 @@ public class ReportController {
     public static class Report {
 
         private String id;
+        private String name;
         private String reportUrl;
         private String logUrl;
         private String duration;
@@ -66,6 +67,7 @@ public class ReportController {
 
         public Report(JLineupRunStatus lineupRunStatus) {
             this.id = lineupRunStatus.getId();
+            this.name = lineupRunStatus.getJobConfig().name;
             this.urls = lineupRunStatus.getUrls();
             this.reportUrl = lineupRunStatus.getReports() != null ?
                     lineupRunStatus.getReports().getHtmlUrlFromCurrentContext() : null;
@@ -136,6 +138,7 @@ public class ReportController {
         public String toString() {
             return "Report{" +
                     "id='" + id + '\'' +
+                    ", name='" + name + '\'' +
                     ", reportUrl='" + reportUrl + '\'' +
                     ", logUrl='" + logUrl + '\'' +
                     ", duration='" + duration + '\'' +
@@ -151,6 +154,7 @@ public class ReportController {
             if (o == null || getClass() != o.getClass()) return false;
             Report report = (Report) o;
             return Objects.equals(id, report.id) &&
+                    Objects.equals(name, report.name) &&
                     Objects.equals(reportUrl, report.reportUrl) &&
                     Objects.equals(logUrl, report.logUrl) &&
                     Objects.equals(duration, report.duration) &&
@@ -162,8 +166,11 @@ public class ReportController {
         @Override
         public int hashCode() {
 
-            return Objects.hash(id, reportUrl, logUrl, duration, startTime, urls, state);
+            return Objects.hash(id, name, reportUrl, logUrl, duration, startTime, urls, state);
         }
 
+        public String getName() {
+            return name;
+        }
     }
 }

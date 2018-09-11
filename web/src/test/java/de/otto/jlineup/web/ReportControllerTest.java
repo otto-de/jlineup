@@ -28,6 +28,7 @@ import static de.otto.jlineup.config.JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME
 import static de.otto.jlineup.config.JobConfig.configBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -70,7 +71,7 @@ public class ReportControllerTest {
                 .withState(State.FINISHED_WITHOUT_DIFFERENCES)
                 .withId("someOldId")
                 .withReports(JLineupRunStatus.Reports.reportsBuilder().withHtmlUrl("/reportHtmlUrlOld").build())
-                .withJobConfig(createJobConfigWithUrl("www.sample0.de"))
+                .withJobConfig(createJobConfigWithUrlAndName("www.sample0.de", null))
                 .build();
 
         JLineupRunStatus runStatus2 = JLineupRunStatus.runStatusBuilder()
@@ -79,7 +80,7 @@ public class ReportControllerTest {
                 .withState(State.FINISHED_WITHOUT_DIFFERENCES)
                 .withId("someId")
                 .withReports(JLineupRunStatus.Reports.reportsBuilder().withHtmlUrl("/reportHtmlUrl").build())
-                .withJobConfig(createJobConfigWithUrl("www.sample1.de"))
+                .withJobConfig(createJobConfigWithUrlAndName("www.sample1.de", "someName"))
                 .build();
 
         JLineupRunStatus runStatus3 = JLineupRunStatus.runStatusBuilder()
@@ -87,7 +88,7 @@ public class ReportControllerTest {
                 .withEndTime(now.plus(1, ChronoUnit.HOURS))
                 .withState(State.AFTER_RUNNING)
                 .withId("someOtherId")
-                .withJobConfig(createJobConfigWithUrl("www.other1.de"))
+                .withJobConfig(createJobConfigWithUrlAndName("www.other1.de", null))
                 .build();
 
         when(jLineupService.getRunStatus()).thenReturn(ImmutableList.of(
@@ -124,17 +125,20 @@ public class ReportControllerTest {
         List<ReportController.Report> reportList = (List<ReportController.Report>)modelAndView.getModelMap().get("reportList");
 
         assertThat(reportList.get(0).getId(), is("someId"));
+        assertThat(reportList.get(0).getName(), is("someName"));
         assertThat(reportList.get(0).getDuration(), is("01:00:00"));
         assertThat(reportList.get(0).getReportUrl(), is("http://localhost/jlineup-ctxpath/reportHtmlUrl"));
         assertThat(reportList.get(1).getId(), is("someOtherId"));
+        assertThat(reportList.get(1).getName(), is(nullValue()));
         assertThat(reportList.get(1).getDuration(), is("02:00:00"));
         assertThat(reportList.get(2).getId(), is("someOldId"));
         assertThat(reportList.get(2).getDuration(), is("06:00:00"));
 
     }
 
-    private JobConfig createJobConfigWithUrl(String url) {
+    private JobConfig createJobConfigWithUrlAndName(String url, String name) {
         return configBuilder()
+                .withName(name)
                 .withUrls(ImmutableMap.of(url,
                         new UrlConfig(
                                 ImmutableList.of("/"),
