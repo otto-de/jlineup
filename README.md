@@ -40,7 +40,7 @@ to get some idea how to use it.
 
 ## Browser compatibility
 
-JLineup 3.0.0-rc3 was tested successfully with
+JLineup 3.0.0-rc4 was tested successfully with
 
 * Chrome 68.x
 * Firefox 64.x (nightly)
