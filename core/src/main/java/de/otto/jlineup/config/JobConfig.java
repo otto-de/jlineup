@@ -49,6 +49,10 @@ public final class JobConfig {
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
 
+    @SerializedName(value = "name")
+    @JsonProperty("name")
+    public final String name;
+
     @SerializedName(value = "wait-after-page-load", alternate = "async-wait")
     @JsonProperty("wait-after-page-load")
     @JsonAlias({"async-wait"})
@@ -84,7 +88,11 @@ public final class JobConfig {
     @JsonProperty("http-check")
     public final HttpCheckConfig httpCheck;
 
-    private final static Gson gson = new GsonBuilder().setDateFormat(COOKIE_TIME_FORMAT).setPrettyPrinting().create();
+    private final static Gson gson =
+            new GsonBuilder()
+                    .setDateFormat(COOKIE_TIME_FORMAT)
+                    .setPrettyPrinting()
+                    .create();
 
     /* Used by GSON to set default values */
     public JobConfig() {
@@ -105,6 +113,7 @@ public final class JobConfig {
         logToFile = builder.logToFile;
         checkForErrorsInLog = builder.checkForErrorsInLog;
         httpCheck = builder.httpCheck;
+        name = builder.name;
     }
 
     public static String prettyPrint(JobConfig jobConfig) {
@@ -113,6 +122,7 @@ public final class JobConfig {
 
     public static Builder copyOfBuilder(JobConfig jobConfig) {
         return configBuilder()
+                .withName(jobConfig.name)
                 .withUrls(jobConfig.urls)
                 .withHttpCheck(jobConfig.httpCheck)
                 .withBrowser(jobConfig.browser)
@@ -129,25 +139,6 @@ public final class JobConfig {
     }
 
     @Override
-    public String toString() {
-        return "JobConfig{" +
-                "urls=" + urls +
-                ", httpCheck=" + httpCheck +
-                ", browser=" + browser +
-                ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
-                ", pageLoadTimeout=" + pageLoadTimeout +
-                ", windowHeight=" + windowHeight +
-                ", reportFormat=" + reportFormat +
-                ", screenshotRetries=" + screenshotRetries +
-                ", threads=" + threads +
-                ", globalTimeout=" + globalTimeout +
-                ", debug=" + debug +
-                ", logToFile=" + logToFile +
-                ", checkForErrorsInLog=" + checkForErrorsInLog +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -161,14 +152,37 @@ public final class JobConfig {
                 checkForErrorsInLog == jobConfig.checkForErrorsInLog &&
                 Objects.equals(urls, jobConfig.urls) &&
                 browser == jobConfig.browser &&
+                Objects.equals(name, jobConfig.name) &&
                 Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) &&
                 Objects.equals(windowHeight, jobConfig.windowHeight) &&
-                Objects.equals(reportFormat, jobConfig.reportFormat);
+                Objects.equals(reportFormat, jobConfig.reportFormat) &&
+                Objects.equals(httpCheck, jobConfig.httpCheck);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(urls, browser, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog);
+
+        return Objects.hash(urls, browser, name, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog, httpCheck);
+    }
+
+    @Override
+    public String toString() {
+        return "JobConfig{" +
+                "urls=" + urls +
+                ", browser=" + browser +
+                ", name='" + name + '\'' +
+                ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
+                ", pageLoadTimeout=" + pageLoadTimeout +
+                ", windowHeight=" + windowHeight +
+                ", reportFormat=" + reportFormat +
+                ", screenshotRetries=" + screenshotRetries +
+                ", threads=" + threads +
+                ", globalTimeout=" + globalTimeout +
+                ", debug=" + debug +
+                ", logToFile=" + logToFile +
+                ", checkForErrorsInLog=" + checkForErrorsInLog +
+                ", httpCheck=" + httpCheck +
+                '}';
     }
 
     public static JobConfig defaultConfig() {
@@ -234,6 +248,7 @@ public final class JobConfig {
     }
 
     public static final class Builder {
+        private String name = null;
         private Map<String, UrlConfig> urls = null;
         private Browser.Type browser = DEFAULT_BROWSER;
         private float globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
@@ -249,6 +264,11 @@ public final class JobConfig {
         public HttpCheckConfig httpCheck = new HttpCheckConfig();
 
         private Builder() {
+        }
+
+        public Builder withName(String val) {
+            name = val;
+            return this;
         }
 
         public Builder withUrls(Map<String, UrlConfig> val) {
