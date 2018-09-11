@@ -1,4 +1,4 @@
-def seleniumVersion = '3.13.0'
+def seleniumVersion = '3.14.0'
 ext['selenium.version'] = seleniumVersion
 
 dependencies {
@@ -78,6 +78,8 @@ tasks.processResources.doLast { task ->
         versionProperties.text = "\njlineup.commit = ${gitVersion}" + "\njlineup.version = ${fullVersion}"
     }
 }
+
+tasks.processResources.outputs.upToDateWhen{ false }
 
 uploadArchives {
     configuration = configurations.archives

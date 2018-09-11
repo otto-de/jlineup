@@ -25,6 +25,7 @@ check_configuration() {
 
 check_configuration
 
+${SCRIPT_DIR}/gradlew clean
 ${SCRIPT_DIR}/gradlew check
 ${SCRIPT_DIR}/gradlew uploadArchives
 ${SCRIPT_DIR}/gradlew closeAndReleaseRepository
