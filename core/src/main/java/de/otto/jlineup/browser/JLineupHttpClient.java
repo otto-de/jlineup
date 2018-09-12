@@ -6,6 +6,8 @@ import de.otto.jlineup.config.HttpCheckConfig;
 import de.otto.jlineup.config.JobConfig;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.cookie.ClientCookie;
 import org.apache.http.impl.client.BasicCookieStore;
@@ -44,6 +46,8 @@ class JLineupHttpClient {
         if (cookies != null) addCookiesToStore(cookies, cookieStore, domain);
 
         try (CloseableHttpClient client = HttpClientBuilder.create()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setCookieSpec(CookieSpecs.STANDARD).build())
                 .setDefaultCookieStore(cookieStore)
                 .build()) {
 
