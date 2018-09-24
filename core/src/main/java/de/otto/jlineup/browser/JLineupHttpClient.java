@@ -64,7 +64,7 @@ class JLineupHttpClient {
             if (!allowedCodes.contains(statusCode)) {
                 throw new JLineupException("Accessibility check of " + request.getURI() + " returned status code " + statusCode);
             } else {
-                LOG.debug("Accessibility of {} checked and considered good! Return code was: {}", request.getURI(), statusCode);
+                LOG.info("Accessibility of {} checked and considered good! Return code was: {}", request.getURI(), statusCode);
             }
         }
     }
