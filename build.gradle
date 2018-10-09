@@ -59,7 +59,7 @@ idea {
 }
 
 subprojects {
-    version = '3.0.0-rc5-SNAPSHOT'
+    version = '3.0.0-rc5'
     group = 'de.otto'
 
     repositories {

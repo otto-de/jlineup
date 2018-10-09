@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 3.0.0-rc5
+* chromedriver 2.42
+* geckodriver 0.23.0
+* Version info displayed in web frontend
+* Fix cookie warning in httpcheck
+
 ## Release 3.0.0-rc2
 * Fix pom artifactIds (this helps if you try to download JLineup via Maven/Gradle)
 
