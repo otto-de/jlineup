@@ -76,8 +76,10 @@ tasks.processResources.doLast { task ->
         def gitVersion = runCommand("git log -n1 --format=format:%H")
         def fullVersion = version
         versionProperties.text =
-                "\njlineup.commit = ${gitVersion}" + "\njlineup.version = ${fullVersion}\n" +
-                        "\nedison.status.vcs.commit = ${gitVersion}" + "\nedison.status.vcs.version = ${fullVersion}\n"
+                "\njlineup.commit = ${gitVersion}"
+        + "\njlineup.version = ${fullVersion}\n"
+        + "\nedison.status.vcs.commit = ${gitVersion}" + "\nedison.status.vcs.version = ${fullVersion}\n"
+
     }
 }
 

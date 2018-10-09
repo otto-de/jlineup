@@ -4,7 +4,9 @@ import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.PropertySource;
 
+@PropertySource(value = "version.properties", ignoreResourceNotFound = true)
 @SpringBootApplication(scanBasePackages = {"de.otto.jlineup", "de.otto.edison"})
 @EnableConfigurationProperties(JLineupWebProperties.class)
 public class JLineupWebApplication {
