@@ -21,4 +21,4 @@ cache:
   directories:
   - $HOME/.m2
 addons:
-  firefox: latest-nightly
+  firefox: latest
