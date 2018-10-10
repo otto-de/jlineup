@@ -54,10 +54,12 @@ public class Housekeeper {
         File[] screenShotFiles = tmpDir.listFiles((dir, fileName) ->
                 fileName.startsWith(SELENIUM_SCREENSHOT_PREFIX) && fileName.endsWith(SELENIUM_SCREENSHOT_EXTENTION));
 
-        Stream.of(screenShotFiles)
-                .map(File::toPath)
-                .filter(filesOlderThan(pointInTime))
-                .forEach(this::deleteFile);
+        if (screenShotFiles != null) {
+            Stream.of(screenShotFiles)
+                    .map(File::toPath)
+                    .filter(filesOlderThan(pointInTime))
+                    .forEach(this::deleteFile);
+        }
     }
 
     private void deleteReportsOlderThan(Duration duration) throws IOException {
