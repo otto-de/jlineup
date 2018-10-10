@@ -134,6 +134,7 @@ public class FileService {
     }
 
     private void writeScreenshot(String fileName, BufferedImage image) throws IOException {
+        LOG.debug("Writing screenshot to {}", fileName);
         ImageIO.write(image, "png", new File(fileName));
     }
 

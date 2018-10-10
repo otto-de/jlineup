@@ -313,6 +313,7 @@ public class Browser implements AutoCloseable {
         }
 
         for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += viewportHeight) {
+            LOG.debug("Scrolling info: yPosition: {}, pageHeight: {}, maxScrollHeight: {}, viewPortHeight: {}", yPosition, pageHeight, screenshotContext.urlConfig.maxScrollHeight, viewportHeight);
             BufferedImage currentScreenshot = takeScreenshot();
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
             fileService.writeScreenshot(currentScreenshot, screenshotContext.url,
@@ -380,17 +381,17 @@ public class Browser implements AutoCloseable {
             }
             urlToSetCookie = (secure ? "https://" : "http://") + urlToSetCookie;
         }
-        LOG.debug("Going to {} to set cookies.", urlToSetCookie);
+        LOG.debug("Going to {} to set cookies afterwards.", urlToSetCookie);
         driver.get(urlToSetCookie);
         logErrorChecker.checkForErrors(driver, jobConfig);
 
         //Set cookies
         if (jobConfig.browser.isPhantomJS()) {
             //current phantomjs driver has a bug that prevents selenium's normal way of setting cookies
-            LOG.debug("Setting cookies for PhantomJS");
+            LOG.debug("Setting cookies for PhantomJS on {}", urlToSetCookie);
             setCookiesPhantomJS(cookies);
         } else {
-            LOG.debug("Setting cookies");
+            LOG.debug("Setting cookies on {}", urlToSetCookie);
             setCookies(cookies);
         }
     }
@@ -435,6 +436,7 @@ public class Browser implements AutoCloseable {
     }
 
     private BufferedImage takeScreenshot() throws IOException {
+        LOG.debug("Taking screenshot.");
         File screenshot = ((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.FILE);
         return ImageIO.read(screenshot);
     }
@@ -443,6 +445,7 @@ public class Browser implements AutoCloseable {
         File screenshot;
         float waitForNoAnimation = screenshotContext.urlConfig.waitForNoAnimationAfterScroll;
         if (waitForNoAnimation > 0f) {
+            LOG.debug("Waiting for no animation.");
             final long beginTime = System.currentTimeMillis();
             int sameCounter = 0;
             while (sameCounter < 10 && !timeIsOver(beginTime, waitForNoAnimation)) {

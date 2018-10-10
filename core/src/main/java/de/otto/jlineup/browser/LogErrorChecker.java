@@ -4,14 +4,21 @@ import de.otto.jlineup.config.JobConfig;
 import org.openqa.selenium.*;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import static java.lang.invoke.MethodHandles.lookup;
+
 public class LogErrorChecker {
+
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     void checkForErrors(WebDriver driver, JobConfig jobConfig) {
         if (jobConfig.checkForErrorsInLog) {
+            LOG.debug("Checking for errors.");
             LogEntries logEntries;
             try {
                 logEntries = driver.manage().logs().get(LogType.BROWSER);
