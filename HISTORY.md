@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 3.0.0-rc6
+* Ability to wait for images to be fully loaded before making screenshots. 
+Especially important when using progressive jpegs in page.
+ 
 ## Release 3.0.0-rc5
 * chromedriver 2.42
 * geckodriver 0.23.0
