@@ -65,6 +65,10 @@ public class UrlConfig {
     @JsonProperty("wait-for-fonts-time")
     public final int waitForFontsTime;
 
+    @SerializedName("wait-for-images-time")
+    @JsonProperty("wait-for-images-time")
+    public final int waitForImagesTime;
+
     @SerializedName("javascript")
     @JsonProperty("javascript")
     public final String javaScript;
@@ -93,11 +97,12 @@ public class UrlConfig {
         this.warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
         this.javaScript = null;
         this.waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
+        this.waitForImagesTime = DEFAULT_WAIT_FOR_IMAGES_TIME;
         this.httpCheck = new HttpCheckConfig();
         this.maxColorDiffPerPixel = DEFAULT_MAX_COLOR_DIFF_PER_PIXEL;
     }
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime, HttpCheckConfig httpCheck, int maxColorDiffPerPixel) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime, int waitForImagesTime, HttpCheckConfig httpCheck, int maxColorDiffPerPixel) {
         this.paths = paths != null ? paths : of(DEFAULT_PATH);
         this.windowWidths = windowWidths != null ? windowWidths : of(DEFAULT_WINDOW_WIDTH);
         this.maxDiff = maxDiff;
@@ -112,6 +117,7 @@ public class UrlConfig {
         this.warmupBrowserCacheTime = warmupBrowserCacheTime;
         this.javaScript = javaScript;
         this.waitForFontsTime = waitForFontsTime;
+        this.waitForImagesTime = waitForImagesTime;
         this.httpCheck = httpCheck;
         this.maxColorDiffPerPixel = maxColorDiffPerPixel;
     }
@@ -130,6 +136,7 @@ public class UrlConfig {
         waitForNoAnimationAfterScroll = builder.waitForNoAnimationAfterScroll;
         warmupBrowserCacheTime = builder.warmupBrowserCacheTime;
         waitForFontsTime = builder.waitForFontsTime;
+        waitForImagesTime = builder.waitForImagesTime;
         javaScript = builder.javaScript;
         httpCheck = builder.httpCheck;
         maxColorDiffPerPixel = builder.maxColorDiffPerPixel;
@@ -154,6 +161,7 @@ public class UrlConfig {
         builder.waitForNoAnimationAfterScroll = copy.waitForNoAnimationAfterScroll;
         builder.warmupBrowserCacheTime = copy.warmupBrowserCacheTime;
         builder.waitForFontsTime = copy.waitForFontsTime;
+        builder.waitForImagesTime = copy.waitForImagesTime;
         builder.javaScript = copy.javaScript;
         builder.httpCheck = copy.httpCheck;
         builder.maxColorDiffPerPixel = copy.maxColorDiffPerPixel;
@@ -176,6 +184,7 @@ public class UrlConfig {
                 ", waitForNoAnimationAfterScroll=" + waitForNoAnimationAfterScroll +
                 ", warmupBrowserCacheTime=" + warmupBrowserCacheTime +
                 ", waitForFontsTime=" + waitForFontsTime +
+                ", waitForImagesTime=" + waitForImagesTime +
                 ", javaScript='" + javaScript + '\'' +
                 ", httpCheck=" + httpCheck +
                 ", maxColorDiffPerPixel=" + maxColorDiffPerPixel +
@@ -194,6 +203,7 @@ public class UrlConfig {
                 Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 &&
                 warmupBrowserCacheTime == urlConfig.warmupBrowserCacheTime &&
                 waitForFontsTime == urlConfig.waitForFontsTime &&
+                waitForImagesTime == urlConfig.waitForImagesTime &&
                 maxColorDiffPerPixel == urlConfig.maxColorDiffPerPixel &&
                 Objects.equals(paths, urlConfig.paths) &&
                 Objects.equals(cookies, urlConfig.cookies) &&
@@ -207,8 +217,7 @@ public class UrlConfig {
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, maxColorDiffPerPixel);
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, waitForImagesTime, javaScript, httpCheck, maxColorDiffPerPixel);
     }
 
     public static final class Builder {
@@ -226,6 +235,7 @@ public class UrlConfig {
         private float waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
         private int warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
         private int waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
+        private int waitForImagesTime = DEFAULT_WAIT_FOR_IMAGES_TIME;
         private String javaScript;
         private HttpCheckConfig httpCheck;
         private int maxColorDiffPerPixel = DEFAULT_MAX_COLOR_DIFF_PER_PIXEL;
@@ -305,6 +315,11 @@ public class UrlConfig {
 
         public Builder withWaitForFontsTime(int val) {
             waitForFontsTime = val;
+            return this;
+        }
+
+        public Builder withWaitForImagesTime(int val) {
+            waitForImagesTime = val;
             return this;
         }
 

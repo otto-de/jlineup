@@ -40,6 +40,7 @@ public final class JobConfig {
     static final int DEFAULT_WAIT_AFTER_SCROLL = 0;
     static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
     static final int DEFAULT_WAIT_FOR_FONTS_TIME = 0;
+    static final int DEFAULT_WAIT_FOR_IMAGES_TIME = 0;
     static final int DEFAULT_THREADS = 0; // '0' means not set which is transformed to '1' when creating the threadpool
     static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
@@ -221,6 +222,7 @@ public final class JobConfig {
                                 DEFAULT_WARMUP_BROWSER_CACHE_TIME,
                                 "console.log('This is JavaScript!')",
                                 DEFAULT_WAIT_FOR_FONTS_TIME,
+                                DEFAULT_WAIT_FOR_IMAGES_TIME,
                                 new HttpCheckConfig(),
                                 DEFAULT_MAX_COLOR_DIFF_PER_PIXEL
                         )));

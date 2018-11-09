@@ -146,6 +146,9 @@ public class JLineupRunner {
             if (urlConfig.waitForFontsTime > 20 || urlConfig.waitForFontsTime < 0) {
                 throw new ConfigValidationException(String.format("Configured wait for fonts time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitForFontsTime, url));
             }
+            if (urlConfig.waitForImagesTime > 20 || urlConfig.waitForImagesTime < 0) {
+                throw new ConfigValidationException(String.format("Configured wait for images time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitForImagesTime, url));
+            }
 
             //Check max scroll height
             if (urlConfig.maxScrollHeight < 0) {

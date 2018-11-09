@@ -103,6 +103,7 @@ public class JSONReportWriterV2Test {
                 "        \"wait-for-no-animation-after-scroll\": 0.0,\n" +
                 "        \"warmup-browser-cache-time\": 0,\n" +
                 "        \"wait-for-fonts-time\": 0,\n" +
+                "        \"wait-for-images-time\": 0,\n" +
                 "        \"javascript\": \"console.log(\\u0027This is JavaScript!\\u0027)\",\n" +
                 "        \"http-check\": {\n" +
                 "          \"enabled\": false\n" +
