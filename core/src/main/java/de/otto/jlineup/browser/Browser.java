@@ -95,6 +95,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
+    static final String JS_HIDE_IMAGES = "document.querySelectorAll(\"img\").forEach(img => img.style.visibility=\"hidden\");";
     static final String JS_DOCUMENT_HEIGHT_CALL = "return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );";
 
     static final String JS_CLIENT_VIEWPORT_HEIGHT_CALL = "return window.innerHeight";
@@ -301,6 +302,10 @@ public class Browser implements AutoCloseable {
 
         //Execute custom javascript if existing
         executeJavaScript(screenshotContext.urlConfig.javaScript);
+
+        if(screenshotContext.urlConfig.hideImages) {
+            executeJavaScript(JS_HIDE_IMAGES);
+        }
 
         //Wait for fonts
         if (screenshotContext.urlConfig.waitForFontsTime > 0) {

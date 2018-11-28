@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 3.0.0-rc7
+* Revert because it didn't work: Ability to wait for images to be fully loaded before making screenshots
+* hide all images using javascript once the url configuration `hideImages` is enabled
+
 ## Release 3.0.0-rc6
 * Ability to wait for images to be fully loaded before making screenshots. 
 Especially important when using progressive jpegs in page.

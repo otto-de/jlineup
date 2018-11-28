@@ -104,6 +104,7 @@ public class JSONReportWriterV2Test {
                 "        \"warmup-browser-cache-time\": 0,\n" +
                 "        \"wait-for-fonts-time\": 0,\n" +
                 "        \"javascript\": \"console.log(\\u0027This is JavaScript!\\u0027)\",\n" +
+                "        \"hide-images\": false,\n" +
                 "        \"http-check\": {\n" +
                 "          \"enabled\": false\n" +
                 "        },\n" +

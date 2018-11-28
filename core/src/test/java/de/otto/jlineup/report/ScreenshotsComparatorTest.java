@@ -47,7 +47,7 @@ public class ScreenshotsComparatorTest {
         jobConfig = configBuilder()
                 .withUrls(ImmutableMap.of(
                         "http://url",
-                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(),0)))
+                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(),0, false)))
                 .withWindowHeight(WINDOW_HEIGHT)
                 .build();
 

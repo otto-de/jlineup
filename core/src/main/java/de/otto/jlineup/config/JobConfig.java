@@ -222,7 +222,8 @@ public final class JobConfig {
                                 "console.log('This is JavaScript!')",
                                 DEFAULT_WAIT_FOR_FONTS_TIME,
                                 new HttpCheckConfig(),
-                                DEFAULT_MAX_COLOR_DIFF_PER_PIXEL
+                                DEFAULT_MAX_COLOR_DIFF_PER_PIXEL,
+                                false
                         )));
     }
 

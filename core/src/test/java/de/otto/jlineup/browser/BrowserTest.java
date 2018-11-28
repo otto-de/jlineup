@@ -178,7 +178,8 @@ public class BrowserTest {
                 "testJS();",
                 5,
                 new HttpCheckConfig(),
-                0);
+                0,
+                true);
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
@@ -207,6 +208,7 @@ public class BrowserTest {
         verify(webDriverWindowMock, times(2)).setSize(new Dimension(800, 100));
         verify(webDriverMock, times(2)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(2)).executeScript("testJS();");
+        verify(webDriverMock, times(2)).executeScript(String.format(JS_HIDE_IMAGES, 500));
         verify(webDriverMock, times(10)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         //Two times the cookie -> goes to url
         verify(webDriverMock, times(2)).get("http://testurl");
@@ -250,7 +252,8 @@ public class BrowserTest {
                 null,
                 5,
                 new HttpCheckConfig(),
-                0);
+                0,
+                false);
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
@@ -324,7 +327,8 @@ public class BrowserTest {
                 null,
                 5,
                 new HttpCheckConfig(),
-                0);
+                0,
+                false);
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(FIREFOX)
@@ -392,7 +396,8 @@ public class BrowserTest {
                 null,
                 5,
                 new HttpCheckConfig(),
-                0);
+                0,
+                false);
 
         JobConfig jobConfig = configBuilder()
                 .withBrowser(CHROME_HEADLESS)
