@@ -12,7 +12,6 @@ import de.otto.jlineup.image.ImageService;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.*;
 import org.openqa.selenium.Point;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -105,11 +104,6 @@ public class Browser implements AutoCloseable {
     static final String JS_SCROLL_TO_TOP_CALL = "window.scrollTo(0, 0);";
     static final String JS_RETURN_DOCUMENT_FONTS_SIZE_CALL = "return document.fonts.size;";
     static final String JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL = "return document.fonts.status === 'loaded';";
-    static final String JS_RETURN_DOCUMENT_IMAGES_LENGTH = "return document.images.length";
-    static final String JS_RETURN_ALL_IMAGES_COMPLETE = "return [].reduce.call(document.images, function (result, image) {\n" +
-            "                return result && image.complete\n" +
-            "            }, true);";
-
     static final String JS_GET_USER_AGENT = "return navigator.userAgent;";
 
     private final JobConfig jobConfig;
@@ -315,16 +309,6 @@ public class Browser implements AutoCloseable {
                 wait.until(fontsLoaded);
             } else {
                 LOG.warn("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.");
-            }
-        }
-
-        //Wait for images
-        if (screenshotContext.urlConfig.waitForImagesTime > 0) {
-            if (!jobConfig.browser.isPhantomJS()) {
-                WebDriverWait wait = new WebDriverWait(getWebDriver(), 10);
-                wait.until(imagesLoaded);
-            } else {
-                LOG.warn("WARNING: 'wait-for-images-time' is ignored because PhantomJS doesn't support this feature.");
             }
         }
 
@@ -672,16 +656,6 @@ public class Browser implements AutoCloseable {
         LOG.debug("Amount of fonts in document: {}", fontsLoadedCount);
         LOG.debug("Fonts loaded: {} ", fontsLoaded);
         return fontsLoaded;
-    };
-
-    // wait for images to load
-    private ExpectedCondition<Boolean> imagesLoaded = driver -> {
-        final JavascriptExecutor javascriptExecutor = (JavascriptExecutor) getWebDriver();
-        final Long imagesLoadedCount = (Long) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_IMAGES_LENGTH);
-        final Boolean allImagesLoaded = (Boolean) javascriptExecutor.executeScript(JS_RETURN_ALL_IMAGES_COMPLETE);
-        LOG.debug("Amount of images in document: {}", imagesLoadedCount);
-        LOG.debug("All images loaded: {} ", allImagesLoaded);
-        return allImagesLoaded;
     };
 
     void grepChromedrivers() throws IOException {
