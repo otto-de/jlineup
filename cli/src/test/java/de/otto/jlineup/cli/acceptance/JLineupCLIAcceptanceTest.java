@@ -140,9 +140,8 @@ public class JLineupCLIAcceptanceTest {
     }
 
     @Test
-    public void shouldRenderLogoTheSame_WithChrome() throws Exception {
+    public void shouldRenderLogoDeterministically_WithChrome() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_svg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
-        //for(int i=0; i<1000; i++) {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_svg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
@@ -156,7 +155,21 @@ public class JLineupCLIAcceptanceTest {
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
-        //}
+    }
+
+    @Test
+    public void shouldRenderProgressiveJPEGsDeterministically_WithChrome() throws Exception {
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_progressive_jpg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_progressive_jpg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+
+        final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
+        assertThat("Report JSON exists", Files.exists(reportJson));
+        final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
+        assertThat("Report HTML exists", Files.exists(reportHtml));
+
+        final String jsonReportText = getTextFileContentAsString(reportJson);
+        final Report report = gson.fromJson(jsonReportText, Report.class);
+        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
     }
 
     @Test
