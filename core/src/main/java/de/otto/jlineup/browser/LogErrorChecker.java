@@ -32,8 +32,9 @@ public class LogErrorChecker {
             if (jobConfig.browser.isChrome()) {
                 driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
                 try {
-                    WebElement element = driver.findElement(By.xpath("//*[@id=\"main-message\"]/div[2]"));
+                    WebElement element = driver.findElement(By.className("error-code"));
                     if (element != null && element.getText() != null) {
+                        element.getText();
                         throw new WebDriverException(element.getText());
                     }
                 } catch (NoSuchElementException e) {
