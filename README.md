@@ -11,11 +11,10 @@
 JLineup is a tool which is useful for visual acceptance tests in continuous delivery pipelines.
 It can be used as a simple command line tool or as a small web service which is controlled via REST API.
 
-JLineup makes and compares screenshots from before and after a deployment
-of a web page. Through comparison of the screenshots it detects every changed pixel.
+JLineup can make and compare screenshots of a web page. Through comparison of the screenshots it detects every changed pixel.
 JLineup generates a HTML report and a JSON report.
 Behind the scenes, it uses Selenium and a browser of choice (currently Chrome, Firefox and
-PhantomJS are supported).
+PhantomJS¹ are supported).
 
 JLineup is a configuration compatible replacement
 for Lineup, implemented in Java. The original
@@ -32,17 +31,17 @@ JLineup CLI comes as executable Java Archive. You need a working Java 8 Runtime 
 
 Open a terminal and download it like this:
 
-    wget https://oss.sonatype.org/service/local/artifact/maven/redirect\?r\=releases\&g\=de.otto\&a\=jlineup-cli\&v\=3.0.0-rc2\&e\=jar -O jlineup.jar
+    wget https://oss.sonatype.org/service/local/artifact/maven/redirect\?r\=releases\&g\=de.otto\&a\=jlineup-cli\&v\=3.0.0-rc7\&e\=jar -O jlineup.jar
 
 Then type
 
     java -jar jlineup.jar --help
   
-to get some idea how to use it.
+to see the command line help.
 
 ## Browser compatibility
 
-JLineup 3.0.0-rc5 was tested successfully with
+JLineup 3.0.0-rc7 was tested successfully with
 
 * Chrome 69.x
 * Firefox 62.x
@@ -82,3 +81,11 @@ JLineup uses some third party tools and libraries
 ##### Thymeleaf
 
 * [Thymeleaf](http://www.thymeleaf.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
+
+
+
+
+### Footnotes
+
+¹) PhantomJS Development has been suspended. For more details go to https://github.com/ariya/phantomjs/issues/15344
+
