@@ -1,4 +1,4 @@
-def seleniumVersion = '3.14.0'
+def seleniumVersion = '3.141.59'
 ext['selenium.version'] = seleniumVersion
 
 dependencies {
