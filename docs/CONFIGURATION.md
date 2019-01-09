@@ -219,7 +219,7 @@ What are all those options about? Look here for details:
                  
 ### `cookies`
 
- A list of cookies that are set on the site
+ A list of cookies that are set on the site. 
 
  * Scope: Site
  * Type: JSON Document
@@ -233,10 +233,13 @@ What are all those options about? Look here for details:
                  "path": "/",
                  "expiry": "1970-01-01T01:00:01+0100",
                  "secure": true
+               },
+               {
+                 "name": "anotherCookie",
+                 "value": "anotherValue"
                }
             ]
             `
-
 ---
     
 ### `env-mapping`
