@@ -155,19 +155,6 @@ This is a full configuration with example values:
 What are all those options about? Here are all the details.
 
 ---
-
-### `urls`
-
- JLineup job settings for one or multiple sites have to be configured as JSON subdocument here
- 
- * Scope: Global
- * Type: JSON Document
- * Default: None - ***urls*** is a mandatory config option
- * Example: `"urls": {
-                   "https://www.otto.de": {}
-            }`
-            
----
             
 ### `browser`
 
@@ -182,11 +169,24 @@ What are all those options about? Here are all the details.
  * Scope: Global
  * Type: String
  * Possible Values: `PhantomJS`, `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`
- * Default: `"browser": "PhantomJS"`
+ * Default: `"PhantomJS"`
  * Example: `"browser": "Chrome-Headless"`
  
  ¹) PhantomJS Development has been suspended. For more details go to https://github.com/ariya/phantomjs/issues/15344
+
+---
+
+### `urls`
+
+ JLineup job settings for one or multiple sites have to be configured as JSON subdocument here
  
+ * Scope: Global
+ * Type: JSON Document
+ * Default: None - ***urls*** is a mandatory config option
+ * Example: `"urls": {
+                   "https://www.otto.de": {}
+            }`
+            
 ---
 
 ### `paths`         
@@ -198,11 +198,27 @@ What are all those options about? Here are all the details.
  * Default: `[ "" ]`
  * Example: `"paths": [ "/", "someOtherPath" ]`
 
+
+---      
+      
+### `window-widths`
+  
+ Every path in the site config will be screenshotted in these given window-widths of the browser
+* Scope: Site
+* Type: List of integers
+* Unit: Pixels
+* Default: `[ 800 ]`
+* Example: `"window-widths": [
+        600,
+        800,
+        1000
+      ]`
+      
 ---
  
 ### `max-diff`
 
- This is the maximum accepted difference of a single screenshot of the current site run. If the difference is
+ This is the maximum accepted difference of a single screenshot of the current site. If the difference is
  greater than the configured maximum, then the failing url + path + window-width combination AND the complete JLineup
  job are marked as erroneous.
  
@@ -226,7 +242,7 @@ What are all those options about? Here are all the details.
 
  A list of cookies that are set on the site. A cookie document can simply consist of `name` and `value`.
  Alternatively, you can specify a full cookie with `name`, `value`, `domain`, `path`, `expiry` and `secure`.
- See the example for details. The expiration time has to be written as ISO 8601 string.
+ See the example for details. The expiration time has to be written as ISO8601 string.
 
  * Scope: Site
  * Type: List of cookie documents
@@ -247,26 +263,6 @@ What are all those options about? Here are all the details.
                }
             ]
             `
----
-    
-### `env-mapping`
-
- This is a convenience option that can replace parts of the domain that are specified in the config before making
- screenshots.
- 
- This can be nice if you want to replace environments that are generated into your lineup.json that don't match the 
- real site url. One Example: At OTTO, the generated live step would result in a generated url like https://live.otto.de,
- which is in reality reachable under https://www.otto.de.   
-                  
- * Scope: Site
- * Type: Map
- * Default: `{}`
- * Example: `
-            "env-mapping": {
-                "live": "www"
-            }
-            `
-            
 ---
 
 ### `local-storage`
@@ -290,21 +286,6 @@ What are all those options about? Here are all the details.
  * Example: "session-storage": {
         "exampleSessionStorageKey": "exampleSessionStorageValue"
       }`
-      
----      
-      
-### `window-widths`
-  
- Every path in the site config will be screenshotted in these given window-widths of the browser
-* Scope: Site
-* Type: List of integers
-* Unit: Pixels
-* Default: `[ 800 ]`
-* Example: `"window-widths": [
-        600,
-        800,
-        1000
-      ]`
       
 ---      
       
@@ -368,22 +349,6 @@ What are all those options about? Here are all the details.
  * Example: `"warmup-browser-cache-time": 5`
  
 --- 
-
-### `wait-for-fonts-time`
-
- If your web fonts load too slow, there may be cases that your page is rendered without a default alternate font,
- which is replaced by the loaded font during a screenshot run. You can explicitly wait for font loading with this
- option.
- 
- This should be rarely needed. 
-
- * Scope: Site
- * Type: Float
- * Unit: Seconds
- * Default: 0
- * Example: `"wait-for-fonts-time": 3`
- 
---- 
  
 ### `javascript`
 
@@ -395,18 +360,6 @@ What are all those options about? Here are all the details.
  * Type: String
  * Default: `null`
  * Example: `"javascript": "console.log('This is JavaScript!')"`
- 
---- 
-
-### `hide-images`
-
- This option can be used to hide all images on the page before making screenshots. This can be useful, if you only
- want to check the layout, but not the possibly changing content of pictures on a site.
-
- * Scope: Site
- * Type: Boolean
- * Default: `false`
- * Example: `"hide-images": true`
  
 ---
 
@@ -440,6 +393,54 @@ What are all those options about? Here are all the details.
               }
             `
             
+---
+    
+### `env-mapping`
+
+ This is a convenience option that can replace parts of the domain that are specified in the config before making
+ screenshots.
+ 
+ This can be nice if you want to replace environments that are generated into your lineup.json that don't match the 
+ real site url. One Example: At OTTO, the generated live step would result in a generated url like https://live.otto.de,
+ which is in reality reachable under https://www.otto.de.   
+                  
+ * Scope: Site
+ * Type: Map
+ * Default: `{}`
+ * Example: `
+            "env-mapping": {
+                "live": "www"
+            }
+            `
+            
+--- 
+
+### `hide-images`
+
+ This option can be used to hide all images on the page before making screenshots. This can be useful, if you only
+ want to check the layout, but not the possibly changing content of pictures on a site.
+
+ * Scope: Site
+ * Type: Boolean
+ * Default: `false`
+ * Example: `"hide-images": true`
+ 
+--- 
+
+### `wait-for-fonts-time`
+
+ If your web fonts load too slow, there may be cases that your page is rendered without a default alternate font,
+ which is replaced by the loaded font during a screenshot run. You can explicitly wait for font loading with this
+ option.
+ 
+ This should be rarely needed. 
+
+ * Scope: Site
+ * Type: Float
+ * Unit: Seconds
+ * Default: 0
+ * Example: `"wait-for-fonts-time": 3`
+ 
 ---            
             
 ### `max-color-diff-per-pixel`

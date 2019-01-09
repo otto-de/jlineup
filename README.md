@@ -25,7 +25,7 @@ get rid of Ruby in our JVM-based pipelines.
 
 Credit for Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
 
-## Howto
+## Quick Howto
 
 JLineup CLI comes as executable Java Archive. You need a working Java 8 Runtime Environment on your system. 
 
@@ -48,6 +48,10 @@ JLineup 3.0.0-SNAPSHOT was tested successfully with
 * PhantomJS 2.1.1 (auto-downloaded by JLineup if not installed)
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
+
+## Documentation
+
+[JLineup Job Configuration](docs/CONFIGURATION.md)
 
 ## Third party libraries
 
