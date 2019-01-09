@@ -283,8 +283,8 @@ public class Browser implements AutoCloseable {
 
         if (screenshotContext.urlConfig.waitAfterPageLoad > 0) {
             try {
-                LOG.debug(String.format("Waiting for %d seconds (wait-after-page-load)", screenshotContext.urlConfig.waitAfterPageLoad));
-                Thread.sleep(screenshotContext.urlConfig.waitAfterPageLoad * 1000);
+                LOG.debug(String.format("Waiting for %f seconds (wait-after-page-load)", screenshotContext.urlConfig.waitAfterPageLoad));
+                Thread.sleep(Math.round(screenshotContext.urlConfig.waitAfterPageLoad * 1000));
             } catch (InterruptedException e) {
                 LOG.error(e.getMessage(), e);
             }
@@ -310,7 +310,7 @@ public class Browser implements AutoCloseable {
         //Wait for fonts
         if (screenshotContext.urlConfig.waitForFontsTime > 0) {
             if (!jobConfig.browser.isPhantomJS()) {
-                WebDriverWait wait = new WebDriverWait(getWebDriver(), screenshotContext.urlConfig.waitForFontsTime);
+                WebDriverWait wait = new WebDriverWait(getWebDriver(), new Double(Math.ceil(screenshotContext.urlConfig.waitForFontsTime)).longValue());
                 wait.until(fontsLoaded);
             } else {
                 LOG.warn("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.");
@@ -334,7 +334,7 @@ public class Browser implements AutoCloseable {
 
             if (screenshotContext.urlConfig.waitAfterScroll > 0) {
                 LOG.debug("Waiting for {} seconds (wait after scroll).", screenshotContext.urlConfig.waitAfterScroll);
-                TimeUnit.SECONDS.sleep(screenshotContext.urlConfig.waitAfterScroll);
+                TimeUnit.MILLISECONDS.sleep(Math.round(screenshotContext.urlConfig.waitAfterScroll * 1000));
             }
 
             //Refresh to check if page grows during scrolling
@@ -402,7 +402,7 @@ public class Browser implements AutoCloseable {
     }
 
     private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) {
-        int warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
+        float warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
             final Set<String> browserCacheWarmupMarks = cacheWarmupMarksMap.computeIfAbsent(Thread.currentThread().getName(), k -> initializeCacheWarmupMarks());
             if (!browserCacheWarmupMarks.contains(url)) {
@@ -412,11 +412,11 @@ public class Browser implements AutoCloseable {
                 LOG.debug("Getting url: {}", url);
                 driver.get(url);
                 logErrorChecker.checkForErrors(driver, jobConfig);
-                LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
+                LOG.debug(String.format("First call of %s - waiting %f seconds for cache warmup", url, warmupTime));
                 browserCacheWarmupMarks.add(url);
                 try {
                     LOG.debug("Sleeping for {} seconds", warmupTime);
-                    Thread.sleep(warmupTime * 1000);
+                    Thread.sleep(Math.round(warmupTime * 1000));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -427,15 +427,15 @@ public class Browser implements AutoCloseable {
     }
 
     private void browserCacheWarmupForHeadless(ScreenshotContext screenshotContext, String url, WebDriver driver) throws Exception {
-        int warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
+        float warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
             LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, screenshotContext.windowWidth, jobConfig.windowHeight));
             LOG.debug("Getting url: {}", url);
             driver.get(url);
             logErrorChecker.checkForErrors(driver, jobConfig);
-            LOG.debug(String.format("First call of %s - waiting %d seconds for cache warmup", url, warmupTime));
+            LOG.debug(String.format("First call of %s - waiting %f seconds for cache warmup", url, warmupTime));
             LOG.debug("Sleeping for {} seconds", warmupTime);
-            Thread.sleep(warmupTime * 1000);
+            Thread.sleep(Math.round(warmupTime * 1000));
             LOG.debug("Cache warmup time is over. Getting " + url + " again.");
         }
     }

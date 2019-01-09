@@ -36,10 +36,10 @@ public final class JobConfig {
     public static final int DEFAULT_WINDOW_WIDTH = 800;
     public static final String DEFAULT_PATH = "";
     static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
-    static final int DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
-    static final int DEFAULT_WAIT_AFTER_SCROLL = 0;
-    static final int DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
-    static final int DEFAULT_WAIT_FOR_FONTS_TIME = 0;
+    static final float DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
+    static final float DEFAULT_WAIT_AFTER_SCROLL = 0;
+    static final float DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
+    static final float DEFAULT_WAIT_FOR_FONTS_TIME = 0;
     static final int DEFAULT_THREADS = 0; // '0' means not set which is transformed to '1' when creating the threadpool
     static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
@@ -221,7 +221,7 @@ public final class JobConfig {
                                 DEFAULT_WARMUP_BROWSER_CACHE_TIME,
                                 "console.log('This is JavaScript!')",
                                 DEFAULT_WAIT_FOR_FONTS_TIME,
-                                new HttpCheckConfig(),
+                                new HttpCheckConfig(true),
                                 DEFAULT_MAX_COLOR_DIFF_PER_PIXEL,
                                 false
                         )));

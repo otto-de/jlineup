@@ -38,7 +38,8 @@ public class JSONReportWriterV2Test {
         Report report = new Report(globalSummary, Collections.singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), exampleConfig());
 
         //language=JSON
-        String expectedString = "{\n" +
+        String expectedString =
+                "{\n" +
                 "  \"summary\": {\n" +
                 "    \"error\": false,\n" +
                 "    \"differenceSum\": 0.0,\n" +
@@ -79,7 +80,7 @@ public class JSONReportWriterV2Test {
                 "            \"value\": \"exampleValue\",\n" +
                 "            \"domain\": \"http://www.example.com\",\n" +
                 "            \"path\": \"/\",\n" +
-                "            \"expiry\": " + new GsonBuilder().setDateFormat(COOKIE_TIME_FORMAT).create().toJson(new Date(1000L)) + ",\n" +
+                "            \"expiry\": \"1970-01-01T01:00:01+0100\",\n" +
                 "            \"secure\": true\n" +
                 "          }\n" +
                 "        ],\n" +
@@ -98,15 +99,28 @@ public class JSONReportWriterV2Test {
                 "          1000\n" +
                 "        ],\n" +
                 "        \"max-scroll-height\": 100000,\n" +
-                "        \"wait-after-page-load\": 0,\n" +
-                "        \"wait-after-scroll\": 0,\n" +
+                "        \"wait-after-page-load\": 0.0,\n" +
+                "        \"wait-after-scroll\": 0.0,\n" +
                 "        \"wait-for-no-animation-after-scroll\": 0.0,\n" +
-                "        \"warmup-browser-cache-time\": 0,\n" +
-                "        \"wait-for-fonts-time\": 0,\n" +
+                "        \"warmup-browser-cache-time\": 0.0,\n" +
+                "        \"wait-for-fonts-time\": 0.0,\n" +
                 "        \"javascript\": \"console.log(\\u0027This is JavaScript!\\u0027)\",\n" +
                 "        \"hide-images\": false,\n" +
                 "        \"http-check\": {\n" +
-                "          \"enabled\": false\n" +
+                "          \"enabled\": true,\n" +
+                "          \"allowed-codes\": [\n" +
+                "            200,\n" +
+                "            202,\n" +
+                "            204,\n" +
+                "            205,\n" +
+                "            206,\n" +
+                "            301,\n" +
+                "            302,\n" +
+                "            303,\n" +
+                "            304,\n" +
+                "            307,\n" +
+                "            308\n" +
+                "          ]\n" +
                 "        },\n" +
                 "        \"max-color-diff-per-pixel\": 1\n" +
                 "      }\n" +

@@ -27,7 +27,8 @@ import static java.lang.invoke.MethodHandles.lookup;
 
 public class BrowserUtils {
 
-    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
+    private static final Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
+    private static final boolean CHROME_DETERMINISTIC_OPTIONS = true;
 
     public static String buildUrl(String url, String path, final Map<String, String> envMapping) {
         if (envMapping != null && !envMapping.isEmpty()) {
@@ -68,7 +69,7 @@ public class BrowserUtils {
             options.addArguments(runStepConfig.getFirefoxParameters());
             if (jobConfig.browser.isHeadless()) {
                 options.setHeadless(true);
-                options.addArguments("-width", width + "" , "-height", jobConfig.windowHeight + "");
+                options.addArguments("-width", width + "", "-height", jobConfig.windowHeight + "");
             }
 
             LOG.debug("Creating firefox with options: {}", options.toString());
@@ -80,6 +81,20 @@ public class BrowserUtils {
             //To work in a headless env, this is needed
             options.addArguments("--no-sandbox");
             options.addArguments(runStepConfig.getChromeParameters());
+
+            //These options my help to convince Chrome to render deterministically
+            //This is important for the pixel-perfect comparison of before and after steps
+            //There were problems to render Webfonts, SVGs and progressive JPGs deterministically on huge pages (i.e. otto.de)
+            //Beware of dragons
+            if (CHROME_DETERMINISTIC_OPTIONS) {
+                options.addArguments("--disable-threaded-animation");
+                //options.addArguments("--disable-threaded-compositing"); // This option breaks rendering completely as of Chrome 70 (2019-01-07)
+                options.addArguments("--disable-threaded-scrolling");
+                options.addArguments("--num-raster-threads=1");
+                options.addArguments("--disable-histogram-customizer");
+                options.addArguments("--disable-composited-antialiasing");
+            }
+
             if (jobConfig.browser.isHeadless()) {
                 options.setHeadless(true);
                 options.addArguments("--window-size=" + width + "," + jobConfig.windowHeight);
@@ -130,7 +145,7 @@ public class BrowserUtils {
     public static String prepareDomain(final RunStepConfig runStepConfig, final String url) {
         String processedUrl = url;
         for (Map.Entry<String, String> replacement : runStepConfig.getUrlReplacements().entrySet()) {
-             processedUrl = processedUrl.replace(replacement.getKey(), replacement.getValue());
+            processedUrl = processedUrl.replace(replacement.getKey(), replacement.getValue());
         }
         return processedUrl;
     }

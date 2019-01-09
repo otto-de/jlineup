@@ -47,11 +47,11 @@ public class UrlConfig {
 
     @SerializedName("wait-after-page-load")
     @JsonProperty("wait-after-page-load")
-    public final int waitAfterPageLoad;
+    public final float waitAfterPageLoad;
 
     @SerializedName("wait-after-scroll")
     @JsonProperty("wait-after-scroll")
-    public final int waitAfterScroll;
+    public final float waitAfterScroll;
 
     @SerializedName("wait-for-no-animation-after-scroll")
     @JsonProperty("wait-for-no-animation-after-scroll")
@@ -59,11 +59,11 @@ public class UrlConfig {
 
     @SerializedName("warmup-browser-cache-time")
     @JsonProperty("warmup-browser-cache-time")
-    public final int warmupBrowserCacheTime;
+    public final float warmupBrowserCacheTime;
 
     @SerializedName("wait-for-fonts-time")
     @JsonProperty("wait-for-fonts-time")
-    public final int waitForFontsTime;
+    public final float waitForFontsTime;
 
     @SerializedName("javascript")
     @JsonProperty("javascript")
@@ -102,7 +102,7 @@ public class UrlConfig {
         this.hideImages = false;
     }
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, int waitAfterPageLoad, int waitAfterScroll, float waitForNoAnimationAfterScroll, int warmupBrowserCacheTime, String javaScript, int waitForFontsTime, HttpCheckConfig httpCheck, int maxColorDiffPerPixel, boolean hideImages) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, float waitAfterPageLoad, float waitAfterScroll, float waitForNoAnimationAfterScroll, float warmupBrowserCacheTime, String javaScript, float waitForFontsTime, HttpCheckConfig httpCheck, int maxColorDiffPerPixel, boolean hideImages) {
         this.paths = paths != null ? paths : of(DEFAULT_PATH);
         this.windowWidths = windowWidths != null ? windowWidths : of(DEFAULT_WINDOW_WIDTH);
         this.maxDiff = maxDiff;
@@ -231,11 +231,11 @@ public class UrlConfig {
         private Map<String, String> sessionStorage;
         private List<Integer> windowWidths = of(DEFAULT_WINDOW_WIDTH);
         private int maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
-        private int waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
-        private int waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
+        private float waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
+        private float waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
         private float waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
-        private int warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
-        private int waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
+        private float warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
+        private float waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
         private String javaScript;
         private HttpCheckConfig httpCheck;
         private boolean hideImages;
@@ -294,12 +294,12 @@ public class UrlConfig {
             return this;
         }
 
-        public Builder withWaitAfterPageLoad(int val) {
+        public Builder withWaitAfterPageLoad(float val) {
             waitAfterPageLoad = val;
             return this;
         }
 
-        public Builder withWaitAfterScroll(int val) {
+        public Builder withWaitAfterScroll(float val) {
             waitAfterScroll = val;
             return this;
         }
@@ -309,12 +309,12 @@ public class UrlConfig {
             return this;
         }
 
-        public Builder withWarmupBrowserCacheTime(int val) {
+        public Builder withWarmupBrowserCacheTime(float val) {
             warmupBrowserCacheTime = val;
             return this;
         }
 
-        public Builder withWaitForFontsTime(int val) {
+        public Builder withWaitForFontsTime(float val) {
             waitForFontsTime = val;
             return this;
         }

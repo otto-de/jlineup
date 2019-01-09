@@ -3,6 +3,7 @@ package de.otto.jlineup.config;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +30,8 @@ public class HttpCheckConfig {
 
     private final boolean enabled;
 
+    @SerializedName("allowed-codes")
     @JsonProperty("allowed-codes")
-    @JsonAlias({"allowed-codes"})
     private final List<Integer> allowedCodes;
 
     public HttpCheckConfig(boolean enabled, List<Integer> allowedCodes) {
