@@ -149,7 +149,9 @@ This is a full configuration with example values:
 
 What are all those options about? Look here for details:
 
-### urls
+---
+
+### `urls`
 
  JLineup job settings for one or multiple sites have to be configured as JSON subdocument here
  
@@ -160,7 +162,9 @@ What are all those options about? Look here for details:
                    "https://www.otto.de": {}
             }`
             
-### browser
+---
+            
+### `browser`
 
  Defines, which browser is used for the JLineup job. The chosen browser has to be installed on the used system.
  One exception is PhantomJS¹. If it's configured and not installed, JLineup downloads and uses it.
@@ -177,8 +181,10 @@ What are all those options about? Look here for details:
  * Example: `"browser": "Chrome-Headless"`
  
  ¹) PhantomJS Development has been suspended. For more details go to https://github.com/ariya/phantomjs/issues/15344
+ 
+---
 
-### paths         
+### `paths`         
                
  These paths are appended to the current site url and screenshotted individually
                                  
@@ -186,9 +192,10 @@ What are all those options about? Look here for details:
  * Type: List of Strings
  * Default: `[ "" ]`
  * Example: `"paths": [ "/", "someOtherPath" ]`
+
+---
  
- 
-### max-diff
+### `max-diff`
 
  This is the maximum accepted difference of a single screenshot of the current site run. If the difference is
  greater than the configured maximum, then the failing url + path + window-width combination AND the complete JLineup
@@ -207,8 +214,10 @@ What are all those options about? Look here for details:
  * Min: `0.0`
  * Max: `1.0`
  * Example: `"max-diff": 0.01`     
+ 
+---
                  
-### cookies
+### `cookies`
 
  A list of cookies that are set on the site
 
@@ -227,8 +236,10 @@ What are all those options about? Look here for details:
                }
             ]
             `
+
+---
     
-### env-mapping
+### `env-mapping`
 
  This is a convenience option that can replace parts of the domain that are specified in the config before making
  screenshots.
@@ -245,8 +256,10 @@ What are all those options about? Look here for details:
                 "live": "www"
             }
             `
+            
+---
 
-### local-storage
+### `local-storage`
 
  Sets key value pairs to the local storage of the site
  * Scope: Site
@@ -256,7 +269,9 @@ What are all those options about? Look here for details:
         "exampleLocalStorageKey": "exampleLocalStorageValue"
       }`
       
-### session-storage
+---
+      
+### `session-storage`
 
  Sets key value pairs to the session storage of the site
  * Scope: Site
@@ -266,7 +281,9 @@ What are all those options about? Look here for details:
         "exampleSessionStorageKey": "exampleSessionStorageValue"
       }`
       
-### window-widths
+---      
+      
+### `window-widths`
   
  Every path in the site config will be screenshotted in these given window-widths of the browser
 * Scope: Site
@@ -279,7 +296,9 @@ What are all those options about? Look here for details:
         1000
       ]`
       
-### max-scroll-height
+---      
+      
+### `max-scroll-height`
 
  When using Chrome or Firefox, JLineup scrolls the page like a normal browser user, because that's the way the web
  works today. Nearly no page fits the screen, and modern pages tend to grow to huge sizes. To not scroll endlessly on
@@ -291,7 +310,9 @@ What are all those options about? Look here for details:
  * Unit: Pixels
  * Example: `"max-scroll-height": 100000`
  
-### wait-after-page-load
+--- 
+ 
+### `wait-after-page-load`
 
  On modern web pages with JavaScript and asynchronous loading mechanisms, it's hard to tell when a page is really 
  loaded completely. JLineup uses Selenium under the hood. Selenium's get() method blocks until the browser/page fires
@@ -308,7 +329,9 @@ What are all those options about? Look here for details:
  * Unit: Seconds
  * Example: `"wait-after-page-load": 3.5`
  
-### wait-after-scroll
+ ---
+ 
+### `wait-after-scroll`
 
  If your reports show half loaded artifacts in lower parts of the page, you should increase this value until this does
  not happen any more. If you set it too high, you increase the time for site scrolling drastically. As long as your page
@@ -320,7 +343,9 @@ What are all those options about? Look here for details:
  * Unit: Seconds
  * Example: `"wait-after-scroll": 1.1`
  
-### warmup-browser-cache-time
+---
+ 
+### `warmup-browser-cache-time`
 
  If this value is greater than 0, JLineup simply loads the page prior to the screenshot run and waits the specified
  amount of seconds to fill the browser cache with everything that can be cached during page load. It can be helpful
@@ -331,8 +356,10 @@ What are all those options about? Look here for details:
  * Default: 0
  * Unit: Seconds
  * Example: `"warmup-browser-cache-time": 5`
+ 
+--- 
 
-### wait-for-fonts-time
+### `wait-for-fonts-time`
 
  If your web fonts load too slow, there may be cases that your page is rendered without a default alternate font,
  which is replaced by the loaded font during a screenshot run. You can explicitly wait for font loading with this
@@ -346,7 +373,9 @@ What are all those options about? Look here for details:
  * Unit: Seconds
  * Example: `"wait-for-fonts-time": 3`
  
-### javascript
+--- 
+ 
+### `javascript`
 
  This is a mighty option. You can specify and run any given JavaScript after loading the page and prior to making the
  screenshots. This can be used for various things, like throwing things out of the DOM by id or class, replacing images etc.
@@ -356,8 +385,10 @@ What are all those options about? Look here for details:
  * Type: String
  * Default: null
  * Example: `"javascript": "console.log('This is JavaScript!')"`
+ 
+--- 
 
-### hide-images
+### `hide-images`
 
  This option can be used to hide all images on the page before making screenshots. This can be useful, if you only
  want to check the layout, but not the possibly changing content of pictures on a site.
@@ -367,7 +398,9 @@ What are all those options about? Look here for details:
  * Default: false
  * Example: `"hide-images": true`
  
-### http-check
+---
+
+### `http-check`
 
  It may be required to check connectivity to a page by checking a http return code before making screenshots of it.
  Real browsers don't report a return code to Selenium, because Selenium looks at a page from a user perspective.
@@ -397,7 +430,9 @@ What are all those options about? Look here for details:
               }
             `
             
-### max-color-diff-per-pixel
+---            
+            
+### `max-color-diff-per-pixel`
 
  For special cases (i.e. rare anti alias issues), you can allow an accepted difference on RGB pixel level. 
  To be precise, it should be called *max-color-diff-per-color-per-pixel*, because every RGB color is handled
@@ -412,8 +447,9 @@ What are all those options about? Look here for details:
  * Default: `0`
  * Example: `"max-color-diff-per-pixel": 1`
  
+---
 
-### page-load-timeout
+### `page-load-timeout`
 
  This value is passed through to Selenium for loading the pages. From the Selenium docs:
  
@@ -427,9 +463,10 @@ What are all those options about? Look here for details:
  * Unit: Seconds
  * Default: `120`
  * Example: `"page-load-timeout": 180`
- 
+  
+--- 
 
-### name
+### `name`
 
  You can define a name for your specific JLineup job. The name is shown in the report and on the jobs overview
  page if you use the web version of JLineup.
@@ -439,7 +476,9 @@ What are all those options about? Look here for details:
  * Default: `null`
  * Example: `"name": "Cool name for my JLineup Job"`
  
-### window-height
+--- 
+ 
+### `window-height`
 
  This is the height of the browser window which JLineup uses.
  
@@ -449,7 +488,9 @@ What are all those options about? Look here for details:
  * Default: `800`
  * Example: `"window-height": 1000`
  
-### report-format
+---
+ 
+### `report-format`
 
  This is a deprecated option to switch to an older JSON report format, which is not that useful. Shouldn't be used any
  more and will be removed in the future.
@@ -459,8 +500,10 @@ What are all those options about? Look here for details:
  * Range: `1` or `2`
  * Default: `2`
  * Example: `"report-format": 2`
+ 
+---
 
-### screenshot-retries
+### `screenshot-retries`
 
  __This option should be used with care. Better don't use it at all. It *may* help in a flaky environment, but it's better
  to fix the flakiness then to use this option.__
@@ -473,19 +516,32 @@ What are all those options about? Look here for details:
  * Type: Integer
  * Default: 0
  * Example: `"screenshot-retries": 2`
+ 
+--- 
 
-### threads
+### `threads`
 
  If you specify multiple urls, paths or window widths in your config, JLineup can run multiple browser instances in 
  parallel to speed up the job. Keep in mind, that memory and CPU requirements increase when multiple browsers are opened
  at the same time.
+ 
+ If you use the CLI version, this simply sets the number of threads. Although the default is `0`, JLineup uses at least 
+ one thread, so `0` or `1` make no difference in that case.
+ 
+ The `0` has another meaning for the web server version, because a maximum of allowed threads per job is configured in
+ the web server properties. If the job config says `0` (which is default), the job uses the maximum of allowed
+ threads. You can override this through setting an explicit value. If your job configuration value is
+ greater than the maximum in the web server properties, the latter wins - so your job cannot use more threads than the
+ server allows. Simply leave this configuration at default until you have special requirements for this particular job.
  
  * Scope: Global
  * Type: Integer
  * Default: `0`
  * Example: `"threads": 2`
  
-### timeout
+--- 
+ 
+### `timeout`
 
  This is a *global* and *hard* timeout for the whole JLineup job. If the job isn't finished after this time, it fails.
  This can help to end stalled jobs. Of course, a job shouldn't stall, but there may be rare cases
@@ -498,6 +554,8 @@ What are all those options about? Look here for details:
  * Default: `600`
  * Example: `"timeout": 300`
  
+--- 
+ 
 ### debug
 
  This option is for CLI only. If you set this to true, JLineup logs on `DEBUG` level. Can be useful for the CLI version, if you track down strange
@@ -507,6 +565,8 @@ What are all those options about? Look here for details:
  * Type: Boolean
  * Default: `false`
  * Example: `"debug": true`
+ 
+--- 
 
 ### log-to-file
 
@@ -517,6 +577,8 @@ What are all those options about? Look here for details:
  * Type: Boolean
  * Default: `false`
  * Example: `"log-to-file": true`
+ 
+--- 
  
 ### check-for-errors-in-log
 
