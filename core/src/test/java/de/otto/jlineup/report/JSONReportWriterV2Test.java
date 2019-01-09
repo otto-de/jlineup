@@ -4,8 +4,10 @@ import com.google.gson.GsonBuilder;
 import de.otto.jlineup.file.FileService;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.sql.Date;
 import java.util.Collections;
@@ -38,7 +40,7 @@ public class JSONReportWriterV2Test {
         Report report = new Report(globalSummary, Collections.singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), exampleConfig());
 
         //language=JSON
-        String expectedString =
+        String expectedJSON =
                 "{\n" +
                 "  \"summary\": {\n" +
                 "    \"error\": false,\n" +
@@ -144,6 +146,9 @@ public class JSONReportWriterV2Test {
 
         testee.writeComparisonReportAsJson(report);
 
-        Mockito.verify(fileServiceMock).writeJsonReport(expectedString);
+        ArgumentCaptor<String> jsonCaptor = ArgumentCaptor.forClass(String.class);
+        Mockito.verify(fileServiceMock).writeJsonReport(jsonCaptor.capture());
+
+        JSONAssert.assertEquals(jsonCaptor.getValue(), expectedJSON, false);
     }
 }
