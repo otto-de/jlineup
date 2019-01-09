@@ -1,15 +1,20 @@
 # Configuration
 
-JLineup has many configuration options. A JLineup run with it's _before_ and _after_ steps is called _job_ throughout
+JLineup has many configuration options. A JLineup cycle with it's _before_ and _after_ steps is called _job_ throughout
 this documentation. Job configuration settings can be separated between two scopes, _global_ and _site_. Some of the
-options exist in global as in site scope. Site specific settings always have precedence before global settings. If you want to
-have the same settings for all sites in your JLineup job, then you can simply specify those settings globally.
+options exist in global as in site scope for convenience.
+
+Site specific settings always have precedence before global settings.
 
 ### Format
 
-A JLineup job config is a json document. The default name of the config file is ___lineup.json___.
-The command line version looks for it in the current working directory. A different path can be specified with the
-`--config` option when you call jlineup via command line.
+A JLineup job config is a json document. 
+
+For JLineup CLI, the default name of the config file is ___lineup.json___.
+It's searched in the current working directory. A different path can be specified with the
+`--config` option.
+
+If using the web server variant, you have to POST the config via REST API.
 
 ### Basic config
 
@@ -24,7 +29,7 @@ A basic configuration with default settings can look like this:
 }
 ```
  
-This config leads JLineup to https://www.otto.de. All other settings like window size, timeouts stay default.
+This config leads JLineup to https://www.otto.de. All other settings like window size, timeouts etc. stay default.
 
 What about those __global__ and __site__ settings?
 
@@ -147,7 +152,7 @@ This is a full configuration with example values:
 
 ## Reference
 
-What are all those options about? Look here for details:
+What are all those options about? Here are all the details.
 
 ---
 
@@ -169,7 +174,7 @@ What are all those options about? Look here for details:
  Defines, which browser is used for the JLineup job. The chosen browser has to be installed on the used system.
  One exception is PhantomJS¹. If it's configured and not installed, JLineup downloads and uses it.
  
- *Advice*: PhantomJS shouldn't be used any more, because it lacks more and more features of modern web and it's not 
+ *Advice*: PhantomJS shouldn't be used, because it lacks more and more features of modern web and it's not 
  maintained any more.¹
  
  JLineup downloads a webdriver, but it doesn't install a real browser during runtime! 
