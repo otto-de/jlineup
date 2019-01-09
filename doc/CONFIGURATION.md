@@ -143,6 +143,8 @@ This is a full configuration with example values:
 }
 ```
 
+---
+
 ## Reference
 
 What are all those options about? Look here for details:
@@ -154,9 +156,27 @@ What are all those options about? Look here for details:
  * Scope: Global
  * Type: JSON Document
  * Default: None - ***urls*** is a mandatory config option
- * Example: ```"urls": {
+ * Example: `"urls": {
                    "https://www.otto.de": {}
-            }```
+            }`
+            
+### browser
+
+ Defines, which browser is used for the JLineup job. The chosen browser has to be installed on the used system.
+ One exception is PhantomJS¹. If it's configured and not installed, JLineup downloads and uses it.
+ 
+ *Advice*: PhantomJS shouldn't be used any more, because it lacks more and more features of modern web and it's not 
+ maintained any more.¹
+ 
+ JLineup downloads a webdriver, but it doesn't install a real browser during runtime! 
+ 
+ * Scope: Global
+ * Type: String
+ * Possible Values: `PhantomJS`, `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`
+ * Default: `"browser": "PhantomJS"`
+ * Example: `"browser": "Chrome-Headless"`
+ 
+ ¹) PhantomJS Development has been suspended. For more details go to https://github.com/ariya/phantomjs/issues/15344
 
 ### paths         
                
@@ -186,8 +206,7 @@ What are all those options about? Look here for details:
  * Default: `0.0`
  * Min: `0.0`
  * Max: `1.0`
- * Example: `"max-diff": 0.01`
-                  
+ * Example: `"max-diff": 0.01`     
                  
 ### cookies
 
@@ -233,9 +252,9 @@ What are all those options about? Look here for details:
  * Scope: Site
  * Type: Map
  * Default: Empty
- * Example: ```"local-storage": {
+ * Example: `"local-storage": {
         "exampleLocalStorageKey": "exampleLocalStorageValue"
-      }```
+      }`
       
 ### session-storage
 
@@ -243,9 +262,9 @@ What are all those options about? Look here for details:
  * Scope: Site
  * Type: Map
  * Default: Empty
- * Example: ```"session-storage": {
+ * Example: "session-storage": {
         "exampleSessionStorageKey": "exampleSessionStorageValue"
-      }```
+      }`
       
 ### window-widths
   
@@ -253,12 +272,12 @@ What are all those options about? Look here for details:
 * Scope: Site
 * Type: List of integers
 * Unit: Pixels
-* Default: ```[ 800 ]```
-* Example: ```"window-widths": [
+* Default: `[ 800 ]`
+* Example: `"window-widths": [
         600,
         800,
         1000
-      ]```
+      ]`
       
 ### max-scroll-height
 
@@ -295,7 +314,7 @@ What are all those options about? Look here for details:
  not happen any more. If you set it too high, you increase the time for site scrolling drastically. As long as your page
  does not load content dynamically during scrolling, you can keep this very low or at default.
  
- * Scope: Site or Global
+ * Scope: Site
  * Type: Float
  * Default: 0
  * Unit: Seconds
@@ -307,7 +326,7 @@ What are all those options about? Look here for details:
  amount of seconds to fill the browser cache with everything that can be cached during page load. It can be helpful
  to have a prewarmed cache while doing the first screenshots of a site in a run.
 
- * Scope: Site or Global
+ * Scope: Site
  * Type: Float
  * Default: 0
  * Unit: Seconds
@@ -321,7 +340,7 @@ What are all those options about? Look here for details:
  
  This should be rarely needed. 
 
- * Scope: Site or Global
+ * Scope: Site
  * Type: Float
  * Default: 0
  * Unit: Seconds
@@ -481,7 +500,7 @@ What are all those options about? Look here for details:
  
 ### debug
 
- If you set this to true, JLineup logs on DEBUG level. Can be useful for the CLI version, if you track down strange
+ This option is for CLI only. If you set this to true, JLineup logs on `DEBUG` level. Can be useful for the CLI version, if you track down strange
  behavior or bugs - or if you simply want to know which steps JLineup is doing in detail.
      
  * Scope: Global
@@ -508,3 +527,5 @@ What are all those options about? Look here for details:
  * Type: Boolean
  * Default: `false`
  * Example: `"check-for-errors-in-log": false`
+ 
+ 
