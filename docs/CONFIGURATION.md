@@ -7,7 +7,7 @@ have the same settings for all sites in your JLineup job, then you can simply sp
 
 ### Format
 
-A JLineup config is a json document. The default name of the config file is ___lineup.json___.
+A JLineup job config is a json document. The default name of the config file is ___lineup.json___.
 The command line version looks for it in the current working directory. A different path can be specified with the
 `--config` option when you call jlineup via command line.
 
@@ -306,8 +306,8 @@ What are all those options about? Look here for details:
  
  * Scope: Site
  * Type: Integer
- * Default: `50000`
  * Unit: Pixels
+ * Default: `50000`
  * Example: `"max-scroll-height": 100000`
  
 --- 
@@ -325,8 +325,8 @@ What are all those options about? Look here for details:
  
  * Scope: Site or Global
  * Type: Float
- * Default: 0
  * Unit: Seconds
+ * Default: `0`
  * Example: `"wait-after-page-load": 3.5`
  
  ---
@@ -339,8 +339,8 @@ What are all those options about? Look here for details:
  
  * Scope: Site
  * Type: Float
- * Default: 0
  * Unit: Seconds
+ * Default: `0`
  * Example: `"wait-after-scroll": 1.1`
  
 ---
@@ -353,8 +353,8 @@ What are all those options about? Look here for details:
 
  * Scope: Site
  * Type: Float
- * Default: 0
  * Unit: Seconds
+ * Default: `0`
  * Example: `"warmup-browser-cache-time": 5`
  
 --- 
@@ -369,8 +369,8 @@ What are all those options about? Look here for details:
 
  * Scope: Site
  * Type: Float
- * Default: 0
  * Unit: Seconds
+ * Default: 0
  * Example: `"wait-for-fonts-time": 3`
  
 --- 
@@ -383,7 +383,7 @@ What are all those options about? Look here for details:
  
  * Scope: Site
  * Type: String
- * Default: null
+ * Default: `null`
  * Example: `"javascript": "console.log('This is JavaScript!')"`
  
 --- 
@@ -395,7 +395,7 @@ What are all those options about? Look here for details:
 
  * Scope: Site
  * Type: Boolean
- * Default: false
+ * Default: `false`
  * Example: `"hide-images": true`
  
 ---
@@ -514,7 +514,7 @@ What are all those options about? Look here for details:
    
  * Scope: Global
  * Type: Integer
- * Default: 0
+ * Default: `0`
  * Example: `"screenshot-retries": 2`
  
 --- 

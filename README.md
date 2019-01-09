@@ -41,9 +41,9 @@ to see the command line help.
 
 ## Browser compatibility
 
-JLineup 3.0.0-rc7 was tested successfully with
+JLineup 3.0.0-SNAPSHOT was tested successfully with
 
-* Chrome 69.x
+* Chrome 71.x
 * Firefox 62.x
 * PhantomJS 2.1.1 (auto-downloaded by JLineup if not installed)
         
