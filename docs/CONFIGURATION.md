@@ -219,10 +219,12 @@ What are all those options about? Look here for details:
                  
 ### `cookies`
 
- A list of cookies that are set on the site. 
+ A list of cookies that are set on the site. A cookie document can simply consist of `name` and `value`.
+ Alternatively, you can specify a full cookie with `name`, `value`, `domain`, `path`, `expiry` and `secure`.
+ See the example for details. The expiration time has to be written as ISO 8601 string.
 
  * Scope: Site
- * Type: JSON Document
+ * Type: List of cookie documents
  * Default: `{}`
  * Example: `
             "cookies": [
