@@ -1,0 +1,12 @@
+graph TD
+Z(Previous steps of CI build) --> A
+subgraph Prelive stage
+A[<b>JLineup</b> 'before'] -->B[Deployment to 'prelive']
+B --> C[<b>JLineup</b> 'after']
+C -->|No changes detected| D[Open gate to live deployment]
+C -->|Changes detected| E[Close gate to live deployment]
+E --> F[Show link to JLineup HTML report]
+F -->|Manual approval| D
+end
+D --> X(Live deployment)
+F -->|No manual approval| T(Fail build)

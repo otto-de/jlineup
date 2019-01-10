@@ -25,15 +25,10 @@ Credit for original Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
 
 ## Basic concept
 
-This is a quick example, how JLineup can be helpful in your automated build and deploy pipeline:
-Let's assume, this is part of a prelive stage deployment:
+This is a quick example, how JLineup can be helpful in your automated build and deploy pipeline.
+Let's assume, this is part of a continuous integration pipeline:
 
- 1. Run JLineup 'before' step on your prelive site
- 2. Deploy your new version
- 3. Run JLineup 'after' step on your prelive site and programatically check return code or json report
- 
- -> Successful: Let you pipeline go on with next stage, no visible changes detected.
- -> A Change was detected: Pause your pipeline (i.e. through closing a gate to the next step) and let a human decide if the change was intended with JLineup's HTML report.
+![Pipeline exampe](docs/pipeline-example.png)
 
 ## Quick Howto
 
