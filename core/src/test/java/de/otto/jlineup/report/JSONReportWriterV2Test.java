@@ -1,6 +1,5 @@
 package de.otto.jlineup.report;
 
-import com.google.gson.GsonBuilder;
 import de.otto.jlineup.file.FileService;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,10 +8,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.sql.Date;
 import java.util.Collections;
 
-import static de.otto.jlineup.config.Cookie.COOKIE_TIME_FORMAT;
 import static de.otto.jlineup.config.JobConfig.exampleConfig;
 import static java.util.Collections.singletonList;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -82,7 +79,7 @@ public class JSONReportWriterV2Test {
                 "            \"value\": \"exampleValue\",\n" +
                 "            \"domain\": \"http://www.example.com\",\n" +
                 "            \"path\": \"/\",\n" +
-                "            \"expiry\": \"1970-01-01T01:00:01+0100\",\n" +
+                "            \"expiry\": \"1970-01-01T00:00:01.000Z\",\n" +
                 "            \"secure\": true\n" +
                 "          }\n" +
                 "        ],\n" +
@@ -149,6 +146,6 @@ public class JSONReportWriterV2Test {
         ArgumentCaptor<String> jsonCaptor = ArgumentCaptor.forClass(String.class);
         Mockito.verify(fileServiceMock).writeJsonReport(jsonCaptor.capture());
 
-        JSONAssert.assertEquals(jsonCaptor.getValue(), expectedJSON, false);
+        JSONAssert.assertEquals(expectedJSON, jsonCaptor.getValue(),false);
     }
 }
