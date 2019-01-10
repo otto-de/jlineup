@@ -19,15 +19,13 @@ PhantomJS¹ are supported).
 JLineup is a configuration compatible replacement
 for Lineup, implemented in Java. The original
 [Lineup](https://github.com/otto-de/lineup) is
-a Ruby tool. We did a rewrite in Java, because we can
-leverage some quicker image comparison here and we can
-get rid of Ruby in our JVM-based pipelines.
+a Ruby tool, but is not maintained any more.
 
-Credit for Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
+Credit for original Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
 
 ## Quick Howto
 
-JLineup CLI comes as executable Java Archive. You need a working Java 8 Runtime Environment on your system. 
+JLineup CLI comes as executable Java Archive. Java 8 or higher has to be available to run it.
 
 Open a terminal and download it like this:
 
@@ -41,7 +39,7 @@ to see the command line help.
 
 ## Browser compatibility
 
-JLineup 3.0.0-SNAPSHOT was tested successfully with
+JLineup 3.0.0-rc7 was tested successfully with
 
 * Chrome 71.x
 * Firefox 62.x
@@ -87,7 +85,9 @@ JLineup uses some third party tools and libraries
 * [Thymeleaf](http://www.thymeleaf.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
 
 
+### Contact
 
+If you have questions or proposals, please open an issue or write an email to marco DOT geweke AT otto.de
 
 ### Footnotes
 
