@@ -8,7 +8,7 @@
 <!--- [![Dependency Status](https://www.versioneye.com/user/projects/58175e12d33a712754f2ab3d/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58175e12d33a712754f2ab3d)) -->
 
 ## About
-JLineup is a tool which is useful for visual acceptance tests in continuous delivery pipelines.
+JLineup is a tool which is useful for visual acceptance tests, especially in continuous delivery pipelines.
 It can be used as a simple command line tool or as a small web service which is controlled via REST API.
 
 JLineup can make and compare screenshots of a web page. Through comparison of the screenshots it detects every changed pixel.
