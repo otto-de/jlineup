@@ -59,7 +59,7 @@ JLineup CLI comes as executable Java Archive. Java 8 or higher has to be availab
 
 Open a terminal and download it like this:
 
-    wget https://oss.sonatype.org/service/local/artifact/maven/redirect\?r\=releases\&g\=de.otto\&a\=jlineup-cli\&v\=3.0.0-rc7\&e\=jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/3.0.0-rc7/jlineup-cli-3.0.0-rc7.jar -O jlineup.jar
 
 Then type
 
@@ -67,9 +67,11 @@ Then type
 
 to see the command line help.
 
-## Integration Concept
+See the [CLI documentation](docs/CLI.md) for more details and a small tutorial.
 
-This is a quick example, how JLineup can be helpful in your automated build and deploy pipeline.
+## Integration example
+
+This is an example, how JLineup can be helpful in your automated build and deploy pipeline.
 Let's assume, this is part of a continuous integration pipeline:
 
 ![Pipeline exampe](docs/pipeline-example.png)
