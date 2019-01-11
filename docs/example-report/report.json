@@ -1,0 +1,518 @@
+{
+  "summary": {
+    "error": true,
+    "differenceSum": 11.242636614583333,
+    "differenceMax": 1.0
+  },
+  "screenshotComparisonsForUrl": {
+    "https://www.otto.de": {
+      "comparisonResults": [
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 500,
+          "verticalScrollPosition": 0,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_0500_00000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_0500_00000_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 500,
+          "verticalScrollPosition": 800,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_0500_00800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_0500_00800_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 500,
+          "verticalScrollPosition": 1600,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_0500_01600_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_0500_01600_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 500,
+          "verticalScrollPosition": 2400,
+          "difference": 7.5E-5,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_0500_02400_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_0500_02400_after.png",
+          "differenceImageFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_0500_02400_DIFFERENCE.png",
+          "maxSingleColorDifference": 3
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1000,
+          "verticalScrollPosition": 0,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1000_00000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1000_00000_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1000,
+          "verticalScrollPosition": 800,
+          "difference": 0.0049575,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1000_00800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1000_00800_after.png",
+          "differenceImageFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1000_00800_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1000,
+          "verticalScrollPosition": 1600,
+          "difference": 0.00497875,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1000_01600_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1000_01600_after.png",
+          "differenceImageFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1000_01600_DIFFERENCE.png",
+          "maxSingleColorDifference": 221
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1000,
+          "verticalScrollPosition": 2400,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1000_02400_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1000_02400_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1200,
+          "verticalScrollPosition": 0,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1200_00000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1200_00000_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1200,
+          "verticalScrollPosition": 800,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1200_00800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1200_00800_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1200,
+          "verticalScrollPosition": 1600,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1200_01600_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1200_01600_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1200,
+          "verticalScrollPosition": 2400,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1200_02400_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1200_02400_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1600,
+          "verticalScrollPosition": 0,
+          "difference": 0.0065375,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1600_00000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1600_00000_after.png",
+          "differenceImageFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1600_00000_DIFFERENCE.png",
+          "maxSingleColorDifference": 178
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1600,
+          "verticalScrollPosition": 800,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1600_00800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1600_00800_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1600,
+          "verticalScrollPosition": 1600,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1600_01600_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1600_01600_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/k/10072934231?a\u003d224673",
+          "width": 1600,
+          "verticalScrollPosition": 2400,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1600_02400_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__k_10072934231_a_224673_6a559b0_1600_02400_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 500,
+          "verticalScrollPosition": 0,
+          "difference": 3.025E-4,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_00000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_00000_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_00000_DIFFERENCE.png",
+          "maxSingleColorDifference": 49
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 500,
+          "verticalScrollPosition": 800,
+          "difference": 0.7902175,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_00800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_00800_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_00800_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 500,
+          "verticalScrollPosition": 1600,
+          "difference": 0.7674775,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_01600_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_01600_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_01600_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 500,
+          "verticalScrollPosition": 2400,
+          "difference": 0.82235,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_02400_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_02400_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_02400_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 500,
+          "verticalScrollPosition": 3200,
+          "difference": 0.6981475,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_03200_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_03200_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_03200_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 500,
+          "verticalScrollPosition": 4000,
+          "difference": 0.4797425,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_04000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_04000_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_04000_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 500,
+          "verticalScrollPosition": 4800,
+          "difference": 0.2800075,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_04800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_04800_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_04800_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 500,
+          "verticalScrollPosition": 5600,
+          "difference": 0.371155,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_05600_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_05600_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_05600_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 500,
+          "verticalScrollPosition": 6400,
+          "difference": 1.0,
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_0500_06400_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1000,
+          "verticalScrollPosition": 0,
+          "difference": 1.925E-4,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_00000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_00000_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_00000_DIFFERENCE.png",
+          "maxSingleColorDifference": 49
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1000,
+          "verticalScrollPosition": 800,
+          "difference": 0.462505,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_00800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_00800_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_00800_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1000,
+          "verticalScrollPosition": 1600,
+          "difference": 0.61991375,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_01600_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_01600_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_01600_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1000,
+          "verticalScrollPosition": 2400,
+          "difference": 0.68279,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_02400_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_02400_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_02400_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1000,
+          "verticalScrollPosition": 3200,
+          "difference": 0.49582,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_03200_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_03200_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_03200_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1000,
+          "verticalScrollPosition": 4000,
+          "difference": 0.2697525,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_04000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_04000_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_04000_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1000,
+          "verticalScrollPosition": 4800,
+          "difference": 1.925E-4,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_04800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_04800_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1000_04800_DIFFERENCE.png",
+          "maxSingleColorDifference": 49
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1200,
+          "verticalScrollPosition": 0,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_00000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_00000_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1200,
+          "verticalScrollPosition": 800,
+          "difference": 0.26795625,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_00800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_00800_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_00800_DIFFERENCE.png",
+          "maxSingleColorDifference": 253
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1200,
+          "verticalScrollPosition": 1600,
+          "difference": 0.23149270833333332,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_01600_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_01600_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_01600_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1200,
+          "verticalScrollPosition": 2400,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_02400_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_02400_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1200,
+          "verticalScrollPosition": 3200,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_03200_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_03200_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1200,
+          "verticalScrollPosition": 4000,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_04000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_04000_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1200,
+          "verticalScrollPosition": 4800,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_04800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_04800_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1200,
+          "verticalScrollPosition": 5600,
+          "difference": 0.0,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_05600_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1200_05600_after.png",
+          "maxSingleColorDifference": 0
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1600,
+          "verticalScrollPosition": 0,
+          "difference": 1.03125E-4,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_00000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_00000_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_00000_DIFFERENCE.png",
+          "maxSingleColorDifference": 49
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1600,
+          "verticalScrollPosition": 800,
+          "difference": 0.28015625,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_00800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_00800_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_00800_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1600,
+          "verticalScrollPosition": 1600,
+          "difference": 0.48593125,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_01600_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_01600_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_01600_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1600,
+          "verticalScrollPosition": 2400,
+          "difference": 0.41577421875,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_02400_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_02400_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_02400_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1600,
+          "verticalScrollPosition": 3200,
+          "difference": 0.42910703125,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_03200_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_03200_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_03200_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1600,
+          "verticalScrollPosition": 4000,
+          "difference": 0.188509375,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_04000_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_04000_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_04000_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1600,
+          "verticalScrollPosition": 4800,
+          "difference": 0.18649140625,
+          "screenshotBeforeFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_04800_before.png",
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_04800_after.png",
+          "differenceImageFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_04800_DIFFERENCE.png",
+          "maxSingleColorDifference": 255
+        },
+        {
+          "url": "https://www.otto.de/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "width": 1600,
+          "verticalScrollPosition": 5600,
+          "difference": 1.0,
+          "screenshotAfterFileName": "https_www_otto_de__wohnen__thema_thmn123nol_retro_chic_9465bea_1600_05600_after.png",
+          "maxSingleColorDifference": 0
+        }
+      ],
+      "summary": {
+        "error": true,
+        "differenceSum": 11.242636614583333,
+        "differenceMax": 1.0
+      }
+    }
+  },
+  "config": {
+    "urls": {
+      "https://www.otto.de": {
+        "paths": [
+          "/wohnen/?thema\u003dthmn123nol_retro_chic",
+          "/k/10072934231?a\u003d224673"
+        ],
+        "max-diff": 0.0,
+        "window-widths": [
+          500,
+          1000,
+          1200,
+          1600
+        ],
+        "max-scroll-height": 100000,
+        "wait-after-page-load": 0,
+        "wait-after-scroll": 0,
+        "wait-for-no-animation-after-scroll": 0.0,
+        "warmup-browser-cache-time": 0,
+        "wait-for-fonts-time": 0,
+        "hide-images": false,
+        "http-check": {
+          "enabled": false
+        },
+        "max-color-diff-per-pixel": 1
+      }
+    },
+    "browser": "Chrome-Headless",
+    "wait-after-page-load": 3.0,
+    "page-load-timeout": 120,
+    "window-height": 800,
+    "report-format": 2,
+    "screenshot-retries": 0,
+    "threads": 4,
+    "timeout": 3600,
+    "debug": false,
+    "log-to-file": false,
+    "check-for-errors-in-log": false,
+    "http-check": {
+      "enabled": false
+    }
+  }
+}
