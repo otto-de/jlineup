@@ -67,14 +67,14 @@ Then type
 
 to see the command line help.
 
-## Integration concept
+## Integration Concept
 
 This is a quick example, how JLineup can be helpful in your automated build and deploy pipeline.
 Let's assume, this is part of a continuous integration pipeline:
 
 ![Pipeline exampe](docs/pipeline-example.png)
 
-## Browser compatibility
+## Browser Compatibility
 
 JLineup 3.0.0-rc7 was tested successfully with
 
@@ -88,7 +88,7 @@ Chrome or Firefox have to be installed on the system if you want to use one of t
 
 [JLineup Job Configuration](docs/CONFIGURATION.md)
 
-## Third party libraries
+## Third Party Libraries
 
 JLineup uses some third party tools and libraries
 
