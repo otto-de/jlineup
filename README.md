@@ -8,11 +8,12 @@
 <!--- [![Dependency Status](https://www.versioneye.com/user/projects/58175e12d33a712754f2ab3d/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58175e12d33a712754f2ab3d)) -->
 
 ## About
-JLineup is a tool which is useful for visual acceptance tests of web pages, especially in continuous delivery pipelines.
+
+JLineup is a tool which is useful for automated visual acceptance tests of web pages, especially in continuous delivery pipelines.
 It can be used as a simple command line tool or as a small web service which is controlled via REST API.
 
-JLineup can make and compare screenshots of a web page. Through comparison of the screenshots it detects every changed pixel.
-JLineup generates a HTML report and a JSON report.
+JLineup shoots and compares screenshots of a web page at two consecutive points in time.
+It does a pixel by pixel comparison of both runs and generates a HTML and a JSON report.
 Behind the scenes, it uses Selenium and a browser of choice (currently Chrome, Firefox and
 PhantomJS¹ are supported).
 
@@ -121,6 +122,16 @@ JLineup uses some third party tools and libraries
 ##### Thymeleaf
 
 * [Thymeleaf](http://www.thymeleaf.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
+
+
+##### Edison Microservice
+
+* [Edison Microservice](https://github.com/otto-de/edison-microservice) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
+
+##### Spring Boot
+
+* [Spring Boot](http://spring.io/projects/spring-boot) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
+
 
 
 ### Contact
