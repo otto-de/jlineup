@@ -5,14 +5,8 @@ If you are interested in the mode of operation of JLineup, this document is for 
 ``` mermaid
 
 graph TD
-A[Jau]-->B[Now]
+A-->B
 
 ```
 
-***Cool stuff!***
-
-
-
-| Goile Tabelle  |
-|---|
-|   Toll |
+=== TODO: Fill this
