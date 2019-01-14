@@ -224,3 +224,7 @@ Additional command line parameters for spawned chrome processes.
 ### `--firefox-parameter`
 
 Additional command line parameters for spawned firefox processes.
+
+---
+
+[Back to Main page](../README.md)
