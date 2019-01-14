@@ -134,7 +134,7 @@ JobConfig file
 
 ---
 
-### `-s, --step`
+### `--step, -s`
 
 JLineup step - 'before' just takes screenshots, 'after' takes
 screenshots and compares them with the 'before'-screenshots in the
@@ -152,7 +152,7 @@ current task.
 
 ---
 
-### `-?, --help`
+### `--help, -?`
 
 Shows a quick help
 
