@@ -1,4 +1,4 @@
-![JLineup](docs/jlineup-logo_small.png)
+[![JLineup](docs/jlineup-logo_small.png)](#)
 
 ## Status
 
