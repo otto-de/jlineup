@@ -90,6 +90,8 @@ Chrome or Firefox have to be installed on the system if you want to use one of t
 
 [JLineup as CLI tool](docs/CLI.md)
 
+[JLineup as web server](docs/WEB.md)
+
 [JLineup Job Configuration](docs/CONFIGURATION.md)
 
 ## Third Party Libraries

@@ -92,7 +92,7 @@ Body:
 
 Content-Type: application/json
 
-You should get an 202 as answer. Just post the same config again to
+You should get an 202 as answer. Then just post the same config again to
 create a second run.
 
 If you go to http://localhost:8080/internal/reports now, you should see
@@ -121,4 +121,9 @@ Click on the green url to open the details:
 ![Report](web/report2.png)
 
 
+## TODO: web server configuration reference
 
+
+---
+
+[Back to Main page](https://github.com/otto-de/jlineup/blob/master/README.md)
