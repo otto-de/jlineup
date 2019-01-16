@@ -139,6 +139,7 @@ public class JLineupControllerTest {
         // then
         result
                 .andExpect(status().isAccepted())
+                .andExpect(content().json("{\"id\":\"someNewId\"}"))
                 .andExpect(header().string("Location", "/testContextPath/runs/someNewId"));
 
         verify(jLineupService).startBeforeRun(jobConfig);
