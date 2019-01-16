@@ -121,7 +121,34 @@ Click on the green url to open the details:
 ![Report](web/report2.png)
 
 
-## TODO: web server configuration reference
+## Configuration
+
+The JLineup web server uses Edison Microservice which is based on
+Spring Boot. You can configure it by application.properties or yaml
+like any Spring Boot application.
+
+These are the internal defaults:
+
+```yaml
+jlineup:
+  workingDirectory: /tmp/jlineup/
+  screenshotsDirectory: report-{id}
+  reportDirectory: report-{id}
+  maxParallelJobs: 1
+
+edison:
+  application:
+    title: JLineup
+    description: Takes screenshots of webpages and checks for differences
+
+spring:
+  application:
+    name: JLineup
+    
+```
+
+You can save this file as application.yml and put it into the same directory
+as jlineup-web.jar. After that, you can change it's contents to your needs.
 
 
 ---
