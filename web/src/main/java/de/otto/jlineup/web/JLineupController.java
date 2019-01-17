@@ -33,12 +33,15 @@ public class JLineupController {
     }
 
     @PostMapping(value = "/runs")
-    public ResponseEntity<Void> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) throws Exception {
+    public ResponseEntity<RunBeforeResponse> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) throws Exception {
         String id = jLineupService.startBeforeRun(jobConfig).getId();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(request.getContextPath() + "/runs/" + id));
-        return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
+
+        return ResponseEntity.accepted()
+                .headers(headers)
+                .body(new RunBeforeResponse(id));
     }
 
     @PostMapping("/runs/{runId}")
