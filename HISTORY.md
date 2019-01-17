@@ -3,6 +3,7 @@
 ## Release 3.0.0
 * Massively improved documentation
 * chromedriver 2.45
+* Some chrome flags are added to improve deterministic rendering
 
 ## Release 3.0.0-rc7
 * Revert because it didn't work: Ability to wait for images to be fully loaded before making screenshots
