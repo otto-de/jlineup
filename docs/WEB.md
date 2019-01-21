@@ -193,7 +193,7 @@ JLineup can run multiple jobs concurrently. Make sure there is enough
 RAM on the machine for `max-parallel-jobs` x `max-threads-per-job`
 browser instances that can result from these settings.
 
-See [jlineup.max-threads-per-job](WEB.md#jlineup.max-threads-per-job) also.
+See [jlineup.max-threads-per-job](WEB.md#jlineupmax-threads-per-job) also.
 
 * Default: `1`
 
@@ -211,6 +211,8 @@ maximally starts on this JLineup server instance.
 Make sure there is enough RAM on the machine for
 `max-parallel-jobs` x `max-threads-per-job`
 browser instances that can result from these settings.
+
+See [jlineup.max-parallel-jobs](WEB.md#jlineupmax-parallel-jobs) also.
 
 * Default: `4`
 
