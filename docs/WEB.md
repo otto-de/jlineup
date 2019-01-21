@@ -131,10 +131,10 @@ These are the internal defaults:
 
 ```yaml
 jlineup:
-  workingDirectory: /tmp/jlineup/
-  screenshotsDirectory: report-{id}
-  reportDirectory: report-{id}
-  maxParallelJobs: 1
+  working-directory: /tmp/jlineup/
+  screenshots-directory: report-{id}
+  report-directory: report-{id}
+  max-parallel-jobs: 1
 
 edison:
   application:
@@ -150,6 +150,106 @@ spring:
 You can save this file as application.yml and put it into the same directory
 as jlineup-web.jar. After that, you can change it's contents to your needs.
 
+Additional to the JLineup configuration properties below, you can use all
+[Spring Boot Application Properties](https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html)
+to specify application behavior, as JLineup is a Spring Boot 2 app.
+
+Also, there are [Edison Microservice Application Properties](https://github.com/otto-de/edison-microservice/blob/master/edison-core/README.md)
+that can be used to configure the core and populate the status page of JLineup.
+
+---
+
+## Web Server Properties Reference
+
+### `jlineup.working-directory`
+
+This is the path to JLineup's working directory during jobs. JLineup
+needs write permissions to this folder's path. It will be created
+during first run if not existing.
+
+* Default: `/tmp/jlineup/`
+
+---
+
+### `jlineup.screenshots-directory`
+
+This folder will contain the screenshots of the JLineup job. If you don't
+want to overwrite previous job's screenshots, you can use `{id}` as
+placeholder for the job id that is randomly created when you start a new
+job. So you'll have unique folders for all job screenshots.
+
+By default screenshots and report will go to the same folder, which is
+totally fine.
+
+The path is relative to the working directory!
+
+* Default: `report-{id}`
+
+---
+
+### `jlineup.max-parallel-jobs`
+
+JLineup can run multiple jobs concurrently. Make sure there is enough
+RAM on the machine for `max-parallel-jobs` x `max-threads-per-job`
+browser instances that can result from these settings.
+
+See [jlineup.max-threads-per-job](WEB.md#jlineup.max-threads-per-job) also.
+
+* Default: `1`
+
+---
+
+### `jlineup.max-threads-per-job`
+
+JLineup can run multiple threads to speed up jobs. See
+[threads configuration in job](CONFIGURATION.md#threads)
+to see how these settings go together.
+
+This specifies, how many browser instances per job JLineup
+maximally starts on this JLineup server instance.
+
+Make sure there is enough RAM on the machine for
+`max-parallel-jobs` x `max-threads-per-job`
+browser instances that can result from these settings.
+
+* Default: `4`
+
+---
+
+### `jlineup.installed-browsers`
+
+JLineup web will deny requests for jobs that contain a browser that is
+not in the list of installed browsers. If you want to allow
+only a subset of installed browsers or if you don't have Firefox and
+Chrome installed, you can narrow the settings.
+
+* Default: `chrome-headless, firefox-headless, phantomjs`
+
+---
+
+### `jlineup.chrome-launch-parameters`
+
+You can specify any Chrome command line parameters,
+that you want to handle to the Chrome instances launched by JLineup.
+
+See [here](https://peter.sh/experiments/chromium-command-line-switches/)
+for a list of Chrome command line switches
+
+* Example: `--use-shm=false, --bwsi`
+* Default: Empty
+
+---
+
+### `jlineup.firefox-launch-parameters`
+
+You can specify any Firefox command line parameters,
+that you want to handle to the Firefox instances launched by JLineup.
+
+See [here](https://developer.mozilla.org/en-US/docs/Mozilla/Command_Line_Options)
+for a list of Firefox command line options.
+
+* Example: `-private`
+* Default: Empty
 
 ---
 
