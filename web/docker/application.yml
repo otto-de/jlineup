@@ -1,0 +1,41 @@
+env: ${STAGE:local}
+
+jlineup:
+  workingDirectory: /tmp/jlineup/
+  screenshotsDirectory: report-{id}
+  reportDirectory: report-{id}
+  installedBrowsers: chrome-headless, firefox-headless, phantomjs
+  maxParallelJobs: 2
+  maxThreadsPerJob: 6
+  chromeLaunchParameters: --use-spdy=off,--disable-dev-shm-usage
+
+management:
+  context-path: /internal
+  security:
+    enabled: false
+
+server:
+  servlet:
+    context-path: /
+  port: ${PORT:8080}
+  use-forward-headers: true
+
+spring:
+  application:
+    name: JLineup
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
+  thymeleaf:
+    mode: HTML
+
+edison:
+  application:
+    environment: ${STAGE:local}
+    group: ${GROUP:none}
+    title: JLineup [${STAGE:local}]
+  status:
+    team:
+      business-contact: ${BUSINESSMAIL:none}
+      name: ${TEAMNAME:none}
+      technical-contact: ${TECHMAIL:none}
