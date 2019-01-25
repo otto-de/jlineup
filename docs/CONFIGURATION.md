@@ -567,7 +567,7 @@ What are all those options about? Here are all the details.
  
 --- 
  
-### debug
+### `debug`
 
  This option is for CLI only. If you set this to true, JLineup logs on `DEBUG` level. Can be useful for the CLI version, if you track down strange
  behavior or bugs - or if you simply want to know which steps JLineup is doing in detail.
@@ -579,7 +579,7 @@ What are all those options about? Here are all the details.
  
 --- 
 
-### log-to-file
+### `log-to-file`
 
  This option is for CLI only. The job output is logged to the file `jlineup.log` in the current working directory if 
  specified.
@@ -591,7 +591,7 @@ What are all those options about? Here are all the details.
  
 --- 
  
-### check-for-errors-in-log
+### `check-for-errors-in-log`
 
  This option only works for Chrome/Chromium. If there is any error logged to the Chrome console and this setting is
  set to `true`, an error is raised for this screenshot and the run fails.
