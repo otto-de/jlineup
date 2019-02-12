@@ -6,12 +6,13 @@ import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.config.Cookie;
+import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import org.openqa.selenium.Dimension;
-import org.openqa.selenium.*;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -26,10 +27,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -106,6 +107,8 @@ public class Browser implements AutoCloseable {
     static final String JS_RETURN_DOCUMENT_FONTS_SIZE_CALL = "return document.fonts.size;";
     static final String JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL = "return document.fonts.status === 'loaded';";
     static final String JS_GET_USER_AGENT = "return navigator.userAgent;";
+
+    static final String JS_GET_DOM = "return document.getElementsByTagName('body')[0].innerHTML;";
 
     private final JobConfig jobConfig;
     private final FileService fileService;
@@ -227,7 +230,7 @@ public class Browser implements AutoCloseable {
         boolean headlessRealBrowser = jobConfig.browser.isHeadlessRealBrowser();
         final WebDriver localDriver;
         if (headlessRealBrowser) {
-            localDriver = initializeWebDriver(screenshotContext.windowWidth);
+            localDriver = initializeWebDriver(DeviceConfig.legacyWithWidth(screenshotContext.windowWidth));
         } else localDriver = initializeWebDriver();
 
         if (printVersion.getAndSet(false)) {
@@ -341,6 +344,9 @@ public class Browser implements AutoCloseable {
             pageHeight = getPageHeight();
             LOG.debug("Page height is {}", pageHeight);
         }
+
+        String dom = getDom();
+        fileService.writeHtml(dom, screenshotContext.before);
     }
 
     private void resizeBrowser(WebDriver driver, int width, int height) {
@@ -483,6 +489,12 @@ public class Browser implements AutoCloseable {
         return (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
     }
 
+    private String getDom() {
+        LOG.debug("Getting DOM.");
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
+        return (String) (jse.executeScript(JS_GET_DOM));
+    }
+
     private void executeJavaScript(String javaScript) throws InterruptedException {
         if (javaScript == null) {
             return;
@@ -595,7 +607,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    WebDriver initializeWebDriver(int width) {
+    WebDriver initializeWebDriver(DeviceConfig device) {
         if (shutdownCalled.get()) return null;
         synchronized (webDrivers) {
             String currentThreadName = Thread.currentThread().getName();
@@ -604,7 +616,7 @@ public class Browser implements AutoCloseable {
                 LOG.debug("Removing webdriver for thread {} ({})", currentThreadName, oldDriver.getClass().getCanonicalName());
                 oldDriver.quit();
             }
-            WebDriver driver = createDriverWithWidth(width);
+            WebDriver driver = createDriverWithEmulatedDevice(device);
             webDrivers.put(currentThreadName, driver);
             return driver;
         }
@@ -615,11 +627,15 @@ public class Browser implements AutoCloseable {
         synchronized (webDrivers) {
             if (shutdownCalled.get()) return null;
             String currentThreadName = Thread.currentThread().getName();
+
+            WebDriver driver;
             if (webDrivers.containsKey(currentThreadName)) {
-                return webDrivers.get(currentThreadName);
+                driver = webDrivers.get(currentThreadName);
             }
-            WebDriver driver = createDriver();
-            webDrivers.put(currentThreadName, driver);
+            else {
+                driver = createDriver();
+                webDrivers.put(currentThreadName, driver);
+            }
             return driver;
         }
     }
@@ -632,10 +648,10 @@ public class Browser implements AutoCloseable {
         return driver;
     }
 
-    private WebDriver createDriverWithWidth(int width) {
-        final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, runStepConfig, width);
+    private WebDriver createDriverWithEmulatedDevice(DeviceConfig device) {
+        final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, runStepConfig, device);
         driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
-        LOG.debug("Adding webdriver for thread {} with width {} ({})", Thread.currentThread().getName(), width, driver.getClass().getCanonicalName());
+        LOG.debug("Adding webdriver for thread {} with emulated device {} ({})", Thread.currentThread().getName(), device, driver.getClass().getCanonicalName());
         return driver;
     }
 

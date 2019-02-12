@@ -188,6 +188,12 @@ public class FileService {
         }
     }
 
+    public void writeHtml(String html, boolean before) throws FileNotFoundException {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + ( before ? "/before.html" : "/after.html")))) {
+            out.print(html);
+        }
+    }
+
     public void writeRunStepMetadata(Step step, String metadata) throws FileNotFoundException {
         try (PrintStream out = new PrintStream(new FileOutputStream(getScreenshotPath("metadata_" + step + ".json")))) {
             out.print(metadata);

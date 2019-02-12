@@ -1,6 +1,7 @@
 package de.otto.jlineup.browser;
 
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -57,25 +59,28 @@ public class BrowserUtils {
     }
 
     synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig) {
-        return getWebDriverByConfig(jobConfig, runStepConfig, JobConfig.DEFAULT_WINDOW_WIDTH);
+        return getWebDriverByConfig(jobConfig, runStepConfig, new DeviceConfig());
     }
 
-    synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig, int width) {
+    synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig, DeviceConfig device) {
         WebDriver driver;
         if (jobConfig.browser.isFirefox()) {
-            WebDriverManager.firefoxdriver().setup();
+            WebDriverManager.firefoxdriver().forceCache().setup();
             FirefoxOptions options = new FirefoxOptions();
-            options.setProfile(getFirefoxProfileWithDisabledAnimatedGifs());
+
+            FirefoxProfile firefoxProfileWithDisabledAnimatedGifs = getFirefoxProfileWithDisabledAnimatedGifs();
+            options.setProfile(firefoxProfileWithDisabledAnimatedGifs);
+
             options.addArguments(runStepConfig.getFirefoxParameters());
             if (jobConfig.browser.isHeadless()) {
                 options.setHeadless(true);
-                options.addArguments("-width", width + "", "-height", jobConfig.windowHeight + "");
+                options.addArguments("-width", device.width + "", "-height", device.height + "");
             }
 
             LOG.debug("Creating firefox with options: {}", options.toString());
             driver = new FirefoxDriver(options);
         } else if (jobConfig.browser.isChrome()) {
-            WebDriverManager.chromedriver().setup();
+            WebDriverManager.chromedriver().forceCache().setup();
             ChromeOptions options = new ChromeOptions();
 
             //To work in a headless env, this is needed
@@ -95,10 +100,17 @@ public class BrowserUtils {
                 options.addArguments("--disable-composited-antialiasing");
             }
 
+            if (device.isMobile()) {
+                Map<String, String> mobileEmulation = new HashMap<>();
+                mobileEmulation.put("deviceName", "iPhone X");
+                options.setExperimentalOption("mobileEmulation", mobileEmulation);
+            }
+
             if (jobConfig.browser.isHeadless()) {
                 options.setHeadless(true);
-                options.addArguments("--window-size=" + width + "," + jobConfig.windowHeight);
+                options.addArguments("--window-size=" + device.width + "," + device.height);
             }
+
             LOG.debug("Creating chrome with options: {}", options.toString());
             driver = new ChromeDriver(options);
         } else {

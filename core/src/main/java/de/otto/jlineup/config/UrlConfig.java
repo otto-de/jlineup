@@ -41,6 +41,10 @@ public class UrlConfig {
     @JsonAlias({"resolutions","widths"})
     public final List<Integer> windowWidths;
 
+    @SerializedName(value = "devices")
+    @JsonProperty(value = "devices")
+    public final List<DeviceConfig> devices;
+
     @SerializedName("max-scroll-height")
     @JsonProperty("max-scroll-height")
     public final int maxScrollHeight;
@@ -85,6 +89,7 @@ public class UrlConfig {
     public UrlConfig() {
         this.paths = of(DEFAULT_PATH);
         this.windowWidths = of(DEFAULT_WINDOW_WIDTH);
+        this.devices = null;
         this.maxDiff = DEFAULT_MAX_DIFF;
         this.cookies = null;
         this.localStorage = null;
@@ -105,6 +110,7 @@ public class UrlConfig {
     public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, float waitAfterPageLoad, float waitAfterScroll, float waitForNoAnimationAfterScroll, float warmupBrowserCacheTime, String javaScript, float waitForFontsTime, HttpCheckConfig httpCheck, int maxColorDiffPerPixel, boolean hideImages) {
         this.paths = paths != null ? paths : of(DEFAULT_PATH);
         this.windowWidths = windowWidths != null ? windowWidths : of(DEFAULT_WINDOW_WIDTH);
+        this.devices = null;
         this.maxDiff = maxDiff;
         this.cookies = cookies;
         this.envMapping = envMapping;
@@ -130,6 +136,7 @@ public class UrlConfig {
         localStorage = builder.localStorage;
         sessionStorage = builder.sessionStorage;
         windowWidths = builder.windowWidths;
+        devices = builder.devices;
         maxScrollHeight = builder.maxScrollHeight;
         waitAfterPageLoad = builder.waitAfterPageLoad;
         waitAfterScroll = builder.waitAfterScroll;
@@ -155,6 +162,7 @@ public class UrlConfig {
         builder.localStorage = copy.localStorage;
         builder.sessionStorage = copy.sessionStorage;
         builder.windowWidths = copy.windowWidths;
+        builder.devices = copy.devices;
         builder.maxScrollHeight = copy.maxScrollHeight;
         builder.waitAfterPageLoad = copy.waitAfterPageLoad;
         builder.waitAfterScroll = copy.waitAfterScroll;
@@ -169,6 +177,36 @@ public class UrlConfig {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UrlConfig urlConfig = (UrlConfig) o;
+        return Float.compare(urlConfig.maxDiff, maxDiff) == 0 &&
+                maxScrollHeight == urlConfig.maxScrollHeight &&
+                Float.compare(urlConfig.waitAfterPageLoad, waitAfterPageLoad) == 0 &&
+                Float.compare(urlConfig.waitAfterScroll, waitAfterScroll) == 0 &&
+                Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 &&
+                Float.compare(urlConfig.warmupBrowserCacheTime, warmupBrowserCacheTime) == 0 &&
+                Float.compare(urlConfig.waitForFontsTime, waitForFontsTime) == 0 &&
+                hideImages == urlConfig.hideImages &&
+                maxColorDiffPerPixel == urlConfig.maxColorDiffPerPixel &&
+                Objects.equals(paths, urlConfig.paths) &&
+                Objects.equals(cookies, urlConfig.cookies) &&
+                Objects.equals(envMapping, urlConfig.envMapping) &&
+                Objects.equals(localStorage, urlConfig.localStorage) &&
+                Objects.equals(sessionStorage, urlConfig.sessionStorage) &&
+                Objects.equals(windowWidths, urlConfig.windowWidths) &&
+                Objects.equals(devices, urlConfig.devices) &&
+                Objects.equals(javaScript, urlConfig.javaScript) &&
+                Objects.equals(httpCheck, urlConfig.httpCheck);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, hideImages, httpCheck, maxColorDiffPerPixel);
+    }
+
+    @Override
     public String toString() {
         return "UrlConfig{" +
                 "paths=" + paths +
@@ -178,6 +216,7 @@ public class UrlConfig {
                 ", localStorage=" + localStorage +
                 ", sessionStorage=" + sessionStorage +
                 ", windowWidths=" + windowWidths +
+                ", devices=" + devices +
                 ", maxScrollHeight=" + maxScrollHeight +
                 ", waitAfterPageLoad=" + waitAfterPageLoad +
                 ", waitAfterScroll=" + waitAfterScroll +
@@ -185,40 +224,10 @@ public class UrlConfig {
                 ", warmupBrowserCacheTime=" + warmupBrowserCacheTime +
                 ", waitForFontsTime=" + waitForFontsTime +
                 ", javaScript='" + javaScript + '\'' +
-                ", httpCheck=" + httpCheck +
                 ", hideImages=" + hideImages +
+                ", httpCheck=" + httpCheck +
                 ", maxColorDiffPerPixel=" + maxColorDiffPerPixel +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UrlConfig urlConfig = (UrlConfig) o;
-        return Float.compare(urlConfig.maxDiff, maxDiff) == 0 &&
-                maxScrollHeight == urlConfig.maxScrollHeight &&
-                waitAfterPageLoad == urlConfig.waitAfterPageLoad &&
-                waitAfterScroll == urlConfig.waitAfterScroll &&
-                Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 &&
-                warmupBrowserCacheTime == urlConfig.warmupBrowserCacheTime &&
-                waitForFontsTime == urlConfig.waitForFontsTime &&
-                maxColorDiffPerPixel == urlConfig.maxColorDiffPerPixel &&
-                Objects.equals(paths, urlConfig.paths) &&
-                Objects.equals(cookies, urlConfig.cookies) &&
-                Objects.equals(envMapping, urlConfig.envMapping) &&
-                Objects.equals(localStorage, urlConfig.localStorage) &&
-                Objects.equals(sessionStorage, urlConfig.sessionStorage) &&
-                Objects.equals(windowWidths, urlConfig.windowWidths) &&
-                Objects.equals(javaScript, urlConfig.javaScript) &&
-                Objects.equals(httpCheck, urlConfig.httpCheck) &&
-                Objects.equals(hideImages, urlConfig.hideImages);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, maxColorDiffPerPixel, hideImages);
     }
 
     public static final class Builder {
@@ -230,6 +239,7 @@ public class UrlConfig {
         private Map<String, String> localStorage;
         private Map<String, String> sessionStorage;
         private List<Integer> windowWidths = of(DEFAULT_WINDOW_WIDTH);
+        private List<DeviceConfig> devices;
         private int maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
         private float waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
         private float waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
@@ -286,6 +296,11 @@ public class UrlConfig {
 
         public Builder withWindowWidths(List<Integer> val) {
             windowWidths = val;
+            return this;
+        }
+
+        public Builder withDevices(List<DeviceConfig> val) {
+            devices = val;
             return this;
         }
 
