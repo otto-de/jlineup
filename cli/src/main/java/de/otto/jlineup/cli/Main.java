@@ -19,6 +19,7 @@ import static java.lang.invoke.MethodHandles.lookup;
 public class Main {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
+    private static final int NO_EXIT = -1;
 
     public static void main(String[] args) {
 
@@ -83,12 +84,14 @@ public class Main {
             exitWithExitCode(1);
         }
 
-        exitWithExitCode(0);
+        exitWithExitCode(NO_EXIT);
     }
 
     private static void exitWithExitCode(int exitCode) {
         Utils.stopFileLoggers();
-        System.exit(exitCode);
+        if (exitCode != NO_EXIT) {
+            System.exit(exitCode);
+        }
     }
 
     private static JobConfig buildConfig(CommandLineParameters parameters) throws FileNotFoundException {
