@@ -14,8 +14,8 @@
     }
   },
   "browser": "chrome",
-  "wait-after-page-load": 1,
+  "wait-after-page-load": 4,
   "threads": 4,
   "report-format" : 2,
-  "timeout": 1
+  "timeout": 3
 }

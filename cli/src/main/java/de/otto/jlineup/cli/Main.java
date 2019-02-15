@@ -45,12 +45,12 @@ public class Main {
         try {
             jobConfig = buildConfig(parameters);
         } catch(FileNotFoundException e) {
-            System.exit(1);
+            exitWithExitCode(1);
         }
 
         if (parameters.isPrintConfig()) {
             System.out.println(JobConfig.prettyPrint(jobConfig));
-            System.exit(0);
+            exitWithExitCode(0);
         }
 
         if (jobConfig.debug) {
@@ -70,19 +70,25 @@ public class Main {
             jLineupRunner = new JLineupRunner(jobConfig, runStepConfig);
         } catch (ConfigValidationException e) {
             LOG.error(e.getMessage());
-            System.exit(1);
+            exitWithExitCode(1);
         }
 
         try {
             boolean runSucceeded = jLineupRunner.run();
             if (!runSucceeded) {
-                System.exit(1);
+                exitWithExitCode(1);
             }
         } catch (Exception e) {
             LOG.error(e.getMessage(),e);
-            System.exit(1);
+            exitWithExitCode(1);
         }
 
+        exitWithExitCode(0);
+    }
+
+    private static void exitWithExitCode(int exitCode) {
+        Utils.stopFileLoggers();
+        System.exit(exitCode);
     }
 
     private static JobConfig buildConfig(CommandLineParameters parameters) throws FileNotFoundException {

@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
 import de.otto.jlineup.config.JobConfig;
 import org.slf4j.Logger;
@@ -23,6 +24,8 @@ public class Utils {
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     private final static AtomicInteger threadCounter = new AtomicInteger();
+    public static final String JLINEUP_FILE_APPENDER = "JLineupFileAppender";
+    public static final String SIFTING_APPENDER_NAME_IN_LOGBACK_XML = "SIFT";
 
     public static String readVersion() {
         Properties prop = new Properties();
@@ -77,6 +80,7 @@ public class Utils {
         ple.setContext(lc);
         ple.start();
         FileAppender<ILoggingEvent> fileAppender = new FileAppender<>();
+        fileAppender.setName(JLINEUP_FILE_APPENDER);
         fileAppender.setFile(workingDir + "/jlineup.log");
         fileAppender.setEncoder(ple);
         fileAppender.setContext(lc);
@@ -85,6 +89,20 @@ public class Utils {
         ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         logger.addAppender(fileAppender);
         logger.setLevel(Level.DEBUG);
+    }
+
+    public static void stopFileLoggers() {
+        ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+
+        Appender<ILoggingEvent> appender = logger.getAppender(JLINEUP_FILE_APPENDER);
+        if (appender != null) {
+            appender.stop();
+        }
+
+        appender = logger.getAppender(SIFTING_APPENDER_NAME_IN_LOGBACK_XML);
+        if (appender != null) {
+            appender.stop();
+        }
     }
 
     public static boolean shouldUseLegacyReportFormat(JobConfig jobConfig) {

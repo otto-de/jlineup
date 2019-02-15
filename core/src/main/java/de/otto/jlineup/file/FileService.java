@@ -23,6 +23,8 @@ public class FileService {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
+    public final static String FILE_SEPARATOR = FileSystems.getDefault().getSeparator();
+
     public static final String BEFORE = "before";
     public static final String AFTER = "after";
     public static final String DIVIDER = "_";
@@ -69,7 +71,7 @@ public class FileService {
 
     private void createOrClearDirectoryBelowWorkingDir(String workingDirectory, String subDirectory) throws IOException {
         try {
-            final String subDirectoryPath = workingDirectory + "/" + subDirectory;
+            final String subDirectoryPath = workingDirectory + FILE_SEPARATOR + subDirectory;
             createDirIfNotExists(subDirectoryPath);
             clearDirectory(subDirectoryPath);
         } catch (IOException e) {
@@ -118,14 +120,14 @@ public class FileService {
 
     @VisibleForTesting
     String getScreenshotPath(String url, String urlSubPath, int width, int yPosition, String step) {
-        return runStepConfig.getWorkingDirectory() + (runStepConfig.getWorkingDirectory().endsWith("/") ? "" : "/")
-                + runStepConfig.getScreenshotsDirectory() + (runStepConfig.getScreenshotsDirectory().endsWith("/") ? "" : "/")
+        return runStepConfig.getWorkingDirectory() + (runStepConfig.getWorkingDirectory().endsWith(FILE_SEPARATOR) ? "" : FILE_SEPARATOR)
+                + runStepConfig.getScreenshotsDirectory() + (runStepConfig.getScreenshotsDirectory().endsWith(FILE_SEPARATOR) ? "" : FILE_SEPARATOR)
                 + generateScreenshotFileName(url, urlSubPath, width, yPosition, step);
     }
 
     private String getScreenshotPath(String fileName) {
-        return runStepConfig.getWorkingDirectory() + (runStepConfig.getWorkingDirectory().endsWith("/") ? "" : "/")
-                + runStepConfig.getScreenshotsDirectory() + (runStepConfig.getScreenshotsDirectory().endsWith("/") ? "" : "/")
+        return runStepConfig.getWorkingDirectory() + (runStepConfig.getWorkingDirectory().endsWith(FILE_SEPARATOR) ? "" : FILE_SEPARATOR)
+                + runStepConfig.getScreenshotsDirectory() + (runStepConfig.getScreenshotsDirectory().endsWith(FILE_SEPARATOR) ? "" : FILE_SEPARATOR)
                 + fileName;
     }
 
@@ -135,7 +137,9 @@ public class FileService {
 
     private void writeScreenshot(String fileName, BufferedImage image) throws IOException {
         LOG.debug("Writing screenshot to {}", fileName);
-        ImageIO.write(image, "png", new File(fileName));
+        File screenshotFile = new File(fileName);
+        ImageIO.write(image, "png", screenshotFile);
+        System.err.println(screenshotFile);
     }
 
     @VisibleForTesting
@@ -173,7 +177,7 @@ public class FileService {
         Path screenshotDirectory = getScreenshotDirectory().toAbsolutePath();
         Path reportDirectory = getReportDirectory().toAbsolutePath();
         Path relative = reportDirectory.relativize(screenshotDirectory);
-        return relative.toString().equals("") ? "" : relative.toString() + "/";
+        return relative.toString().equals("") ? "" : relative.toString() + FILE_SEPARATOR;
     }
 
     public void writeJsonReport(String reportJson) throws FileNotFoundException {

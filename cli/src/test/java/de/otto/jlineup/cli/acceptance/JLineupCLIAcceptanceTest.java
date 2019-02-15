@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import de.otto.jlineup.cli.Main;
 import de.otto.jlineup.report.Report;
 import org.hamcrest.CoreMatchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import java.io.ByteArrayOutputStream;
@@ -18,11 +15,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,16 +27,13 @@ public class JLineupCLIAcceptanceTest {
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
-    private final ByteArrayOutputStream systemOutCaptor = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream systemErrCaptor = new ByteArrayOutputStream();
+    private ByteArrayOutputStream systemOutCaptor = new ByteArrayOutputStream();
+    private ByteArrayOutputStream systemErrCaptor = new ByteArrayOutputStream();
 
     private static final String CWD = Paths.get(".").toAbsolutePath().normalize().toString();
 
     private PrintStream stdout = System.out;
     private PrintStream stderr = System.err;
-
-    private MirrorOutputStream teeOut = new MirrorOutputStream(stdout, systemOutCaptor);
-    private MirrorOutputStream teeErr = new MirrorOutputStream(stderr, systemErrCaptor);
 
     private Path tempDirectory;
 
@@ -49,19 +41,29 @@ public class JLineupCLIAcceptanceTest {
 
     @Before
     public void setUpStreams() {
+
+        systemOutCaptor = new ByteArrayOutputStream();
+        systemErrCaptor = new ByteArrayOutputStream();
+
+        MirrorOutputStream teeOut = new MirrorOutputStream(stdout, systemOutCaptor);
+        MirrorOutputStream teeErr = new MirrorOutputStream(stderr, systemErrCaptor);
+
         System.setOut(new PrintStream(teeOut));
         System.setErr(new PrintStream(teeErr));
     }
 
     @Before
     public void createTempDir() throws IOException {
-        tempDirectory = Files.createTempDirectory("jlineup-acceptance-test");
+        tempDirectory = Files.createTempDirectory("jlineup-acceptance-test-");
     }
 
     @After
-    public void cleanUpStreams() {
+    public void cleanUpStreams() throws IOException {
         System.setOut(stdout);
         System.setErr(stderr);
+
+        systemOutCaptor.close();
+        systemErrCaptor.close();
     }
 
     @After
@@ -130,7 +132,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
     }
 
     @Test
@@ -154,7 +156,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
     }
 
     @Test
@@ -187,7 +189,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
     }
 
     @Test
@@ -205,7 +207,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
     }
 
     @Test
@@ -223,7 +225,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
     }
 
     @Test
@@ -241,7 +243,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.get(0).get("difference"), CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
     }
 
     @Test
@@ -259,7 +261,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file__"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
 
         assertThat(systemOutCaptor.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/: 0.0 (0 %)"));
         assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences: 0.0 (0 %)"));
@@ -292,15 +294,26 @@ public class JLineupCLIAcceptanceTest {
     }
 
     private void deleteDir(Path path) throws Exception {
-        Files
-                .walk(path)
-                .sorted(Comparator.reverseOrder())
-                .map(Path::toFile)
-                .forEach(file -> {
-                    if (!file.delete()) {
-                        throw new RuntimeException("Couldn't delete file " + file.getAbsolutePath());
-                    }
-                });
+
+        LinkedList<File> files = new LinkedList<>();
+
+        try (Stream<Path> pathStream = Files.walk(path)) {
+            pathStream
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(files::add);
+        }
+
+        files.forEach(file -> {
+            if (!file.delete()) {
+                try {
+                    Files.delete(file.toPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                throw new RuntimeException("Couldn't delete file " + file.getAbsolutePath());
+            }
+        });
     }
 
     private String combinedOutput() {

@@ -10,15 +10,12 @@ import org.junit.rules.TemporaryFolder;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.Arrays;
 import java.util.List;
 
 import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
-import static de.otto.jlineup.file.FileService.AFTER;
-import static de.otto.jlineup.file.FileService.BEFORE;
+import static de.otto.jlineup.file.FileService.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -89,7 +86,7 @@ public class FileServiceTest {
     public void shouldGenerateFullPathToPngFile() {
         final String fullFileNameWithPath = testee.getScreenshotPath("testurl", "/", 1001, 2002, "step");
 
-        assertThat(fullFileNameWithPath, is(writeScreenshotTestPath + "/screenshots/testurl_root_bbf1812_1001_02002_step.png"));
+        assertThat(fullFileNameWithPath, is(writeScreenshotTestPath + FILE_SEPARATOR + "screenshots" + FILE_SEPARATOR + "testurl_root_bbf1812_1001_02002_step.png"));
     }
 
     @Test
@@ -152,7 +149,7 @@ public class FileServiceTest {
     public void shouldBuildRelativePathsForDifferentDirectories() {
         //given
         runStepConfig = jLineupRunConfigurationBuilder()
-                .withWorkingDirectory("src/test/resources")
+                .withWorkingDirectory("src" + FILE_SEPARATOR + "test" + FILE_SEPARATOR + "resources")
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
                 .build();
@@ -162,7 +159,7 @@ public class FileServiceTest {
         String relativePathFromReportDirToScreenshotsDir = fileService.getRelativePathFromReportDirToScreenshotsDir();
 
         //then
-        assertThat(relativePathFromReportDirToScreenshotsDir, is("../screenshots/"));
+        assertThat(relativePathFromReportDirToScreenshotsDir, is(".." + FILE_SEPARATOR + "screenshots" + FILE_SEPARATOR));
 
     }
 

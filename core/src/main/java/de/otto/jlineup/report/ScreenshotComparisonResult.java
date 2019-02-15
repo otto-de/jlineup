@@ -2,6 +2,8 @@ package de.otto.jlineup.report;
 
 import java.util.Objects;
 
+import static de.otto.jlineup.file.FileService.FILE_SEPARATOR;
+
 public class ScreenshotComparisonResult {
 
     public final String url;
@@ -22,6 +24,26 @@ public class ScreenshotComparisonResult {
         this.screenshotAfterFileName = screenshotAfterFileName;
         this.differenceImageFileName = differenceImageFileName;
         this.maxSingleColorDifference = maxSingleColorDifference;
+    }
+
+    @UsedInTemplate
+    public String getScreenshotBeforeFileNameForHTML() {
+        return convertToHtmlPath(screenshotBeforeFileName);
+    }
+
+    @UsedInTemplate
+    public String getScreenshotAfterFileNameForHTML() {
+        return convertToHtmlPath(screenshotAfterFileName);
+    }
+
+    @UsedInTemplate
+    public String getDifferenceImageFileNameForHtml() {
+        return convertToHtmlPath(differenceImageFileName);
+    }
+
+    private String convertToHtmlPath(String fileName) {
+        if (fileName == null) return null;
+        return fileName.replace(FILE_SEPARATOR, "/");
     }
 
     public static ScreenshotComparisonResult noBeforeImageComparisonResult(String url, int width, int verticalScrollPosition, String screenshotAfterFileName) {

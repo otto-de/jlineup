@@ -134,20 +134,20 @@
                     </p>
                 </td>
                 <td th:switch="${result.screenshotBeforeFileName!=null}">
-                    <a th:case="${true}" th:href="${result.screenshotBeforeFileName}" target="_blank">
-                        <img th:src="${result.screenshotBeforeFileName}" style="max-width: 350px;" />
+                    <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}" target="_blank">
+                        <img th:src="${result.screenshotBeforeFileNameForHTML}" style="max-width: 350px;" />
                     </a>
                     <p th:case="${false}">No before image</p>
                 </td>
                 <td th:switch="${result.screenshotAfterFileName!=null}">
-                    <a th:case="${true}" th:href="${result.screenshotAfterFileName}" target="_blank">
-                        <img th:src="${result.screenshotAfterFileName}" style="max-width: 350px;" />
+                    <a th:case="${true}" th:href="${result.screenshotAfterFileNameForHTML}" target="_blank">
+                        <img th:src="${result.screenshotAfterFileNameForHTML}" style="max-width: 350px;" />
                     </a>
                     <p th:case="${false}">No after image</p>
                 </td>
                 <td th:switch="${result.differenceImageFileName!=null}">
-                    <a th:case="${true}" th:href="${result.differenceImageFileName}" target="_blank">
-                        <img th:src="${result.differenceImageFileName}" style="max-width: 350px;" />
+                    <a th:case="${true}" th:href="${result.differenceImageFileNameForHTML}" target="_blank">
+                        <img th:src="${result.differenceImageFileNameForHTML}" style="max-width: 350px;" />
                     </a>
                     <p th:case="${false}">No difference image</p>
                 </td>
