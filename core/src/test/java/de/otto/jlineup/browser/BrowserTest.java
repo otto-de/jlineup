@@ -21,7 +21,7 @@ import java.util.*;
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS;
 import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
-import static de.otto.jlineup.config.JobConfig.configBuilder;
+import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -60,7 +60,7 @@ public class BrowserTest {
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class))).thenReturn(webDriverMock);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class), any(DeviceConfig.class))).thenReturn(webDriverMock);
         when(webDriverMock.executeScript(JS_GET_USER_AGENT)).thenReturn("Mocked Webdriver");
-        JobConfig jobConfig = configBuilder().build();
+        JobConfig jobConfig = jobConfigBuilder().build();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
         testee.initializeWebDriver();
     }
@@ -178,7 +178,7 @@ public class BrowserTest {
                 0,
                 true);
 
-        JobConfig jobConfig = configBuilder()
+        JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
                 .withUrls(ImmutableMap.of("http://testurl", urlConfig))
                 .withWindowHeight(100)
@@ -252,7 +252,7 @@ public class BrowserTest {
                 0,
                 false);
 
-        JobConfig jobConfig = configBuilder()
+        JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
                 .withUrls(ImmutableMap.of("http://testurl", urlConfig))
                 .withWindowHeight(100)
@@ -327,7 +327,7 @@ public class BrowserTest {
                 0,
                 false);
 
-        JobConfig jobConfig = configBuilder()
+        JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
                 .withUrls(ImmutableMap.of("http://testurl", urlConfig))
                 .withWindowHeight(100)
@@ -396,7 +396,7 @@ public class BrowserTest {
                 0,
                 false);
 
-        JobConfig jobConfig = configBuilder()
+        JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(CHROME_HEADLESS)
                 .withUrls(ImmutableMap.of("testurl", urlConfig))
                 .withWindowHeight(100)

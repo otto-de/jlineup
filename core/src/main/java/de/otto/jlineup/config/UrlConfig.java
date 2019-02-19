@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.google.common.collect.ImmutableList.of;
 import static de.otto.jlineup.config.JobConfig.*;
@@ -153,7 +150,7 @@ public class UrlConfig {
         return new Builder().withHttpCheck(new HttpCheckConfig());
     }
 
-    public static Builder newBuilder(UrlConfig copy) {
+    public static Builder copyOfBuilder(UrlConfig copy) {
         Builder builder = new Builder();
         builder.paths = copy.paths;
         builder.maxDiff = copy.maxDiff;
@@ -239,7 +236,7 @@ public class UrlConfig {
         private Map<String, String> localStorage;
         private Map<String, String> sessionStorage;
         private List<Integer> windowWidths = of(DEFAULT_WINDOW_WIDTH);
-        private List<DeviceConfig> devices;
+        private List<DeviceConfig> devices = new ArrayList<DeviceConfig>();
         private int maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
         private float waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
         private float waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
@@ -304,6 +301,11 @@ public class UrlConfig {
             return this;
         }
 
+        public Builder addDeviceConfig(DeviceConfig deviceConfig) {
+            devices.add(deviceConfig);
+            return this;
+        }
+
         public Builder withMaxScrollHeight(int val) {
             maxScrollHeight = val;
             return this;
@@ -352,5 +354,7 @@ public class UrlConfig {
         public UrlConfig build() {
             return new UrlConfig(this);
         }
+
+
     }
 }

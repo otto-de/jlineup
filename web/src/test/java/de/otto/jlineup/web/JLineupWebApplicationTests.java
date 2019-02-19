@@ -155,7 +155,7 @@ public class JLineupWebApplicationTests {
     }
 
     private JobConfig createTestConfig() {
-        return configBuilder()
+        return jobConfigBuilder()
                 .withUrls(ImmutableMap.of("http://www.example.com",
                         new UrlConfig(
                                 ImmutableList.of("/"),

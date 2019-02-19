@@ -17,7 +17,7 @@ import java.util.Map;
 import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
-import static de.otto.jlineup.config.JobConfig.configBuilder;
+import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
@@ -111,25 +111,25 @@ public class BrowserUtilsTest {
 
     @Test
     public void shouldGetFirefoxDriver() {
-        final JobConfig jobConfig = configBuilder().withBrowser(FIREFOX).build();
+        final JobConfig jobConfig = jobConfigBuilder().withBrowser(FIREFOX).build();
         assertSetDriverType(jobConfig, FirefoxDriver.class);
     }
 
     @Test
     public void shouldGetChromeDriver() {
-        final JobConfig jobConfig = configBuilder().withBrowser(CHROME).build();
+        final JobConfig jobConfig = jobConfigBuilder().withBrowser(CHROME).build();
         assertSetDriverType(jobConfig, ChromeDriver.class);
     }
 
     @Test
     public void shouldGetChromeDriverForHeadlessChrome() {
-        final JobConfig jobConfig = configBuilder().withBrowser(CHROME_HEADLESS).build();
+        final JobConfig jobConfig = jobConfigBuilder().withBrowser(CHROME_HEADLESS).build();
         assertSetDriverType(jobConfig, ChromeDriver.class);
     }
 
     @Test
     public void shouldGetPhantomJSDriver() {
-        final JobConfig jobConfig = configBuilder().withBrowser(PHANTOMJS).build();
+        final JobConfig jobConfig = jobConfigBuilder().withBrowser(PHANTOMJS).build();
         assertSetDriverType(jobConfig, PhantomJSDriver.class);
     }
 

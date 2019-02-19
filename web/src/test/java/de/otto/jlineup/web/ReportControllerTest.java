@@ -25,7 +25,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import static de.otto.jlineup.config.JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME;
-import static de.otto.jlineup.config.JobConfig.configBuilder;
+import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -137,7 +137,7 @@ public class ReportControllerTest {
     }
 
     private JobConfig createJobConfigWithUrlAndName(String url, String name) {
-        return configBuilder()
+        return jobConfigBuilder()
                 .withName(name)
                 .withUrls(ImmutableMap.of(url,
                         new UrlConfig(

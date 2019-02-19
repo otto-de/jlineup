@@ -97,7 +97,7 @@ public final class JobConfig {
 
     /* Used by GSON to set default values */
     public JobConfig() {
-        this(configBuilder());
+        this(jobConfigBuilder());
     }
 
     private JobConfig(Builder builder) {
@@ -122,7 +122,7 @@ public final class JobConfig {
     }
 
     public static Builder copyOfBuilder(JobConfig jobConfig) {
-        return configBuilder()
+        return jobConfigBuilder()
                 .withName(jobConfig.name)
                 .withUrls(jobConfig.urls)
                 .withHttpCheck(jobConfig.httpCheck)
@@ -191,10 +191,10 @@ public final class JobConfig {
     }
 
     public static JobConfig defaultConfig(String url) {
-        return configBuilder().withUrls(ImmutableMap.of(url, new UrlConfig())).build();
+        return jobConfigBuilder().withUrls(ImmutableMap.of(url, new UrlConfig())).build();
     }
 
-    public static Builder configBuilder() {
+    public static Builder jobConfigBuilder() {
         return new Builder();
     }
 
@@ -203,7 +203,7 @@ public final class JobConfig {
     }
 
     public static JobConfig.Builder exampleConfigBuilder() {
-        return configBuilder()
+        return jobConfigBuilder()
                 .withUrls(ImmutableMap.of("http://www.example.com",
                         new UrlConfig(
                                 ImmutableList.of("/", "someOtherPath"),
@@ -340,6 +340,14 @@ public final class JobConfig {
 
         public JobConfig build() {
             return new JobConfig(this);
+        }
+
+        public Builder addUrlConfig(String url, UrlConfig urlConfig) {
+            if (urls == null) {
+                urls = new HashMap<>();
+            }
+            urls.put(url, urlConfig);
+            return this;
         }
     }
 }

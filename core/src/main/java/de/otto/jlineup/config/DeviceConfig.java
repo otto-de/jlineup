@@ -10,8 +10,8 @@ import static de.otto.jlineup.config.JobConfig.*;
 
 public class DeviceConfig {
 
-    private static final String DESKTOP_DEVICE_NAME = "DESKTOP";
-    private static final String MOBILE_DEVICE_NAME = "MOBILE";
+    static final String DESKTOP_DEVICE_NAME = "DESKTOP";
+    static final String MOBILE_DEVICE_NAME = "MOBILE";
     private static final String DEFAULT_DEVICE_NAME = DESKTOP_DEVICE_NAME;
     private static final String DEFAULT_USER_AGENT = null;
     private static final boolean DEFAULT_TOUCH_OPTION = false;
@@ -60,8 +60,21 @@ public class DeviceConfig {
         this.touch = touch;
     }
 
+    private DeviceConfig(Builder builder) {
+        width = builder.width;
+        height = builder.height;
+        pixelRatio = builder.pixelRatio;
+        deviceName = builder.deviceName;
+        userAgent = builder.userAgent;
+        touch = builder.touch;
+    }
+
     public static DeviceConfig legacyWithWidth(int width) {
         return new DeviceConfig(width, DEFAULT_WINDOW_HEIGHT, DEFAULT_PIXEL_RATIO, DEFAULT_DEVICE_NAME, DEFAULT_USER_AGENT, DEFAULT_TOUCH_OPTION);
+    }
+
+    public static Builder deviceConfigBuilder() {
+        return new Builder();
     }
 
     @Override
@@ -99,6 +112,56 @@ public class DeviceConfig {
     }
 
     public boolean isMobile() {
+        return !DESKTOP_DEVICE_NAME.equalsIgnoreCase(deviceName.trim());
+    }
+
+    public boolean isGenericMobile() {
         return MOBILE_DEVICE_NAME.equalsIgnoreCase(deviceName.trim());
+    }
+
+    public static final class Builder {
+        private int width = DEFAULT_WINDOW_WIDTH;
+        private int height = DEFAULT_WINDOW_HEIGHT;
+        private float pixelRatio = DEFAULT_PIXEL_RATIO;
+        private String deviceName = DEFAULT_DEVICE_NAME;
+        private String userAgent = DEFAULT_USER_AGENT;
+        private boolean touch = DEFAULT_TOUCH_OPTION;
+
+        private Builder() {
+        }
+
+        public Builder withWidth(int val) {
+            width = val;
+            return this;
+        }
+
+        public Builder withHeight(int val) {
+            height = val;
+            return this;
+        }
+
+        public Builder withPixelRatio(float val) {
+            pixelRatio = val;
+            return this;
+        }
+
+        public Builder withDeviceName(String val) {
+            deviceName = val;
+            return this;
+        }
+
+        public Builder withUserAgent(String val) {
+            userAgent = val;
+            return this;
+        }
+
+        public Builder withTouch(boolean val) {
+            touch = val;
+            return this;
+        }
+
+        public DeviceConfig build() {
+            return new DeviceConfig(this);
+        }
     }
 }

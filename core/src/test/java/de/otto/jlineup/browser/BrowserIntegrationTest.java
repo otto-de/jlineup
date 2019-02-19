@@ -205,7 +205,7 @@ public class BrowserIntegrationTest {
     }
 
     private JobConfig localTestConfig(String endpoint, Browser.Type browser, boolean checkForErrors, UrlConfig urlConfig) {
-        return JobConfig.configBuilder().withCheckForErrorsInLog(checkForErrors).withUrls(ImmutableMap.of("http://localhost:" + port + "/" + endpoint, urlConfig)).withBrowser(browser).build();
+        return JobConfig.jobConfigBuilder().withCheckForErrorsInLog(checkForErrors).withUrls(ImmutableMap.of("http://localhost:" + port + "/" + endpoint, urlConfig)).withBrowser(browser).build();
     }
 
 }
