@@ -168,7 +168,14 @@ directory.
 ### `--print-config`
 
 Prints the current (if existing) or a default config file to standard
-out. Useful as quick start.
+out.
+
+---
+
+### `--print-example`
+
+Prints a default example config file to standard out. Useful as quick
+start.
 
 ---
 
