@@ -7,7 +7,7 @@ dependencies {
     //this pulls spring context support to specified spring version because metrics lib in edison core is pulling it to 5.0.2
     compile("org.springframework:spring-context-support:${springVersion}")
     compile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.6")
-    compile("de.otto.edison:edison-core:2.0.0-rc3")
+    compile("de.otto.edison:edison-core:2.0.0-rc4")
 
     testCompile project(path: ":core", configuration: 'testCompile')
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
