@@ -42,6 +42,11 @@ public class Main {
             Utils.setLogLevelToDebug();
         }
 
+        if (parameters.isPrintExample()) {
+            System.out.println(JobConfig.prettyPrint(JobConfig.exampleConfig()));
+            exitWithExitCode(0);
+        }
+
         JobConfig jobConfig = null;
         try {
             jobConfig = buildConfig(parameters);

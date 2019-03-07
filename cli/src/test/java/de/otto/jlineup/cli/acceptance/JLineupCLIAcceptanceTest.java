@@ -2,9 +2,13 @@ package de.otto.jlineup.cli.acceptance;
 
 import com.google.gson.Gson;
 import de.otto.jlineup.cli.Main;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.report.Report;
 import org.hamcrest.CoreMatchers;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import java.io.ByteArrayOutputStream;
@@ -282,10 +286,17 @@ public class JLineupCLIAcceptanceTest {
     }
 
     @Test
-    public void shouldPrintConfig() throws Exception {
+    public void shouldPrintConfig() {
         exit.checkAssertionAfterwards(() -> assertThat(systemOutCaptor.toString(), containsString("http://www.example.com")));
         exit.expectSystemExitWithStatus(0);
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--print-config"});
+    }
+
+    @Test
+    public void shouldPrintExampleConfig() {
+        exit.checkAssertionAfterwards(() -> assertThat(systemOutCaptor.toString(), containsString(JobConfig.prettyPrint(JobConfig.exampleConfig()))));
+        exit.expectSystemExitWithStatus(0);
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--print-example"});
     }
 
     private String getTextFileContentAsString(Path reportJson) throws IOException {

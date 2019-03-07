@@ -29,8 +29,11 @@ public class CommandLineParameters {
     @Parameter(names = {"--url", "-u"}, description = "If you run JLineup without config file, this is the one url that is tested with the default config.")
     private String url = null;
 
-    @Parameter(names = {"--print-config"}, description = "Prints a default config file to standard out. Useful as quick start.")
+    @Parameter(names = {"--print-config"}, description = "Prints the current (if found) or a default config file to standard out.")
     private boolean printConfig = false;
+
+    @Parameter(names = {"--print-example"}, description = "Prints an example default config file to standard out. Useful as quick start.")
+    private boolean printExample = false;
 
     @Parameter(names = {"--debug"}, description = "Sets the log level to DEBUG, produces verbose information about the current task.")
     private boolean debug = false;
@@ -110,6 +113,23 @@ public class CommandLineParameters {
         return logToFile;
     }
 
+    public boolean isVersion() {
+        return version;
+    }
+
+    public List<String> getChromeParameters() {
+        return chromeParameters;
+    }
+
+    public List<String> getFirefoxParameters() {
+        return firefoxParameters;
+    }
+
+    public boolean isPrintExample() {
+        return printExample;
+    }
+
+
     @Override
     public String toString() {
         return "CommandLineParameters{" +
@@ -121,9 +141,12 @@ public class CommandLineParameters {
                 ", reportDirectory='" + reportDirectory + '\'' +
                 ", url='" + url + '\'' +
                 ", printConfig=" + printConfig +
+                ", printExample=" + printExample +
                 ", debug=" + debug +
                 ", logToFile=" + logToFile +
                 ", version=" + version +
+                ", chromeParameters=" + chromeParameters +
+                ", firefoxParameters=" + firefoxParameters +
                 ", urlReplacements=" + urlReplacements +
                 '}';
     }
@@ -135,6 +158,7 @@ public class CommandLineParameters {
         CommandLineParameters that = (CommandLineParameters) o;
         return help == that.help &&
                 printConfig == that.printConfig &&
+                printExample == that.printExample &&
                 debug == that.debug &&
                 logToFile == that.logToFile &&
                 version == that.version &&
@@ -144,24 +168,13 @@ public class CommandLineParameters {
                 Objects.equals(screenshotDirectory, that.screenshotDirectory) &&
                 Objects.equals(reportDirectory, that.reportDirectory) &&
                 Objects.equals(url, that.url) &&
+                Objects.equals(chromeParameters, that.chromeParameters) &&
+                Objects.equals(firefoxParameters, that.firefoxParameters) &&
                 Objects.equals(urlReplacements, that.urlReplacements);
     }
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(help, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, url, printConfig, debug, logToFile, version, urlReplacements);
-    }
-
-    public boolean isVersion() {
-        return version;
-    }
-
-    public List<String> getChromeParameters() {
-        return chromeParameters;
-    }
-
-    public List<String> getFirefoxParameters() {
-        return firefoxParameters;
+        return Objects.hash(help, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, url, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements);
     }
 }
