@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 3.0.1
+* JLineup detects webdriver that fits to installed browsers automatically
+
 ## Release 3.0.0
 * Massively improved documentation
 * chromedriver 2.45
