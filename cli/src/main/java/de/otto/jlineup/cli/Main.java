@@ -6,8 +6,7 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.JobConfigValidator;
-import de.otto.jlineup.exceptions.ConfigValidationException;
+import de.otto.jlineup.exceptions.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +69,7 @@ public class Main {
         JLineupRunner jLineupRunner = null;
         try {
             jLineupRunner = new JLineupRunner(jobConfig, runStepConfig);
-        } catch (ConfigValidationException e) {
+        } catch (ValidationError e) {
             LOG.error(e.getMessage());
             exitWithExitCode(1);
         }
@@ -119,9 +118,6 @@ public class Main {
                 }
             }
         }
-
-        JobConfigValidator.validateJobConfig(jobConfig);
-
         return jobConfig;
     }
 

@@ -3,9 +3,10 @@ package de.otto.jlineup;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.JobConfigValidator;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
-import de.otto.jlineup.exceptions.ConfigValidationException;
+import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import de.otto.jlineup.report.*;
@@ -31,7 +32,7 @@ public class JLineupRunner {
     private final JobConfig jobConfig;
     private final RunStepConfig runStepConfig;
 
-    public JLineupRunner(JobConfig jobConfig, RunStepConfig runStepConfig) throws ConfigValidationException {
+    public JLineupRunner(JobConfig jobConfig, RunStepConfig runStepConfig) throws ValidationError {
         this.jobConfig = jobConfig;
         this.runStepConfig = runStepConfig;
 
@@ -113,44 +114,7 @@ public class JLineupRunner {
         return true;
     }
 
-    private void validateConfig() throws ConfigValidationException {
-        //Check urls
-        if (jobConfig.urls == null || jobConfig.urls.isEmpty()) {
-            throw new ConfigValidationException("No URLs configured.");
-        }
-
-        //Check browser window height
-        if (jobConfig.windowHeight != null && (jobConfig.windowHeight < 100 && jobConfig.windowHeight > 10000)) {
-            throw new ConfigValidationException(String.format("Configured window height is invalid: %d. Valid values are between 100 and 10000", jobConfig.windowHeight));
-        }
-
-        for (Map.Entry<String, UrlConfig> urlConfigEntry : jobConfig.urls.entrySet()) {
-
-            String url = urlConfigEntry.getKey();
-            UrlConfig urlConfig = urlConfigEntry.getValue();
-
-            //Check browser window widths
-            for (Integer width : urlConfig.windowWidths) {
-                if (width < 10 || width > 10000) {
-                    throw new ConfigValidationException(String.format("Configured window width for %s is invalid: %d. Valid values are between 10 and 10000", url, width));
-                }
-            }
-
-            //Check timeouts
-            if (urlConfig.waitAfterPageLoad > 20 || urlConfig.waitAfterPageLoad < 0) {
-                throw new ConfigValidationException(String.format("Configured wait after page load time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitAfterPageLoad, url));
-            }
-            if (urlConfig.waitAfterScroll > 20 || urlConfig.waitAfterScroll < 0) {
-                throw new ConfigValidationException(String.format("Configured wait after scroll time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitAfterScroll, url));
-            }
-            if (urlConfig.waitForFontsTime > 20 || urlConfig.waitForFontsTime < 0) {
-                throw new ConfigValidationException(String.format("Configured wait for fonts time of %d seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitForFontsTime, url));
-            }
-
-            //Check max scroll height
-            if (urlConfig.maxScrollHeight < 0) {
-                throw new ConfigValidationException(String.format("Configured max scroll height (%d) for %s must not be negative)", urlConfig.maxScrollHeight, url));
-            }
-        }
+    private void validateConfig() throws ValidationError {
+        JobConfigValidator.validateJobConfig(jobConfig);
     }
 }

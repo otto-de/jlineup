@@ -2,7 +2,7 @@ package de.otto.jlineup.web;
 
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.exceptions.ConfigValidationException;
+import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
@@ -83,8 +83,8 @@ public class JLineupController {
         return new ResponseEntity<>(exception.getCause().getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    @ExceptionHandler(ConfigValidationException.class)
-    public ResponseEntity<String> exceptionHandler(final ConfigValidationException exception) {
+    @ExceptionHandler(ValidationError.class)
+    public ResponseEntity<String> exceptionHandler(final ValidationError exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }

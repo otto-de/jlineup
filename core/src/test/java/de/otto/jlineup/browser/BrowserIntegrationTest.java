@@ -6,7 +6,7 @@ import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.config.*;
-import de.otto.jlineup.exceptions.ConfigValidationException;
+import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.file.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -51,7 +51,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldNotThrowAnExceptionInPhantomJSBecausePhantomJSWithSeleniumCantHandleResponseCodes() throws ConfigValidationException {
+    public void shouldNotThrowAnExceptionInPhantomJSBecausePhantomJSWithSeleniumCantHandleResponseCodes() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("403", Browser.Type.PHANTOMJS, true);
         //when
@@ -61,7 +61,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldNotThrowAnExceptionInChromeIfItIsConfiguredToNotCheckForErrorsOnA403() throws ConfigValidationException {
+    public void shouldNotThrowAnExceptionInChromeIfItIsConfiguredToNotCheckForErrorsOnA403() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("403", Browser.Type.CHROME_HEADLESS, false);
         //when
@@ -71,7 +71,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldThrowAnExceptionInChromeIfItIsConfiguredToCheckForErrorsOnA403() throws ConfigValidationException {
+    public void shouldThrowAnExceptionInChromeIfItIsConfiguredToCheckForErrorsOnA403() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("403", Browser.Type.CHROME_HEADLESS, true);
         Exception thrown = null;
@@ -87,7 +87,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldNotThrowAnExceptionInChromeIfItIsConfiguredToNotCheckForErrorsOnA500() throws ConfigValidationException {
+    public void shouldNotThrowAnExceptionInChromeIfItIsConfiguredToNotCheckForErrorsOnA500() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, false);
         //when
@@ -97,7 +97,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldThrowAnExceptionInChromeIfItIsConfiguredToCheckForErrorsOnA500() throws ConfigValidationException {
+    public void shouldThrowAnExceptionInChromeIfItIsConfiguredToCheckForErrorsOnA500() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, true);
         Exception thrown = null;
@@ -113,7 +113,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldNotThrowAnExceptionInFirefoxIfItIsConfiguredToNotCheckForErrorsOnA500() throws ConfigValidationException {
+    public void shouldNotThrowAnExceptionInFirefoxIfItIsConfiguredToNotCheckForErrorsOnA500() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.FIREFOX_HEADLESS, false);
         //when
@@ -123,7 +123,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void willNotThrowAnExceptionInFirefoxBecauseFirefoxWithSeleniumCantHandleResponseCodes() throws ConfigValidationException {
+    public void willNotThrowAnExceptionInFirefoxBecauseFirefoxWithSeleniumCantHandleResponseCodes() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.FIREFOX_HEADLESS, true);
         //when
@@ -134,14 +134,14 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldNotAppendSlashToDomain() throws ConfigValidationException {
+    public void shouldNotAppendSlashToDomain() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder().withCookie(new Cookie("CookieName", "CookieValue")).build();
         JobConfig jobConfig = localTestConfig("params?param1=1&param2=2", Browser.Type.CHROME_HEADLESS, true, urlConfig);
         runJLineup(jobConfig, Step.before);
     }
 
     @Test
-    public void shouldSetCookieOnCorrectPath() throws ConfigValidationException {
+    public void shouldSetCookieOnCorrectPath() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withCookie(new Cookie("CookieName", "CookieValue"))
                 .withPaths(ImmutableList.of("/")).build();
@@ -165,7 +165,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldCheckCustomHttpStatusCodes() throws ConfigValidationException {
+    public void shouldCheckCustomHttpStatusCodes() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(new HttpCheckConfig(true, ImmutableList.of(304)))
                 .withPaths(ImmutableList.of("/")).build();
@@ -181,7 +181,7 @@ public class BrowserIntegrationTest {
 
 
     @Test
-    public void shouldNotCheckHttpStatusCodeErrorIfNotConfigured() throws ConfigValidationException {
+    public void shouldNotCheckHttpStatusCodeErrorIfNotConfigured() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(new HttpCheckConfig(false))
                 .withPaths(ImmutableList.of("/")).build();
@@ -190,7 +190,7 @@ public class BrowserIntegrationTest {
         //no exception
     }
 
-    private void runJLineup(JobConfig jobConfig, Step step) throws ConfigValidationException {
+    private void runJLineup(JobConfig jobConfig, Step step) throws ValidationError {
 
         new JLineupRunner(jobConfig,
                 RunStepConfig.jLineupRunConfigurationBuilder()

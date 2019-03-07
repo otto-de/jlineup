@@ -2,7 +2,7 @@ package de.otto.jlineup.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.exceptions.ConfigValidationException;
+import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
@@ -240,7 +240,7 @@ public class JLineupControllerTest {
 
         // given
         JobConfig jobConfig = JobConfig.copyOfBuilder(exampleConfig()).withUrls(null).build();
-        when(jLineupService.startBeforeRun(jobConfig)).thenThrow(new ConfigValidationException("Validation message"));
+        when(jLineupService.startBeforeRun(jobConfig)).thenThrow(new ValidationError("Validation message"));
 
         // when
         ResultActions result = mvc
@@ -251,7 +251,7 @@ public class JLineupControllerTest {
         // then
         result
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string("\"Validation message\""));
+                .andExpect(content().string(containsString("Validation message")));
     }
 
 }

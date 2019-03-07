@@ -1,6 +1,7 @@
 package de.otto.jlineup.config;
 
 import de.otto.jlineup.browser.Browser;
+import de.otto.jlineup.exceptions.ValidationError;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -33,7 +34,7 @@ public class JobConfigValidatorTest {
             fail("Expected validation error");
 
         // then
-        } catch(JobConfigValidator.ValidationError e) {
+        } catch(ValidationError e) {
             assertThat(e.getMessage(), containsString("Mobile emulation is only supported by Chrome"));
         }
     }
@@ -43,7 +44,7 @@ public class JobConfigValidatorTest {
         // given
         JobConfig jobConfig = jobConfigBuilder()
                 .addUrlConfig("someUrl", urlConfigBuilder()
-                        .withWindowWidths(Arrays.asList(1,2,3))
+                        .withWindowWidths(Arrays.asList(200,300,400))
                         .addDeviceConfig(deviceConfigBuilder()
                                 .withDeviceName("MOBILE")
                                 .build())
@@ -57,7 +58,7 @@ public class JobConfigValidatorTest {
             fail("Expected validation error");
 
             // then
-        } catch(JobConfigValidator.ValidationError e) {
+        } catch(ValidationError e) {
             assertThat(e.getMessage(), containsString("window-widths"));
         }
     }
@@ -82,7 +83,7 @@ public class JobConfigValidatorTest {
             fail("Expected validation error");
 
             // then
-        } catch(JobConfigValidator.ValidationError e) {
+        } catch(ValidationError e) {
             assertThat(e.getMessage(), containsString("overridden"));
         }
     }
