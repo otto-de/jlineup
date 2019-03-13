@@ -80,8 +80,8 @@ Let's assume, this is part of a continuous integration pipeline:
 
 JLineup 3.0.1 was tested successfully with
 
-* Chrome 71.x
-* Firefox 62.x
+* Chrome 72.x
+* Firefox 65.x
 * PhantomJS 2.1.1 (auto-downloaded by JLineup if not installed)
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
