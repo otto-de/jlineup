@@ -139,7 +139,6 @@ public class FileService {
         LOG.debug("Writing screenshot to {}", fileName);
         File screenshotFile = new File(fileName);
         ImageIO.write(image, "png", screenshotFile);
-        System.err.println(screenshotFile);
     }
 
     @VisibleForTesting

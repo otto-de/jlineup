@@ -17,6 +17,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS;
@@ -148,9 +149,9 @@ public class BrowserTest {
     @Test
     public void shouldScroll() throws InterruptedException {
         //when
-        testee.scrollBy(1337);
+        testee.scrollTo(1337);
         //then
-        verify(webDriverMock).executeScript(String.format(JS_SCROLL_CALL, 1337L));
+        verify(webDriverMock).executeScript(String.format(JS_SCROLL_TO_CALL, 1337L));
     }
 
     @Test
@@ -215,8 +216,15 @@ public class BrowserTest {
         verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value"));
-        verify(webDriverMock, times(8)).executeScript(String.format(JS_SCROLL_CALL, 500));
-
+        verify(webDriverMock, times(1)).executeScript(JS_GET_USER_AGENT);
+        verify(webDriverMock, times(3)).executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL);
+        verify(webDriverMock, times(3)).executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL);
+        verify(webDriverMock, times(2)).executeScript(JS_GET_DOM);
+        verify(webDriverMock, times(2)).executeScript(String.format(JS_SCROLL_TO_CALL, 500));
+        verify(webDriverMock, times(2)).executeScript(String.format(JS_SCROLL_TO_CALL, 1000));
+        verify(webDriverMock, times(2)).executeScript(String.format(JS_SCROLL_TO_CALL, 1500));
+        verify(webDriverMock, times(2)).executeScript(String.format(JS_SCROLL_TO_CALL, 2000));
+        //verifyNoMoreInteractions(webDriverMock);
     }
 
 
@@ -290,7 +298,10 @@ public class BrowserTest {
 
         verify(webDriverMock, times(1)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
         verify(webDriverMock, times(1)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value"));
-        verify(webDriverMock, times(4)).executeScript(String.format(JS_SCROLL_CALL, 500));
+        verify(webDriverMock, times(1)).executeScript(String.format(JS_SCROLL_TO_CALL, 500));
+        verify(webDriverMock, times(1)).executeScript(String.format(JS_SCROLL_TO_CALL, 1000));
+        verify(webDriverMock, times(1)).executeScript(String.format(JS_SCROLL_TO_CALL, 1500));
+        verify(webDriverMock, times(1)).executeScript(String.format(JS_SCROLL_TO_CALL, 2000));
     }
 
 

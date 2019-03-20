@@ -102,7 +102,7 @@ public class Browser implements AutoCloseable {
     static final String JS_CLIENT_VIEWPORT_HEIGHT_CALL = "return window.innerHeight";
     static final String JS_SET_LOCAL_STORAGE_CALL = "localStorage.setItem('%s','%s')";
     static final String JS_SET_SESSION_STORAGE_CALL = "sessionStorage.setItem('%s','%s')";
-    static final String JS_SCROLL_CALL = "window.scrollBy(0,%d)";
+    static final String JS_SCROLL_TO_CALL = "window.scrollTo(0,%d)";
     static final String JS_SCROLL_TO_TOP_CALL = "window.scrollTo(0, 0);";
     static final String JS_RETURN_DOCUMENT_FONTS_SIZE_CALL = "return document.fonts.size;";
     static final String JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL = "return document.fonts.status === 'loaded';";
@@ -332,7 +332,7 @@ public class Browser implements AutoCloseable {
                 break;
             }
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
-            scrollBy(viewportHeight.intValue());
+            scrollTo(yPosition + viewportHeight.intValue());
             LOG.debug("Scroll by {} done", viewportHeight.intValue());
 
             if (screenshotContext.urlConfig.waitAfterScroll > 0) {
@@ -511,10 +511,10 @@ public class Browser implements AutoCloseable {
         return (String) jse.executeScript(JS_GET_USER_AGENT);
     }
 
-    void scrollBy(int viewportHeight) throws InterruptedException {
-        LOG.debug("Scroll by {}", viewportHeight);
+    void scrollTo(int yPosition) throws InterruptedException {
+        LOG.debug("Scroll to {}", yPosition);
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
-        jse.executeScript(String.format(JS_SCROLL_CALL, viewportHeight));
+        jse.executeScript(String.format(JS_SCROLL_TO_CALL, yPosition));
         //Sleep some milliseconds to give scrolling time before the next screenshot happens
         Thread.sleep(DEFAULT_SLEEP_AFTER_SCROLL_MILLIS);
     }
