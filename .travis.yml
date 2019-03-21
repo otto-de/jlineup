@@ -8,7 +8,7 @@ install:
 jdk:
   - openjdk10
 script:
-  - ./gradlew clean test -i
+  - xvfb-run ./gradlew clean test -i
 cache:
   directories:
   - $HOME/.m2
