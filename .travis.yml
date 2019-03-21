@@ -14,7 +14,7 @@ language: java
 install:
   - echo "This echo line overrides the default Travis install step which would call an unnecessary './gradlew assemble'."
 jdk:
-  - oraclejdk8
+  - oraclejdk9
 script:
   - ./gradlew clean test -i
 cache:
