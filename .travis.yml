@@ -1,15 +1,7 @@
 sudo: required
 dist: xenial
-before_install:
-  - "wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -"
-  - "echo \"deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main\" | sudo tee -a /etc/apt/sources.list"
-  - "sudo apt-get update -qq"
-  - "sudo apt-get install -y --allow-unauthenticated google-chrome-stable"
-  - "df -h"
-before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3 # give xvfb some time to start
+services:
+  - xvfb
 language: java
 install:
   - echo "This echo line overrides the default Travis install step which would call an unnecessary './gradlew assemble'."
@@ -22,3 +14,4 @@ cache:
   - $HOME/.m2
 addons:
   firefox: latest
+  chrome: stable
