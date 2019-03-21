@@ -8,7 +8,7 @@ interface to take JLineup jobs.
 You can simply download the web version by getting the jlineup-web.jar
 from Maven Central in a terminal window:
 
-`wget https://repo1.maven.org/maven2/de/otto/jlineup-web/3.0.1/jlineup-web-3.0.1.jar -O jlineup-web.jar`
+`wget https://repo1.maven.org/maven2/de/otto/jlineup-web/3.0.2/jlineup-web-3.0.2.jar -O jlineup-web.jar`
 
 Now you have a `jlineup-web.jar` in your current directory.
 

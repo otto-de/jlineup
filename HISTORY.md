@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 3.0.2
+* Bugfix: Implemented workaround for strange scrolling behavior in Firefox (sometimes window.scrollBy(0, x) scrolls double the amount given)
+
 ## Release 3.0.1
 * JLineup detects webdriver that fits to installed browsers automatically
 
