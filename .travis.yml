@@ -1,14 +1,14 @@
 sudo: required
 dist: xenial
-services:
-  - xvfb
 language: java
+before_install:
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1200x16"
 install:
   - echo "This echo line overrides the default Travis install step which would call an unnecessary './gradlew assemble'."
 jdk:
   - openjdk10
 script:
-  - xvfb-run ./gradlew clean test -i
+  - ./gradlew clean test -i
 cache:
   directories:
   - $HOME/.m2
