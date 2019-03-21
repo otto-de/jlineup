@@ -85,6 +85,7 @@ public class BrowserUtils {
 
             //To work in a headless env, this is needed
             options.addArguments("--no-sandbox");
+            options.addArguments("--whitelisted-ips");
             options.addArguments(runStepConfig.getChromeParameters());
 
             //These options my help to convince Chrome to render deterministically
