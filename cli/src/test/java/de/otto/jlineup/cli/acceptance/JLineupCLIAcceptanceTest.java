@@ -5,6 +5,7 @@ import de.otto.jlineup.cli.Main;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.report.Report;
 import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -244,7 +245,7 @@ public class JLineupCLIAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         @SuppressWarnings("unchecked") final ArrayList<Map<String, String>> report = gson.fromJson(jsonReportText, ArrayList.class);
-        assertThat(report.get(0).get("difference"), CoreMatchers.is(0.0d));
+        assertThat(report.get(0).get("difference"), CoreMatchers.is(0.0));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
