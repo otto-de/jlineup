@@ -201,7 +201,7 @@ public class BrowserIntegrationTest {
     }
 
     private JobConfig localTestConfig(String endpoint, Browser.Type browser, boolean checkForErrors) {
-        return localTestConfig(endpoint, browser, checkForErrors, new UrlConfig());
+        return localTestConfig(endpoint, browser, checkForErrors, UrlConfig.urlConfigBuilder().build());
     }
 
     private JobConfig localTestConfig(String endpoint, Browser.Type browser, boolean checkForErrors, UrlConfig urlConfig) {

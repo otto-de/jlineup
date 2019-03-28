@@ -3,110 +3,43 @@ package de.otto.jlineup.config;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.google.common.collect.ImmutableList;
 
 import java.util.*;
 
-import static com.google.common.collect.ImmutableList.of;
 import static de.otto.jlineup.config.JobConfig.*;
 
+@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
+@JsonDeserialize(builder = UrlConfig.Builder.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UrlConfig {
 
     public final List<String> paths;
-
-    @SerializedName("max-diff")
-    @JsonProperty("max-diff")
     public final float maxDiff;
-
     public final List<Cookie> cookies;
-
-    @SerializedName("env-mapping")
-    @JsonProperty("env-mapping")
     public final Map<String, String> envMapping;
-
-    @SerializedName("local-storage")
-    @JsonProperty("local-storage")
     public final Map<String, String> localStorage;
-
-    @SerializedName("session-storage")
-    @JsonProperty("session-storage")
     public final Map<String, String> sessionStorage;
-
-    @SerializedName(value = "window-widths", alternate = {"resolutions","widths"})
-    @JsonProperty(value = "window-widths")
-    @JsonAlias({"resolutions","widths"})
     public final List<Integer> windowWidths;
-
-    @SerializedName(value = "devices")
-    @JsonProperty(value = "devices")
     public final List<DeviceConfig> devices;
-
-    @SerializedName("max-scroll-height")
-    @JsonProperty("max-scroll-height")
     public final int maxScrollHeight;
-
-    @SerializedName("wait-after-page-load")
-    @JsonProperty("wait-after-page-load")
     public final float waitAfterPageLoad;
-
-    @SerializedName("wait-after-scroll")
-    @JsonProperty("wait-after-scroll")
     public final float waitAfterScroll;
-
-    @SerializedName("wait-for-no-animation-after-scroll")
-    @JsonProperty("wait-for-no-animation-after-scroll")
     public final float waitForNoAnimationAfterScroll;
-
-    @SerializedName("warmup-browser-cache-time")
-    @JsonProperty("warmup-browser-cache-time")
     public final float warmupBrowserCacheTime;
-
-    @SerializedName("wait-for-fonts-time")
-    @JsonProperty("wait-for-fonts-time")
     public final float waitForFontsTime;
-
-    @SerializedName("javascript")
     @JsonProperty("javascript")
     public final String javaScript;
-
-    @SerializedName("hide-images")
-    @JsonProperty("hide-images")
     public final boolean hideImages;
-
-    @SerializedName("http-check")
-    @JsonProperty("http-check")
     public final HttpCheckConfig httpCheck;
-
-    @SerializedName("max-color-diff-per-pixel")
-    @JsonProperty("max-color-diff-per-pixel")
     public final int maxColorDiffPerPixel;
 
-    //Default constructor for GSON
-    public UrlConfig() {
-        this.paths = of(DEFAULT_PATH);
-        this.windowWidths = of(DEFAULT_WINDOW_WIDTH);
-        this.devices = null;
-        this.maxDiff = DEFAULT_MAX_DIFF;
-        this.cookies = null;
-        this.localStorage = null;
-        this.sessionStorage = null;
-        this.maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
-        this.waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
-        this.waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
-        this.waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
-        this.envMapping = null;
-        this.warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
-        this.javaScript = null;
-        this.waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
-        this.httpCheck = new HttpCheckConfig();
-        this.maxColorDiffPerPixel = DEFAULT_MAX_COLOR_DIFF_PER_PIXEL;
-        this.hideImages = false;
-    }
-
     public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, float waitAfterPageLoad, float waitAfterScroll, float waitForNoAnimationAfterScroll, float warmupBrowserCacheTime, String javaScript, float waitForFontsTime, HttpCheckConfig httpCheck, int maxColorDiffPerPixel, boolean hideImages) {
-        this.paths = paths != null ? paths : of(DEFAULT_PATH);
-        this.windowWidths = windowWidths != null ? windowWidths : of(DEFAULT_WINDOW_WIDTH);
+        this.paths = paths != null ? paths : ImmutableList.of(DEFAULT_PATH);
+        this.windowWidths = windowWidths;
         this.devices = null;
         this.maxDiff = maxDiff;
         this.cookies = cookies;
@@ -147,7 +80,7 @@ public class UrlConfig {
     }
 
     public static Builder urlConfigBuilder() {
-        return new Builder().withHttpCheck(new HttpCheckConfig());
+        return new Builder();
     }
 
     public static Builder copyOfBuilder(UrlConfig copy) {
@@ -171,6 +104,147 @@ public class UrlConfig {
         builder.maxColorDiffPerPixel = copy.maxColorDiffPerPixel;
         builder.hideImages = copy.hideImages;
         return builder;
+    }
+
+    @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
+    public static final class Builder {
+        private List<String> paths = ImmutableList.of(DEFAULT_PATH);
+        private float maxDiff = DEFAULT_MAX_DIFF;
+        private List<Cookie> cookies;
+        private Map<String, String> envMapping;
+        private Map<String, String> localStorage;
+        private Map<String, String> sessionStorage;
+        private List<Integer> windowWidths;
+        private List<DeviceConfig> devices;
+        private int maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
+        private float waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
+        private float waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
+        private float waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
+        private float warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
+        private float waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
+        private String javaScript;
+        private HttpCheckConfig httpCheck = new HttpCheckConfig();
+        private boolean hideImages;
+        private int maxColorDiffPerPixel = DEFAULT_MAX_COLOR_DIFF_PER_PIXEL;
+
+        private Builder() {
+        }
+
+        public Builder withPaths(List<String> val) {
+            paths = val;
+            return this;
+        }
+
+        public Builder withMaxDiff(float val) {
+            maxDiff = val;
+            return this;
+        }
+
+        public Builder withCookies(List<Cookie> val) {
+            cookies = val;
+            return this;
+        }
+
+        public Builder withCookie(Cookie val) {
+            cookies = Collections.singletonList(val);
+            return this;
+        }
+
+        public Builder withEnvMapping(Map<String, String> val) {
+            envMapping = val;
+            return this;
+        }
+
+        public Builder withHttpCheck(HttpCheckConfig val) {
+            httpCheck = val;
+            return this;
+        }
+
+        public Builder withLocalStorage(Map<String, String> val) {
+            localStorage = val;
+            return this;
+        }
+
+        public Builder withSessionStorage(Map<String, String> val) {
+            sessionStorage = val;
+            return this;
+        }
+
+        @JsonAlias({"resolutions","widths"})
+        public Builder withWindowWidths(List<Integer> val) {
+            windowWidths = val;
+            return this;
+        }
+
+        public Builder withDevices(List<DeviceConfig> val) {
+            devices = val;
+            return this;
+        }
+
+        public Builder addDeviceConfig(DeviceConfig deviceConfig) {
+            if (devices == null) {
+                devices = new ArrayList<>();
+            }
+            devices.add(deviceConfig);
+            return this;
+        }
+
+        public Builder withMaxScrollHeight(int val) {
+            maxScrollHeight = val;
+            return this;
+        }
+
+        public Builder withWaitAfterPageLoad(float val) {
+            waitAfterPageLoad = val;
+            return this;
+        }
+
+        public Builder withWaitAfterScroll(float val) {
+            waitAfterScroll = val;
+            return this;
+        }
+
+        public Builder withWaitForNoAnimationAfterScroll(float val) {
+            waitForNoAnimationAfterScroll = val;
+            return this;
+        }
+
+        public Builder withWarmupBrowserCacheTime(float val) {
+            warmupBrowserCacheTime = val;
+            return this;
+        }
+
+        public Builder withWaitForFontsTime(float val) {
+            waitForFontsTime = val;
+            return this;
+        }
+
+        @JsonProperty("javascript")
+        public Builder withJavaScript(String val) {
+            javaScript = val;
+            return this;
+        }
+
+        public Builder withMaxColorDiffPerPixel(int val) {
+            maxColorDiffPerPixel = val;
+            return this;
+        }
+
+        public Builder withHideImages(boolean val) {
+            hideImages = val;
+            return this;
+        }
+
+        public UrlConfig build() {
+
+            //If both are not set, use default window width
+            if (windowWidths == null && devices == null) {
+                windowWidths = ImmutableList.of(DEFAULT_WINDOW_WIDTH);
+            }
+
+            return new UrlConfig(this);
+        }
+
     }
 
     @Override
@@ -225,136 +299,5 @@ public class UrlConfig {
                 ", httpCheck=" + httpCheck +
                 ", maxColorDiffPerPixel=" + maxColorDiffPerPixel +
                 '}';
-    }
-
-    public static final class Builder {
-
-        private List<String> paths = of(DEFAULT_PATH);
-        private float maxDiff = DEFAULT_MAX_DIFF;
-        private List<Cookie> cookies;
-        private Map<String, String> envMapping;
-        private Map<String, String> localStorage;
-        private Map<String, String> sessionStorage;
-        private List<Integer> windowWidths = of(DEFAULT_WINDOW_WIDTH);
-        private List<DeviceConfig> devices = new ArrayList<DeviceConfig>();
-        private int maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
-        private float waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
-        private float waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
-        private float waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
-        private float warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
-        private float waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
-        private String javaScript;
-        private HttpCheckConfig httpCheck;
-        private boolean hideImages;
-        private int maxColorDiffPerPixel = DEFAULT_MAX_COLOR_DIFF_PER_PIXEL;
-
-        private Builder() {
-        }
-
-        public Builder withPaths(List<String> val) {
-            paths = val;
-            return this;
-        }
-
-        public Builder withMaxDiff(float val) {
-            maxDiff = val;
-            return this;
-        }
-
-        public Builder withCookies(List<Cookie> val) {
-            cookies = val;
-            return this;
-        }
-
-        public Builder withCookie(Cookie val) {
-            cookies = Collections.singletonList(val);
-            return this;
-        }
-
-        public Builder withEnvMapping(Map<String, String> val) {
-            envMapping = val;
-            return this;
-        }
-
-        public Builder withHttpCheck(HttpCheckConfig val) {
-            httpCheck = val;
-            return this;
-        }
-
-        public Builder withLocalStorage(Map<String, String> val) {
-            localStorage = val;
-            return this;
-        }
-
-        public Builder withSessionStorage(Map<String, String> val) {
-            sessionStorage = val;
-            return this;
-        }
-
-        public Builder withWindowWidths(List<Integer> val) {
-            windowWidths = val;
-            return this;
-        }
-
-        public Builder withDevices(List<DeviceConfig> val) {
-            devices = val;
-            return this;
-        }
-
-        public Builder addDeviceConfig(DeviceConfig deviceConfig) {
-            devices.add(deviceConfig);
-            return this;
-        }
-
-        public Builder withMaxScrollHeight(int val) {
-            maxScrollHeight = val;
-            return this;
-        }
-
-        public Builder withWaitAfterPageLoad(float val) {
-            waitAfterPageLoad = val;
-            return this;
-        }
-
-        public Builder withWaitAfterScroll(float val) {
-            waitAfterScroll = val;
-            return this;
-        }
-
-        public Builder withWaitForNoAnimationAfterScroll(float val) {
-            waitForNoAnimationAfterScroll = val;
-            return this;
-        }
-
-        public Builder withWarmupBrowserCacheTime(float val) {
-            warmupBrowserCacheTime = val;
-            return this;
-        }
-
-        public Builder withWaitForFontsTime(float val) {
-            waitForFontsTime = val;
-            return this;
-        }
-
-        public Builder withJavaScript(String val) {
-            javaScript = val;
-            return this;
-        }
-
-        public Builder withMaxColorDiffPerPixel(int val) {
-            maxColorDiffPerPixel = val;
-            return this;
-        }
-
-        public Builder withHideImages(boolean val) {
-            hideImages = val;
-            return this;
-        }
-
-        public UrlConfig build() {
-            return new UrlConfig(this);
-        }
-
-
     }
 }

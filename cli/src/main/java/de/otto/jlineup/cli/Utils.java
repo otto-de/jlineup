@@ -3,7 +3,7 @@ package de.otto.jlineup.cli;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.JobConfig;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.util.Collections.emptyList;
@@ -11,7 +11,7 @@ import static java.util.Collections.emptyMap;
 
 public class Utils {
 
-    public static JobConfig readConfig(final CommandLineParameters parameters) throws FileNotFoundException {
+    public static JobConfig readConfig(final CommandLineParameters parameters) throws IOException {
         return JobConfig.readConfig(parameters.getWorkingDirectory(), parameters.getConfigFile());
     }
 

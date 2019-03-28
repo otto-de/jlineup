@@ -5,20 +5,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.SerializedName;
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.browser.Browser;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static de.otto.jlineup.config.Cookie.COOKIE_TIME_FORMAT;
+import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class JobConfig {
@@ -50,52 +49,33 @@ public final class JobConfig {
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
 
-    @SerializedName(value = "name")
     @JsonProperty("name")
     public final String name;
 
-    @SerializedName(value = "wait-after-page-load", alternate = "async-wait")
     @JsonProperty("wait-after-page-load")
     @JsonAlias({"async-wait"})
     public final Float globalWaitAfterPageLoad;
-    @SerializedName(value = "page-load-timeout")
     @JsonProperty("page-load-timeout")
     public final int pageLoadTimeout;
-    @SerializedName("window-height")
     @JsonProperty("window-height")
     public final Integer windowHeight;
-    @SerializedName("report-format")
     @JsonProperty("report-format")
     public final Integer reportFormat;
-    @SerializedName("screenshot-retries")
     @JsonProperty("screenshot-retries")
     public final int screenshotRetries;
-    @SerializedName("threads")
     @JsonProperty("threads")
     public final int threads;
-    @SerializedName("timeout")
     @JsonProperty("timeout")
     public final int globalTimeout;
-    @SerializedName("debug")
     @JsonProperty("debug")
     public final boolean debug;
-    @SerializedName("log-to-file")
     @JsonProperty("log-to-file")
     public final boolean logToFile;
-    @SerializedName("check-for-errors-in-log")
     @JsonProperty("check-for-errors-in-log")
     public final boolean checkForErrorsInLog;
-    @SerializedName("http-check")
     @JsonProperty("http-check")
     public final HttpCheckConfig httpCheck;
 
-    private final static Gson gson =
-            new GsonBuilder()
-                    .setDateFormat(COOKIE_TIME_FORMAT)
-                    .setPrettyPrinting()
-                    .create();
-
-    /* Used by GSON to set default values */
     public JobConfig() {
         this(jobConfigBuilder());
     }
@@ -118,7 +98,7 @@ public final class JobConfig {
     }
 
     public static String prettyPrint(JobConfig jobConfig) {
-        return gson.toJson(jobConfig);
+        return JacksonWrapper.serializeObject(jobConfig);
     }
 
     public static Builder copyOfBuilder(JobConfig jobConfig) {
@@ -162,7 +142,6 @@ public final class JobConfig {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(urls, browser, name, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog, httpCheck);
     }
 
@@ -191,7 +170,7 @@ public final class JobConfig {
     }
 
     public static JobConfig defaultConfig(String url) {
-        return jobConfigBuilder().withUrls(ImmutableMap.of(url, new UrlConfig())).build();
+        return jobConfigBuilder().withUrls(ImmutableMap.of(url, urlConfigBuilder().build())).build();
     }
 
     public static Builder jobConfigBuilder() {
@@ -229,7 +208,7 @@ public final class JobConfig {
     }
 
 
-    public static JobConfig readConfig(final String workingDir, final String configFileName) throws FileNotFoundException {
+    public static JobConfig readConfig(final String workingDir, final String configFileName) throws IOException {
         List<String> searchPaths = new ArrayList<>();
         Path configFilePath = Paths.get(workingDir + "/" + configFileName);
         searchPaths.add(configFilePath.toString());
@@ -246,7 +225,7 @@ public final class JobConfig {
             }
         }
         BufferedReader br = new BufferedReader(new FileReader(configFilePath.toString()));
-        return gson.fromJson(br, JobConfig.class);
+        return JacksonWrapper.deserializeConfig(br);
     }
 
     public static final class Builder {

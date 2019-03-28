@@ -33,18 +33,16 @@ public class JSONReportWriterV1Test {
         final Summary globalSummary = new Summary(false, 0d, 0d);
         Report report = new Report(globalSummary, singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), JobConfig.exampleConfig());
 
-        String expectedString = "[\n" +
-                "  {\n" +
-                "    \"url\": \"url\",\n" +
-                "    \"width\": 1337,\n" +
-                "    \"verticalScrollPosition\": 1338,\n" +
-                "    \"difference\": 0.0,\n" +
-                "    \"screenshotBeforeFileName\": \"before\",\n" +
-                "    \"screenshotAfterFileName\": \"after\",\n" +
-                "    \"differenceImageFileName\": \"differenceImageFileName\",\n" +
-                "    \"maxSingleColorDifference\": 0\n" +
-                "  }\n" +
-                "]";
+        String expectedString = "[ {\n" +
+                "  \"url\" : \"url\",\n" +
+                "  \"width\" : 1337,\n" +
+                "  \"verticalScrollPosition\" : 1338,\n" +
+                "  \"difference\" : 0.0,\n" +
+                "  \"screenshotBeforeFileName\" : \"before\",\n" +
+                "  \"screenshotAfterFileName\" : \"after\",\n" +
+                "  \"differenceImageFileName\" : \"differenceImageFileName\",\n" +
+                "  \"maxSingleColorDifference\" : 0\n" +
+                "} ]";
 
         testee.writeComparisonReportAsJson(report);
 

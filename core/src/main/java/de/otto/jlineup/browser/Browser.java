@@ -2,7 +2,6 @@ package de.otto.jlineup.browser;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.config.Cookie;
@@ -51,19 +50,14 @@ public class Browser implements AutoCloseable {
     public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;
 
     public enum Type {
-        @SerializedName(value = "Firefox", alternate = {"firefox", "FIREFOX"})
         @JsonProperty(value = "Firefox")
         FIREFOX,
-        @SerializedName(value = "Firefox-Headless", alternate = {"firefox-headless", "FIREFOX_HEADLESS"})
         @JsonProperty(value = "Firefox-Headless")
         FIREFOX_HEADLESS,
-        @SerializedName(value = "Chrome", alternate = {"chrome", "CHROME"})
         @JsonProperty(value = "Chrome")
         CHROME,
-        @SerializedName(value = "Chrome-Headless", alternate = {"chrome-headless", "CHROME_HEADLESS"})
         @JsonProperty(value = "Chrome-Headless")
         CHROME_HEADLESS,
-        @SerializedName(value = "PhantomJS", alternate = {"phantomjs", "PHANTOMJS"})
         @JsonProperty(value = "PhantomJS")
         PHANTOMJS;
 

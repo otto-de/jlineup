@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +16,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.lang.invoke.MethodHandles.lookup;
-import static java.lang.invoke.MethodHandles.throwException;
 
 public class Housekeeper {
 

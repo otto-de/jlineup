@@ -2,7 +2,6 @@ package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
 
 import java.util.Objects;
 
@@ -24,17 +23,14 @@ public class DeviceConfig {
 
     public final int height;
 
-    @SerializedName(value = "pixel-ratio", alternate = {"pixelRatio"})
     @JsonProperty("pixel-ratio")
     @JsonAlias("pixelRatio")
     public final float pixelRatio;
 
-    @SerializedName(value = "device-name", alternate = {"deviceName"})
     @JsonProperty("device-name")
     @JsonAlias("deviceName")
     public final String deviceName;
 
-    @SerializedName(value = "user-agent", alternate = {"userAgent"})
     @JsonProperty("user-agent")
     @JsonAlias("userAgent")
     public final String userAgent;

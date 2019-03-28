@@ -10,7 +10,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +58,7 @@ public class BrowserUtilsTest {
     }
 
     @Test
-    public void shouldGenerateScreenshotsParameters() throws FileNotFoundException, JLineupException {
+    public void shouldGenerateScreenshotsParameters() throws IOException, JLineupException {
         //given
         JobConfig jobConfig = JobConfig.readConfig(".", "src/test/resources/lineup_test.json");
 

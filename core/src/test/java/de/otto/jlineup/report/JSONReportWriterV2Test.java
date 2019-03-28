@@ -79,7 +79,7 @@ public class JSONReportWriterV2Test {
                 "            \"value\": \"exampleValue\",\n" +
                 "            \"domain\": \"http://www.example.com\",\n" +
                 "            \"path\": \"/\",\n" +
-                "            \"expiry\": \"1970-01-01T00:00:01.000Z\",\n" +
+                "            \"expiry\": \"1970-01-01T00:00:01Z\",\n" +
                 "            \"secure\": true\n" +
                 "          }\n" +
                 "        ],\n" +

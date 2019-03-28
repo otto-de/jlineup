@@ -15,7 +15,7 @@ import java.time.Instant;
 import java.util.logging.Level;
 
 import static com.google.common.collect.ImmutableList.of;
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.when;
 

@@ -6,7 +6,6 @@ apply plugin: 'org.springframework.boot'
 dependencies {
     compile project(":core")
     compile "com.beust:jcommander:1.72"
-    compile "com.google.code.gson:gson:2.8.5"
     compile "ch.qos.logback:logback-classic:1.2.3"
 
     testCompile project(path: ":core", configuration: 'testCompile')

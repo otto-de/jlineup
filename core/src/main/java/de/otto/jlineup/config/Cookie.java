@@ -3,10 +3,11 @@ package de.otto.jlineup.config;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Cookie {
 
-    public static final String COOKIE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
+    public static final String COOKIE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 
     public final String name;
     public final String value;
@@ -52,11 +53,11 @@ public class Cookie {
         Cookie cookie = (Cookie) o;
 
         if (secure != cookie.secure) return false;
-        if (name != null ? !name.equals(cookie.name) : cookie.name != null) return false;
-        if (value != null ? !value.equals(cookie.value) : cookie.value != null) return false;
-        if (domain != null ? !domain.equals(cookie.domain) : cookie.domain != null) return false;
-        if (path != null ? !path.equals(cookie.path) : cookie.path != null) return false;
-        return expiry != null ? expiry.equals(cookie.expiry) : cookie.expiry == null;
+        if (!Objects.equals(name, cookie.name)) return false;
+        if (!Objects.equals(value, cookie.value)) return false;
+        if (!Objects.equals(domain, cookie.domain)) return false;
+        if (!Objects.equals(path, cookie.path)) return false;
+        return Objects.equals(expiry, cookie.expiry);
 
     }
 

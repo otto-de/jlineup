@@ -5,7 +5,6 @@ import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.JobConfigValidator;
 import de.otto.jlineup.config.Step;
-import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;

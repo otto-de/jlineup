@@ -1,5 +1,7 @@
 package de.otto.jlineup.report;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Objects;
 
 import static de.otto.jlineup.file.FileService.FILE_SEPARATOR;
@@ -27,16 +29,19 @@ public class ScreenshotComparisonResult {
     }
 
     @UsedInTemplate
+    @JsonIgnore
     public String getScreenshotBeforeFileNameForHTML() {
         return convertToHtmlPath(screenshotBeforeFileName);
     }
 
     @UsedInTemplate
+    @JsonIgnore
     public String getScreenshotAfterFileNameForHTML() {
         return convertToHtmlPath(screenshotAfterFileName);
     }
 
     @UsedInTemplate
+    @JsonIgnore
     public String getDifferenceImageFileNameForHtml() {
         return convertToHtmlPath(differenceImageFileName);
     }

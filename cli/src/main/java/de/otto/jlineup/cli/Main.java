@@ -10,7 +10,7 @@ import de.otto.jlineup.exceptions.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import static de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfiguration;
 import static de.otto.jlineup.cli.Utils.readConfig;
@@ -50,7 +50,8 @@ public class Main {
         JobConfig jobConfig = null;
         try {
             jobConfig = buildConfig(parameters);
-        } catch(FileNotFoundException e) {
+        } catch(IOException e) {
+            LOG.error("Error building config.", e);
             exitWithExitCode(1);
         }
 
@@ -99,7 +100,7 @@ public class Main {
         }
     }
 
-    private static JobConfig buildConfig(CommandLineParameters parameters) throws FileNotFoundException {
+    private static JobConfig buildConfig(CommandLineParameters parameters) throws IOException {
         JobConfig jobConfig;
         if (parameters.getUrl() != null) {
             String url = BrowserUtils.prependHTTPIfNotThereAndToLowerCase(parameters.getUrl());
@@ -113,7 +114,7 @@ public class Main {
         } else {
             try {
                 jobConfig = readConfig(parameters);
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 if (!parameters.isPrintConfig()) {
                     LOG.error(e.getMessage());
                     LOG.error("Use --help to see the JLineup quick help.");
