@@ -189,7 +189,7 @@ public class Browser implements AutoCloseable {
             try {
                 screenshotResult.getValue().get(10, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
-                LOG.error("Timeout while getting screenshot result for {} with width {}.", screenshotResult.getKey().url, screenshotResult.getKey().windowWidth);
+                LOG.error("Timeout while getting screenshot result for {} with device {}.", screenshotResult.getKey().url, screenshotResult.getKey().deviceConfig);
                 throw e;
             }
         }
@@ -224,7 +224,7 @@ public class Browser implements AutoCloseable {
         boolean headlessRealBrowser = jobConfig.browser.isHeadlessRealBrowser();
         final WebDriver localDriver;
         if (headlessRealBrowser) {
-            localDriver = initializeWebDriver(DeviceConfig.legacyWithWidth(screenshotContext.windowWidth));
+            localDriver = initializeWebDriver(screenshotContext.deviceConfig);
         } else localDriver = initializeWebDriver();
 
         if (printVersion.getAndSet(false)) {
@@ -238,7 +238,7 @@ public class Browser implements AutoCloseable {
 
         if (!headlessRealBrowser) {
             localDriver.manage().window().setPosition(new Point(0, 0));
-            resizeBrowser(localDriver, screenshotContext.windowWidth, jobConfig.windowHeight);
+            resizeBrowser(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
 
         final String url = buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
@@ -268,7 +268,7 @@ public class Browser implements AutoCloseable {
         }
 
         //now get the real page
-        LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.windowWidth, jobConfig.windowHeight));
+        LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height));
 
         //Selenium's get() method blocks until the browser/page fires an onload event (files and images referenced in the html have been loaded,
         //but there might be JS calls that load more stuff dynamically afterwards).
@@ -319,7 +319,7 @@ public class Browser implements AutoCloseable {
             BufferedImage currentScreenshot = takeScreenshot();
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
             fileService.writeScreenshot(currentScreenshot, screenshotContext.url,
-                    screenshotContext.urlSubPath, screenshotContext.windowWidth, yPosition, screenshotContext.before ? BEFORE : AFTER);
+                    screenshotContext.urlSubPath, screenshotContext.deviceConfig.width, yPosition, screenshotContext.before ? BEFORE : AFTER);
             //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
             //This is subject to change because W3C standard wants viewport screenshots
             if (jobConfig.browser.isPhantomJS()) {
@@ -420,7 +420,7 @@ public class Browser implements AutoCloseable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                resizeBrowser(driver, screenshotContext.windowWidth, jobConfig.windowHeight);
+                resizeBrowser(driver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
                 LOG.debug("Cache warmup time is over. Getting " + url + " again.");
             }
         }
@@ -429,7 +429,7 @@ public class Browser implements AutoCloseable {
     private void browserCacheWarmupForHeadless(ScreenshotContext screenshotContext, String url, WebDriver driver) throws Exception {
         float warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
-            LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, screenshotContext.windowWidth, jobConfig.windowHeight));
+            LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height));
             LOG.debug("Getting url: {}", url);
             driver.get(url);
             logErrorChecker.checkForErrors(driver, jobConfig);

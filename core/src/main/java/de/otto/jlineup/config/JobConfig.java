@@ -3,6 +3,8 @@ package de.otto.jlineup.config;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.JacksonWrapper;
@@ -19,6 +21,7 @@ import java.util.*;
 
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 
+@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public final class JobConfig {
 
@@ -30,8 +33,8 @@ public final class JobConfig {
 
     static final Browser.Type DEFAULT_BROWSER = Browser.Type.PHANTOMJS;
     static final float DEFAULT_MAX_DIFF = 0;
-    public static final int DEFAULT_WINDOW_WIDTH = 800;
-    static final int DEFAULT_WINDOW_HEIGHT = 800;
+    static final int DEFAULT_WINDOW_WIDTH = 800;
+    public static final int DEFAULT_WINDOW_HEIGHT = 800;
     static final float DEFAULT_PIXEL_RATIO = 1.0f;
     static final float DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD = 0f;
     public static final String DEFAULT_PATH = "";
@@ -49,31 +52,21 @@ public final class JobConfig {
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
 
-    @JsonProperty("name")
     public final String name;
 
     @JsonProperty("wait-after-page-load")
     @JsonAlias({"async-wait"})
     public final Float globalWaitAfterPageLoad;
-    @JsonProperty("page-load-timeout")
     public final int pageLoadTimeout;
-    @JsonProperty("window-height")
     public final Integer windowHeight;
-    @JsonProperty("report-format")
     public final Integer reportFormat;
-    @JsonProperty("screenshot-retries")
     public final int screenshotRetries;
-    @JsonProperty("threads")
     public final int threads;
     @JsonProperty("timeout")
     public final int globalTimeout;
-    @JsonProperty("debug")
     public final boolean debug;
-    @JsonProperty("log-to-file")
     public final boolean logToFile;
-    @JsonProperty("check-for-errors-in-log")
     public final boolean checkForErrorsInLog;
-    @JsonProperty("http-check")
     public final HttpCheckConfig httpCheck;
 
     public JobConfig() {
@@ -242,7 +235,7 @@ public final class JobConfig {
         private boolean debug = false;
         private boolean logToFile = false;
         private boolean checkForErrorsInLog = true;
-        public HttpCheckConfig httpCheck = new HttpCheckConfig();
+        private HttpCheckConfig httpCheck = new HttpCheckConfig();
 
         private Builder() {
         }

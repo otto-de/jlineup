@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static de.otto.jlineup.config.DeviceConfig.deviceConfigBuilder;
 import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
 import static java.lang.invoke.MethodHandles.lookup;
 
@@ -103,7 +104,9 @@ public class BrowserUtils {
 
             if (device.isMobile()) {
                 Map<String, String> mobileEmulation = new HashMap<>();
-                mobileEmulation.put("deviceName", "iPhone X");
+                if (!device.deviceName.equalsIgnoreCase("MOBILE")) {
+                    mobileEmulation.put("deviceName", device.deviceName);
+                }
                 options.setExperimentalOption("mobileEmulation", mobileEmulation);
             }
 
@@ -128,19 +131,27 @@ public class BrowserUtils {
         return firefoxProfileHeadless;
     }
 
-    static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(RunStepConfig runStepConfig, JobConfig jobConfig) throws JLineupException {
+    static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(RunStepConfig runStepConfig, JobConfig jobConfig) {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
         Map<String, UrlConfig> urls = jobConfig.urls;
 
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
             final UrlConfig urlConfig = urlConfigEntry.getValue();
-            final List<Integer> resolutions = urlConfig.windowWidths;
+
+            final List<DeviceConfig> deviceConfigs;
+            if (urlConfig.devices == null) {
+                deviceConfigs = new ArrayList<>();
+                urlConfig.windowWidths.forEach(width -> deviceConfigs.add(deviceConfigBuilder().withWidth(width).withHeight(jobConfig.windowHeight).build()));
+            } else {
+                deviceConfigs = urlConfig.devices;
+            }
+
             final List<String> paths = urlConfig.paths;
             for (final String path : paths) {
                 screenshotContextList.addAll(
-                        resolutions.stream()
-                                .map(windowWidth ->
-                                        new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getKey()), path, windowWidth,
+                        deviceConfigs.stream()
+                                .map(deviceConfig ->
+                                        new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getKey()), path, deviceConfig,
                                                 runStepConfig.getStep() == Step.before, urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig)))
                                 .collect(Collectors.toList()));
             }

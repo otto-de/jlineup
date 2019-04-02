@@ -2,11 +2,14 @@ package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.util.Objects;
 
 import static de.otto.jlineup.config.JobConfig.*;
 
+@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 public class DeviceConfig {
 
     static final String DESKTOP_DEVICE_NAME = "DESKTOP";
@@ -23,20 +26,16 @@ public class DeviceConfig {
 
     public final int height;
 
-    @JsonProperty("pixel-ratio")
     @JsonAlias("pixelRatio")
     public final float pixelRatio;
 
-    @JsonProperty("device-name")
     @JsonAlias("deviceName")
     public final String deviceName;
 
-    @JsonProperty("user-agent")
     @JsonAlias("userAgent")
     public final String userAgent;
 
     public final boolean touch;
-
 
     public DeviceConfig() {
         deviceName = DEFAULT_DEVICE_NAME;
@@ -65,8 +64,8 @@ public class DeviceConfig {
         touch = builder.touch;
     }
 
-    public static DeviceConfig legacyWithWidth(int width) {
-        return new DeviceConfig(width, DEFAULT_WINDOW_HEIGHT, DEFAULT_PIXEL_RATIO, DEFAULT_DEVICE_NAME, DEFAULT_USER_AGENT, DEFAULT_TOUCH_OPTION);
+    public static DeviceConfig deviceConfig(int width, int height) {
+        return DeviceConfig.deviceConfigBuilder().withWidth(width).withHeight(height).build();
     }
 
     public static Builder deviceConfigBuilder() {

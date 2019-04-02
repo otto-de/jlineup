@@ -17,6 +17,8 @@ import java.util.Map;
 import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
+import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_WINDOW_HEIGHT;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -71,15 +73,16 @@ public class BrowserUtilsTest {
 
         UrlConfig expectedUrlConfigForOttoDe = getExpectedUrlConfigForOttoDe();
         UrlConfig expectedUrlConfigForGoogleDe = getExpectedUrlConfigForGoogleDe();
+        int expectedHeight = jobConfig.windowHeight;
 
         final List<ScreenshotContext> expectedScreenshotContextList = ImmutableList.of(
-                ScreenshotContext.of("https://www.otto.de", "/", 600, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "/", 800, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "/", 1200, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "multimedia", 600, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "multimedia", 800, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "multimedia", 1200, true, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("http://www.doodle.de", "/", 1200, true, expectedUrlConfigForGoogleDe)
+                ScreenshotContext.of("https://www.otto.de", "/", deviceConfig(600, expectedHeight), true, expectedUrlConfigForOttoDe),
+                ScreenshotContext.of("https://www.otto.de", "/", deviceConfig(800, expectedHeight), true, expectedUrlConfigForOttoDe),
+                ScreenshotContext.of("https://www.otto.de", "/", deviceConfig(1200, expectedHeight), true, expectedUrlConfigForOttoDe),
+                ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(600, expectedHeight), true, expectedUrlConfigForOttoDe),
+                ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(800, expectedHeight), true, expectedUrlConfigForOttoDe),
+                ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(1200, expectedHeight), true, expectedUrlConfigForOttoDe),
+                ScreenshotContext.of("http://www.doodle.de", "/",         deviceConfig(1200, expectedHeight), true, expectedUrlConfigForGoogleDe)
         );
 
         //when

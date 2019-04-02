@@ -236,15 +236,12 @@ public class UrlConfig {
         }
 
         public UrlConfig build() {
-
             //If both are not set, use default window width
             if (windowWidths == null && devices == null) {
                 windowWidths = ImmutableList.of(DEFAULT_WINDOW_WIDTH);
             }
-
             return new UrlConfig(this);
         }
-
     }
 
     @Override

@@ -2,6 +2,8 @@ package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.Objects;
 
 import static org.apache.http.HttpStatus.*;
 
+@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HttpCheckConfig {
 
@@ -28,7 +31,6 @@ public class HttpCheckConfig {
 
     private final boolean enabled;
 
-    @JsonProperty("allowed-codes")
     private final List<Integer> allowedCodes;
 
     public HttpCheckConfig(boolean enabled, List<Integer> allowedCodes) {
