@@ -24,6 +24,8 @@ a Ruby tool, but is not maintained any more.
 
 Credit for original Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
 
+JLineup has no other dependencies than a JVM and a browser.
+
 ## Example
 
 Let's take this little example [config](docs/CONFIGURATION.md) for a check of two paths on otto.de during a deployment:
