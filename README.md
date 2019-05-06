@@ -9,7 +9,7 @@
 
 ## About
 
-JLineup is a tool which is useful for automated visual acceptance tests of web pages, especially in continuous delivery pipelines.
+JLineup is a tool which is useful for automated visual regression tests of web pages, especially in continuous delivery pipelines.
 It can be used as a simple command line tool or as a small web service which is controlled via REST API.
 
 JLineup shoots and compares screenshots of a web page at two consecutive points in time.
