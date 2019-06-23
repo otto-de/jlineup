@@ -1,6 +1,7 @@
 package de.otto.jlineup.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.service.BrowserNotInstalledException;
@@ -143,6 +144,93 @@ public class JLineupControllerTest {
                 .andExpect(header().string("Location", "/testContextPath/runs/someNewId"));
 
         verify(jLineupService).startBeforeRun(jobConfig);
+    }
+
+    @Test
+    public void shouldParseConfigWithCookie() throws Exception {
+
+        String realWorldConfig = "{\n" +
+                "  \"name\": \"promo-shoppromo\",\n" +
+                "  \"urls\": {\n" +
+                "    \"https://www.otto.de/\": {\n" +
+                "      \"paths\": [\n" +
+                "        \"/promo-shoppromo/shoppromo?dreson=(test.all.shoppromo.widgettypes)&preview=true\",\n" +
+                "        \"/promo-shoppromo/shoppromo?dreson=(test.all.shoppromo.widgettypes)&preview=true&index=0&variant=cinema\",\n" +
+                "        \"/promo-shoppromo/shoppromo?dreson=(test.all.shoppromo.widgettypes)&preview=true&index=1&variant=cinema\",\n" +
+                "        \"/promo-shoppromo/shoppromo?dreson=(test.all.shoppromo.widgettypes)&preview=true&index=2\"\n" +
+                "      ],\n" +
+                "      \"max-diff\": 0.0,\n" +
+                "      \"cookies\": [\n" +
+                "        {\n" +
+                "          \"name\": \"AWS-COOKIE\",\n" +
+                "          \"value\": \"AWS_COOKIE_PLACEHOLDER\",\n" +
+                "          \"domain\": \".otto.de\",\n" +
+                "          \"path\": \"/\",\n" +
+                "          \"expiry\": \"2022-01-01T01:00:01+0100\",\n" +
+                "          \"secure\": true\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"BYPASS-RATE-LIMIT\",\n" +
+                "          \"value\": \"BYPASS_RATE_LIMIT_COOKIE_PLACEHOLDER\",\n" +
+                "          \"domain\": \".otto.de\",\n" +
+                "          \"path\": \"/\",\n" +
+                "          \"expiry\": \"2020-01-01\",\n" +
+                "          \"secure\": true\n" +
+                "        },\n" +
+                "\t{\n" +
+                "          \"name\": \"trackingDisabled\",\n" +
+                "          \"value\": \"true\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"name\": \"survey\",\n" +
+                "          \"value\": \"1\"\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"local-storage\": {\n" +
+                "        \"us_customerServiceWidget\": \"{'customerServiceWidgetNotificationHidden':{'value':true,'timestamp':9467812242358}}\",\n" +
+                "        \"stopSlidingCinemaForJLineup\": \"true\"\n" +
+                "      },\n" +
+                "      \"window-widths\": [\n" +
+                "        320,\n" +
+                "        448,\n" +
+                "        768,\n" +
+                "        992\n" +
+                "      ],\n" +
+                "      \"http-check\": {\n" +
+                "        \"enabled\": true,\n" +
+                "        \"allowed-codes\": [\n" +
+                "          200\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"browser\": \"chrome-headless\",\n" +
+                "  \"check-for-errors-in-log\":false,\n" +
+                "  \"wait-after-page-load\": 5.0,\n" +
+                "  \"page-load-timeout\": 120,\n" +
+                "  \"window-height\": 1000,\n" +
+                "  \"timeout\": 600\n" +
+                "}\n";
+
+        // given
+        JLineupRunStatus run = runStatusBuilder().withId("someNewId").withJobConfig(objectMapper.readValue(realWorldConfig, JobConfig.class)).withState(State.BEFORE_RUNNING).build();
+        when(jLineupService.startBeforeRun(any())).thenReturn(run);
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/testContextPath/runs")
+                        .contextPath("/testContextPath")
+                        .content(realWorldConfig)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isAccepted())
+                .andExpect(content().json("{\"id\":\"someNewId\"}"));
+              //  .andExpect(header().string("Location", "/testContextPath/runs/someNewId"));
+
+        //verify(jLineupService).startBeforeRun(jobConfig);
+
     }
 
     @Test
