@@ -1,11 +1,14 @@
 package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Date;
 import java.util.Objects;
 
 public class Cookie {
+
+
 
     public static final String COOKIE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 
@@ -14,6 +17,7 @@ public class Cookie {
     public final String domain;
     public final String path;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = COOKIE_TIME_FORMAT, timezone = "UTC")
+    @JsonDeserialize(using = CustomDateDeserializer.class)
     public final Date expiry;
     public final boolean secure;
 
