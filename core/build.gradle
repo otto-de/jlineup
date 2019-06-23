@@ -9,7 +9,7 @@ dependencies {
         exclude module: "selenium-safari-driver"
         exclude module: "htmlunit"
     }
-    compile "io.github.bonigarcia:webdrivermanager:3.4.0"
+    compile "io.github.bonigarcia:webdrivermanager:3.6.1"
     compile "com.codeborne:phantomjsdriver:1.4.4"
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.8"
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8"
@@ -27,11 +27,6 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 }
 
-jar {
-    enabled = true
-    baseName = "jlineup-core"
-}
-
 test {
     testLogging {
         exceptionFormat = 'full'
@@ -40,27 +35,13 @@ test {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    baseName = 'jlineup-core'
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
     from 'build/docs/javadoc'
 }
 
 task sourcesJar(type: Jar) {
-    baseName = 'jlineup-core'
     from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-    archives jar
-}
-
-[distZip, distTar].each { task ->
-    configurations.archives.artifacts.removeAll
-            { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
-    task.enabled = false
+    archiveClassifier = 'sources'
 }
 
 signing {

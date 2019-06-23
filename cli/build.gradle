@@ -1,15 +1,27 @@
-def seleniumVersion = '3.8.1'
+def seleniumVersion = '3.141.59'
 ext['selenium.version'] = seleniumVersion
 
 apply plugin: 'org.springframework.boot'
 
 dependencies {
-    compile project(":core")
+    compile project(":jlineup-core")
     compile "com.beust:jcommander:1.72"
     compile "ch.qos.logback:logback-classic:1.2.3"
 
-    testCompile project(path: ":core", configuration: 'testCompile')
+    testCompile project(path: ":jlineup-core", configuration: 'testCompile')
 }
+
+tasks.distZip.enabled = false
+tasks.distTar.enabled = false
+
+tasks.bootDistZip {
+    baseName = project.archivesBaseName
+}
+
+tasks.bootDistTar {
+    baseName = project.archivesBaseName
+}
+
 
 test {
     testLogging {
@@ -19,44 +31,27 @@ test {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    baseName = 'jlineup-cli'
-    classifier = 'javadoc'
     from 'build/docs/javadoc'
+    archiveClassifier = 'javadoc'
 }
 
 task sourcesJar(type: Jar) {
-    baseName = 'jlineup-cli'
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier = 'sources'
 }
 
 jar {
-    baseName = "jlineup"
-    archiveName = "jlineup.jar"
+    enabled = false;
 }
 
 bootJar {
     enabled = true
-    baseName = "jlineup"
-    archiveName = "jlineup.jar"
     mainClassName = "de.otto.jlineup.cli.Main"
     launchScript()
 }
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-    archives bootJar
-}
-
-[distZip, bootDistZip, distTar, bootDistTar].each { task ->
-    configurations.archives.artifacts.removeAll
-            { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
-    task.enabled = false
-}
-
 signing {
-    sign configurations.archives
+    sign configurations.bootArchives
 }
 
 uploadArchives {

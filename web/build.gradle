@@ -1,14 +1,14 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
-    compile project(":core")
+    compile project(":jlineup-core")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
     //this pulls spring context support to specified spring version because metrics lib in edison core is pulling it to 5.0.2
     compile("org.springframework:spring-context-support:${springVersion}")
     compile("de.otto.edison:edison-core:2.0.0-rc4")
 
-    testCompile project(path: ":core", configuration: 'testCompile')
+    testCompile project(path: ":jlineup-core", configuration: 'testCompile')
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("io.rest-assured:rest-assured:3.0.7")
     testCompile("org.awaitility:awaitility:3.1.0")
@@ -16,43 +16,48 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
 }
 
+tasks.distZip.enabled = false
+tasks.distTar.enabled = false
+
+tasks.bootDistZip {
+    baseName = project.archivesBaseName
+}
+
+tasks.bootDistTar {
+    baseName = project.archivesBaseName
+}
+
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+        showStandardStreams = true
+    }
+}
+
 jar {
-    baseName = "jlineup-web"
+    enabled = false
 }
 
 bootJar {
     enabled = true
-    baseName = "jlineup-web"
+    baseName = 'jlineup-web'
     mainClassName = "de.otto.jlineup.web.JLineupWebApplication"
     launchScript()
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    baseName = 'jlineup-web'
-    classifier = 'javadoc'
     from 'build/docs/javadoc'
+    archiveClassifier = 'javadoc'
 }
 
 task sourcesJar(type: Jar) {
-    baseName = 'jlineup-web'
     from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-    archives bootJar
-}
-
-[distZip, bootDistZip, distTar, bootDistTar].each { task ->
-    configurations.archives.artifacts.removeAll
-            { it.class.simpleName == "ArchivePublishArtifact" && it.archiveTask == task }
-    task.enabled = false
+    archiveClassifier = 'sources'
 }
 
 signing {
-    sign configurations.archives
+    sign configurations.bootArchives
 }
 
 uploadArchives {
