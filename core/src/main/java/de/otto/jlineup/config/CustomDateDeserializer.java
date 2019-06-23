@@ -25,7 +25,7 @@ public class CustomDateDeserializer extends JsonDeserializer<Date> {
 
     @Override
     public Date deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         if (paramJsonParser == null || "".equals(paramJsonParser.getText()))
             return null;
         String date = paramJsonParser.getText();
@@ -37,7 +37,6 @@ public class CustomDateDeserializer extends JsonDeserializer<Date> {
                 //This page was left blank intentionally
             }
         }
-        System.err.println("Could not parse " + date);
-        return null;
+        throw new IOException("Could not parse date '" + date + "'");
     }
 }
