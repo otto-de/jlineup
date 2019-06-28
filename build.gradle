@@ -72,8 +72,8 @@ subprojects {
 
     task allDeps(type: DependencyReportTask) {}
 
-    apply plugin: 'java'
     apply plugin: 'application'
+    apply plugin: 'maven-publish'
     //apply plugin: 'com.github.johnrengelman.shadow'
 
     mainClassName = 'de.otto.jlineup.cli.Main'
@@ -81,7 +81,6 @@ subprojects {
     apply plugin: 'project-report'
     apply plugin: 'signing'
     apply plugin: 'idea'
-    apply plugin: 'maven'
 
     jar {
         manifest.attributes provider: 'gradle'

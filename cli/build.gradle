@@ -41,7 +41,7 @@ task sourcesJar(type: Jar) {
 }
 
 jar {
-    enabled = false;
+    enabled = false
 }
 
 bootJar {
@@ -50,57 +50,71 @@ bootJar {
     launchScript()
 }
 
-signing {
-    sign configurations.bootArchives
-}
-
-uploadArchives {
-    configuration = configurations.archives
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            if (project.debugUpload) {
-                // use this for local upload debugging instead of sonatype
-                repository(url: "file://${buildDir}/repo")
-                snapshotRepository(url: "file://${buildDir}/repo")
-            } else {
-                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'jlineup-cli'
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
                 }
-                snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                    authentication(userName: sonatypeUsername, password: sonatypePassword)
+                usage('java-runtime') {
+                    fromResolutionResult()
                 }
             }
-
-            pom.artifactId = "jlineup-cli"
-            pom.project {
-                name 'JLineup Command Line Interface'
-                packaging 'jar'
-                description 'Webapp image comparison tool'
-                url 'http://github.com/otto-de/jlineup'
-
-                scm {
-                    url 'scm:git@github.com:otto-de/jlineup.git'
-                    connection 'scm:git@github.com:otto-de/jlineup.git'
-                }
-
+            pom {
+                name = 'JLineup CLI'
+                description = 'The cli version of JLineup'
+                url = 'https://github.com/otto-de/jlineup'
                 licenses {
                     license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
                 }
-
                 developers {
                     developer {
-                        id 'mgeweke'
-                        name 'Marco Geweke'
-                        url 'https://github.com/MediaMarco'
+                        id = 'MediaMarco'
+                        name = 'Marco Geweke'
+                        email = 'marco.geweke@gmail.com'
                     }
+                }
+                scm {
+                    connection = 'scm:git@github.com:otto-de/jlineup.git'
+                    developerConnection = 'scm:git@github.com:otto-de/jlineup.git'
+                    url = 'https://github.com/otto-de/jlineup'
                 }
             }
         }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            if (project.debugUpload) {
+                releasesRepoUrl = "$buildDir/repos/releases"
+                snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            }
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username = sonatypeUsername
+                password = sonatypePassword
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
     }
 }
 
@@ -114,5 +128,6 @@ static String runCommand(command) {
     if (errorlevel != 0) {
         throw new RuntimeException("exec failed on command: '${command}' with errorlevel ${errorlevel}".toString())
     }
+    //System.err.println("Git Hash: " + out.toString().trim())
     out.toString().trim()
 }
