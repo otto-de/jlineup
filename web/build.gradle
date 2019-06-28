@@ -6,7 +6,9 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
     //this pulls spring context support to specified spring version because metrics lib in edison core is pulling it to 5.0.2
     compile("org.springframework:spring-context-support:${springVersion}")
-    compile("de.otto.edison:edison-core:2.0.0-rc4")
+    compile("de.otto.edison:edison-core:2.0.0-rc7") {
+        exclude group: 'software.amazon.awssdk', module: "*"
+    }
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")

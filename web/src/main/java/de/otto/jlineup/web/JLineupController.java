@@ -29,7 +29,7 @@ public class JLineupController {
 
     @GetMapping("/")
     public String getHello() {
-        return "JLineup is great!";
+        return "<p>JLineup is great! Do you want to go to my <a href=\"/internal/status\">status page</a>?</p>";
     }
 
     @PostMapping(value = "/runs")

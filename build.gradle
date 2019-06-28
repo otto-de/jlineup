@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.8.RELEASE'
-        springVersion = '5.0.12.RELEASE'
+        springBootVersion = '2.1.6.RELEASE'
+        springVersion = '5.1.8.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -11,6 +11,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath 'org.owasp:dependency-check-gradle:3.3.1'
+        //classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
     }
 }
 
@@ -59,7 +60,7 @@ idea {
 }
 
 subprojects {
-    version = '3.0.3-SNAPSHOT'
+    version = '3.0.3'
     group = 'de.otto'
 
     repositories {
@@ -73,6 +74,7 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'application'
+    //apply plugin: 'com.github.johnrengelman.shadow'
 
     mainClassName = 'de.otto.jlineup.cli.Main'
 

@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 3.0.3
+* Update of Webdrivermanager to support latest browsers
+* Replace GSON with Jackson, which is used anyway for the web module with Spring
+* JLineup can be build with Java 11
+* Update multiple dependencies
+
 ## Release 3.0.2
 * Bugfix: Implemented workaround for strange scrolling behavior in Firefox (sometimes window.scrollBy(0, x) scrolls double the amount given)
 

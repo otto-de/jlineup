@@ -1,5 +1,7 @@
 def seleniumVersion = '3.141.59'
+def jacksonVersion = '2.9.9'
 ext['selenium.version'] = seleniumVersion
+ext['jackson.version'] = jacksonVersion
 
 dependencies {
     compile("org.seleniumhq.selenium:selenium-java:" + seleniumVersion) {
@@ -11,9 +13,11 @@ dependencies {
     }
     compile "io.github.bonigarcia:webdrivermanager:3.6.1"
     compile "com.codeborne:phantomjsdriver:1.4.4"
-    compile "com.fasterxml.jackson.core:jackson-databind:2.9.8"
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.8"
+    compile "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
+    compile "com.fasterxml.jackson.core:jackson-databind:" + jacksonVersion
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:" + jacksonVersion
     compile "ch.qos.logback:logback-classic:1.2.3"
+    compile "org.slf4j:slf4j-api:1.7.26"
     compile "org.codehaus.janino:janino:3.0.12"
     compile "org.thymeleaf:thymeleaf:3.0.11.RELEASE"
     testCompile "junit:junit:4.12"
