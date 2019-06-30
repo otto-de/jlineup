@@ -112,12 +112,13 @@ publishing {
             if (project.debugUpload) {
                 releasesRepoUrl = "$buildDir/repos/releases"
                 snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            } else {
+                credentials {
+                    username = sonatypeUsername
+                    password = sonatypePassword
+                }
             }
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            credentials {
-                username = sonatypeUsername
-                password = sonatypePassword
-            }
         }
     }
 }

@@ -4,16 +4,14 @@ dependencies {
     compile project(":jlineup-core")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
-    //this pulls spring context support to specified spring version because metrics lib in edison core is pulling it to 5.0.2
-    compile("org.springframework:spring-context-support:${springVersion}")
     compile("de.otto.edison:edison-core:2.0.0-rc7") {
         exclude group: 'software.amazon.awssdk', module: "*"
     }
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-    testCompile("io.rest-assured:rest-assured:3.0.7")
-    testCompile("org.awaitility:awaitility:3.1.0")
+    testCompile("io.rest-assured:rest-assured:4.0.0")
+    testCompile("org.awaitility:awaitility:3.1.6")
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
 }
@@ -42,7 +40,6 @@ jar {
 
 bootJar {
     enabled = true
-    baseName = 'jlineup-web'
     mainClassName = "de.otto.jlineup.web.JLineupWebApplication"
     launchScript()
 }
@@ -104,12 +101,13 @@ publishing {
             if (project.debugUpload) {
                 releasesRepoUrl = "$buildDir/repos/releases"
                 snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            } else {
+                credentials {
+                    username = sonatypeUsername
+                    password = sonatypePassword
+                }
             }
             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            credentials {
-                username = sonatypeUsername
-                password = sonatypePassword
-            }
         }
     }
 }

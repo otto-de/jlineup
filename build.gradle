@@ -19,7 +19,7 @@ plugins {
     id 'io.codearte.nexus-staging' version '0.11.0'
 }
 
-project.ext.set("debugUpload", true)
+project.ext.set("debugUpload", false)
 
 repositories {
     mavenCentral()
@@ -28,6 +28,7 @@ repositories {
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
+apply plugin: 'java'
 apply plugin: 'io.codearte.nexus-staging'
 apply plugin: 'org.owasp.dependencycheck'
 
@@ -62,6 +63,9 @@ idea {
 subprojects {
     version = '3.0.4-SNAPSHOT'
     group = 'de.otto'
+
+    targetCompatibility = '1.8'
+    sourceCompatibility = '1.8'
 
     repositories {
         mavenLocal()
