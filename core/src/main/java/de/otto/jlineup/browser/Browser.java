@@ -175,9 +175,9 @@ public class Browser implements AutoCloseable {
         LOG.debug("All tasks have been sent to browser thread pool. Queuing shutdown.");
         threadPool.shutdown();
         LOG.debug("Browser thread pool shutdown queued. Doing work and awaiting termination. The global timeout is set to {} seconds.", jobConfig.globalTimeout);
-        boolean notRanIntoTimeout = threadPool.awaitTermination(jobConfig.globalTimeout, TimeUnit.SECONDS);
+        boolean ranIntoTimeout = !threadPool.awaitTermination(jobConfig.globalTimeout, TimeUnit.SECONDS);
 
-        if (!notRanIntoTimeout) {
+        if (ranIntoTimeout) {
             LOG.error("Browser thread pool ran into timeout.");
             throw new TimeoutException("Global timeout of " + jobConfig.globalTimeout + " seconds was reached. Set or increase global \"timeout\" variable in config to change default.");
         } else {
