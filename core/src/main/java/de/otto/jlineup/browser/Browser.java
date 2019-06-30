@@ -36,8 +36,6 @@ import java.util.stream.Collectors;
 import static de.otto.jlineup.JLineupRunner.LOGFILE_NAME;
 import static de.otto.jlineup.JLineupRunner.REPORT_LOG_NAME_KEY;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
-import static de.otto.jlineup.file.FileService.AFTER;
-import static de.otto.jlineup.file.FileService.BEFORE;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.stream.Collectors.groupingBy;
 
@@ -318,8 +316,8 @@ public class Browser implements AutoCloseable {
             LOG.debug("Scrolling info: yPosition: {}, pageHeight: {}, maxScrollHeight: {}, viewPortHeight: {}", yPosition, pageHeight, screenshotContext.urlConfig.maxScrollHeight, viewportHeight);
             BufferedImage currentScreenshot = takeScreenshot();
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
-            fileService.writeScreenshot(currentScreenshot, screenshotContext.url,
-                    screenshotContext.urlSubPath, screenshotContext.deviceConfig.width, yPosition, screenshotContext.before ? BEFORE : AFTER);
+            fileService.writeScreenshot(screenshotContext, currentScreenshot,
+                    yPosition);
             //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
             //This is subject to change because W3C standard wants viewport screenshots
             if (jobConfig.browser.isPhantomJS()) {

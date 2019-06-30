@@ -3,6 +3,8 @@ package de.otto.jlineup.report;
 import com.google.common.annotations.VisibleForTesting;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.BrowserUtils;
+import de.otto.jlineup.browser.ScreenshotContext;
+import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;

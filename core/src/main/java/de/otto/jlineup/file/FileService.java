@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class FileService {
     public static final String AFTER = "after";
     public static final String DIVIDER = "_";
     public static final String PNG_EXTENSION = ".png";
-    private static final int MAX_URL_TO_FILENAME_LENGHT = 180;
+    private static final int MAX_URL_TO_FILENAME_LENGTH = 180;
 
     private final RunStepConfig runStepConfig;
 
@@ -109,10 +110,10 @@ public class FileService {
         fileNamePrefix = fileNamePrefix.replace("://", DIVIDER);
         fileNamePrefix = fileNamePrefix.replaceAll("[^A-Za-z0-9\\-_]", DIVIDER);
 
-        if (fileNamePrefix.length() > MAX_URL_TO_FILENAME_LENGHT) {
-            fileNamePrefix = fileNamePrefix.substring(0, MAX_URL_TO_FILENAME_LENGHT) + DIVIDER;
+        if (fileNamePrefix.length() > MAX_URL_TO_FILENAME_LENGTH) {
+            fileNamePrefix = fileNamePrefix.substring(0, MAX_URL_TO_FILENAME_LENGTH) + DIVIDER;
         }
-        
+
         fileNamePrefix = fileNamePrefix + hash + DIVIDER;
 
         return fileNamePrefix;
@@ -166,6 +167,12 @@ public class FileService {
         return screenshotPath;
     }
 
+    public String writeScreenshot(ScreenshotContext screenshotContext, BufferedImage image,
+                                  int yPosition) throws IOException {
+        String writtenScreenshotPath = writeScreenshot(image, screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.deviceConfig.width, yPosition, screenshotContext.before ? BEFORE : AFTER);
+        return writtenScreenshotPath;
+    }
+
     public List<String> getFilenamesForStep(String path, String url, String step) throws IOException {
         final String matcherPattern = "glob:**" + generateScreenshotFileNamePrefix(url, path) + "*_*_" + step + ".png";
         Path screenshotDirectory = getScreenshotDirectory();
@@ -192,7 +199,7 @@ public class FileService {
     }
 
     public void writeHtml(String html, boolean before) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + ( before ? "/before.html" : "/after.html")))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + (before ? "/before.html" : "/after.html")))) {
             out.print(html);
         }
     }
