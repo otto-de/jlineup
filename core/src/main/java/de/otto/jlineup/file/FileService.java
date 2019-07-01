@@ -26,8 +26,6 @@ public class FileService {
 
     public final static String FILE_SEPARATOR = FileSystems.getDefault().getSeparator();
 
-    public static final String BEFORE = "before";
-    public static final String AFTER = "after";
     public static final String DIVIDER = "_";
     public static final String PNG_EXTENSION = ".png";
     private static final int MAX_URL_TO_FILENAME_LENGTH = 180;
@@ -169,7 +167,7 @@ public class FileService {
 
     public String writeScreenshot(ScreenshotContext screenshotContext, BufferedImage image,
                                   int yPosition) throws IOException {
-        String writtenScreenshotPath = writeScreenshot(image, screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.deviceConfig.width, yPosition, screenshotContext.before ? BEFORE : AFTER);
+        String writtenScreenshotPath = writeScreenshot(image, screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.deviceConfig.width, yPosition, screenshotContext.step.name());
         return writtenScreenshotPath;
     }
 
@@ -198,8 +196,8 @@ public class FileService {
         }
     }
 
-    public void writeHtml(String html, boolean before) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + (before ? "/before.html" : "/after.html")))) {
+    public void writeHtml(String html, Step step) throws FileNotFoundException {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + (step + ".html")))) {
             out.print(html);
         }
     }

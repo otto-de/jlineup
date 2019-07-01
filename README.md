@@ -61,7 +61,7 @@ JLineup CLI comes as executable Java Archive. Java 8 or higher has to be availab
 
 Open a terminal and download it like this:
 
-    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/3.0.2/jlineup-cli-3.0.2.jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/3.0.3/jlineup-cli-3.0.3.jar -O jlineup.jar
 
 Then type
 
@@ -80,7 +80,7 @@ Let's assume, this is part of a continuous integration pipeline:
 
 ## Browser Compatibility
 
-JLineup 3.0.2 was tested successfully with
+JLineup 3.0.3 was tested successfully with
 
 * Chrome 72.x
 * Firefox 65.x

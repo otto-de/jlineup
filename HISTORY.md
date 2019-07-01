@@ -6,7 +6,7 @@
 * JLineup can be build with Java 11
 * Update multiple dependencies
 
-## Release 3.0.2
+## Release 3.0.3
 * Bugfix: Implemented workaround for strange scrolling behavior in Firefox (sometimes window.scrollBy(0, x) scrolls double the amount given)
 
 ## Release 3.0.1

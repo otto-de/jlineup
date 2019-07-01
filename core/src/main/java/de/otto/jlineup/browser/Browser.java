@@ -338,7 +338,7 @@ public class Browser implements AutoCloseable {
         }
 
         String dom = getDom();
-        fileService.writeHtml(dom, screenshotContext.before);
+        fileService.writeHtml(dom, screenshotContext.step);
     }
 
     private void resizeBrowser(WebDriver driver, int width, int height) {

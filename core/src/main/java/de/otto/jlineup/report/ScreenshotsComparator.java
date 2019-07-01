@@ -6,6 +6,7 @@ import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
@@ -28,8 +29,8 @@ public class ScreenshotsComparator {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
-    private static final String BEFORE_MATCHER = DIVIDER + BEFORE + PNG_EXTENSION;
-    private static final String AFTER_MATCHER = DIVIDER + AFTER + PNG_EXTENSION;
+    private static final String BEFORE_MATCHER = DIVIDER + Step.before.name() + PNG_EXTENSION;
+    private static final String AFTER_MATCHER = DIVIDER + Step.after.name() + PNG_EXTENSION;
 
     private final RunStepConfig runStepConfig;
     private final JobConfig jobConfig;
@@ -62,12 +63,12 @@ public class ScreenshotsComparator {
                 LOG.debug("Path: {}", path);
                 String fullUrlWithPath = BrowserUtils.buildUrl(url, path, urlConfig.envMapping);
 
-                final List<String> beforeFileNamesList = fileService.getFilenamesForStep(path, url, BEFORE);
+                final List<String> beforeFileNamesList = fileService.getFilenamesForStep(path, url, Step.before.name());
                 final List<String> afterFileNamesList = new ArrayList<>();
                 beforeFileNamesList.forEach(filename -> afterFileNamesList.add(switchAfterWithBeforeInFileName(filename)));
 
                 final Set<String> beforeFileNamesSet = new HashSet<>(beforeFileNamesList);
-                final Set<String> afterFileNamesSet = new HashSet<>(fileService.getFilenamesForStep(path, url, AFTER));
+                final Set<String> afterFileNamesSet = new HashSet<>(fileService.getFilenamesForStep(path, url, Step.after.name()));
 
                 //we need after files that have no before file in the final report
                 final List<String> afterFileNamesWithNoBeforeFile = new ArrayList<>();

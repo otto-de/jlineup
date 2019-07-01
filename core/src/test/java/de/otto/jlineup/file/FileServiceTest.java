@@ -2,6 +2,7 @@ package de.otto.jlineup.file;
 
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.config.Step;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -127,7 +128,7 @@ public class FileServiceTest {
         FileService fileService = new FileService(runStepConfig);
 
         //when
-        List<String> beforeFiles = fileService.getFilenamesForStep("/", "http://url", BEFORE);
+        List<String> beforeFiles = fileService.getFilenamesForStep("/", "http://url", Step.before.name());
         //then
         assertThat(beforeFiles, is(ImmutableList.of("http_url_root_ff3c40c_1001_02002_before.png")));
     }
@@ -142,7 +143,7 @@ public class FileServiceTest {
         FileService fileService = new FileService(runStepConfig);
 
         //when
-        List<String> afterFiles = fileService.getFilenamesForStep("/", "http://url", AFTER);
+        List<String> afterFiles = fileService.getFilenamesForStep("/", "http://url", Step.after.name());
         //then
         assertThat(afterFiles, is(ImmutableList.of("http_url_root_ff3c40c_1001_02002_after.png", "http_url_root_ff3c40c_1001_03003_after.png")));
     }
