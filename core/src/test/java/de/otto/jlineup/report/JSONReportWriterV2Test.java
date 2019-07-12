@@ -11,6 +11,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import java.util.Collections;
 
 import static de.otto.jlineup.config.JobConfig.exampleConfig;
+import static java.lang.System.lineSeparator;
 import static java.util.Collections.singletonList;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -38,107 +39,107 @@ public class JSONReportWriterV2Test {
 
         //language=JSON
         String expectedJSON =
-                "{\n" +
-                "  \"summary\": {\n" +
-                "    \"error\": false,\n" +
-                "    \"differenceSum\": 0.0,\n" +
-                "    \"differenceMax\": 0.0\n" +
-                "  },\n" +
-                "  \"screenshotComparisonsForUrl\": {\n" +
-                "    \"test\": {\n" +
-                "      \"comparisonResults\": [\n" +
-                "        {\n" +
-                "          \"url\": \"url\",\n" +
-                "          \"width\": 1337,\n" +
-                "          \"verticalScrollPosition\": 1338,\n" +
-                "          \"difference\": 0.0,\n" +
-                "          \"screenshotBeforeFileName\": \"before\",\n" +
-                "          \"screenshotAfterFileName\": \"after\",\n" +
-                "          \"differenceImageFileName\": \"differenceImageFileName\",\n" +
-                "          \"maxSingleColorDifference\": 0\n" +
-                "        }\n" +
-                "      ],\n" +
-                "      \"summary\": {\n" +
-                "        \"error\": false,\n" +
-                "        \"differenceSum\": 0.0,\n" +
-                "        \"differenceMax\": 0.0\n" +
-                "      }\n" +
-                "    }\n" +
-                "  },\n" +
-                "  \"config\": {\n" +
-                "    \"urls\": {\n" +
-                "      \"http://www.example.com\": {\n" +
-                "        \"paths\": [\n" +
-                "          \"/\",\n" +
-                "          \"someOtherPath\"\n" +
-                "        ],\n" +
-                "        \"max-diff\": 0.0,\n" +
-                "        \"cookies\": [\n" +
-                "          {\n" +
-                "            \"name\": \"exampleCookieName\",\n" +
-                "            \"value\": \"exampleValue\",\n" +
-                "            \"domain\": \"http://www.example.com\",\n" +
-                "            \"path\": \"/\",\n" +
-                "            \"expiry\": \"1970-01-01T00:00:01Z\",\n" +
-                "            \"secure\": true\n" +
-                "          }\n" +
-                "        ],\n" +
-                "        \"env-mapping\": {\n" +
-                "          \"live\": \"www\"\n" +
-                "        },\n" +
-                "        \"local-storage\": {\n" +
-                "          \"exampleLocalStorageKey\": \"value\"\n" +
-                "        },\n" +
-                "        \"session-storage\": {\n" +
-                "          \"exampleSessionStorageKey\": \"value\"\n" +
-                "        },\n" +
-                "        \"window-widths\": [\n" +
-                "          600,\n" +
-                "          800,\n" +
-                "          1000\n" +
-                "        ],\n" +
-                "        \"max-scroll-height\": 100000,\n" +
-                "        \"wait-after-page-load\": 0.0,\n" +
-                "        \"wait-after-scroll\": 0.0,\n" +
-                "        \"wait-for-no-animation-after-scroll\": 0.0,\n" +
-                "        \"warmup-browser-cache-time\": 0.0,\n" +
-                "        \"wait-for-fonts-time\": 0.0,\n" +
-                "        \"javascript\": \"console.log(\\u0027This is JavaScript!\\u0027)\",\n" +
-                "        \"hide-images\": false,\n" +
-                "        \"http-check\": {\n" +
-                "          \"enabled\": true,\n" +
-                "          \"allowed-codes\": [\n" +
-                "            200,\n" +
-                "            202,\n" +
-                "            204,\n" +
-                "            205,\n" +
-                "            206,\n" +
-                "            301,\n" +
-                "            302,\n" +
-                "            303,\n" +
-                "            304,\n" +
-                "            307,\n" +
-                "            308\n" +
-                "          ]\n" +
-                "        },\n" +
-                "        \"max-color-diff-per-pixel\": 1\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"browser\": \"PhantomJS\",\n" +
-                "    \"wait-after-page-load\": 0.0,\n" +
-                "    \"page-load-timeout\": 120,\n" +
-                "    \"window-height\": 800,\n" +
-                "    \"report-format\": 2,\n" +
-                "    \"screenshot-retries\": 0,\n" +
-                "    \"threads\": 0,\n" +
-                "    \"timeout\": 600,\n" +
-                "    \"debug\": false,\n" +
-                "    \"log-to-file\": false,\n" +
-                "    \"check-for-errors-in-log\": true,\n" +
-                "    \"http-check\": {\n" +
-                "      \"enabled\": false\n" +
-                "    }\n" +
-                "  }\n" +
+                "{" + lineSeparator() +
+                "  \"summary\": {" + lineSeparator() +
+                "    \"error\": false," + lineSeparator() +
+                "    \"differenceSum\": 0.0," + lineSeparator() +
+                "    \"differenceMax\": 0.0" + lineSeparator() +
+                "  }," + lineSeparator() +
+                "  \"screenshotComparisonsForUrl\": {" + lineSeparator() +
+                "    \"test\": {" + lineSeparator() +
+                "      \"comparisonResults\": [" + lineSeparator() +
+                "        {" + lineSeparator() +
+                "          \"url\": \"url\"," + lineSeparator() +
+                "          \"width\": 1337," + lineSeparator() +
+                "          \"verticalScrollPosition\": 1338," + lineSeparator() +
+                "          \"difference\": 0.0," + lineSeparator() +
+                "          \"screenshotBeforeFileName\": \"before\"," + lineSeparator() +
+                "          \"screenshotAfterFileName\": \"after\"," + lineSeparator() +
+                "          \"differenceImageFileName\": \"differenceImageFileName\"," + lineSeparator() +
+                "          \"maxSingleColorDifference\": 0" + lineSeparator() +
+                "        }" + lineSeparator() +
+                "      ]," + lineSeparator() +
+                "      \"summary\": {" + lineSeparator() +
+                "        \"error\": false," + lineSeparator() +
+                "        \"differenceSum\": 0.0," + lineSeparator() +
+                "        \"differenceMax\": 0.0" + lineSeparator() +
+                "      }" + lineSeparator() +
+                "    }" + lineSeparator() +
+                "  }," + lineSeparator() +
+                "  \"config\": {" + lineSeparator() +
+                "    \"urls\": {" + lineSeparator() +
+                "      \"http://www.example.com\": {" + lineSeparator() +
+                "        \"paths\": [" + lineSeparator() +
+                "          \"/\"," + lineSeparator() +
+                "          \"someOtherPath\"" + lineSeparator() +
+                "        ]," + lineSeparator() +
+                "        \"max-diff\": 0.0," + lineSeparator() +
+                "        \"cookies\": [" + lineSeparator() +
+                "          {" + lineSeparator() +
+                "            \"name\": \"exampleCookieName\"," + lineSeparator() +
+                "            \"value\": \"exampleValue\"," + lineSeparator() +
+                "            \"domain\": \"http://www.example.com\"," + lineSeparator() +
+                "            \"path\": \"/\"," + lineSeparator() +
+                "            \"expiry\": \"1970-01-01T00:00:01Z\"," + lineSeparator() +
+                "            \"secure\": true" + lineSeparator() +
+                "          }" + lineSeparator() +
+                "        ]," + lineSeparator() +
+                "        \"env-mapping\": {" + lineSeparator() +
+                "          \"live\": \"www\"" + lineSeparator() +
+                "        }," + lineSeparator() +
+                "        \"local-storage\": {" + lineSeparator() +
+                "          \"exampleLocalStorageKey\": \"value\"" + lineSeparator() +
+                "        }," + lineSeparator() +
+                "        \"session-storage\": {" + lineSeparator() +
+                "          \"exampleSessionStorageKey\": \"value\"" + lineSeparator() +
+                "        }," + lineSeparator() +
+                "        \"window-widths\": [" + lineSeparator() +
+                "          600," + lineSeparator() +
+                "          800," + lineSeparator() +
+                "          1000" + lineSeparator() +
+                "        ]," + lineSeparator() +
+                "        \"max-scroll-height\": 100000," + lineSeparator() +
+                "        \"wait-after-page-load\": 0.0," + lineSeparator() +
+                "        \"wait-after-scroll\": 0.0," + lineSeparator() +
+                "        \"wait-for-no-animation-after-scroll\": 0.0," + lineSeparator() +
+                "        \"warmup-browser-cache-time\": 0.0," + lineSeparator() +
+                "        \"wait-for-fonts-time\": 0.0," + lineSeparator() +
+                "        \"javascript\": \"console.log(\\u0027This is JavaScript!\\u0027)\"," + lineSeparator() +
+                "        \"hide-images\": false," + lineSeparator() +
+                "        \"http-check\": {" + lineSeparator() +
+                "          \"enabled\": true," + lineSeparator() +
+                "          \"allowed-codes\": [" + lineSeparator() +
+                "            200," + lineSeparator() +
+                "            202," + lineSeparator() +
+                "            204," + lineSeparator() +
+                "            205," + lineSeparator() +
+                "            206," + lineSeparator() +
+                "            301," + lineSeparator() +
+                "            302," + lineSeparator() +
+                "            303," + lineSeparator() +
+                "            304," + lineSeparator() +
+                "            307," + lineSeparator() +
+                "            308" + lineSeparator() +
+                "          ]" + lineSeparator() +
+                "        }," + lineSeparator() +
+                "        \"max-color-diff-per-pixel\": 1" + lineSeparator() +
+                "      }" + lineSeparator() +
+                "    }," + lineSeparator() +
+                "    \"browser\": \"PhantomJS\"," + lineSeparator() +
+                "    \"wait-after-page-load\": 0.0," + lineSeparator() +
+                "    \"page-load-timeout\": 120," + lineSeparator() +
+                "    \"window-height\": 800," + lineSeparator() +
+                "    \"report-format\": 2," + lineSeparator() +
+                "    \"screenshot-retries\": 0," + lineSeparator() +
+                "    \"threads\": 0," + lineSeparator() +
+                "    \"timeout\": 600," + lineSeparator() +
+                "    \"debug\": false," + lineSeparator() +
+                "    \"log-to-file\": false," + lineSeparator() +
+                "    \"check-for-errors-in-log\": true," + lineSeparator() +
+                "    \"http-check\": {" + lineSeparator() +
+                "      \"enabled\": false" + lineSeparator() +
+                "    }" + lineSeparator() +
+                "  }" + lineSeparator() +
                 "}";
 
         testee.writeComparisonReportAsJson(report);

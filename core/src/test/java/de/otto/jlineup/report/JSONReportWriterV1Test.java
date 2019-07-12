@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import static java.lang.System.lineSeparator;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -33,15 +34,15 @@ public class JSONReportWriterV1Test {
         final Summary globalSummary = new Summary(false, 0d, 0d);
         Report report = new Report(globalSummary, singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), JobConfig.exampleConfig());
 
-        String expectedString = "[ {\n" +
-                "  \"url\" : \"url\",\n" +
-                "  \"width\" : 1337,\n" +
-                "  \"verticalScrollPosition\" : 1338,\n" +
-                "  \"difference\" : 0.0,\n" +
-                "  \"screenshotBeforeFileName\" : \"before\",\n" +
-                "  \"screenshotAfterFileName\" : \"after\",\n" +
-                "  \"differenceImageFileName\" : \"differenceImageFileName\",\n" +
-                "  \"maxSingleColorDifference\" : 0\n" +
+        String expectedString = "[ {" + lineSeparator() +
+                "  \"url\" : \"url\"," + lineSeparator() +
+                "  \"width\" : 1337," + lineSeparator() +
+                "  \"verticalScrollPosition\" : 1338," + lineSeparator() +
+                "  \"difference\" : 0.0," + lineSeparator() +
+                "  \"screenshotBeforeFileName\" : \"before\"," + lineSeparator() +
+                "  \"screenshotAfterFileName\" : \"after\"," + lineSeparator() +
+                "  \"differenceImageFileName\" : \"differenceImageFileName\"," + lineSeparator() +
+                "  \"maxSingleColorDifference\" : 0" + lineSeparator() +
                 "} ]";
 
         testee.writeComparisonReportAsJson(report);
