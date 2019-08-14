@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- * Ported from looks-same by Yandex
+ * Ported from looks-same by Yandex: https://github.com/gemini-testing/looks-same
  *
  * The MIT License (MIT)
  *
