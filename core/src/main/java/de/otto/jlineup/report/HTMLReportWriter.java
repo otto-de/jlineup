@@ -1,6 +1,8 @@
 package de.otto.jlineup.report;
 
 import de.otto.jlineup.Utils;
+import de.otto.jlineup.browser.BrowserUtils;
+import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.file.FileService;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -39,13 +41,13 @@ public class HTMLReportWriter {
         Map<String, Object> variables = new HashMap<>();
         List<ScreenshotComparisonResultContext> screenshotComparisonResultContexts = new LinkedList<>();
 
-        String lastContextKey = null;
+        int lastContextKey = 0;
         ScreenshotComparisonResultContext currentContext = null;
         for (ScreenshotComparisonResult screenshotComparisonResult : screenshotComparisonResults) {
-            String context = getContextKey(screenshotComparisonResult);
-            if (!context.equals(lastContextKey)) {
+            int context = getContextHash(screenshotComparisonResult);
+            if (context != lastContextKey) {
                 lastContextKey = context;
-                currentContext = new ScreenshotComparisonResultContext(screenshotComparisonResult.url, screenshotComparisonResult.width);
+                currentContext = new ScreenshotComparisonResultContext(screenshotComparisonResult.contextHash);
                 screenshotComparisonResultContexts.add(currentContext);
             }
             currentContext.addResult(screenshotComparisonResult);
@@ -57,33 +59,39 @@ public class HTMLReportWriter {
         return variables;
     }
 
-    private String getContextKey(final ScreenshotComparisonResult screenshotComparisonResult) {
-        return screenshotComparisonResult.url + "|||" + screenshotComparisonResult.width;
+    private int getContextHash(final ScreenshotComparisonResult screenshotComparisonResult) {
+        return screenshotComparisonResult.contextHash;
     }
 
     private class ScreenshotComparisonResultContext {
 
-        private final String url;
-        private final int width;
         private final List<ScreenshotComparisonResult> results;
+        private final ScreenshotContext screenshotContext;
+        private final int contextHash;
 
-        ScreenshotComparisonResultContext(final String url, final int width) {
-            this.url = url;
-            this.width = width;
+        ScreenshotComparisonResultContext(final int contextHash) {
             this.results = new LinkedList<>();
+            this.screenshotContext = fileService.getRecordedContext(contextHash);
+            this.contextHash = contextHash;
         }
 
         void addResult(ScreenshotComparisonResult result) {
             results.add(result);
         }
 
+        @UsedInTemplate
+        public int getContextHash() {
+            return contextHash;
+        }
+
+        @UsedInTemplate
         public String getUrl() {
-            return url;
+            return BrowserUtils.buildUrl(screenshotContext.url, screenshotContext.urlSubPath, Collections.emptyMap());
         }
 
         @UsedInTemplate
         public int getWidth() {
-            return width;
+            return screenshotContext.deviceConfig.width;
         }
 
         @UsedInTemplate
@@ -93,18 +101,17 @@ public class HTMLReportWriter {
 
         @UsedInTemplate
         public String getShortenedUrl() {
-            String shortenedUrl = url;
-            if (url.length() > 25) {
+            String shortenedUrl = getUrl();
+            if (shortenedUrl.length() > 25) {
                 shortenedUrl = "..." + shortenedUrl.substring(shortenedUrl.lastIndexOf("/"), shortenedUrl.length());
             }
             return shortenedUrl;
         }
 
         @UsedInTemplate
-        public boolean isSuccess()
-        {
-            for(ScreenshotComparisonResult result : results) {
-                if(result.difference > 0)
+        public boolean isSuccess() {
+            for (ScreenshotComparisonResult result : results) {
+                if (result.difference > 0)
                     return false;
             }
 

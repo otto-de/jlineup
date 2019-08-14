@@ -112,8 +112,8 @@
 <div class="report">
     <h2>JLineup Comparison Report</h2>
     <div class="context" th:each="resultContext,iterationStatus : ${resultContexts}">
-        <input type="checkbox" th:attr="id=${resultContext.url} + '|||' + ${resultContext.width}" />
-        <label th:attr="for=${resultContext.url} + '|||' + ${resultContext.width}" th:classappend="${resultContext.isSuccess()} ? success : failure">
+        <input type="checkbox" th:attr="id=${resultContext.contextHash}" />
+        <label th:attr="for=${resultContext.contextHash}" th:classappend="${resultContext.isSuccess()} ? success : failure">
             <div class="arrow-right"></div>
             <div class="arrow-down"></div>
             [[${resultContext.url}]] (Browser window width: [[${resultContext.width}]])
@@ -127,8 +127,8 @@
             </tr>
             <tr th:each="result,iterationStatus : ${resultContext.results}">
                 <td>
-                    <p><a th:href="${result.url}" target="_blank" th:title="${result.url}">[[${resultContext.getShortenedUrl()}]]</a><br/>
-                        Width: [[${result.width}]]<br/>
+                    <p><a th:href="${resultContext.url}" target="_blank" th:title="${resultContext.url}">[[${resultContext.getShortenedUrl()}]]</a><br/>
+                        Width: [[${resultContext.width}]]<br/>
                         Scroll pos: [[${result.verticalScrollPosition}]]<br/>
                         Difference: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%
                     </p>

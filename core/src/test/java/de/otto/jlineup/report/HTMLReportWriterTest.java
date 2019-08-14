@@ -1,7 +1,12 @@
 package de.otto.jlineup.report;
 
+import de.otto.jlineup.browser.ScreenshotContext;
+import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.file.FileTracker;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -10,13 +15,16 @@ import org.mockito.Mockito;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class HTMLReportWriterTest {
@@ -26,7 +34,7 @@ public class HTMLReportWriterTest {
     @Mock
     private FileService fileServiceMock;
 
-    private final List<ScreenshotComparisonResult> screenshotComparisonResults = singletonList(new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceSum", 0));
+    private final List<ScreenshotComparisonResult> screenshotComparisonResults = singletonList(new ScreenshotComparisonResult(1887, "someurl/somepath", DeviceConfig.deviceConfig(1337,200), 1338, 0d, "before", "after", "differenceSum", 0));
     private Summary summary = new Summary(true, 1d, 0.5d);
     private Summary localSummary = new Summary(true, 2d, 0.3d);
     private final Map<String, UrlReport> screenshotComparisonResultList =
@@ -37,6 +45,7 @@ public class HTMLReportWriterTest {
     public void setup() {
         initMocks(this);
         testee = new HTMLReportWriter(fileServiceMock);
+        when(fileServiceMock.getRecordedContext(anyInt())).thenReturn(ScreenshotContext.of("someUrl", "somePath", DeviceConfig.deviceConfig(1337,200), Step.before, UrlConfig.urlConfigBuilder().build()));
     }
 
     @Test
@@ -158,11 +167,11 @@ public class HTMLReportWriterTest {
                 "<div class=\"report\">" + n +
                 "    <h2>JLineup Comparison Report</h2>" + n +
                 "    <div class=\"context\">" + n +
-                "        <input type=\"checkbox\" id=\"url|||1337\" />" + n +
-                "        <label for=\"url|||1337\" class=\"success\">" + n +
+                "        <input type=\"checkbox\" id=\"1887\" />" + n +
+                "        <label for=\"1887\" class=\"success\">" + n +
                 "            <div class=\"arrow-right\"></div>" + n +
                 "            <div class=\"arrow-down\"></div>" + n +
-                "            url (Browser window width: 1337)" + n +
+                "            someUrl/somePath (Browser window width: 1337)" + n +
                 "        </label>" + n +
                 "        <table>" + n +
                 "            <tr>" + n +
@@ -173,7 +182,7 @@ public class HTMLReportWriterTest {
                 "            </tr>" + n +
                 "            <tr>" + n +
                 "                <td>" + n +
-                "                    <p><a href=\"url\" target=\"_blank\" title=\"url\">url</a><br/>" + n +
+                "                    <p><a href=\"someUrl/somePath\" target=\"_blank\" title=\"someUrl/somePath\">someUrl/somePath</a><br/>" + n +
                 "                        Width: 1337<br/>" + n +
                 "                        Scroll pos: 1338<br/>" + n +
                 "                        Difference: 0.00%" + n +
@@ -219,7 +228,6 @@ public class HTMLReportWriterTest {
     public void shouldWriteReport() throws FileNotFoundException {
 
         testee.writeReport(report);
-
         Mockito.verify(fileServiceMock).writeHtmlReport(anyString());
     }
 }

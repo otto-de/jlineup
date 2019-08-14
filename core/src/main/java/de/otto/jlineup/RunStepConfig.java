@@ -32,6 +32,10 @@ public class RunStepConfig {
         return new Builder();
     }
 
+    public static Builder copyOfBuilder(RunStepConfig config) {
+        return new Builder(config);
+    }
+
     public String getReportDirectory() {
         return reportDirectory;
     }
@@ -71,6 +75,16 @@ public class RunStepConfig {
         private Step step;
 
         private Builder() {
+        }
+
+        private Builder(RunStepConfig copy) {
+            this.reportDirectory = copy.getReportDirectory();
+            this.workingDirectory = copy.getWorkingDirectory();
+            this.screenshotsDirectory = copy.getScreenshotsDirectory();
+            this.step = copy.getStep();
+            this.urlReplacements = copy.getUrlReplacements();
+            this.chromeParameters = copy.getChromeParameters();
+            this.firefoxParameters = copy.getFirefoxParameters();
         }
 
         public Builder withReportDirectory(String val) {

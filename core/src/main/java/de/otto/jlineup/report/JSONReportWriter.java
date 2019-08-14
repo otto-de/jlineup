@@ -6,5 +6,5 @@ import java.io.FileNotFoundException;
 
 public interface JSONReportWriter {
 
-    public void writeComparisonReportAsJson(Report report) throws FileNotFoundException, JsonProcessingException;
+    void writeComparisonReportAsJson(Report report) throws FileNotFoundException, JsonProcessingException;
 }

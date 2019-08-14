@@ -34,13 +34,12 @@ public class JLineupRunner {
     public JLineupRunner(JobConfig jobConfig, RunStepConfig runStepConfig) throws ValidationError {
         this.jobConfig = jobConfig;
         this.runStepConfig = runStepConfig;
-
         validateConfig();
     }
 
     public boolean run() {
 
-        FileService fileService = new FileService(runStepConfig);
+        FileService fileService = new FileService(runStepConfig, jobConfig);
         ImageService imageService = new ImageService();
 
         //Make sure the working dir exists

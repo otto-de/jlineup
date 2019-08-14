@@ -1,10 +1,8 @@
 package de.otto.jlineup.report;
 
-import com.google.common.annotations.VisibleForTesting;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
-import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
@@ -16,21 +14,13 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.IIOException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import static de.otto.jlineup.file.FileService.*;
 import static java.lang.invoke.MethodHandles.lookup;
 
 public class ScreenshotsComparator {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
-
-    private static final String BEFORE_MATCHER = DIVIDER + Step.before.name() + PNG_EXTENSION;
-    private static final String AFTER_MATCHER = DIVIDER + Step.after.name() + PNG_EXTENSION;
 
     private final RunStepConfig runStepConfig;
     private final JobConfig jobConfig;
@@ -41,7 +31,7 @@ public class ScreenshotsComparator {
                                  JobConfig jobConfig,
                                  FileService fileService,
                                  ImageService imageService) {
-        this.runStepConfig = runStepConfig;
+        this.runStepConfig = RunStepConfig.copyOfBuilder(runStepConfig).withStep(Step.compare).build();
         this.jobConfig = jobConfig;
         this.fileService = fileService;
         this.imageService = imageService;
@@ -54,60 +44,66 @@ public class ScreenshotsComparator {
             return null;
         }
         Map<String, List<ScreenshotComparisonResult>> results = new HashMap<>();
+        List<ScreenshotContext> screenshotContexts = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig);
+        final HashMap<Integer, ScreenshotContext> contextHashMap = new HashMap<>();
+        screenshotContexts.forEach(v -> contextHashMap.put(v.contextHash(), v));
+
         for (Map.Entry<String, UrlConfig> urlConfigEntry : jobConfig.urls.entrySet()) {
             List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
-            String url = BrowserUtils.prepareDomain(runStepConfig, urlConfigEntry.getKey());
-            UrlConfig urlConfig = urlConfigEntry.getValue();
-            LOG.debug("Url: {}", url);
-            for (String path : urlConfig.paths) {
-                LOG.debug("Path: {}", path);
-                String fullUrlWithPath = BrowserUtils.buildUrl(url, path, urlConfig.envMapping);
+            for (ScreenshotContext screenshotContext : screenshotContexts) {
+                String fullUrlWithPath = BrowserUtils.buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
+                Map<Integer, Map<Step, String>> screenshots = fileService.getFileTracker().getScreenshotsForContext(screenshotContext.contextHash());
+                List<Integer> yPositions = new ArrayList<>(screenshots.keySet());
 
-                final List<String> beforeFileNamesList = fileService.getFilenamesForStep(path, url, Step.before.name());
-                final List<String> afterFileNamesList = new ArrayList<>();
-                beforeFileNamesList.forEach(filename -> afterFileNamesList.add(switchAfterWithBeforeInFileName(filename)));
+                for (int i = 0; i < yPositions.size(); i++) {
+                    Integer yPosition = yPositions.get(i);
+                    String beforeFileName = screenshots.get(yPosition).get(Step.before);
+                    String afterFileName = screenshots.get(yPosition).get(Step.after);
 
-                final Set<String> beforeFileNamesSet = new HashSet<>(beforeFileNamesList);
-                final Set<String> afterFileNamesSet = new HashSet<>(fileService.getFilenamesForStep(path, url, Step.after.name()));
+                    LOG.debug("Comparing file '{}' with '{}'", beforeFileName, afterFileName);
+                    int windowWidth = screenshotContext.deviceConfig.width;
 
-                //we need after files that have no before file in the final report
-                final List<String> afterFileNamesWithNoBeforeFile = new ArrayList<>();
-                afterFileNamesSet.stream()
-                        .filter(name -> !beforeFileNamesSet.contains(switchAfterWithBeforeInFileName(name)))
-                        .forEach(afterFileNamesWithNoBeforeFile::add);
-
-                for (int i = 0; i < beforeFileNamesList.size(); i++) {
-                    String beforeFileName = beforeFileNamesList.get(i);
-                    String afterFileName = afterFileNamesList.get(i);
-
-                    LOG.debug("Comparing '{}' with '{}'", beforeFileName, afterFileName);
-
-                    int yPosition = extractVerticalScrollPositionFromFileName(beforeFileName);
-                    int windowWidth = extractWindowWidthFromFileName(beforeFileName);
-
-                    BufferedImage imageBefore;
-                    try {
-                        imageBefore = fileService.readScreenshot(beforeFileName);
-                    } catch (IIOException e) {
-                        System.err.println("Can't read screenshot of 'before' step. Did you run JLineup with '--step before' parameter before trying to run '--step after' or --compare?");
-                        throw e;
+                    boolean error = false;
+                    BufferedImage imageBefore = null;
+                    if (beforeFileName == null) {
+                        error = true;
+                    } else {
+                        try {
+                            imageBefore = fileService.readScreenshot(beforeFileName);
+                        } catch (IIOException e) {
+                            error = true;
+                        }
                     }
-
-                    BufferedImage imageAfter;
-                    try {
-                        imageAfter = fileService.readScreenshot(afterFileName);
-                    } catch (IIOException e) {
-                        screenshotComparisonResults.add(ScreenshotComparisonResult.noAfterImageComparisonResult(fullUrlWithPath, windowWidth, yPosition, buildRelativePathFromReportDir(beforeFileName)));
+                    if (error) {
+                        screenshotComparisonResults.add(ScreenshotComparisonResult.noBeforeImageComparisonResult(screenshotContext.contextHash(), fullUrlWithPath, screenshotContext.deviceConfig, yPosition, buildRelativePathFromReportDir(afterFileName)));
                         continue;
                     }
 
-                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, jobConfig.windowHeight, urlConfig.maxColorDiffPerPixel);
+                    BufferedImage imageAfter = null;
+                    if (afterFileName == null) {
+                        error = true;
+                    } else {
+                        try {
+                            imageAfter = fileService.readScreenshot(afterFileName);
+                        } catch (IIOException e) {
+                            error = true;
+                        }
+                    }
+
+                    if (error) {
+                        screenshotComparisonResults.add(ScreenshotComparisonResult.noAfterImageComparisonResult(screenshotContext.contextHash(), fullUrlWithPath, screenshotContext.deviceConfig, yPosition, buildRelativePathFromReportDir(beforeFileName)));
+                        continue;
+                    }
+
+                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, jobConfig.windowHeight, screenshotContext.urlConfig.maxColorDiffPerPixel, false);
                     String differenceImageFileName = null;
                     if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
-                        differenceImageFileName = Paths.get(fileService.writeScreenshot(imageComparisonResult.getDifferenceImage().orElse(null), url, path, windowWidth, yPosition, "DIFFERENCE")).getFileName().toString();
+                        differenceImageFileName = fileService.writeScreenshot(screenshotContext, imageComparisonResult.getDifferenceImage().orElse(null), yPosition);
                     }
-                    screenshotComparisonResults.add(new ScreenshotComparisonResult(fullUrlWithPath,
-                            windowWidth,
+                    screenshotComparisonResults.add(new ScreenshotComparisonResult(
+                            screenshotContext.contextHash(),
+                            fullUrlWithPath,
+                            screenshotContext.deviceConfig,
                             yPosition,
                             imageComparisonResult.getDifference(),
                             buildRelativePathFromReportDir(beforeFileName),
@@ -115,10 +111,13 @@ public class ScreenshotsComparator {
                             buildRelativePathFromReportDir(differenceImageFileName),
                             imageComparisonResult.getMaxSingleColorDifference()));
                 }
-
-                addMissingBeforeFilesToResults(screenshotComparisonResults, fullUrlWithPath, afterFileNamesWithNoBeforeFile);
             }
-            screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>comparing(r -> r.url).thenComparing(r -> r.width).thenComparing(r -> r.verticalScrollPosition));
+            screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>
+                    comparing(r -> r.url)
+                    .thenComparing(r -> r.deviceConfig.width)
+                    .thenComparing(r -> r.deviceConfig.height)
+                    .thenComparing(r -> r.deviceConfig.pixelRatio)
+                    .thenComparing(r -> r.verticalScrollPosition));
             results.put(urlConfigEntry.getKey(), screenshotComparisonResults);
         }
         return results;
@@ -126,50 +125,5 @@ public class ScreenshotsComparator {
 
     private String buildRelativePathFromReportDir(String imageFileName) {
         return imageFileName != null ? fileService.getRelativePathFromReportDirToScreenshotsDir() + imageFileName : null;
-    }
-
-    private void addMissingBeforeFilesToResults(List<ScreenshotComparisonResult> screenshotComparisonResults, String fullUrlWithPath, List<String> afterFileNamesWithNoBeforeFile) {
-        screenshotComparisonResults.addAll(afterFileNamesWithNoBeforeFile
-                .stream()
-                .map(remainingFile -> ScreenshotComparisonResult.noBeforeImageComparisonResult(
-                        fullUrlWithPath,
-                        extractWindowWidthFromFileName(remainingFile),
-                        extractVerticalScrollPositionFromFileName(remainingFile),
-                        buildRelativePathFromReportDir(remainingFile)))
-                .collect(Collectors.toList()));
-    }
-
-    @VisibleForTesting
-    static String switchAfterWithBeforeInFileName(String filename) {
-        if (filename.contains(BEFORE_MATCHER)) {
-            return filename.replace(BEFORE_MATCHER, AFTER_MATCHER);
-        } else if (filename.contains(AFTER_MATCHER)) {
-            return filename.replace(AFTER_MATCHER, BEFORE_MATCHER);
-        }
-        return filename;
-    }
-
-    final private static Pattern FIND_VERTICAL_SCROLL_POSITION_PATTERN = Pattern.compile("_([0-9]*?)_\\D*$");
-
-    @VisibleForTesting
-    static int extractVerticalScrollPositionFromFileName(String fileName) {
-        Matcher matcher = FIND_VERTICAL_SCROLL_POSITION_PATTERN.matcher(fileName);
-        if (matcher.find()) {
-            String group = matcher.group(1);
-            return Integer.parseInt(group);
-        }
-        return 0;
-    }
-
-    final private static Pattern FIND_WINDOW_WIDTH_PATTERN = Pattern.compile("([0-9]*?)_[0-9]*?_\\D*$");
-
-    @VisibleForTesting
-    static int extractWindowWidthFromFileName(String fileName) {
-        Matcher matcher = FIND_WINDOW_WIDTH_PATTERN.matcher(fileName);
-        if (matcher.find()) {
-            String group = matcher.group(1);
-            return Integer.parseInt(group);
-        }
-        return 0;
     }
 }

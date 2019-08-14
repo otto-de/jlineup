@@ -2,7 +2,11 @@ package de.otto.jlineup.file;
 
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.browser.ScreenshotContext;
+import de.otto.jlineup.config.DeviceConfig;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.UrlConfig;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +32,7 @@ public class FileServiceTest {
     private FileService testee;
 
     private RunStepConfig runStepConfig;
+    private JobConfig jobConfig;
 
     @Rule
     public TemporaryFolder tempDir = new TemporaryFolder();
@@ -47,9 +52,12 @@ public class FileServiceTest {
                 .withWorkingDirectory(writeScreenshotTestPath)
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
+                .withStep(Step.before)
                 .build();
 
-        testee = new FileService(runStepConfig);
+        jobConfig = JobConfig.exampleConfig();
+
+        testee = new FileService(runStepConfig, jobConfig);
         testee.createDirIfNotExists(writeScreenshotTestPath);
         testee.createDirIfNotExists(writeScreenshotTestPath + "/screenshots");
         testee.createDirIfNotExists(writeScreenshotTestPath + "/report");
@@ -69,9 +77,9 @@ public class FileServiceTest {
         BufferedImage bufferedImage = new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB);
         bufferedImage.setRGB(0, 0, 200);
 
-        String fileName = testee.writeScreenshot(bufferedImage, "http://someurl", "somePath", 999, 777, "someStep");
+        String fileName = testee.writeScreenshot(ScreenshotContext.of("someUrl", "somePath", DeviceConfig.deviceConfig(1000, 1001), Step.before, UrlConfig.urlConfigBuilder().build()), bufferedImage, 12345);
 
-        assertThat(Files.exists(Paths.get(fileName)), is(true));
+        assertThat(Files.exists(Paths.get(testee.getScreenshotDirectory().toString(), fileName)), is(true));
     }
 
     @Test
@@ -112,51 +120,15 @@ public class FileServiceTest {
     }
 
     @Test
-    public void shouldFindAfterImagesInDirectoryWithPattern() throws IOException {
-        List<String> fileNamesMatchingPattern = testee.getFileNamesMatchingPattern(Paths.get("src/test/resources/screenshots"), "glob:**http_url_root_*_*_after.png");
-        assertThat(fileNamesMatchingPattern, is(Arrays.asList("http_url_root_ff3c40c_1001_02002_after.png", "http_url_root_ff3c40c_1001_03003_after.png")));
-    }
-
-    @Test
-    public void shouldFindBeforeImages() throws IOException {
-
-        runStepConfig = jLineupRunConfigurationBuilder()
-                .withWorkingDirectory("src/test/resources")
-                .withScreenshotsDirectory("screenshots")
-                .withReportDirectory("report")
-                .build();
-        FileService fileService = new FileService(runStepConfig);
-
-        //when
-        List<String> beforeFiles = fileService.getFilenamesForStep("/", "http://url", Step.before.name());
-        //then
-        assertThat(beforeFiles, is(ImmutableList.of("http_url_root_ff3c40c_1001_02002_before.png")));
-    }
-
-    @Test
-    public void shouldFindAfterImages() throws IOException {
-        runStepConfig = jLineupRunConfigurationBuilder()
-                .withWorkingDirectory("src/test/resources")
-                .withScreenshotsDirectory("screenshots")
-                .withReportDirectory("report")
-                .build();
-        FileService fileService = new FileService(runStepConfig);
-
-        //when
-        List<String> afterFiles = fileService.getFilenamesForStep("/", "http://url", Step.after.name());
-        //then
-        assertThat(afterFiles, is(ImmutableList.of("http_url_root_ff3c40c_1001_02002_after.png", "http_url_root_ff3c40c_1001_03003_after.png")));
-    }
-
-    @Test
     public void shouldBuildRelativePathsForDifferentDirectories() {
         //given
         runStepConfig = jLineupRunConfigurationBuilder()
                 .withWorkingDirectory("src" + FILE_SEPARATOR + "test" + FILE_SEPARATOR + "resources")
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
+                .withStep(Step.before)
                 .build();
-        FileService fileService = new FileService(runStepConfig);
+        FileService fileService = new FileService(runStepConfig, jobConfig);
 
         //when
         String relativePathFromReportDirToScreenshotsDir = fileService.getRelativePathFromReportDirToScreenshotsDir();
@@ -173,8 +145,9 @@ public class FileServiceTest {
                 .withWorkingDirectory("src/test/resources")
                 .withScreenshotsDirectory("rreeppoorrtt")
                 .withReportDirectory("rreeppoorrtt")
+                .withStep(Step.before)
                 .build();
-        FileService fileService = new FileService(runStepConfig);
+        FileService fileService = new FileService(runStepConfig, jobConfig);
 
         //when
         String relativePathFromReportDirToScreenshotsDir = fileService.getRelativePathFromReportDirToScreenshotsDir();

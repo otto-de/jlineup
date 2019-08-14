@@ -1,6 +1,7 @@
 package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -72,44 +73,17 @@ public class DeviceConfig {
         return new Builder();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DeviceConfig that = (DeviceConfig) o;
-        return width == that.width &&
-                height == that.height &&
-                Float.compare(that.pixelRatio, pixelRatio) == 0 &&
-                touch == that.touch &&
-                Objects.equals(deviceName, that.deviceName) &&
-                Objects.equals(userAgent, that.userAgent);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(width, height, pixelRatio, deviceName, userAgent, touch);
-    }
-
-    @Override
-    public String toString() {
-        return "DeviceConfig{" +
-                "width=" + width +
-                ", height=" + height +
-                ", pixelRatio=" + pixelRatio +
-                ", deviceName='" + deviceName + '\'' +
-                ", userAgent='" + userAgent + '\'' +
-                ", touch=" + touch +
-                '}';
-    }
-
+    @JsonIgnore
     public boolean isDesktop() {
         return DESKTOP_DEVICE_NAME.equalsIgnoreCase(deviceName.trim());
     }
 
+    @JsonIgnore
     public boolean isMobile() {
         return !DESKTOP_DEVICE_NAME.equalsIgnoreCase(deviceName.trim());
     }
 
+    @JsonIgnore
     public boolean isGenericMobile() {
         return MOBILE_DEVICE_NAME.equalsIgnoreCase(deviceName.trim());
     }
@@ -158,5 +132,35 @@ public class DeviceConfig {
         public DeviceConfig build() {
             return new DeviceConfig(this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DeviceConfig that = (DeviceConfig) o;
+        return width == that.width &&
+                height == that.height &&
+                Float.compare(that.pixelRatio, pixelRatio) == 0 &&
+                touch == that.touch &&
+                Objects.equals(deviceName, that.deviceName) &&
+                Objects.equals(userAgent, that.userAgent);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(width, height, pixelRatio, deviceName, userAgent, touch);
+    }
+
+    @Override
+    public String toString() {
+        return "DeviceConfig{" +
+                "width=" + width +
+                ", height=" + height +
+                ", pixelRatio=" + pixelRatio +
+                ", deviceName='" + deviceName + '\'' +
+                ", userAgent='" + userAgent + '\'' +
+                ", touch=" + touch +
+                '}';
     }
 }

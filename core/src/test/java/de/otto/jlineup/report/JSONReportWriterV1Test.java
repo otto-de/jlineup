@@ -1,5 +1,6 @@
 package de.otto.jlineup.report;
 
+import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import org.junit.Before;
@@ -29,15 +30,23 @@ public class JSONReportWriterV1Test {
     public void shouldWriteComparisonReportAsJson() throws Exception {
 
         ScreenshotComparisonResult screenshotComparisonResult =
-                new ScreenshotComparisonResult("url", 1337, 1338, 0d, "before", "after", "differenceImageFileName", 0);
+                new ScreenshotComparisonResult(1887, "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, "before", "after", "differenceImageFileName", 0);
         final Summary localSummary = new Summary(false, 0d, 0d);
         final Summary globalSummary = new Summary(false, 0d, 0d);
         Report report = new Report(globalSummary, singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), JobConfig.exampleConfig());
 
         String expectedString = "[ {" + lineSeparator() +
+                "  \"contextHash\" : 1887," + lineSeparator() +
                 "  \"url\" : \"url\"," + lineSeparator() +
-                "  \"width\" : 1337," + lineSeparator() +
-                "  \"verticalScrollPosition\" : 1338," + lineSeparator() +
+                "  \"deviceConfig\" : {" + lineSeparator() +
+                "    \"width\" : 1337," + lineSeparator() +
+                "    \"height\" : 1887," + lineSeparator() +
+                "    \"pixel-ratio\" : 1.0," + lineSeparator() +
+                "    \"device-name\" : \"DESKTOP\"," + lineSeparator() +
+                "    \"user-agent\" : null," + lineSeparator() +
+                "    \"touch\" : false" + lineSeparator() +
+                "  }," + lineSeparator() +
+                "  \"verticalScrollPosition\" : 1979," + lineSeparator() +
                 "  \"difference\" : 0.0," + lineSeparator() +
                 "  \"screenshotBeforeFileName\" : \"before\"," + lineSeparator() +
                 "  \"screenshotAfterFileName\" : \"after\"," + lineSeparator() +

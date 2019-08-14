@@ -3,10 +3,11 @@ package de.otto.jlineup.report;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.config.HttpCheckConfig;
-import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.UrlConfig;
+import de.otto.jlineup.browser.BrowserUtils;
+import de.otto.jlineup.browser.ScreenshotContext;
+import de.otto.jlineup.config.*;
 import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.image.ImageService;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,9 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -31,11 +32,15 @@ public class ScreenshotsComparatorTest {
 
     private ScreenshotsComparator testee;
 
-    private RunStepConfig runConfig;
+    private RunStepConfig runStepConfig;
     private JobConfig jobConfig;
+    private final UrlConfig urlConfig = new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, singletonList(100), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(), 0, false);
 
     @Mock
     private FileService fileService;
+
+    @Mock
+    private FileTracker fileTracker;
 
     @Mock
     private ImageService imageService;
@@ -43,86 +48,61 @@ public class ScreenshotsComparatorTest {
     @Before
     public void setup() {
         initMocks(this);
-        runConfig = RunStepConfig.jLineupRunConfigurationBuilder().withWorkingDirectory("src/test/resources").build();
+        runStepConfig = RunStepConfig.jLineupRunConfigurationBuilder().withWorkingDirectory("src/test/resources").withStep(Step.compare).build();
         jobConfig = jobConfigBuilder()
                 .withUrls(ImmutableMap.of(
-                        "http://url",
-                        new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1001), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(),0, false)))
+                        "http://url", urlConfig
+                ))
                 .withWindowHeight(WINDOW_HEIGHT)
                 .build();
 
-        testee = new ScreenshotsComparator(runConfig, jobConfig, fileService, imageService);
-    }
-
-    @Test
-    public void shouldFindVerticalScrollPositionInImageFileName() throws Exception {
-        String fileName = "url_root_1001_2002_after.png";
-        int yPos = ScreenshotsComparator.extractVerticalScrollPositionFromFileName(fileName);
-        assertThat(yPos, is(2002));
-    }
-
-    @Test
-    public void shouldFindWindowWidthInImageFileName() throws Exception {
-        String fileName = "url_root_1001_2002_after.png";
-        int yPos = ScreenshotsComparator.extractWindowWidthFromFileName(fileName);
-        assertThat(yPos, is(1001));
-    }
-
-    @Test
-    public void shouldReplaceAfterWithBeforeInFilename() throws Exception {
-        String filename = "url_root_1001_02002_after.png";
-        String switchedFileName = ScreenshotsComparator.switchAfterWithBeforeInFileName(filename);
-        assertThat(switchedFileName, is("url_root_1001_02002_before.png"));
+        testee = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
     }
 
     @Test
     public void shouldBuildComparisonResults() throws Exception {
         //given
+        ScreenshotContext screenshotContext = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig).get(0);
+        DeviceConfig givenDeviceConfig = DeviceConfig.deviceConfig(100, WINDOW_HEIGHT);
         final ImmutableMap<String, ImmutableList<ScreenshotComparisonResult>> expectedResults = ImmutableMap.of("http://url", ImmutableList.of(
                 new ScreenshotComparisonResult(
+                        screenshotContext.contextHash(),
                         "http://url/",
-                        1001,
+                        givenDeviceConfig,
                         2002,
                         0.1337,
                         "screenshots/http_url_root_ff3c40c_1001_02002_before.png",
                         "screenshots/http_url_root_ff3c40c_1001_02002_after.png",
-                        "screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE.png",
+                        "screenshots/http_url_root_ff3c40c_1001_02002_compare.png",
                         10),
                 ScreenshotComparisonResult.noBeforeImageComparisonResult(
+                        screenshotContext.contextHash(),
                         "http://url/",
-                        1001,
+                        givenDeviceConfig,
                         3003,
                         "screenshots/http_url_root_ff3c40c_1001_03003_after.png")
         ));
 
+        when(fileService.getFileTracker()).thenReturn(fileTracker);
         when(fileService.getRelativePathFromReportDirToScreenshotsDir()).thenReturn("screenshots/");
-        when(fileService.getFilenamesForStep("/", "http://url", "before")).thenReturn(ImmutableList.of("http_url_root_ff3c40c_1001_02002_before.png"));
-        when(fileService.getFilenamesForStep("/", "http://url", "after")).thenReturn(ImmutableList.of("http_url_root_ff3c40c_1001_02002_after.png", "http_url_root_ff3c40c_1001_03003_after.png"));
+        when(fileTracker.getScreenshotsForContext(screenshotContext.contextHash())).thenReturn(
+                ImmutableMap.of(2002, ImmutableMap.of(Step.before, "http_url_root_ff3c40c_1001_02002_before.png",
+                        Step.after, "http_url_root_ff3c40c_1001_02002_after.png"),
+                        3003, ImmutableMap.of(Step.after, "http_url_root_ff3c40c_1001_03003_after.png")));
         BufferedImage beforeBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
         when(fileService.readScreenshot("http_url_root_ff3c40c_1001_02002_before.png")).thenReturn(
                 beforeBuffer);
         BufferedImage afterBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_after.png"));
         when(fileService.readScreenshot("http_url_root_ff3c40c_1001_02002_after.png")).thenReturn(
                 afterBuffer);
-
-
         BufferedImage differenceBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
-        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, ImageService.DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10));
-
-        when(fileService.writeScreenshot(differenceBuffer, "http://url", "/", 1001, 2002, "DIFFERENCE")).thenReturn("http_url_root_ff3c40c_1001_02002_DIFFERENCE.png");
+        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, ImageService.DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD, false)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10));
+        when(fileService.writeScreenshot(screenshotContext, differenceBuffer, 2002)).thenReturn("http_url_root_ff3c40c_1001_02002_compare.png");
 
         //when
         Map<String, List<ScreenshotComparisonResult>> comparisonResults = testee.compare();
 
         //then
         assertThat(comparisonResults, is(expectedResults));
-        verify(fileService).
-                writeScreenshot(
-                        differenceBuffer,
-                        "http://url",
-                        "/",
-                        1001,
-                        2002,
-                        "DIFFERENCE");
     }
 }

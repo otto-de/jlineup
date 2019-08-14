@@ -1,30 +1,51 @@
 package de.otto.jlineup.browser;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
 
 import java.util.Objects;
 
+@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 public final class ScreenshotContext {
     public final String url;
     public final String urlSubPath;
     public final DeviceConfig deviceConfig;
+    @JsonIgnore
     public final Step step;
+    @JsonIgnore
     public final UrlConfig urlConfig;
-    public final String fullPathOfReportDir;
+    @JsonIgnore
+    final String fullPathOfReportDir;
 
-    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, boolean before, UrlConfig urlConfig, String fullPathOfReportDir) {
+    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, String fullPathOfReportDir) {
         this.url = url;
         this.urlSubPath = urlSubPath;
         this.deviceConfig = deviceConfig;
-        this.step = before ? Step.before : Step.after;
+        this.step = step;
         this.urlConfig = urlConfig;
         this.fullPathOfReportDir = fullPathOfReportDir;
     }
 
-    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, boolean before, UrlConfig urlConfig) {
-        return new ScreenshotContext(url, path, deviceConfig, before, urlConfig, null);
+    //Used by Jackson
+    private ScreenshotContext() {
+        this.url = null;
+        this.urlSubPath = null;
+        this.deviceConfig = null;
+        this.step = null;
+        this.urlConfig = null;
+        this.fullPathOfReportDir = null;
+    }
+
+    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig) {
+        return new ScreenshotContext(url, path, deviceConfig, step, urlConfig, null);
+    }
+
+    public int contextHash() {
+        return Objects.hash(url, urlSubPath, deviceConfig, urlConfig);
     }
 
     public boolean equalsIgnoreStep(ScreenshotContext that) {

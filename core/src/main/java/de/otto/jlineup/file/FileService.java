@@ -3,22 +3,26 @@ package de.otto.jlineup.file;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.ScreenshotContext;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static de.otto.jlineup.file.FileUtils.clearDirectory;
 import static java.lang.invoke.MethodHandles.lookup;
+import static java.lang.invoke.MethodHandles.throwException;
 
 public class FileService {
 
@@ -30,10 +34,30 @@ public class FileService {
     public static final String PNG_EXTENSION = ".png";
     private static final int MAX_URL_TO_FILENAME_LENGTH = 180;
 
+    public static final String FILETRACKER_FILENAME = "files.json";
+    public static final String REPORT_HTML_FILENAME = "report.html";
+    public static final String REPORT_JSON_FILENAME = "report.json";
+
     private final RunStepConfig runStepConfig;
 
-    public FileService(RunStepConfig runStepConfig) {
+    public FileTracker getFileTracker() {
+        return fileTracker;
+    }
+
+    public ScreenshotContext getRecordedContext(int hash) {
+        return fileTracker.getScreenshotContextFileTracker(hash).screenshotContext;
+    }
+
+    private final FileTracker fileTracker;
+
+    public FileService(RunStepConfig runStepConfig, JobConfig jobConfig) {
         this.runStepConfig = runStepConfig;
+        if (runStepConfig.getStep() == Step.before) {
+            this.fileTracker = FileTracker.create(jobConfig);
+        } else {
+            Path path = Paths.get(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory(), FILETRACKER_FILENAME);
+            this.fileTracker = JacksonWrapper.readFileTrackerFile(path.toFile());
+        }
     }
 
     @VisibleForTesting
@@ -48,7 +72,8 @@ public class FileService {
         createOrClearDirectoryBelowWorkingDir(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory());
     }
 
-    private Path getScreenshotDirectory() {
+    @VisibleForTesting
+    Path getScreenshotDirectory() {
         return Paths.get(String.format("%s/%s", runStepConfig.getWorkingDirectory(), runStepConfig.getScreenshotsDirectory()));
     }
 
@@ -140,41 +165,18 @@ public class FileService {
         ImageIO.write(image, "png", screenshotFile);
     }
 
-    @VisibleForTesting
-    List<String> getFileNamesMatchingPattern(Path directory, String matcherPattern) throws IOException {
-        final List<String> files = new ArrayList<>();
-
-        final PathMatcher pathMatcher = FileSystems.getDefault()
-                .getPathMatcher(matcherPattern);
-
-        try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(
-                directory, pathMatcher::matches)) {
-            dirStream.forEach(filePath -> files.add(filePath.getFileName().toString()));
-        }
-        files.sort(Comparator.naturalOrder());
-        return files;
-    }
-
-    public String writeScreenshot(BufferedImage image, String url,
-                                  String urlSubPath, int windowWidth, int yPosition, String step) throws IOException {
-        final String screenshotPath =
-                getScreenshotPath(url,
-                        urlSubPath, windowWidth,
-                        yPosition, step);
-        writeScreenshot(screenshotPath, image);
-        return screenshotPath;
-    }
-
     public String writeScreenshot(ScreenshotContext screenshotContext, BufferedImage image,
                                   int yPosition) throws IOException {
-        String writtenScreenshotPath = writeScreenshot(image, screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.deviceConfig.width, yPosition, screenshotContext.step.name());
-        return writtenScreenshotPath;
+
+        createDirIfNotExists(getScreenshotDirectory().toString() + FILE_SEPARATOR + screenshotContext.contextHash());
+        String fileName = getScreenshotFilenameBelowScreenshotsDir(screenshotContext, yPosition);
+        writeScreenshot(Paths.get(getScreenshotDirectory().toString(), fileName).toString(), image);
+        fileTracker.addScreenshot(screenshotContext, fileName, yPosition);
+        return fileName;
     }
 
-    public List<String> getFilenamesForStep(String path, String url, String step) throws IOException {
-        final String matcherPattern = "glob:**" + generateScreenshotFileNamePrefix(url, path) + "*_*_" + step + ".png";
-        Path screenshotDirectory = getScreenshotDirectory();
-        return getFileNamesMatchingPattern(screenshotDirectory, matcherPattern);
+    private String getScreenshotFilenameBelowScreenshotsDir(ScreenshotContext screenshotContext, int yPosition) {
+        return screenshotContext.contextHash() + FILE_SEPARATOR + generateScreenshotFileName(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.deviceConfig.width, yPosition, screenshotContext.step.name());
     }
 
     public String getRelativePathFromReportDirToScreenshotsDir() {
@@ -185,27 +187,26 @@ public class FileService {
     }
 
     public void writeJsonReport(String reportJson) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + "/report.json"))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + FILE_SEPARATOR + REPORT_JSON_FILENAME))) {
             out.print(reportJson);
         }
     }
 
     public void writeHtmlReport(String htmlReport) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + "/report.html"))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + FILE_SEPARATOR + REPORT_HTML_FILENAME))) {
             out.print(htmlReport);
         }
     }
 
     public void writeHtml(String html, Step step) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + (step + ".html")))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + FILE_SEPARATOR + step + ".html"))) {
             out.print(html);
         }
     }
 
-    public void writeRunStepMetadata(Step step, String metadata) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getScreenshotPath("metadata_" + step + ".json")))) {
-            out.print(metadata);
-        }
+    public void writeFileTrackerData() throws IOException {
+        Path path = Paths.get(getReportDirectory().toString(), FILETRACKER_FILENAME);
+        Files.write(path, JacksonWrapper.serializeObject(fileTracker).getBytes());
     }
 }
 

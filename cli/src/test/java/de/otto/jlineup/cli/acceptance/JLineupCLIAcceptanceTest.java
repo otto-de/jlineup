@@ -136,7 +136,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
     @Test
@@ -160,7 +160,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
     @Test
@@ -193,7 +193,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
     @Test
@@ -211,7 +211,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
     @Test
@@ -229,7 +229,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
     @Test
@@ -247,7 +247,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.get(0).get("difference"), CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
     @Test
@@ -265,7 +265,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/file_"));
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
 
         assertThat(systemOutCaptor.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/: 0.0 (0 %)"));
         assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences: 0.0 (0 %)"));

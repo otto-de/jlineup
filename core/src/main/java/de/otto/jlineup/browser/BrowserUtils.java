@@ -131,7 +131,7 @@ public class BrowserUtils {
         return firefoxProfileHeadless;
     }
 
-    static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(RunStepConfig runStepConfig, JobConfig jobConfig) {
+    public static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(RunStepConfig runStepConfig, JobConfig jobConfig) {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
         Map<String, UrlConfig> urls = jobConfig.urls;
 
@@ -152,7 +152,7 @@ public class BrowserUtils {
                         deviceConfigs.stream()
                                 .map(deviceConfig ->
                                         new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getKey()), path, deviceConfig,
-                                                runStepConfig.getStep() == Step.before, urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig)))
+                                                runStepConfig.getStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig)))
                                 .collect(Collectors.toList()));
             }
         }

@@ -4,7 +4,7 @@ dependencies {
     compile project(":jlineup-core")
     compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
-    compile("de.otto.edison:edison-core:2.0.0-rc7") {
+    compile("de.otto.edison:edison-core:2.0.0-rc9") {
         exclude group: 'software.amazon.awssdk', module: "*"
     }
 

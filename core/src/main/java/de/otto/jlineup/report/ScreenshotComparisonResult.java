@@ -1,6 +1,7 @@
 package de.otto.jlineup.report;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.otto.jlineup.config.DeviceConfig;
 
 import java.util.Objects;
 
@@ -8,8 +9,9 @@ import static de.otto.jlineup.file.FileService.FILE_SEPARATOR;
 
 public class ScreenshotComparisonResult {
 
+    public final int contextHash;
     public final String url;
-    public final int width;
+    public final DeviceConfig deviceConfig;
     public final int verticalScrollPosition;
     public final double difference;
     public final String screenshotBeforeFileName;
@@ -17,9 +19,10 @@ public class ScreenshotComparisonResult {
     public final String differenceImageFileName;
     public final int maxSingleColorDifference;
 
-    public ScreenshotComparisonResult(String url, int width, int verticalScrollPosition, double difference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName, int maxSingleColorDifference) {
+    public ScreenshotComparisonResult(int contextHash, String url, DeviceConfig deviceConfig, int verticalScrollPosition, double difference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName, int maxSingleColorDifference) {
+        this.contextHash = contextHash;
         this.url = url;
-        this.width = width;
+        this.deviceConfig = deviceConfig;
         this.verticalScrollPosition = verticalScrollPosition;
         this.difference = difference;
         this.screenshotBeforeFileName = screenshotBeforeFileName;
@@ -51,12 +54,12 @@ public class ScreenshotComparisonResult {
         return fileName.replace(FILE_SEPARATOR, "/");
     }
 
-    public static ScreenshotComparisonResult noBeforeImageComparisonResult(String url, int width, int verticalScrollPosition, String screenshotAfterFileName) {
-        return new ScreenshotComparisonResult(url, width, verticalScrollPosition, 1d, null, screenshotAfterFileName, null, 0);
+    public static ScreenshotComparisonResult noBeforeImageComparisonResult(int contextHash, String url, DeviceConfig deviceConfig, int verticalScrollPosition, String screenshotAfterFileName) {
+        return new ScreenshotComparisonResult(contextHash, url, deviceConfig, verticalScrollPosition, 1d, null, screenshotAfterFileName, null, 0);
     }
 
-    public static ScreenshotComparisonResult noAfterImageComparisonResult(String url, int width, int verticalScrollPosition, String screenshotBeforeFileName) {
-        return new ScreenshotComparisonResult(url, width, verticalScrollPosition, 1d, screenshotBeforeFileName, null, null, 0);
+    public static ScreenshotComparisonResult noAfterImageComparisonResult(int contextHash, String url, DeviceConfig deviceConfig, int verticalScrollPosition, String screenshotBeforeFileName) {
+        return new ScreenshotComparisonResult(contextHash, url, deviceConfig, verticalScrollPosition, 1d, screenshotBeforeFileName, null, null, 0);
     }
 
     @Override
@@ -64,11 +67,12 @@ public class ScreenshotComparisonResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ScreenshotComparisonResult that = (ScreenshotComparisonResult) o;
-        return width == that.width &&
+        return contextHash == that.contextHash &&
                 verticalScrollPosition == that.verticalScrollPosition &&
                 Double.compare(that.difference, difference) == 0 &&
                 maxSingleColorDifference == that.maxSingleColorDifference &&
                 Objects.equals(url, that.url) &&
+                Objects.equals(deviceConfig, that.deviceConfig) &&
                 Objects.equals(screenshotBeforeFileName, that.screenshotBeforeFileName) &&
                 Objects.equals(screenshotAfterFileName, that.screenshotAfterFileName) &&
                 Objects.equals(differenceImageFileName, that.differenceImageFileName);
@@ -76,15 +80,15 @@ public class ScreenshotComparisonResult {
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(url, width, verticalScrollPosition, difference, screenshotBeforeFileName, screenshotAfterFileName, differenceImageFileName, maxSingleColorDifference);
+        return Objects.hash(contextHash, url, deviceConfig, verticalScrollPosition, difference, screenshotBeforeFileName, screenshotAfterFileName, differenceImageFileName, maxSingleColorDifference);
     }
 
     @Override
     public String toString() {
         return "ScreenshotComparisonResult{" +
-                "url='" + url + '\'' +
-                ", width=" + width +
+                "contextHash=" + contextHash +
+                ", url='" + url + '\'' +
+                ", deviceConfig=" + deviceConfig +
                 ", verticalScrollPosition=" + verticalScrollPosition +
                 ", difference=" + difference +
                 ", screenshotBeforeFileName='" + screenshotBeforeFileName + '\'' +

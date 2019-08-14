@@ -47,7 +47,7 @@ public class ImageServiceTest {
         //final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_DIFFERENCE_reference.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 1);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 1, false);
 
         //then
         assertThat(result.getDifference(), is(0.0));
@@ -64,7 +64,7 @@ public class ImageServiceTest {
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_after.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 1);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 1, false);
 
         //then
         //assertThat(result.getDifference(), is(0.0));
