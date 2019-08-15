@@ -33,11 +33,12 @@ public class UrlConfig {
     public final float waitForFontsTime;
     @JsonProperty("javascript")
     public final String javaScript;
-    public final boolean hideImages;
     public final HttpCheckConfig httpCheck;
     public final int maxColorDiffPerPixel;
+    public final boolean hideImages;
+    public final boolean ignoreAntiAliasing;
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, float waitAfterPageLoad, float waitAfterScroll, float waitForNoAnimationAfterScroll, float warmupBrowserCacheTime, String javaScript, float waitForFontsTime, HttpCheckConfig httpCheck, int maxColorDiffPerPixel, boolean hideImages) {
+    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, float waitAfterPageLoad, float waitAfterScroll, float waitForNoAnimationAfterScroll, float warmupBrowserCacheTime, String javaScript, float waitForFontsTime, HttpCheckConfig httpCheck, int maxColorDiffPerPixel, boolean hideImages, boolean ignoreAntiAliasing) {
         this.paths = paths != null ? paths : ImmutableList.of(DEFAULT_PATH);
         this.windowWidths = windowWidths;
         this.devices = null;
@@ -56,6 +57,7 @@ public class UrlConfig {
         this.httpCheck = httpCheck;
         this.maxColorDiffPerPixel = maxColorDiffPerPixel;
         this.hideImages = hideImages;
+        this.ignoreAntiAliasing = ignoreAntiAliasing;
     }
 
     private UrlConfig(Builder builder) {
@@ -77,6 +79,7 @@ public class UrlConfig {
         httpCheck = builder.httpCheck;
         maxColorDiffPerPixel = builder.maxColorDiffPerPixel;
         hideImages = builder.hideImages;
+        ignoreAntiAliasing = builder.ignoreAntiAliasing;
     }
 
     public static Builder urlConfigBuilder() {
@@ -103,6 +106,7 @@ public class UrlConfig {
         builder.httpCheck = copy.httpCheck;
         builder.maxColorDiffPerPixel = copy.maxColorDiffPerPixel;
         builder.hideImages = copy.hideImages;
+        builder.ignoreAntiAliasing = copy.ignoreAntiAliasing;
         return builder;
     }
 
@@ -126,6 +130,7 @@ public class UrlConfig {
         private HttpCheckConfig httpCheck = new HttpCheckConfig();
         private boolean hideImages;
         private int maxColorDiffPerPixel = DEFAULT_MAX_COLOR_DIFF_PER_PIXEL;
+        private boolean ignoreAntiAliasing;
 
         private Builder() {
         }
@@ -235,6 +240,11 @@ public class UrlConfig {
             return this;
         }
 
+        public Builder withIgnoreAntiAliasing(boolean val) {
+            ignoreAntiAliasing = val;
+            return this;
+        }
+
         public UrlConfig build() {
             //If both are not set, use default window width
             if (windowWidths == null && devices == null) {
@@ -256,8 +266,9 @@ public class UrlConfig {
                 Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 &&
                 Float.compare(urlConfig.warmupBrowserCacheTime, warmupBrowserCacheTime) == 0 &&
                 Float.compare(urlConfig.waitForFontsTime, waitForFontsTime) == 0 &&
-                hideImages == urlConfig.hideImages &&
                 maxColorDiffPerPixel == urlConfig.maxColorDiffPerPixel &&
+                hideImages == urlConfig.hideImages &&
+                ignoreAntiAliasing == urlConfig.ignoreAntiAliasing &&
                 Objects.equals(paths, urlConfig.paths) &&
                 Objects.equals(cookies, urlConfig.cookies) &&
                 Objects.equals(envMapping, urlConfig.envMapping) &&
@@ -271,7 +282,7 @@ public class UrlConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, hideImages, httpCheck, maxColorDiffPerPixel);
+        return Objects.hash(paths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, maxColorDiffPerPixel, hideImages, ignoreAntiAliasing);
     }
 
     @Override
@@ -292,9 +303,10 @@ public class UrlConfig {
                 ", warmupBrowserCacheTime=" + warmupBrowserCacheTime +
                 ", waitForFontsTime=" + waitForFontsTime +
                 ", javaScript='" + javaScript + '\'' +
-                ", hideImages=" + hideImages +
                 ", httpCheck=" + httpCheck +
                 ", maxColorDiffPerPixel=" + maxColorDiffPerPixel +
+                ", hideImages=" + hideImages +
+                ", ignoreAntiAliasing=" + ignoreAntiAliasing +
                 '}';
     }
 }

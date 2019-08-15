@@ -177,7 +177,8 @@ public class BrowserTest {
                 5,
                 new HttpCheckConfig(),
                 0,
-                true);
+                true,
+                false);
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
@@ -258,6 +259,7 @@ public class BrowserTest {
                 5,
                 new HttpCheckConfig(),
                 0,
+                false,
                 false);
 
         JobConfig jobConfig = jobConfigBuilder()
@@ -336,6 +338,7 @@ public class BrowserTest {
                 5,
                 new HttpCheckConfig(),
                 0,
+                false,
                 false);
 
         JobConfig jobConfig = jobConfigBuilder()
@@ -405,6 +408,7 @@ public class BrowserTest {
                 5,
                 new HttpCheckConfig(),
                 0,
+                false,
                 false);
 
         JobConfig jobConfig = jobConfigBuilder()

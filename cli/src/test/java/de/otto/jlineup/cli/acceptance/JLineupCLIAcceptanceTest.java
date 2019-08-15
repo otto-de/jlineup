@@ -5,10 +5,7 @@ import de.otto.jlineup.cli.Main;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.report.Report;
 import org.hamcrest.CoreMatchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
 import java.io.ByteArrayOutputStream;
@@ -146,6 +143,7 @@ public class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    @Ignore //New IgnoreAntiAliasing option handles this, chrome does not render deterministically all the time
     public void shouldRenderLogoDeterministically_WithChrome() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_svg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_svg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
@@ -164,6 +162,7 @@ public class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    @Ignore //New IgnoreAntiAliasing option handles this, chrome does not render deterministically all the time
     public void shouldRenderProgressiveJPEGsDeterministically_WithChrome() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_progressive_jpg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_progressive_jpg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});

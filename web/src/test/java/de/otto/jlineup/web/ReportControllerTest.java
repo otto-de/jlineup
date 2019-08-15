@@ -156,6 +156,7 @@ public class ReportControllerTest {
                                 0,
                                 new HttpCheckConfig(),
                                 0,
+                                false,
                                 false
                         )))
                 .build();

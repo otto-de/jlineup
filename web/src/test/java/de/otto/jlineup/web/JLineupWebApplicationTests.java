@@ -174,6 +174,7 @@ public class JLineupWebApplicationTests {
                                 0,
                                 new HttpCheckConfig(),
                                 0,
+                                false,
                                 false
                         )))
                 .build();

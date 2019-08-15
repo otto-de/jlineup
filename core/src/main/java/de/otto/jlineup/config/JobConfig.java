@@ -196,6 +196,7 @@ public final class JobConfig {
                                 DEFAULT_WAIT_FOR_FONTS_TIME,
                                 new HttpCheckConfig(true),
                                 DEFAULT_MAX_COLOR_DIFF_PER_PIXEL,
+                                false,
                                 false
                         )));
     }
