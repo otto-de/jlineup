@@ -16,6 +16,7 @@ public class ImageService {
     public static final int SAME_COLOR = Color.BLACK.getRGB();
     public static final int HIGHLIGHT_COLOR = Color.WHITE.getRGB();
     public static final int DIFFERENT_SIZE_COLOR = Color.GRAY.getRGB();
+    public static final int ANTI_ALIAS_DETECTED_COLOR = Color.GREEN.getRGB();
     public static final int DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD = 0;
 
     public static class ImageComparisonResult {
@@ -91,7 +92,7 @@ public class ImageService {
                 if (getMaxColorDifference(image1Pixels[i1], image2Pixels[i2]) <= pixelColorDifferenceThreshold) {
                     differenceImagePixels[iD] = SAME_COLOR;
                 } else if (ignoreAntiAliased && AntiAliasingIgnoringComparator.checkIsAntialiased(image1, image2, x, y)) {
-                    differenceImagePixels[iD] = SAME_COLOR;
+                    differenceImagePixels[iD] = ANTI_ALIAS_DETECTED_COLOR;
                 } else {
                     differenceImagePixels[iD] = HIGHLIGHT_COLOR;
                     diffPixelCounter++;

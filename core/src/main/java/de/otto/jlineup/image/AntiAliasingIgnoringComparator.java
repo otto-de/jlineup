@@ -1,7 +1,12 @@
 package de.otto.jlineup.image;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
+import static java.lang.invoke.MethodHandles.lookup;
 
 /**
  * Ported from looks-same by Yandex: https://github.com/gemini-testing/looks-same
@@ -30,12 +35,16 @@ import java.awt.image.BufferedImage;
 
 public class AntiAliasingIgnoringComparator {
 
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
+
     private final static double DEFAULT_BRIGHTNESS_TOLERANCE = 0d;
     private final static double JUST_NOTICEABLE_DIFFERENCE = 2.3d;  // Just noticeable difference if ciede2000 >= JND then colors difference is noticeable by human eye
 
     public static boolean checkIsAntialiased(BufferedImage img1, BufferedImage img2, int x, int y) {
-        return isAntialiased(img2, x, y, img1)
+        boolean isPixelAntiAliased = isAntialiased(img2, x, y, img1)
                 || isAntialiased(img1, x, y, img2);
+        LOG.trace("Check if different pixel {}|{} is because of anti-aliasing: {}", x, y, isPixelAntiAliased);
+        return isPixelAntiAliased;
     }
 
     private static boolean isAntialiased(BufferedImage img1, int x1, int y1, BufferedImage img2) {
