@@ -69,6 +69,19 @@ public class ImageServiceTest {
     }
 
     @Test
+    public void shouldIgnoreRoundedEdgeAntialiasDifference() throws IOException {
+        //given
+        final int viewportHeight = 800;
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/shoppromo_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/shoppromo_after.png"));
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 0, true);
+        //then
+        assertThat(result.getDifference(), is(0.0));
+    }
+
+    @Test
     public void shouldNotIgnoreChangeInOttoLogoWhenAntiAliasingIsNotIgnored() throws IOException {
         //given
         final int viewportHeight = 800;

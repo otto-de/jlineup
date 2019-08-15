@@ -25,8 +25,8 @@ check_configuration() {
 
 check_configuration
 
-#${SCRIPT_DIR}/gradlew clean
-#${SCRIPT_DIR}/gradlew check
+${SCRIPT_DIR}/gradlew clean
+${SCRIPT_DIR}/gradlew check
 ${SCRIPT_DIR}/gradlew installBootDist publish
 
-${SCRIPT_DIR}/gradlew closeAndReleaseRepository
+#${SCRIPT_DIR}/gradlew closeAndReleaseRepository
