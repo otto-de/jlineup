@@ -51,7 +51,7 @@ public class JSONReportWriterV1Test {
                 "  \"screenshotBeforeFileName\" : \"before\"," + lineSeparator() +
                 "  \"screenshotAfterFileName\" : \"after\"," + lineSeparator() +
                 "  \"differenceImageFileName\" : \"differenceImageFileName\"," + lineSeparator() +
-                "  \"maxSingleColorDifference\" : 0" + lineSeparator() +
+                "  \"acceptedDifferentPixels\" : 0" + lineSeparator() +
                 "} ]";
 
         testee.writeComparisonReportAsJson(report);

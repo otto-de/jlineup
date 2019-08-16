@@ -34,7 +34,7 @@ public class ScreenshotsComparatorTest {
 
     private RunStepConfig runStepConfig;
     private JobConfig jobConfig;
-    private final UrlConfig urlConfig = new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, singletonList(100), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(), 0, false, false);
+    private final UrlConfig urlConfig = new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, singletonList(100), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(),false, false, false);
 
     @Mock
     private FileService fileService;
@@ -96,7 +96,7 @@ public class ScreenshotsComparatorTest {
         when(fileService.readScreenshot("http_url_root_ff3c40c_1001_02002_after.png")).thenReturn(
                 afterBuffer);
         BufferedImage differenceBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
-        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, ImageService.DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD, false)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10));
+        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, false, false)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10));
         when(fileService.writeScreenshot(screenshotContext, differenceBuffer, 2002)).thenReturn("http_url_root_ff3c40c_1001_02002_compare.png");
 
         //when

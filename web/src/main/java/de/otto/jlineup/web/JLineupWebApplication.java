@@ -22,6 +22,5 @@ public class JLineupWebApplication {
 		LOG.info("\nStarting JLineup {}\n", Utils.getVersion());
 		SpringApplicationBuilder builder = new SpringApplicationBuilder(JLineupWebApplication.class);
 		builder.headless(false).run(args);
-
 	}
 }

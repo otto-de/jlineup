@@ -1,6 +1,7 @@
 package de.otto.jlineup.image;
 
 import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -16,18 +17,18 @@ public class ImageService {
     public static final int SAME_COLOR = Color.BLACK.getRGB();
     public static final int HIGHLIGHT_COLOR = Color.WHITE.getRGB();
     public static final int DIFFERENT_SIZE_COLOR = Color.GRAY.getRGB();
+    public static final int LOOK_SAME_COLOR = Color.BLUE.getRGB();
     public static final int ANTI_ALIAS_DETECTED_COLOR = Color.GREEN.getRGB();
-    public static final int DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD = 0;
 
     public static class ImageComparisonResult {
         private final BufferedImage differenceImage;
         private final double difference;
-        private final int maxSingleColorDifference;
+        private final int acceptedDifferentPixels;
 
-        public ImageComparisonResult(BufferedImage differenceImage, double difference, int maxSingleColorDifference) {
+        public ImageComparisonResult(BufferedImage differenceImage, double difference, int acceptedDifferentPixels) {
             this.differenceImage = differenceImage;
             this.difference = difference;
-            this.maxSingleColorDifference = maxSingleColorDifference;
+            this.acceptedDifferentPixels = acceptedDifferentPixels;
         }
 
         public Optional<BufferedImage> getDifferenceImage() {
@@ -38,16 +39,16 @@ public class ImageService {
             return difference;
         }
 
-        public int getMaxSingleColorDifference() {
-            return maxSingleColorDifference;
+        public int getAcceptedDifferentPixels() {
+            return acceptedDifferentPixels;
         }
     }
 
     public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight) {
-        return this.compareImages(image1, image2, viewportHeight, DEFAULT_PIXEL_COLOR_DIFFERENCE_THRESHOLD, false);
+        return this.compareImages(image1, image2, viewportHeight, false, true);
     }
 
-    public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight, int pixelColorDifferenceThreshold, boolean ignoreAntiAliased) {
+    public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight, boolean ignoreAntiAliased, boolean strictColorComparison) {
 
         if (image1 == null || image2 == null) throw new NullPointerException("Can't compare null imagebuffers");
 
@@ -82,17 +83,20 @@ public class ImageService {
 
         // compare img1 to img2, pixel by pixel. If different, highlight differenceSum image pixel
         int diffPixelCounter = 0;
+        int antiAliasedDiffPixelCounter = 0;
+        int lookSameDiffPixelCounter = 0;
         final int[] differenceImagePixels = new int[maxPixelCount];
-        int maxSingleColorDifference = 0;
         //i1 and i2 are the indices in the image pixel arrays of image1pixels and image2pixels
         //iD is the index of the differenceSum image
         for (int i1 = 0, i2 = 0, iD = 0, x = 0, y = 0; iD < maxPixelCount; ) {
             //mark same pixels with same_color and different pixels in highlight_color
             if (image1Pixels[i1] != image2Pixels[i2]) {
-                if (getMaxColorDifference(image1Pixels[i1], image2Pixels[i2]) <= pixelColorDifferenceThreshold) {
-                    differenceImagePixels[iD] = SAME_COLOR;
+                if (!strictColorComparison && doColorsLookSame(image1Pixels[i1], image2Pixels[i2])) {
+                    differenceImagePixels[iD] = LOOK_SAME_COLOR;
+                    lookSameDiffPixelCounter++;
                 } else if (ignoreAntiAliased && AntiAliasingIgnoringComparator.checkIsAntialiased(image1, image2, x, y)) {
                     differenceImagePixels[iD] = ANTI_ALIAS_DETECTED_COLOR;
+                    antiAliasedDiffPixelCounter++;
                 } else {
                     differenceImagePixels[iD] = HIGHLIGHT_COLOR;
                     diffPixelCounter++;
@@ -100,7 +104,7 @@ public class ImageService {
             } else {
                 differenceImagePixels[iD] = SAME_COLOR;
             }
-            maxSingleColorDifference = Math.max(maxSingleColorDifference, getMaxColorDifference(image1Pixels[i1], image2Pixels[i2]));
+
             //advance all indices
             i1++;
             i2++;
@@ -156,18 +160,7 @@ public class ImageService {
         // save differenceImagePixels to a new BufferedImage
         final BufferedImage out = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
         out.setRGB(0, 0, maxWidth, maxHeight, differenceImagePixels, 0, maxWidth);
-        return new ImageComparisonResult(out, difference, maxSingleColorDifference);
-    }
-
-    private int getMaxColorDifference(int pixelA, int pixelB) {
-        final int[] argbA = getARGB(pixelA);
-        final int[] argbB = getARGB(pixelB);
-
-        int max = 0;
-        for (int i = 0; i < argbA.length; i++) {
-            max = Math.max(max, Math.abs(argbA[i] - argbB[i]));
-        }
-        return max;
+        return new ImageComparisonResult(out, difference, lookSameDiffPixelCounter + antiAliasedDiffPixelCounter);
     }
 
     private static int[] getARGB(int pixel) {
@@ -198,6 +191,16 @@ public class ImageService {
             return false;
         }
         return true;
+    }
+
+    static boolean doColorsLookSame(int argbColor1, int argbColor2) {
+        int[] argb1 = getARGB(argbColor1);
+        int[] argb2 = getARGB(argbColor2);
+        LAB lab1 = LAB.fromRGB(argb1[1], argb1[2], argb1[3], 0);
+        LAB lab2 = LAB.fromRGB(argb2[1], argb2[2], argb2[3], 0);
+
+        double distance = LAB.ciede2000(lab1, lab2);
+        return distance <= 2.3d;
     }
 
     //A very fast byte buffer based image comparison for images containing INT or BYTE type representations

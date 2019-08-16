@@ -17,9 +17,9 @@ public class ScreenshotComparisonResult {
     public final String screenshotBeforeFileName;
     public final String screenshotAfterFileName;
     public final String differenceImageFileName;
-    public final int maxSingleColorDifference;
+    public final int acceptedDifferentPixels;
 
-    public ScreenshotComparisonResult(int contextHash, String url, DeviceConfig deviceConfig, int verticalScrollPosition, double difference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName, int maxSingleColorDifference) {
+    public ScreenshotComparisonResult(int contextHash, String url, DeviceConfig deviceConfig, int verticalScrollPosition, double difference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName, int acceptedDifferentPixels) {
         this.contextHash = contextHash;
         this.url = url;
         this.deviceConfig = deviceConfig;
@@ -28,7 +28,7 @@ public class ScreenshotComparisonResult {
         this.screenshotBeforeFileName = screenshotBeforeFileName;
         this.screenshotAfterFileName = screenshotAfterFileName;
         this.differenceImageFileName = differenceImageFileName;
-        this.maxSingleColorDifference = maxSingleColorDifference;
+        this.acceptedDifferentPixels = acceptedDifferentPixels;
     }
 
     @UsedInTemplate
@@ -70,7 +70,7 @@ public class ScreenshotComparisonResult {
         return contextHash == that.contextHash &&
                 verticalScrollPosition == that.verticalScrollPosition &&
                 Double.compare(that.difference, difference) == 0 &&
-                maxSingleColorDifference == that.maxSingleColorDifference &&
+                acceptedDifferentPixels == that.acceptedDifferentPixels &&
                 Objects.equals(url, that.url) &&
                 Objects.equals(deviceConfig, that.deviceConfig) &&
                 Objects.equals(screenshotBeforeFileName, that.screenshotBeforeFileName) &&
@@ -80,7 +80,7 @@ public class ScreenshotComparisonResult {
 
     @Override
     public int hashCode() {
-        return Objects.hash(contextHash, url, deviceConfig, verticalScrollPosition, difference, screenshotBeforeFileName, screenshotAfterFileName, differenceImageFileName, maxSingleColorDifference);
+        return Objects.hash(contextHash, url, deviceConfig, verticalScrollPosition, difference, screenshotBeforeFileName, screenshotAfterFileName, differenceImageFileName, acceptedDifferentPixels);
     }
 
     @Override
@@ -94,7 +94,7 @@ public class ScreenshotComparisonResult {
                 ", screenshotBeforeFileName='" + screenshotBeforeFileName + '\'' +
                 ", screenshotAfterFileName='" + screenshotAfterFileName + '\'' +
                 ", differenceImageFileName='" + differenceImageFileName + '\'' +
-                ", maxSingleColorDifference=" + maxSingleColorDifference +
+                ", acceptedDifferentPixels=" + acceptedDifferentPixels +
                 '}';
     }
 }

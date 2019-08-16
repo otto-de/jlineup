@@ -173,10 +173,9 @@ public class JLineupWebApplicationTests {
                                 null,
                                 0,
                                 new HttpCheckConfig(),
-                                0,
                                 false,
-                                false
-                        )))
+                                false,
+                                false)))
                 .build();
     }
 }

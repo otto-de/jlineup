@@ -443,21 +443,37 @@ What are all those options about? Here are all the details.
  
 ---            
             
-### `max-color-diff-per-pixel`
+### `ignore-anti-aliasing`
 
- For special cases (i.e. rare anti alias issues), you can allow an accepted difference on RGB pixel level. 
- To be precise, it should be called *max-color-diff-per-color-per-pixel*, because every RGB color is handled
- individually. A comparison of the pixel RGB(255,255,255) and RGB(253,254,255) would result in a difference
- of 3. If max color diff would be below 3 in this case, an error would be reported.
- 
- It doesn't count how often in the picture a difference occurs. The check is reset after each
- pixel while going through the image.
+ Browsers use anti-aliasing to render smooth fonts, rounded edges, svgs etc. Sometimes, the rendering is not
+ deterministic between to renderings of an identical web page. JLineup can ignore differences that are caused by
+ anti-aliased pixels. Use this, if JLineup detects differences at edges, that can't be spotted by human eyes
+ in the before and after screenshots.
  
  * Scope: Site
- * Type: Integer
- * Default: `0`
- * Example: `"max-color-diff-per-pixel": 1`
+ * Type: Boolean
+ * Default: `false`
+ * Example: `"ignore-anti-aliasing": true`
  
+ Since: 4.0.0
+ 
+---
+
+### `strict-color-comparison`
+
+ By default, JLineup compares screenshots in a non-strict mode that takes into account that some slight color 
+ differences look same for the human eye. To check this, the CIEDE2000 metric is used.
+ See https://en.wikipedia.org/wiki/Color_difference for details.
+  
+ If you don't want this, you can enable the strict color comparison which checks for exactly identical RGB values.
+ 
+ * Scope: Site
+ * Type: Boolean
+ * Default: `false`
+ * Example: `"strict-color-comparison": true`
+ 
+ Since: 4.0.0
+
 ---
 
 ### `page-load-timeout`

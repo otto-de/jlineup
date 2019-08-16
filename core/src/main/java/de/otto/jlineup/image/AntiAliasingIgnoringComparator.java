@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import static java.lang.invoke.MethodHandles.lookup;
 
 /**
- * Ported from looks-same by Yandex: https://github.com/gemini-testing/looks-same
+ * This class is ported from looks-same by Yandex: https://github.com/gemini-testing/looks-same
  *
  * The MIT License (MIT)
  *

@@ -18,7 +18,6 @@ import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_WINDOW_HEIGHT;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -60,7 +59,7 @@ public class BrowserUtilsTest {
     }
 
     @Test
-    public void shouldGenerateScreenshotsParameters() throws IOException, JLineupException {
+    public void shouldGenerateScreenshotsParameters() throws IOException {
         //given
         JobConfig jobConfig = JobConfig.readConfig(".", "src/test/resources/lineup_test.json");
 
@@ -105,11 +104,11 @@ public class BrowserUtilsTest {
     }
 
     public static UrlConfig getExpectedUrlConfigForOttoDe() {
-        return new UrlConfig(ImmutableList.of("/", "multimedia"), 0.05f, ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600, 800, 1200), 50000, 2, 1, 0, 3, "console.log('Moin!');", 0, new HttpCheckConfig(), 1, false, false);
+        return new UrlConfig(ImmutableList.of("/", "multimedia"), 0.05f, ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600, 800, 1200), 50000, 2, 1, 0, 3, "console.log('Moin!');", 0, new HttpCheckConfig(), false, false, false);
     }
 
     public static UrlConfig getExpectedUrlConfigForGoogleDe() {
-        return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1200), 100000, 0, 0, 0, 0, null, 0, new HttpCheckConfig(), 1, false, false);
+        return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1200), 100000, 0, 0, 0, 0, null,0, new HttpCheckConfig(), false,false,false);
     }
 
     @Test

@@ -47,7 +47,6 @@ public final class JobConfig {
     static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
     static final int DEFAULT_GLOBAL_TIMEOUT = 600;
-    static final int DEFAULT_MAX_COLOR_DIFF_PER_PIXEL = 1;
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
@@ -195,10 +194,9 @@ public final class JobConfig {
                                 "console.log('This is JavaScript!')",
                                 DEFAULT_WAIT_FOR_FONTS_TIME,
                                 new HttpCheckConfig(true),
-                                DEFAULT_MAX_COLOR_DIFF_PER_PIXEL,
                                 false,
-                                false
-                        )));
+                                false,
+                                false)));
     }
 
 

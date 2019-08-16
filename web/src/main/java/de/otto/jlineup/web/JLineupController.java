@@ -28,8 +28,8 @@ public class JLineupController {
     }
 
     @GetMapping("/")
-    public String getHello() {
-        return "<p>JLineup is great! Do you want to go to my <a href=\"/internal/status\">status page</a>?</p>";
+    public String getHello(HttpServletRequest request) {
+        return String.format("<p>JLineup is great! Do you want to go to my <a href=\"%s/internal/status\">status page</a>?</p>", request.getContextPath());
     }
 
     @PostMapping(value = "/runs")

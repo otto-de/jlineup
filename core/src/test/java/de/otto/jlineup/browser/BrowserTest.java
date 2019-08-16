@@ -176,8 +176,8 @@ public class BrowserTest {
                 "testJS();",
                 5,
                 new HttpCheckConfig(),
-                0,
                 true,
+                false,
                 false);
 
         JobConfig jobConfig = jobConfigBuilder()
@@ -258,7 +258,7 @@ public class BrowserTest {
                 null,
                 5,
                 new HttpCheckConfig(),
-                0,
+                false,
                 false,
                 false);
 
@@ -337,7 +337,7 @@ public class BrowserTest {
                 null,
                 5,
                 new HttpCheckConfig(),
-                0,
+                false,
                 false,
                 false);
 
@@ -407,7 +407,7 @@ public class BrowserTest {
                 null,
                 5,
                 new HttpCheckConfig(),
-                0,
+                false,
                 false,
                 false);
 

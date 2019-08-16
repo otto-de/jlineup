@@ -95,9 +95,9 @@ public class ScreenshotsComparator {
                         continue;
                     }
 
-                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, jobConfig.windowHeight, screenshotContext.urlConfig.maxColorDiffPerPixel, screenshotContext.urlConfig.ignoreAntiAliasing);
+                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, jobConfig.windowHeight, screenshotContext.urlConfig.ignoreAntiAliasing, screenshotContext.urlConfig.strictColorComparison);
                     String differenceImageFileName = null;
-                    if (imageComparisonResult.getDifference() > 0 && imageComparisonResult.getDifferenceImage().isPresent()) {
+                    if ((imageComparisonResult.getDifference() > 0 || imageComparisonResult.getAcceptedDifferentPixels() > 0) && imageComparisonResult.getDifferenceImage().isPresent()) {
                         differenceImageFileName = fileService.writeScreenshot(screenshotContext, imageComparisonResult.getDifferenceImage().orElse(null), yPosition);
                     }
                     screenshotComparisonResults.add(new ScreenshotComparisonResult(
@@ -109,7 +109,7 @@ public class ScreenshotsComparator {
                             buildRelativePathFromReportDir(beforeFileName),
                             buildRelativePathFromReportDir(afterFileName),
                             buildRelativePathFromReportDir(differenceImageFileName),
-                            imageComparisonResult.getMaxSingleColorDifference()));
+                            imageComparisonResult.getAcceptedDifferentPixels()));
                 }
             }
             screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>

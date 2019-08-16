@@ -63,8 +63,7 @@ public class JSONReportWriterV2Test {
                         "        \"difference\" : 0.0," + lineSeparator() +
                         "        \"screenshotBeforeFileName\" : \"before\"," + lineSeparator() +
                         "        \"screenshotAfterFileName\" : \"after\"," + lineSeparator() +
-                        "        \"differenceImageFileName\" : \"differenceImageFileName\"," + lineSeparator() +
-                        "        \"maxSingleColorDifference\" : 0" + lineSeparator() +
+                        "        \"differenceImageFileName\" : \"differenceImageFileName\"" + lineSeparator() +
                         "      } ]," + lineSeparator() +
                         "      \"summary\" : {" + lineSeparator() +
                         "        \"error\" : false," + lineSeparator() +
@@ -108,7 +107,6 @@ public class JSONReportWriterV2Test {
                         "          \"enabled\" : true," + lineSeparator() +
                         "          \"allowed-codes\" : [ 200, 202, 204, 205, 206, 301, 302, 303, 304, 307, 308 ]" + lineSeparator() +
                         "        }," + lineSeparator() +
-                        "        \"max-color-diff-per-pixel\" : 1," + lineSeparator() +
                         "        \"javascript\" : \"console.log('This is JavaScript!')\"" + lineSeparator() +
                         "      }" + lineSeparator() +
                         "    }," + lineSeparator() +
@@ -145,7 +143,7 @@ public class JSONReportWriterV2Test {
                         "    \"screenshotBeforeFileName\" : \"before\"," + lineSeparator() +
                         "    \"screenshotAfterFileName\" : \"after\"," + lineSeparator() +
                         "    \"differenceImageFileName\" : \"differenceImageFileName\"," + lineSeparator() +
-                        "    \"maxSingleColorDifference\" : 0" + lineSeparator() +
+                        "    \"acceptedDifferentPixels\" : 0" + lineSeparator() +
                         "  } ]" + lineSeparator() +
                         "}";
 

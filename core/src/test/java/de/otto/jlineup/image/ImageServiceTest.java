@@ -1,5 +1,6 @@
 package de.otto.jlineup.image;
 
+import de.otto.jlineup.file.FileService;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,33 +40,35 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldIgnoreSlightDifferencesInColorSpace() throws IOException {
+    public void shouldNotIgnoreSlightDifferencesInColorSpaceInStrictMode() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_before.png"));
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_after.png"));
-        //final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_DIFFERENCE_reference.png"));
+        final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_DIFFERENCE_reference.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 1, false);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, true);
 
         //then
-        assertThat(result.getDifference(), is(0.0));
-        assertThat(result.getMaxSingleColorDifference(), is(1));
-        //assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
+        assertThat(result.getAcceptedDifferentPixels(), is(0));
+        assertThat(result.getDifference(), greaterThan(0d));
+        assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
     }
 
     @Test
-    public void shouldIgnoreChangeInOttoLogoWhenAntiAliasingIsIgnored() throws IOException {
+    public void shouldIgnoreSlightDifferencesInColorSpaceInDefaultNonStrictMode() throws IOException {
         //given
         final int viewportHeight = 800;
-        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_before.png"));
-        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_after.png"));
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_after.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 0, true);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, false);
+
         //then
         assertThat(result.getDifference(), is(0.0));
+        assertThat(result.getAcceptedDifferentPixels(), is(5));
     }
 
     @Test
@@ -76,7 +79,20 @@ public class ImageServiceTest {
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/shoppromo_after.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 0, true);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false);
+        //then
+        assertThat(result.getDifference(), is(0.0));
+    }
+
+    @Test
+    public void shouldIgnoreChangeInOttoLogoWhenAntiAliasingIsIgnored() throws IOException {
+        //given
+        final int viewportHeight = 800;
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_after.png"));
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false);
         //then
         assertThat(result.getDifference(), is(0.0));
     }
@@ -89,7 +105,7 @@ public class ImageServiceTest {
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_after.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, 0, false);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, false);
         //then
         assertThat(result.getDifference(), greaterThan(0d));
     }
