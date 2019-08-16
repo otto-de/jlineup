@@ -26,6 +26,7 @@ public class ReportGenerator {
     private Summary getSummary(List<ScreenshotComparisonResult> resultList) {
         final double differenceSum = resultList.stream().mapToDouble(scr -> scr.difference).sum();
         final OptionalDouble differenceMax = resultList.stream().mapToDouble(scr -> scr.difference).max();
-        return new Summary(differenceSum > 0, differenceSum, differenceMax.orElseGet(() -> 0));
+        final int acceptedDifferentPixelsSum = resultList.stream().mapToInt(scr -> scr.acceptedDifferentPixels).sum();
+        return new Summary(differenceSum > 0, differenceSum, differenceMax.orElseGet(() -> 0), acceptedDifferentPixelsSum);
     }
 }

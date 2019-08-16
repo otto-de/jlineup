@@ -31,8 +31,8 @@ public class JSONReportWriterV1Test {
 
         ScreenshotComparisonResult screenshotComparisonResult =
                 new ScreenshotComparisonResult(1887, "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, "before", "after", "differenceImageFileName", 0);
-        final Summary localSummary = new Summary(false, 0d, 0d);
-        final Summary globalSummary = new Summary(false, 0d, 0d);
+        final Summary localSummary = new Summary(false, 0d, 0d, 0);
+        final Summary globalSummary = new Summary(false, 0d, 0d, 0);
         Report report = new Report(globalSummary, singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), JobConfig.exampleConfig());
 
         String expectedString = "[ {" + lineSeparator() +
