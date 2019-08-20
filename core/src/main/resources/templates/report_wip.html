@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>JLineup Comparison Report</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache"/>
+    <META HTTP-EQUIV="Expires" CONTENT="-1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <style>
+
+        body {
+            background-color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            margin-left: 10px;
+            margin-top: 10px;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 10px;
+            color: grey;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #eee;
+        }
+
+        table tr:nth-child(odd) {
+            background-color: #fff;
+        }
+
+        table th {
+            color: white;
+            background-color: black;
+        }
+
+        td {
+            padding: 0 0 0 0;
+            border: 1px solid;
+            border-collapse: collapse;
+            vertical-align: top;
+            position: relative;
+        }
+
+        table {
+            padding: 0 0 15px 20px;
+            display: block;
+        }
+
+        p {
+            padding: 5px;
+        }
+
+        label {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .context input[type=checkbox] {
+            display: none;
+        }
+
+        .context input[type=checkbox]:checked ~ table {
+            display: block;
+        }
+
+        .context input[type=checkbox]:checked ~ label .arrow-down {
+            display: block;
+        }
+
+        .context input[type=checkbox]:checked ~ label .arrow-right {
+            display: none;
+        }
+
+        .arrow-right {
+            display: block;
+            float: left;
+            width: 0;
+            height: 0;
+            margin: 5px 10px 0px 6px;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 6px solid gray;
+        }
+
+        .arrow-down {
+            display: none;
+            float: left;
+            width: 0;
+            height: 0;
+            margin: 9px 7px 0px 3px;
+            border-top: 6px solid gray;
+            border-right: 6px solid transparent;
+            border-left: 6px solid transparent;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .failure {
+            color: red;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .zoom-lens {
+            position: absolute;
+            border: 1px solid #c3c3c3;
+            width: 44px;
+            height: 44px;
+        }
+
+        .zoom {
+            border: 1px solid #c3c3c3;
+            width: 320px;
+            height: 320px;
+            image-rendering: pixelated;
+        }
+
+    </style>
+
+    <script type="application/javascript">
+
+        function imageZoomForContext(context) {
+            imageZoom(context, 'before_' + context, 'after_' + context, 'diff_' + context, 'zoom_before_' + context, 'zoom_after_' + context, 'zoom_diff_' + context);
+        }
+
+        function imageZoom(context, beforeImageId, afterImageId, differenceImageId, zoomBeforeId, zoomAfterId, zoomDifferenceId) {
+            let zoomByLensX, zoomByLensY;
+            const beforeImg = document.getElementById(beforeImageId);
+            const afterImg = document.getElementById(afterImageId);
+            const differenceImg = document.getElementById(differenceImageId);
+            const zoomBefore = document.getElementById(zoomBeforeId);
+            const zoomAfter = document.getElementById(zoomAfterId);
+            const zoomDifference = document.getElementById(zoomDifferenceId);
+
+            let beforeLens, afterLens, differenceLens;
+            if (beforeImg) {
+                beforeLens = document.createElement("div");
+                beforeLens.setAttribute("class", "zoom-lens lens-" + context);
+                beforeImg.parentElement.insertBefore(beforeLens, beforeImg);
+                beforeLens.addEventListener("mousemove", (e) => moveLens(e, beforeLens, beforeImg));
+                beforeLens.addEventListener("touchmove", (e) => moveLens(e, beforeLens, beforeImg));
+
+                zoomByLensX = zoomBefore.offsetWidth / beforeLens.offsetWidth;
+                zoomByLensY = zoomBefore.offsetHeight / beforeLens.offsetHeight;
+
+                zoomBefore.style.backgroundImage = "url('" + beforeImg.src + "')";
+                zoomBefore.style.backgroundSize = (beforeImg.width * zoomByLensX) + "px " + (beforeImg.height * zoomByLensY) + "px";
+
+                beforeImg.addEventListener("mousemove", (e) => moveLens(e, beforeLens, beforeImg));
+                beforeImg.addEventListener("touchmove", (e) => moveLens(e, beforeLens, beforeImg));
+            }
+            if (afterImg) {
+                afterLens = document.createElement("div");
+                afterLens.setAttribute("class", "zoom-lens lens-" + context);
+                afterImg.parentElement.insertBefore(afterLens, afterImg);
+                afterLens.addEventListener("mousemove", (e) => moveLens(e, afterLens, afterImg));
+                afterLens.addEventListener("touchmove", (e) => moveLens(e, afterLens, afterImg));
+
+                zoomByLensX = zoomAfter.offsetWidth / afterLens.offsetWidth;
+                zoomByLensY = zoomAfter.offsetHeight / afterLens.offsetHeight;
+
+                zoomAfter.style.backgroundImage = "url('" + afterImg.src + "')";
+                zoomAfter.style.backgroundSize = (afterImg.width * zoomByLensX) + "px " + (afterImg.height * zoomByLensY) + "px";
+
+                afterImg.addEventListener("mousemove", (e) => moveLens(e, afterLens, afterImg));
+                afterImg.addEventListener("touchmove", (e) => moveLens(e, afterLens, afterImg));
+            }
+            if (differenceImg) {
+                differenceLens = document.createElement("div");
+                differenceLens.setAttribute("class", "zoom-lens lens-" + context);
+                differenceImg.parentElement.insertBefore(differenceLens, differenceImg);
+                differenceLens.addEventListener("mousemove", (e) => moveLens(e, differenceLens, differenceImg));
+                differenceLens.addEventListener("touchmove", (e) => moveLens(e, differenceLens, differenceImg));
+
+                zoomByLensX = zoomDifference.offsetWidth / differenceLens.offsetWidth;
+                zoomByLensY = zoomDifference.offsetHeight / differenceLens.offsetHeight;
+
+                zoomDifference.style.backgroundImage = "url('" + differenceImg.src + "')";
+                zoomDifference.style.backgroundSize = (differenceImg.width * zoomByLensX) + "px " + (differenceImg.height * zoomByLensY) + "px";
+
+                differenceImg.addEventListener("mousemove", (e) => moveLens(e, differenceLens, differenceImg));
+                differenceImg.addEventListener("touchmove", (e) => moveLens(e, differenceLens, differenceImg));
+            }
+
+            function moveLens(e, lens, img) {
+                let pos, x, y;
+                e.preventDefault();
+                pos = getCursorPosition(e, img);
+                x = pos.x - (lens.offsetWidth / 2);
+                y = pos.y - (lens.offsetHeight / 2);
+                if (x > img.width - lens.offsetWidth) {
+                    x = img.width - lens.offsetWidth;
+                }
+                if (x < 0) {
+                    x = 0;
+                }
+                if (y > img.height - lens.offsetHeight) {
+                    y = img.height - lens.offsetHeight;
+                }
+                if (y < 0) {
+                    y = 0;
+                }
+
+                let lenses = document.getElementsByClassName("lens-" + context);
+                for (const lensi of lenses) {
+                    lensi.style.left = x + "px";
+                    lensi.style.top = y + "px";
+                }
+
+                let zooms = document.getElementsByClassName("zoom_" + context);
+                for (const zoom of zooms) {
+                    zoom.style.backgroundPosition = "-" + (x * zoomByLensX) + "px -" + (y * zoomByLensY) + "px";
+                }
+            }
+
+            function getCursorPosition(e, img) {
+                let a, x, y;
+                a = img.getBoundingClientRect();
+                x = e.pageX - a.left;
+                y = e.pageY - a.top;
+                x = x - window.pageXOffset;
+                y = y - window.pageYOffset;
+                return {x: x, y: y};
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+<div class="report">
+    <h2>JLineup Comparison Report</h2>
+    <div class="context" th:each="resultContext,iterationStatus : ${resultContexts}">
+        <input type="checkbox" th:attr="id=${resultContext.contextHash}"/>
+        <label th:attr="for=${resultContext.contextHash}"
+               th:classappend="${resultContext.isSuccess()} ? success : failure">
+            <div class="arrow-right"></div>
+            <div class="arrow-down"></div>
+            [[${resultContext.url}]] (Browser window width: [[${resultContext.width}]])
+        </label>
+        <table>
+            <tr>
+                <th>Info</th>
+                <th>Before</th>
+                <th>After</th>
+                <th>Difference</th>
+                <th>Zoom Before</th>
+                <th>Zoom After</th>
+                <th>Zoom Diff</th>
+            </tr>
+            <tr th:each="result,iterationStatus : ${resultContext.results}">
+                <td>
+                    <p><a th:href="${resultContext.url}" target="_blank" th:title="${resultContext.url}">[[${resultContext.getShortenedUrl()}]]</a><br/>
+                        Width: [[${resultContext.width}]]<br/>
+                        Scroll pos: [[${result.verticalScrollPosition}]]<br/>
+                        Difference: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%
+                    </p>
+                </td>
+                <td th:switch="${result.screenshotBeforeFileName!=null}">
+                    <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}" target="_blank">
+                        <img th:src="${result.screenshotBeforeFileNameForHTML}" style="max-width: 350px;"
+                             th:id="${'before_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"/>
+                    </a>
+                    <p th:case="${false}">No before image</p>
+                </td>
+                <td th:switch="${result.screenshotAfterFileName!=null}">
+                    <a th:case="${true}" th:href="${result.screenshotAfterFileNameForHTML}" target="_blank">
+                        <img th:src="${result.screenshotAfterFileNameForHTML}" style="max-width: 350px;"
+                             th:id="${'after_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"/>
+                    </a>
+                    <p th:case="${false}">No after image</p>
+                </td>
+                <td th:switch="${result.differenceImageFileName!=null}">
+                    <a th:case="${true}" th:href="${result.differenceImageFileNameForHTML}" target="_blank">
+                        <img th:src="${result.differenceImageFileNameForHTML}" style="max-width: 350px;"
+                             th:id="${'diff_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"/>
+                    </a>
+                    <p th:case="${false}">No difference image</p>
+                </td>
+                <td>
+                    <div th:id="${'zoom_before_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                         class="zoom" th:classappend="${'zoom_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"></div>
+                </td>
+                <td>
+                    <div th:id="${'zoom_after_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                         class="zoom" th:classappend="${'zoom_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"></div>
+                </td>
+                <td>
+                    <div th:id="${'zoom_diff_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                         class="zoom" th:classappend="${'zoom_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"></div>
+                </td>
+                <script th:utext="${'imageZoomForContext(\'' + resultContext.contextHash + '-' + result.verticalScrollPosition + '\')'}"></script>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<p class="footer">Generated with Jlineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
+    [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]]</p>
+
+</body>
+</html>
