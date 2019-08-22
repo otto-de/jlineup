@@ -90,11 +90,14 @@ public class ImageServiceTest {
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_before.png"));
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_after.png"));
+        final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_diff2.png"));
 
         //when
         ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false);
+
         //then
         assertThat(result.getDifference(), is(0.0));
+        assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
     }
 
     @Test
@@ -103,11 +106,14 @@ public class ImageServiceTest {
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_before.png"));
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_after.png"));
+        final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_diff.png"));
 
         //when
         ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, false);
+
         //then
         assertThat(result.getDifference(), greaterThan(0d));
+        assertThat(bufferedImagesEqual(referenceImageBuffer, result.getDifferenceImage().orElse(null)), is(true));
     }
 
     @Test

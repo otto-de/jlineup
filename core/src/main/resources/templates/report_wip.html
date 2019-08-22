@@ -23,20 +23,20 @@
             color: grey;
         }
 
-        table tr:nth-child(even) {
+        .reporttable tr:nth-child(even) {
             background-color: #eee;
         }
 
-        table tr:nth-child(odd) {
+        .reporttable tr:nth-child(odd) {
             background-color: #fff;
         }
 
-        table th {
+        .reporttable th {
             color: white;
             background-color: black;
         }
 
-        td {
+        .reporttable td {
             padding: 0 0 0 0;
             border: 1px solid;
             border-collapse: collapse;
@@ -44,9 +44,9 @@
             position: relative;
         }
 
-        table {
+        #report {
             padding: 0 0 15px 20px;
-            display: block;
+            display: none;
         }
 
         p {
@@ -63,7 +63,7 @@
             display: none;
         }
 
-        .context input[type=checkbox]:checked ~ table {
+        .context input[type=checkbox]:checked ~ #report {
             display: block;
         }
 
@@ -123,16 +123,52 @@
             image-rendering: pixelated;
         }
 
+        #zoombox {
+            position: relative;
+        }
+
+        #zoomfix {
+            position: fixed;
+            /* top: 5px;
+            right: 5px; */
+            /*width: 965px;
+            height: 300px;
+            background-color: blue;*/
+            z-index: 10;
+        }
+
+        .visible {
+            display: block;
+        }
+
+        .invisible {
+            display: none;
+        }
+
+        #zoombox div table {
+            position: relative;
+        }
+
     </style>
 
     <script type="application/javascript">
 
+        function initZoom(element) {
+            document.getElementById("zoombox").classList.remove("invisible");
+            document.getElementById("zoombox").classList.add("visible");
+            imageZoomForContext(element.dataset.contextid);
+        }
+
+        function stopZoom() {
+            document.getElementById("zoombox").classList.add("invisible");
+            document.getElementById("zoombox").classList.remove("visible");
+        }
+
         function imageZoomForContext(context) {
-            imageZoom(context, 'before_' + context, 'after_' + context, 'diff_' + context, 'zoom_before_' + context, 'zoom_after_' + context, 'zoom_diff_' + context);
+            imageZoom(context, 'before_' + context, 'after_' + context, 'diff_' + context, 'zoom_before', 'zoom_after', 'zoom_diff');
         }
 
         function imageZoom(context, beforeImageId, afterImageId, differenceImageId, zoomBeforeId, zoomAfterId, zoomDifferenceId) {
-            let zoomByLensX, zoomByLensY;
             const beforeImg = document.getElementById(beforeImageId);
             const afterImg = document.getElementById(afterImageId);
             const differenceImg = document.getElementById(differenceImageId);
@@ -140,97 +176,79 @@
             const zoomAfter = document.getElementById(zoomAfterId);
             const zoomDifference = document.getElementById(zoomDifferenceId);
 
-            let beforeLens, afterLens, differenceLens;
+
             if (beforeImg) {
-                beforeLens = document.createElement("div");
-                beforeLens.setAttribute("class", "zoom-lens lens-" + context);
-                beforeImg.parentElement.insertBefore(beforeLens, beforeImg);
-                beforeLens.addEventListener("mousemove", (e) => moveLens(e, beforeLens, beforeImg));
-                beforeLens.addEventListener("touchmove", (e) => moveLens(e, beforeLens, beforeImg));
-
-                zoomByLensX = zoomBefore.offsetWidth / beforeLens.offsetWidth;
-                zoomByLensY = zoomBefore.offsetHeight / beforeLens.offsetHeight;
-
-                zoomBefore.style.backgroundImage = "url('" + beforeImg.src + "')";
-                zoomBefore.style.backgroundSize = (beforeImg.width * zoomByLensX) + "px " + (beforeImg.height * zoomByLensY) + "px";
-
-                beforeImg.addEventListener("mousemove", (e) => moveLens(e, beforeLens, beforeImg));
-                beforeImg.addEventListener("touchmove", (e) => moveLens(e, beforeLens, beforeImg));
+                let lens = document.getElementById('lens-before_' + context);
+                zoom(context, beforeImg, zoomBefore, lens);
             }
             if (afterImg) {
-                afterLens = document.createElement("div");
-                afterLens.setAttribute("class", "zoom-lens lens-" + context);
-                afterImg.parentElement.insertBefore(afterLens, afterImg);
-                afterLens.addEventListener("mousemove", (e) => moveLens(e, afterLens, afterImg));
-                afterLens.addEventListener("touchmove", (e) => moveLens(e, afterLens, afterImg));
-
-                zoomByLensX = zoomAfter.offsetWidth / afterLens.offsetWidth;
-                zoomByLensY = zoomAfter.offsetHeight / afterLens.offsetHeight;
-
-                zoomAfter.style.backgroundImage = "url('" + afterImg.src + "')";
-                zoomAfter.style.backgroundSize = (afterImg.width * zoomByLensX) + "px " + (afterImg.height * zoomByLensY) + "px";
-
-                afterImg.addEventListener("mousemove", (e) => moveLens(e, afterLens, afterImg));
-                afterImg.addEventListener("touchmove", (e) => moveLens(e, afterLens, afterImg));
+                let lens = document.getElementById('lens-after_' + context);
+                zoom(context, afterImg, zoomAfter, lens);
             }
             if (differenceImg) {
-                differenceLens = document.createElement("div");
-                differenceLens.setAttribute("class", "zoom-lens lens-" + context);
-                differenceImg.parentElement.insertBefore(differenceLens, differenceImg);
-                differenceLens.addEventListener("mousemove", (e) => moveLens(e, differenceLens, differenceImg));
-                differenceLens.addEventListener("touchmove", (e) => moveLens(e, differenceLens, differenceImg));
-
-                zoomByLensX = zoomDifference.offsetWidth / differenceLens.offsetWidth;
-                zoomByLensY = zoomDifference.offsetHeight / differenceLens.offsetHeight;
-
-                zoomDifference.style.backgroundImage = "url('" + differenceImg.src + "')";
-                zoomDifference.style.backgroundSize = (differenceImg.width * zoomByLensX) + "px " + (differenceImg.height * zoomByLensY) + "px";
-
-                differenceImg.addEventListener("mousemove", (e) => moveLens(e, differenceLens, differenceImg));
-                differenceImg.addEventListener("touchmove", (e) => moveLens(e, differenceLens, differenceImg));
-            }
-
-            function moveLens(e, lens, img) {
-                let pos, x, y;
-                e.preventDefault();
-                pos = getCursorPosition(e, img);
-                x = pos.x - (lens.offsetWidth / 2);
-                y = pos.y - (lens.offsetHeight / 2);
-                if (x > img.width - lens.offsetWidth) {
-                    x = img.width - lens.offsetWidth;
-                }
-                if (x < 0) {
-                    x = 0;
-                }
-                if (y > img.height - lens.offsetHeight) {
-                    y = img.height - lens.offsetHeight;
-                }
-                if (y < 0) {
-                    y = 0;
-                }
-
-                let lenses = document.getElementsByClassName("lens-" + context);
-                for (const lensi of lenses) {
-                    lensi.style.left = x + "px";
-                    lensi.style.top = y + "px";
-                }
-
-                let zooms = document.getElementsByClassName("zoom_" + context);
-                for (const zoom of zooms) {
-                    zoom.style.backgroundPosition = "-" + (x * zoomByLensX) + "px -" + (y * zoomByLensY) + "px";
-                }
-            }
-
-            function getCursorPosition(e, img) {
-                let a, x, y;
-                a = img.getBoundingClientRect();
-                x = e.pageX - a.left;
-                y = e.pageY - a.top;
-                x = x - window.pageXOffset;
-                y = y - window.pageYOffset;
-                return {x: x, y: y};
+                let lens = document.getElementById('lens-difference_' + context);
+                zoom(context, differenceImg, zoomDifference, lens);
             }
         }
+
+        function zoom(context, img, zoomImg, lens) {
+            lens.addEventListener("mousemove", (e) => moveLens(e, context, lens, img, zoomByLensX, zoomByLensY));
+
+            let zoomByLensX = zoomImg.offsetWidth / lens.offsetWidth;
+            let zoomByLensY = zoomImg.offsetHeight / lens.offsetHeight;
+
+            zoomImg.style.backgroundImage = "url('" + img.src + "')";
+            zoomImg.style.backgroundSize = (img.width * zoomByLensX) + "px " + (img.height * zoomByLensY) + "px";
+
+            img.addEventListener("mousemove", (e) => moveLens(e, context, lens, img, zoomByLensX, zoomByLensY));
+            img.addEventListener("touchmove", (e) => moveLens(e, context, lens, img, zoomByLensX, zoomByLensY));
+        }
+
+        function moveLens(e, context, lens, img, zoomByLensX, zoomByLensY) {
+            let pos, x, y;
+            e.preventDefault();
+            pos = getCursorPosition(e, img);
+            x = pos.x - (lens.offsetWidth / 2);
+            y = pos.y - (lens.offsetHeight / 2);
+            if (x > img.width - lens.offsetWidth) {
+                x = img.width - lens.offsetWidth;
+            }
+            if (x < 0) {
+                x = 0;
+            }
+            if (y > img.height - lens.offsetHeight) {
+                y = img.height - lens.offsetHeight;
+            }
+            if (y < 0) {
+                y = 0;
+            }
+
+            console.log("X: " + e.clientX + " - Y:" + e.clientY);
+            let zommfix = document.getElementById("zoomfix");
+            zommfix.style.top = (e.clientY - 22) + "px";
+            zommfix.style.left = (e.clientX + 25) + "px";
+
+            let lenses = document.getElementsByClassName("lens-" + context);
+            for (const lensi of lenses) {
+                lensi.style.left = x + "px";
+                lensi.style.top = y + "px";
+            }
+
+            let zooms = document.getElementsByClassName("zoom");
+            for (const zoom of zooms) {
+                zoom.style.backgroundPosition = "-" + (x * zoomByLensX) + "px -" + (y * zoomByLensY) + "px";
+            }
+        }
+
+        function getCursorPosition(e, img) {
+            let rect = img.getBoundingClientRect();
+            let x = e.pageX - rect.left;
+            let y = e.pageY - rect.top;
+            x = x - window.pageXOffset;
+            y = y - window.pageYOffset;
+            return {x: x, y: y};
+        }
+
     </script>
 </head>
 
@@ -238,66 +256,98 @@
 
 <div class="report">
     <h2>JLineup Comparison Report</h2>
+
+    <div id="zoombox" class="invisible">
+        <div id="zoomfix">
+            <table>
+                <tr
+                <tr class="reporttable">
+                    <th>Before</th>
+                    <th>After</th>
+                    <th>Difference</th>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="zoom_before" class="zoom"></div>
+                    </td>
+                    <td>
+                        <div id="zoom_after" class="zoom"></div>
+                    </td>
+                    <td>
+                        <div id="zoom_diff" class="zoom"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
     <div class="context" th:each="resultContext,iterationStatus : ${resultContexts}">
         <input type="checkbox" th:attr="id=${resultContext.contextHash}"/>
         <label th:attr="for=${resultContext.contextHash}"
                th:classappend="${resultContext.isSuccess()} ? success : failure">
             <div class="arrow-right"></div>
             <div class="arrow-down"></div>
-            [[${resultContext.url}]] (Browser window width: [[${resultContext.width}]])
+            [[${resultContext.url}]] (Width: [[${resultContext.width}]]) <a th:href="${resultContext.url}"
+                                                                            target="_blank"
+                                                                            th:title="${resultContext.url}">Visit</a>
         </label>
-        <table>
+        <table class="reporttable" id="report">
             <tr>
                 <th>Info</th>
                 <th>Before</th>
                 <th>After</th>
                 <th>Difference</th>
-                <th>Zoom Before</th>
-                <th>Zoom After</th>
-                <th>Zoom Diff</th>
             </tr>
             <tr th:each="result,iterationStatus : ${resultContext.results}">
                 <td>
-                    <p><a th:href="${resultContext.url}" target="_blank" th:title="${resultContext.url}">[[${resultContext.getShortenedUrl()}]]</a><br/>
-                        Width: [[${resultContext.width}]]<br/>
+                    <p>Width: [[${resultContext.width}]]<br/>
                         Scroll pos: [[${result.verticalScrollPosition}]]<br/>
                         Difference: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%
                     </p>
                 </td>
                 <td th:switch="${result.screenshotBeforeFileName!=null}">
-                    <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}" target="_blank">
+                    <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}" target="_blank"
+                       th:data-contextid="${resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                       onmouseenter="initZoom(this)"
+                       onmouseleave="stopZoom()">
+                        <div class=" zoom-lens" th:classappend="${'lens-' + resultContext.contextHash + '-' +
+                    result.verticalScrollPosition}" th:id="${'lens-before_' + resultContext.contextHash + '-' +
+                    result.verticalScrollPosition}">
+                        </div>
                         <img th:src="${result.screenshotBeforeFileNameForHTML}" style="max-width: 350px;"
-                             th:id="${'before_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"/>
+                             th:id="${'before_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                        />
                     </a>
                     <p th:case="${false}">No before image</p>
                 </td>
                 <td th:switch="${result.screenshotAfterFileName!=null}">
-                    <a th:case="${true}" th:href="${result.screenshotAfterFileNameForHTML}" target="_blank">
+                    <a th:case="${true}" th:href="${result.screenshotAfterFileNameForHTML}" target="_blank"
+                       th:data-contextid="${resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                       onmouseenter="initZoom(this)"
+                       onmouseleave="stopZoom()">
+                        <div class="zoom-lens"
+                             th:classappend="${'lens-' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                             th:id="${'lens-after_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"></div>
                         <img th:src="${result.screenshotAfterFileNameForHTML}" style="max-width: 350px;"
-                             th:id="${'after_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"/>
+                             th:id="${'after_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                        />
                     </a>
                     <p th:case="${false}">No after image</p>
                 </td>
                 <td th:switch="${result.differenceImageFileName!=null}">
-                    <a th:case="${true}" th:href="${result.differenceImageFileNameForHTML}" target="_blank">
+                    <a th:case="${true}" th:href="${result.differenceImageFileNameForHTML}" target="_blank"
+                       th:data-contextid="${resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                       onmouseenter="initZoom(this)"
+                       onmouseleave="stopZoom()">
+                        <div class="zoom-lens"
+                             th:classappend="${'lens-' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                             th:id="${'lens-difference_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"></div>
                         <img th:src="${result.differenceImageFileNameForHTML}" style="max-width: 350px;"
-                             th:id="${'diff_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"/>
+                             th:id="${'diff_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
+                        />
                     </a>
                     <p th:case="${false}">No difference image</p>
                 </td>
-                <td>
-                    <div th:id="${'zoom_before_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
-                         class="zoom" th:classappend="${'zoom_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"></div>
-                </td>
-                <td>
-                    <div th:id="${'zoom_after_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
-                         class="zoom" th:classappend="${'zoom_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"></div>
-                </td>
-                <td>
-                    <div th:id="${'zoom_diff_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"
-                         class="zoom" th:classappend="${'zoom_' + resultContext.contextHash + '-' + result.verticalScrollPosition}"></div>
-                </td>
-                <script th:utext="${'imageZoomForContext(\'' + resultContext.contextHash + '-' + result.verticalScrollPosition + '\')'}"></script>
             </tr>
         </table>
     </div>

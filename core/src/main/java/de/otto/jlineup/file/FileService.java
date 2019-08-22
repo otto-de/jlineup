@@ -11,7 +11,6 @@ import de.otto.jlineup.config.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -22,7 +21,6 @@ import java.nio.file.Paths;
 
 import static de.otto.jlineup.file.FileUtils.clearDirectory;
 import static java.lang.invoke.MethodHandles.lookup;
-import static java.lang.invoke.MethodHandles.throwException;
 
 public class FileService {
 
@@ -159,7 +157,7 @@ public class FileService {
         return ImageIO.read(new File(getScreenshotPath(fileName)));
     }
 
-    private void writeScreenshot(String fileName, BufferedImage image) throws IOException {
+    private static void writeScreenshot(String fileName, BufferedImage image) throws IOException {
         LOG.debug("Writing screenshot to {}", fileName);
         File screenshotFile = new File(fileName);
         ImageIO.write(image, "png", screenshotFile);
@@ -193,7 +191,11 @@ public class FileService {
     }
 
     public void writeHtmlReport(String htmlReport) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + FILE_SEPARATOR + REPORT_HTML_FILENAME))) {
+        writeHtmlReport(htmlReport, REPORT_HTML_FILENAME);
+    }
+
+    public void writeHtmlReport(String htmlReport, String filename) throws FileNotFoundException {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + FILE_SEPARATOR + filename))) {
             out.print(htmlReport);
         }
     }
