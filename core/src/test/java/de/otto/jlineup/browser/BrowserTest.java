@@ -220,7 +220,8 @@ public class BrowserTest {
         verify(webDriverMock, times(1)).executeScript(JS_GET_USER_AGENT);
         verify(webDriverMock, times(3)).executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL);
         verify(webDriverMock, times(3)).executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL);
-        verify(webDriverMock, times(2)).executeScript(JS_GET_DOM);
+        //TODO: re-enable if dom save feature comes back
+        //verify(webDriverMock, times(2)).executeScript(JS_GET_DOM);
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SCROLL_TO_CALL, 500));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SCROLL_TO_CALL, 1000));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SCROLL_TO_CALL, 1500));
