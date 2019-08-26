@@ -337,8 +337,9 @@ public class Browser implements AutoCloseable {
             LOG.debug("Page height is {}", pageHeight);
         }
 
-        String dom = getDom();
-        fileService.writeHtml(dom, screenshotContext.step);
+        //TODO what about this feature?
+        //String dom = getDom();
+        //fileService.writeHtml(dom, screenshotContext.step);
         fileService.writeFileTrackerData();
     }
 
