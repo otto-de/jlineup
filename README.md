@@ -82,8 +82,8 @@ Let's assume, this is part of a continuous integration pipeline:
 
 JLineup 4.0.0-rc1 was tested successfully with
 
-* Chrome 72.x
-* Firefox 65.x
+* Chrome 76.x
+* Firefox 68.x
 * PhantomJS 2.1.1 (auto-downloaded by JLineup if not installed)
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
@@ -112,9 +112,9 @@ JLineup uses some third party tools and libraries
 
 * [JCommander](http://jcommander.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
 
-##### Gson
+##### Jackson
 
-* [google-gson](https://github.com/google/gson) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0) 
+* [Jackson](https://github.com/FasterXML/jackson) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0) 
 
 ##### Logback
 

@@ -293,7 +293,7 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldPrintExampleConfig() {
-        exit.checkAssertionAfterwards(() -> assertThat(systemOutCaptor.toString(), containsString(JobConfig.prettyPrint(JobConfig.exampleConfig()))));
+        exit.checkAssertionAfterwards(() -> assertThat(systemOutCaptor.toString(), containsString(JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig()))));
         exit.expectSystemExitWithStatus(0);
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--print-example"});
     }

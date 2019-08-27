@@ -2,6 +2,7 @@ package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -15,6 +16,7 @@ import static de.otto.jlineup.config.JobConfig.*;
 @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 @JsonDeserialize(builder = UrlConfig.Builder.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UrlConfig {
 
     public final List<String> paths;
@@ -28,12 +30,17 @@ public class UrlConfig {
     public final int maxScrollHeight;
     public final float waitAfterPageLoad;
     public final float waitAfterScroll;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public final float waitForNoAnimationAfterScroll;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public final float warmupBrowserCacheTime;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public final float waitForFontsTime;
     @JsonProperty("javascript")
     public final String javaScript;
+    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = HttpCheckFilter.class)
     public final HttpCheckConfig httpCheck;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public final boolean hideImages;
     public final boolean ignoreAntiAliasing;
     public final boolean strictColorComparison;

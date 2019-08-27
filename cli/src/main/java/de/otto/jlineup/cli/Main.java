@@ -43,7 +43,7 @@ public class Main {
         }
 
         if (parameters.isPrintExample()) {
-            System.out.println(JobConfig.prettyPrint(JobConfig.exampleConfig()));
+            System.out.println(JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig()));
             exitWithExitCode(0);
         }
 
@@ -106,10 +106,10 @@ public class Main {
             String url = BrowserUtils.prependHTTPIfNotThereAndToLowerCase(parameters.getUrl());
             jobConfig = JobConfig.defaultConfig(url);
             if (!parameters.isPrintConfig()) {
-                LOG.info("You specified an explicit URL parameter ({}), any given jobConfig file is ignored! This should only be done for testing purpose.", url);
-                LOG.info("Using generated jobConfig:\n {}", JobConfig.prettyPrint(jobConfig));
-                LOG.info("You can take this generated jobConfig as base and save it as a text file named 'lineup.json'.");
-                LOG.info("Just add --print-jobConfig parameter to let JLineup print an example jobConfig");
+                LOG.info("You specified an explicit URL parameter ({}), any given jobConfig file is ignored! This should only be done for testing purposes.", url);
+                LOG.info("Using generated jobConfig:\n\n{}", JobConfig.prettyPrint(jobConfig));
+                LOG.info("\nYou can take this generated jobConfig as base and save it as a text file named 'lineup.json'.");
+                LOG.info("Just add --print-config parameter to let JLineup print a more detailed example jobConfig");
             }
         } else {
             try {

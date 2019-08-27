@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class JobConfigTest {
@@ -40,6 +40,18 @@ public class JobConfigTest {
         assertThat(jobConfig.globalWaitAfterPageLoad, is(0F));
         assertThat(jobConfig.pageLoadTimeout, is(120));
         assertThat(jobConfig.screenshotRetries, is(0));
+    }
+
+    @Test
+    public void shouldExcludeDefaultsFromSerializedConfig() {
+        JobConfig jobConfig = JobConfig.defaultConfig();
+        String printedConfig = JobConfig.prettyPrint(jobConfig);
+
+        JobConfig jobConfig1 = new JobConfig();
+
+        assertThat(jobConfig.httpCheck, is(jobConfig1.httpCheck));
+
+        assertThat(printedConfig, not(containsString("http-check")));
     }
 
     private void assertThatConfigContentsAreCorrect(JobConfig jobConfig) {

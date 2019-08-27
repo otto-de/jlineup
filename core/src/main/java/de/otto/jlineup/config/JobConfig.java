@@ -2,8 +2,13 @@ package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -19,10 +24,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.*;
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 
 @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public final class JobConfig {
 
     static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
@@ -51,6 +58,7 @@ public final class JobConfig {
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
 
+    @JsonInclude(Include.NON_DEFAULT)
     public final String name;
 
     @JsonProperty("wait-after-page-load")
@@ -58,14 +66,19 @@ public final class JobConfig {
     public final Float globalWaitAfterPageLoad;
     public final int pageLoadTimeout;
     public final Integer windowHeight;
+    @JsonInclude(value = Include.CUSTOM, valueFilter = ReportFormatFilter.class)
     public final Integer reportFormat;
+    @JsonInclude(Include.NON_DEFAULT)
     public final int screenshotRetries;
+    @JsonInclude(Include.NON_DEFAULT)
     public final int threads;
     @JsonProperty("timeout")
     public final int globalTimeout;
     public final boolean debug;
+    @JsonInclude(Include.NON_DEFAULT)
     public final boolean logToFile;
     public final boolean checkForErrorsInLog;
+    @JsonInclude(value = Include.CUSTOM, valueFilter = HttpCheckFilter.class)
     public final HttpCheckConfig httpCheck;
 
     public JobConfig() {
@@ -91,6 +104,18 @@ public final class JobConfig {
 
     public static String prettyPrint(JobConfig jobConfig) {
         return JacksonWrapper.serializeObject(jobConfig);
+    }
+
+    public static String prettyPrintWithAllFields(JobConfig jobConfig) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.addMixIn(JobConfig.class, JobConfigMixIn.class);
+        objectMapper.addMixIn(UrlConfig.class, UrlConfigMixIn.class);
+        try {
+            return objectMapper.writeValueAsString(jobConfig);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("There is a problem while writing the " + jobConfig.getClass().getCanonicalName() + " with Jackson.", e);
+        }
     }
 
     public static Builder copyOfBuilder(JobConfig jobConfig) {

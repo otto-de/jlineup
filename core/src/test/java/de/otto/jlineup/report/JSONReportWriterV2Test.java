@@ -95,14 +95,9 @@ public class JSONReportWriterV2Test {
                         "          \"exampleSessionStorageKey\" : \"value\"" + lineSeparator() +
                         "        }," + lineSeparator() +
                         "        \"window-widths\" : [ 600, 800, 1000 ]," + lineSeparator() +
-                        "        \"devices\" : null," + lineSeparator() +
                         "        \"max-scroll-height\" : 100000," + lineSeparator() +
                         "        \"wait-after-page-load\" : 0.0," + lineSeparator() +
                         "        \"wait-after-scroll\" : 0.0," + lineSeparator() +
-                        "        \"wait-for-no-animation-after-scroll\" : 0.0," + lineSeparator() +
-                        "        \"warmup-browser-cache-time\" : 0.0," + lineSeparator() +
-                        "        \"wait-for-fonts-time\" : 0.0," + lineSeparator() +
-                        "        \"hide-images\" : false," + lineSeparator() +
                         "        \"http-check\" : {" + lineSeparator() +
                         "          \"enabled\" : true," + lineSeparator() +
                         "          \"allowed-codes\" : [ 200, 202, 204, 205, 206, 301, 302, 303, 304, 307, 308 ]" + lineSeparator() +
@@ -111,19 +106,10 @@ public class JSONReportWriterV2Test {
                         "      }" + lineSeparator() +
                         "    }," + lineSeparator() +
                         "    \"browser\" : \"PhantomJS\"," + lineSeparator() +
-                        "    \"name\" : null," + lineSeparator() +
                         "    \"page-load-timeout\" : 120," + lineSeparator() +
                         "    \"window-height\" : 800," + lineSeparator() +
-                        "    \"report-format\" : 2," + lineSeparator() +
-                        "    \"screenshot-retries\" : 0," + lineSeparator() +
-                        "    \"threads\" : 0," + lineSeparator() +
                         "    \"debug\" : false," + lineSeparator() +
-                        "    \"log-to-file\" : false," + lineSeparator() +
                         "    \"check-for-errors-in-log\" : true," + lineSeparator() +
-                        "    \"http-check\" : {" + lineSeparator() +
-                        "      \"enabled\" : false," + lineSeparator() +
-                        "      \"allowed-codes\" : null" + lineSeparator() +
-                        "    }," + lineSeparator() +
                         "    \"wait-after-page-load\" : 0.0," + lineSeparator() +
                         "    \"timeout\" : 600" + lineSeparator() +
                         "  }," + lineSeparator() +

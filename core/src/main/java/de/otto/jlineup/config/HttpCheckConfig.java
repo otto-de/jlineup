@@ -1,6 +1,7 @@
 package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -31,6 +32,7 @@ public class HttpCheckConfig {
 
     private final boolean enabled;
 
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private final List<Integer> allowedCodes;
 
     public HttpCheckConfig(boolean enabled, List<Integer> allowedCodes) {

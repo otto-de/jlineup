@@ -13,6 +13,9 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.ProtocolHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.config.DeviceConfig.deviceConfigBuilder;
@@ -118,8 +122,14 @@ public class BrowserUtils {
             LOG.debug("Creating chrome with options: {}", options.toString());
             driver = new ChromeDriver(options);
         } else {
+            java.util.logging.Logger.getLogger(PhantomJSDriverService.class.getName()).setLevel(Level.OFF);
+            java.util.logging.Logger.getLogger(ProtocolHandshake.class.getName()).setLevel(Level.OFF);
+
             WebDriverManager.phantomjs().forceCache().setup();
-            driver = new PhantomJSDriver();
+            String[] args = new String[] {"--webdriver-loglevel=NONE"};
+            DesiredCapabilities capabilities = new DesiredCapabilities();
+            capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, args);
+            driver = new PhantomJSDriver(capabilities);
         }
         driver.manage().timeouts().pageLoadTimeout(jobConfig.pageLoadTimeout, TimeUnit.SECONDS);
         return driver;
