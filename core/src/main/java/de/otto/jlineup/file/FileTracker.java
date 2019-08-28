@@ -6,6 +6,7 @@ import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,8 +35,14 @@ public class FileTracker {
         return contexts.get(hash);
     }
 
-    public Map<Integer, Map<Step, String>> getScreenshotsForContext(int hash) {
-        return contexts.get(hash).screenshots;
+    public Map<Integer, Map<Step, String>> getScreenshotsForContext(int hash) throws IOException {
+        ScreenshotContextFileTracker screenshotContextFileTracker = contexts.get(hash);
+        if (screenshotContextFileTracker == null) {
+            throw new IOException("The files in the working directory don't fit the given config.\n" +
+                    "Are you trying to run the 'compare' step for files made with a different config?\n" +
+                    "Please run JLineup before and after with the current config before trying again.");
+        }
+        return screenshotContextFileTracker.screenshots;
     }
 
     public void addScreenshot(final ScreenshotContext screenshotContext, final String path, final int yPosition) {

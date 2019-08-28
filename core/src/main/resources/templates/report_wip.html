@@ -223,10 +223,9 @@
                 y = 0;
             }
 
-            console.log("X: " + e.clientX + " - Y:" + e.clientY);
-            let zommfix = document.getElementById("zoomfix");
-            zommfix.style.top = (e.clientY - 22) + "px";
-            zommfix.style.left = (e.clientX + 25) + "px";
+            let zoomfix = document.getElementById("zoomfix");
+            zoomfix.style.top = (e.clientY - 22 + 75) + "px";
+            zoomfix.style.left = (e.clientX + 25 + 75) + "px";
 
             let lenses = document.getElementsByClassName("lens-" + context);
             for (const lensi of lenses) {
