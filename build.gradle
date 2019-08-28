@@ -61,7 +61,7 @@ idea {
 }
 
 subprojects {
-    version = '4.0.0-rc1'
+    version = '4.0.0-rc2'
     group = 'de.otto'
 
     targetCompatibility = '1.8'
