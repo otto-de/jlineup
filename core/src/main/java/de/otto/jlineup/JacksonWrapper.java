@@ -1,10 +1,7 @@
 package de.otto.jlineup;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileTracker;
 
@@ -12,14 +9,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 
+import static com.fasterxml.jackson.core.JsonParser.Feature.*;
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
+
 public class JacksonWrapper {
 
     private static final ObjectMapper objectMapper;
 
     static {
         objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        objectMapper.enable(JsonParser.Feature.ALLOW_COMMENTS);
+        objectMapper.enable(INDENT_OUTPUT);
+        objectMapper.enable(ALLOW_COMMENTS);
+        objectMapper.enable(ALLOW_TRAILING_COMMA);
+        objectMapper.enable(ALLOW_UNQUOTED_CONTROL_CHARS);
     }
 
     private static ObjectMapper objectMapper() {
