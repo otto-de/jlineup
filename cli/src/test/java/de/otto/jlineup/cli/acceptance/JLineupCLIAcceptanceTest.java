@@ -143,41 +143,6 @@ public class JLineupCLIAcceptanceTest {
     }
 
     @Test
-    @Ignore //New IgnoreAntiAliasing option handles this, chrome does not render deterministically all the time
-    public void shouldRenderLogoDeterministically_WithChrome() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_svg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_svg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
-
-        final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
-        assertThat("Report JSON exists", Files.exists(reportJson));
-        final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
-        assertThat("Report HTML exists", Files.exists(reportHtml));
-
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
-
-        final String htmlReportText = getTextFileContentAsString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
-    }
-
-    @Test
-    @Ignore //New IgnoreAntiAliasing option handles this, chrome does not render deterministically all the time
-    public void shouldRenderProgressiveJPEGsDeterministically_WithChrome() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_progressive_jpg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_progressive_jpg.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
-
-        final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
-        assertThat("Report JSON exists", Files.exists(reportJson));
-        final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
-        assertThat("Report HTML exists", Files.exists(reportHtml));
-
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
-    }
-
-    @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_WithChromeHeadless() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-headless.lineup.json", "--replace-in-url###CWD###=" + CWD, " --step", "before"});
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-headless.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});

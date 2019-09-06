@@ -19,6 +19,7 @@ import org.openqa.selenium.remote.ProtocolHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,7 +127,7 @@ public class BrowserUtils {
             java.util.logging.Logger.getLogger(ProtocolHandshake.class.getName()).setLevel(Level.OFF);
 
             WebDriverManager.phantomjs().forceCache().setup();
-            String[] args = new String[] {"--webdriver-loglevel=NONE"};
+            String[] args = new String[] {"--webdriver-loglevel=NONE", "--webdriver-logfile=" + System.getProperty("java.io.tmpdir") + File.separator + "jlineup-phantomjsdriver.log"};
             DesiredCapabilities capabilities = new DesiredCapabilities();
             capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, args);
             driver = new PhantomJSDriver(capabilities);
