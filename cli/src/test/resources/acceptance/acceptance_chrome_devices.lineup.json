@@ -1,0 +1,29 @@
+{
+  "urls": {
+    "file://###CWD###/src/test/resources/acceptance/webpage/": {
+      "paths": [
+        "test.html"
+      ],
+      "devices": [
+        {
+          "device-name": "iPhone X"
+        },
+        {
+          "deviceName": "MOBILE",
+          "width": 600,
+          "height": 1200,
+          "pixelRatio": 2.5,
+          "touch": true
+        },
+        {
+          "deviceName": "DESKTOP",
+          "width": 2000,
+          "height": 2000
+        }
+      ]
+    }
+  },
+  "report-format" : 2,
+  "threads" : 3,
+  "browser" : "chrome-headless"
+}
