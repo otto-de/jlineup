@@ -1,13 +1,22 @@
 package de.otto.jlineup.cli.acceptance;
 
 import com.google.gson.Gson;
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.cli.Main;
+import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.Step;
+import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.report.Report;
 import org.hamcrest.CoreMatchers;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +30,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.fail;
 
 public class JLineupCLIAcceptanceTest {
 
@@ -130,10 +141,47 @@ public class JLineupCLIAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
+        assertThat(report.summary.differenceSum, is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
+    }
+
+    @Test
+    public void shouldRunJLineupWithSomeDevices_WithChrome() throws Exception {
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+
+        final Path filesJson = Paths.get(tempDirectory.toString(), "report", "files.json");
+        assertThat("Filetracker file exists", Files.exists(filesJson));
+
+        FileTracker fileTracker = JacksonWrapper.readFileTrackerFile(filesJson.toFile());
+        assertThat(fileTracker.contexts.size(), is(3));
+        fileTracker.contexts.forEach((k, v) -> {
+            DeviceConfig deviceConfig = v.screenshotContext.deviceConfig;
+            String filename = v.screenshots.get(0).get(Step.before);
+            if (deviceConfig.deviceName.equals("iPhone X")) {
+                checkScreenshotSize(filename, 1125, 2436);
+            } else if (deviceConfig.deviceName.equals("MOBILE")) {
+                checkScreenshotSize(filename, 1500, 3000);
+            } else if (deviceConfig.deviceName.equals("DESKTOP")) {
+                checkScreenshotSize(filename, 2000, 2000);
+            } else {
+                fail("Context should not be here");
+            }
+        });
+    }
+
+    private void checkScreenshotSize(String filename, int width, int height) {
+        try {
+            String filepath = tempDirectory.toString() + "/report/screenshots/" + filename;
+            System.out.println("Trying to read: " + filepath);
+            BufferedImage image = ImageIO.read(new File(filepath));
+            assertThat(image.getWidth(), is(width)); //iPhone X Screen height
+            assertThat(image.getHeight(), is(height)); //iPhone X Screen width
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -154,7 +202,7 @@ public class JLineupCLIAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
+        assertThat(report.summary.differenceSum, is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
@@ -172,7 +220,7 @@ public class JLineupCLIAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
+        assertThat(report.summary.differenceSum, is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
@@ -190,7 +238,7 @@ public class JLineupCLIAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
+        assertThat(report.summary.differenceSum, is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
@@ -208,7 +256,7 @@ public class JLineupCLIAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         @SuppressWarnings("unchecked") final ArrayList<Map> report = gson.fromJson(jsonReportText, ArrayList.class);
-        assertThat(report.get(0).get("difference"), CoreMatchers.is(0.0d));
+        assertThat(report.get(0).get("difference"), is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
@@ -226,7 +274,7 @@ public class JLineupCLIAcceptanceTest {
 
         final String jsonReportText = getTextFileContentAsString(reportJson);
         final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, CoreMatchers.is(0.0d));
+        assertThat(report.summary.differenceSum, is(0.0d));
 
         final String htmlReportText = getTextFileContentAsString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));

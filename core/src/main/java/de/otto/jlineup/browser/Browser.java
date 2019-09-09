@@ -219,9 +219,9 @@ public class Browser implements AutoCloseable {
             jLineupHttpClient.checkPageAccessibility(screenshotContext, jobConfig);
         }
 
-        boolean headlessRealBrowser = jobConfig.browser.isHeadlessRealBrowser();
+        boolean headlessRealBrowserOrMobileEmulation = jobConfig.browser.isHeadlessRealBrowser() || screenshotContext.deviceConfig.isMobile();
         final WebDriver localDriver;
-        if (headlessRealBrowser) {
+        if (headlessRealBrowserOrMobileEmulation) {
             localDriver = initializeWebDriver(screenshotContext.deviceConfig);
         } else localDriver = initializeWebDriver();
 
@@ -234,7 +234,7 @@ public class Browser implements AutoCloseable {
             moveMouseToZeroZero();
         }
 
-        if (!headlessRealBrowser) {
+        if (!headlessRealBrowserOrMobileEmulation) {
             localDriver.manage().window().setPosition(new Point(0, 0));
             resizeBrowser(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
@@ -259,7 +259,7 @@ public class Browser implements AutoCloseable {
             setSessionStorage(screenshotContext);
         }
 
-        if (headlessRealBrowser) {
+        if (headlessRealBrowserOrMobileEmulation) {
             browserCacheWarmupForHeadless(screenshotContext, url, localDriver);
         } else {
             checkBrowserCacheWarmup(screenshotContext, url, localDriver);

@@ -108,9 +108,17 @@ public class BrowserUtils {
             }
 
             if (device.isMobile()) {
-                Map<String, String> mobileEmulation = new HashMap<>();
+                Map<String, Object> mobileEmulation = new HashMap<>();
                 if (!device.deviceName.equalsIgnoreCase("MOBILE")) {
                     mobileEmulation.put("deviceName", device.deviceName);
+                } else {
+                    Map<String, Object> deviceMetrics = new HashMap<>();
+                    deviceMetrics.put("width", device.width);
+                    deviceMetrics.put("height", device.height);
+                    deviceMetrics.put("pixelRatio", device.pixelRatio);
+                    deviceMetrics.put("touch", device.touch);
+                    mobileEmulation.put("deviceMetrics", deviceMetrics);
+                    if (device.userAgent != null) mobileEmulation.put("userAgent", device.userAgent);
                 }
                 options.setExperimentalOption("mobileEmulation", mobileEmulation);
             }
