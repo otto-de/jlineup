@@ -38,6 +38,10 @@ jar {
     enabled = false
 }
 
+application {
+    mainClassName = "de.otto.jlineup.web.JLineupWebApplication"
+}
+
 bootJar {
     enabled = true
     mainClassName = "de.otto.jlineup.web.JLineupWebApplication"

@@ -32,6 +32,10 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 }
 
+application {
+    mainClassName = 'de.otto.jlineup.core.Main'
+}
+
 test {
     testLogging {
         exceptionFormat = 'full'
