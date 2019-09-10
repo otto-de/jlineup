@@ -6,7 +6,7 @@ SCRIPT_DIR=$(dirname $0)
 USER_GRADLE_PROPERTIES=~/.gradle/gradle.properties
 
 check_configured() {
-    grep -q $1 ${USER_GRADLE_PROPERTIES} || echo "$1 not configured in ${USER_GRADLE_PROPERTIES}. $2"
+    grep -q "$1" ${USER_GRADLE_PROPERTIES} || echo "$1 not configured in ${USER_GRADLE_PROPERTIES}. $2"
 }
 
 check_configuration() {
@@ -25,8 +25,8 @@ check_configuration() {
 
 check_configuration
 
-${SCRIPT_DIR}/gradlew clean
-${SCRIPT_DIR}/gradlew check
-${SCRIPT_DIR}/gradlew installBootDist publish
+#${SCRIPT_DIR}/gradlew clean
+#${SCRIPT_DIR}/gradlew check
+"${SCRIPT_DIR}"/gradlew -Dorg.gradle.internal.http.socketTimeout=200000 -Dorg.gradle.internal.http.connectionTimeout=200000 build installBootDist publish
 
-${SCRIPT_DIR}/gradlew closeAndReleaseRepository
+"${SCRIPT_DIR}"/gradlew closeAndReleaseRepository

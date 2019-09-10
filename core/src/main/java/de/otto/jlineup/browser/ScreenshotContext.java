@@ -20,14 +20,17 @@ public final class ScreenshotContext {
     public final UrlConfig urlConfig;
     @JsonIgnore
     final String fullPathOfReportDir;
+    @JsonIgnore
+    final boolean dontShareBrowser;
 
-    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, String fullPathOfReportDir) {
+    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser) {
         this.url = url;
         this.urlSubPath = urlSubPath;
         this.deviceConfig = deviceConfig;
         this.step = step;
         this.urlConfig = urlConfig;
         this.fullPathOfReportDir = fullPathOfReportDir;
+        this.dontShareBrowser = dontShareBrowser;
     }
 
     //Used by Jackson
@@ -38,10 +41,12 @@ public final class ScreenshotContext {
         this.step = null;
         this.urlConfig = null;
         this.fullPathOfReportDir = null;
+        this.dontShareBrowser = false;
     }
 
+    //Used in Tests only
     public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig) {
-        return new ScreenshotContext(url, path, deviceConfig, step, urlConfig, null);
+        return new ScreenshotContext(url, path, deviceConfig, step, urlConfig, null, false);
     }
 
     public int contextHash() {
@@ -63,7 +68,8 @@ public final class ScreenshotContext {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ScreenshotContext that = (ScreenshotContext) o;
-        return Objects.equals(url, that.url) &&
+        return dontShareBrowser == that.dontShareBrowser &&
+                Objects.equals(url, that.url) &&
                 Objects.equals(urlSubPath, that.urlSubPath) &&
                 Objects.equals(deviceConfig, that.deviceConfig) &&
                 step == that.step &&
@@ -73,7 +79,7 @@ public final class ScreenshotContext {
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, urlSubPath, deviceConfig, step, urlConfig, fullPathOfReportDir);
+        return Objects.hash(url, urlSubPath, deviceConfig, step, urlConfig, fullPathOfReportDir, dontShareBrowser);
     }
 
     @Override
@@ -85,6 +91,7 @@ public final class ScreenshotContext {
                 ", step=" + step +
                 ", urlConfig=" + urlConfig +
                 ", fullPathOfReportDir='" + fullPathOfReportDir + '\'' +
+                ", dontShareBrowser=" + dontShareBrowser +
                 '}';
     }
 }

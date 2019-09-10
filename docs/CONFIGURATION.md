@@ -128,7 +128,8 @@ This is a full configuration with example values:
       "http-check": {
         "enabled": false
       },
-      "max-color-diff-per-pixel": 1
+      "ignore-antialiasing": false,
+      "strict-color-comparison": false
     }
   },
   "browser": "PhantomJS",
@@ -204,6 +205,9 @@ What are all those options about? Here are all the details.
 ### `window-widths`
   
  Every path in the site config will be screenshotted in these given window-widths of the browser
+ 
+ Since JLineup 4.0.0, there is a new device-config option which replaces window-widths, see `device-config`
+ 
 * Scope: Site
 * Type: List of integers
 * Unit: Pixels
@@ -474,6 +478,46 @@ What are all those options about? Here are all the details.
  
  Since: 4.0.0
 
+---
+
+### `device-config`
+
+ * Scope: Site
+ * Type: Map
+ * Default: 
+    `
+        { 
+            "device-name": "DESKTOP",
+            "width": 800,
+            "height": 800
+        }
+    `
+ * Examples:
+   
+   `
+        {
+            "device-name": "iPhone X"
+        }
+   `
+   
+   `
+       { 
+           "device-name": "MOBILE",
+           "width": 600,
+           "height": 1200,
+           "user-agent": "My special mobile"
+       }
+   `
+   
+   `
+          { 
+              "device-name": "DESKTOP",
+              "width": 600,
+              "height": 1200,
+              "user-agent": "My special user agent string"
+              "touch": true
+          }
+      `
 ---
 
 ### `page-load-timeout`

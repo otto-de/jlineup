@@ -3,7 +3,6 @@ package de.otto.jlineup.browser;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
@@ -26,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -116,7 +116,7 @@ public class BrowserUtils {
                     deviceMetrics.put("width", device.width);
                     deviceMetrics.put("height", device.height);
                     deviceMetrics.put("pixelRatio", device.pixelRatio);
-                    deviceMetrics.put("touch", device.touch);
+                    deviceMetrics.put("touch", true);
                     mobileEmulation.put("deviceMetrics", deviceMetrics);
                     if (device.userAgent != null) mobileEmulation.put("userAgent", device.userAgent);
                 }
@@ -135,7 +135,7 @@ public class BrowserUtils {
             java.util.logging.Logger.getLogger(ProtocolHandshake.class.getName()).setLevel(Level.OFF);
 
             WebDriverManager.phantomjs().forceCache().setup();
-            String[] args = new String[] {"--webdriver-loglevel=NONE", "--webdriver-logfile=" + System.getProperty("java.io.tmpdir") + File.separator + "jlineup-phantomjsdriver.log"};
+            String[] args = new String[]{"--webdriver-loglevel=NONE", "--webdriver-logfile=" + System.getProperty("java.io.tmpdir") + File.separator + "jlineup-phantomjsdriver.log"};
             DesiredCapabilities capabilities = new DesiredCapabilities();
             capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, args);
             driver = new PhantomJSDriver(capabilities);
@@ -165,13 +165,20 @@ public class BrowserUtils {
                 deviceConfigs = urlConfig.devices;
             }
 
+            AtomicBoolean dontShareBrowser = new AtomicBoolean(false);
+            deviceConfigs.forEach(config -> {
+                if (config.isMobile()) {
+                    dontShareBrowser.set(true);
+                }
+            });
+
             final List<String> paths = urlConfig.paths;
             for (final String path : paths) {
                 screenshotContextList.addAll(
                         deviceConfigs.stream()
                                 .map(deviceConfig ->
                                         new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getKey()), path, deviceConfig,
-                                                runStepConfig.getStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig)))
+                                                runStepConfig.getStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig), dontShareBrowser.get()))
                                 .collect(Collectors.toList()));
             }
         }

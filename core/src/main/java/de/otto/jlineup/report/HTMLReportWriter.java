@@ -96,6 +96,11 @@ public class HTMLReportWriter {
         }
 
         @UsedInTemplate
+        public String getDeviceInfo() {
+            return screenshotContext.deviceConfig.;
+        }
+
+        @UsedInTemplate
         public List<ScreenshotComparisonResult> getResults() {
             return results;
         }

@@ -219,7 +219,7 @@ public class Browser implements AutoCloseable {
             jLineupHttpClient.checkPageAccessibility(screenshotContext, jobConfig);
         }
 
-        boolean headlessRealBrowserOrMobileEmulation = jobConfig.browser.isHeadlessRealBrowser() || screenshotContext.deviceConfig.isMobile();
+        boolean headlessRealBrowserOrMobileEmulation = jobConfig.browser.isHeadlessRealBrowser() || screenshotContext.dontShareBrowser;
         final WebDriver localDriver;
         if (headlessRealBrowserOrMobileEmulation) {
             localDriver = initializeWebDriver(screenshotContext.deviceConfig);
