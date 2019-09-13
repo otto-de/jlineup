@@ -116,7 +116,7 @@
         <label th:attr="for=${resultContext.contextHash}" th:classappend="${resultContext.isSuccess()} ? success : failure">
             <div class="arrow-right"></div>
             <div class="arrow-down"></div>
-            [[${resultContext.url}]] (Browser window width: [[${resultContext.width}]])
+            [[${resultContext.url}]] ([[${resultContext.deviceInfo}]])
         </label>
         <table>
             <tr>
@@ -128,7 +128,7 @@
             <tr th:each="result,iterationStatus : ${resultContext.results}">
                 <td>
                     <p><a th:href="${resultContext.url}" target="_blank" th:title="${resultContext.url}">[[${resultContext.getShortenedUrl()}]]</a><br/>
-                        Width: [[${resultContext.width}]]<br/>
+                    <div th:utext="${#strings.replace( #strings.escapeXml(resultContext.deviceInfo),'\n','&lt;br /&gt;')}" ></div>
                         Scroll pos: [[${result.verticalScrollPosition}]]<br/>
                         Difference: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%
                     </p>

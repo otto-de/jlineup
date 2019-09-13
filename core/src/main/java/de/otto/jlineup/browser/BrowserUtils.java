@@ -122,6 +122,9 @@ public class BrowserUtils {
                 }
                 options.setExperimentalOption("mobileEmulation", mobileEmulation);
             }
+            else if (device.userAgent != null) {
+                options.addArguments("--user-agent='" + device.userAgent + "'");
+            }
 
             if (jobConfig.browser.isHeadless()) {
                 options.setHeadless(true);

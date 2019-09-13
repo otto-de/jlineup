@@ -3,6 +3,7 @@ package de.otto.jlineup.report;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
+import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.file.FileService;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -93,6 +94,37 @@ public class HTMLReportWriter {
         @UsedInTemplate
         public int getWidth() {
             return screenshotContext.deviceConfig.width;
+        }
+
+        @UsedInTemplate
+        public String getDeviceInfo() {
+            StringBuilder sb = new StringBuilder();
+            DeviceConfig dc = screenshotContext.deviceConfig;
+            if (dc.isMobile()) {
+                sb.append(dc.deviceName);
+            }
+            if (dc.isGenericMobile()) {
+                sb.append("\n");
+            }
+            if (dc.isGenericMobile() || dc.isDesktop()) {
+                sb.append("Size: ");
+                sb.append(dc.width);
+                sb.append("x");
+                sb.append(dc.height);
+                if (dc.pixelRatio != 1.0f) {
+                    sb.append("\nPixel ratio: ");
+                    sb.append(dc.pixelRatio);
+                }
+                if (dc.userAgent != null) {
+                    sb.append("\n");
+                    sb.append(dc.userAgent);
+                }
+                if (dc.isDesktop() && dc.touch) {
+                    sb.append("\n");
+                    sb.append("Touch enabled");
+                }
+            }
+            return sb.toString();
         }
 
         @UsedInTemplate
