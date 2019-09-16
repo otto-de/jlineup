@@ -2,6 +2,7 @@ package de.otto.jlineup.browser;
 
 import de.otto.jlineup.config.JobConfig;
 import org.openqa.selenium.*;
+import org.openqa.selenium.json.JsonException;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogType;
 import org.slf4j.Logger;
@@ -22,9 +23,10 @@ public class LogErrorChecker {
             LogEntries logEntries;
             try {
                 logEntries = driver.manage().logs().get(LogType.BROWSER);
-            } catch (UnsupportedCommandException e) {
+            } catch (UnsupportedCommandException | JsonException e) {
                 logEntries = null;
             }
+
             if (logEntries != null && !logEntries.getAll().isEmpty() && logEntries.getAll().get(0).getLevel() == Level.SEVERE) {
                 throw new WebDriverException(logEntries.getAll().get(0).getMessage());
             }
