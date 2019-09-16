@@ -6,7 +6,6 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
-import de.otto.jlineup.file.FileTracker;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -15,11 +14,12 @@ import org.mockito.Mockito;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -72,6 +72,9 @@ public class HTMLReportWriterTest {
 
         assertThat(report, startsWith(expectedHtmlStart));
         assertThat(report, endsWith(expectedHtmlEnd));
+        //Check that all variables are replaced
+        assertThat(report, not(containsString("${")));
+        assertThat(report, not(containsString(" th:")));
     }
 
     @Test
