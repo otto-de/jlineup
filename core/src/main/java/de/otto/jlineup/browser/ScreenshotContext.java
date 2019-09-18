@@ -50,7 +50,12 @@ public final class ScreenshotContext {
     }
 
     public int contextHash() {
-        return Objects.hash(url, urlSubPath, deviceConfig, urlConfig);
+        return Objects.hash(url, urlSubPath, deviceConfig);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url, urlSubPath, deviceConfig, step, urlConfig, fullPathOfReportDir, dontShareBrowser);
     }
 
     public boolean equalsIgnoreStep(ScreenshotContext that) {
@@ -75,11 +80,6 @@ public final class ScreenshotContext {
                 step == that.step &&
                 Objects.equals(urlConfig, that.urlConfig) &&
                 Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(url, urlSubPath, deviceConfig, step, urlConfig, fullPathOfReportDir, dontShareBrowser);
     }
 
     @Override
