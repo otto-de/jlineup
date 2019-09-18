@@ -227,6 +227,24 @@ public class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    public void shouldRunJLineupWithTestPageThatDoesntChange_WithDifferentConfigsButSamePages_FixesContextHashBug() throws Exception {
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox_variant1.lineup.json", "--replace-in-url###CWD###=" + CWD, " --step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox_variant2.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+
+        final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
+        assertThat("Report JSON exists", Files.exists(reportJson));
+        final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
+        assertThat("Report HTML exists", Files.exists(reportHtml));
+
+        final String jsonReportText = getTextFileContentAsString(reportJson);
+        final Report report = gson.fromJson(jsonReportText, Report.class);
+        assertThat(report.summary.differenceSum, is(0.0d));
+
+        final String htmlReportText = getTextFileContentAsString(reportHtml);
+        assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
+    }
+
+    @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_ReportFormat2() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_reportv2.lineup.json", "--replace-in-url###CWD###=" + CWD, " --step", "before"});
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_reportv2.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
