@@ -1,13 +1,14 @@
 # JLineup Release History
 
 ## Release 4.0.0-rc3
-
 * Use latest Webdrivermanager
 * Fix Exception with latest Firefox
 * Minor improvements to HTML Report
 
-## Release 4.0.0-rc1
+## Release 4.0.0-rc2
+* Only show often used options and non-defaults in config prints by default, example-config shows everything
 
+## Release 4.0.0-rc1
 * Massively improved similar colors detection
 * Anti-Alias detection option
 * DeviceConfig option
