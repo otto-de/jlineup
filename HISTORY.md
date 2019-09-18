@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.0.0-rc4
+* Use only relevant fields in context hash calculation (fixes bugs if 'before' and 'after' configs differ)
+
 ## Release 4.0.0-rc3
 * Use latest Webdrivermanager
 * Fix Exception with latest Firefox
