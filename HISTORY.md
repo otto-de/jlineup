@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 4.0.0-rc3
+
+* Use latest Webdrivermanager
+* Fix Exception with latest Firefox
+* Minor improvements to HTML Report
+
 ## Release 4.0.0-rc1
 
 * Massively improved similar colors detection
