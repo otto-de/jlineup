@@ -8,10 +8,12 @@ import de.otto.jlineup.file.FileService;
 import org.junit.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.Logs;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
 import java.net.URI;
@@ -61,6 +63,7 @@ public class BrowserTest {
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class))).thenReturn(webDriverMock);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class), any(DeviceConfig.class))).thenReturn(webDriverMock);
         when(webDriverMock.executeScript(JS_GET_USER_AGENT)).thenReturn("Mocked Webdriver");
+        when(webDriverMock.getCapabilities()).thenReturn(DesiredCapabilities.chrome());
         JobConfig jobConfig = jobConfigBuilder().build();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
         testee.initializeWebDriver();

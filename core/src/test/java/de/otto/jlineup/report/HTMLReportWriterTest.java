@@ -1,5 +1,6 @@
 package de.otto.jlineup.report;
 
+import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
@@ -46,6 +47,7 @@ public class HTMLReportWriterTest {
         initMocks(this);
         testee = new HTMLReportWriter(fileServiceMock);
         when(fileServiceMock.getRecordedContext(anyInt())).thenReturn(ScreenshotContext.of("someUrl", "somePath", DeviceConfig.deviceConfig(1337,200), Step.before, UrlConfig.urlConfigBuilder().build()));
+        when(fileServiceMock.getBrowsers()).thenReturn(ImmutableMap.of(Step.before, "SomeBrowser 1.2.3", Step.after, "SomeBrowser 4.5.6"));
     }
 
     @Test

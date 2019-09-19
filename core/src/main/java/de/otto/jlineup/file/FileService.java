@@ -18,6 +18,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import static de.otto.jlineup.file.FileUtils.clearDirectory;
 import static java.lang.invoke.MethodHandles.lookup;
@@ -209,6 +210,14 @@ public class FileService {
     public void writeFileTrackerData() throws IOException {
         Path path = Paths.get(getReportDirectory().toString(), FILETRACKER_FILENAME);
         Files.write(path, JacksonWrapper.serializeObject(fileTracker).getBytes());
+    }
+
+    public void setBrowserAndVersion(ScreenshotContext screenshotContext, String browserAndVersion) {
+        fileTracker.setBrowserAndVersion(screenshotContext, browserAndVersion);
+    }
+
+    public Map<Step, String> getBrowsers() {
+        return fileTracker.browsers;
     }
 }
 

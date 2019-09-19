@@ -4,6 +4,7 @@ import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.DeviceConfig;
+import de.otto.jlineup.config.Step;
 import de.otto.jlineup.file.FileService;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -70,11 +71,13 @@ public class HTMLReportWriter {
         private final List<ScreenshotComparisonResult> results;
         private final ScreenshotContext screenshotContext;
         private final int contextHash;
+        private final Map<Step, String> browsers;
 
         ScreenshotComparisonResultContext(final int contextHash) {
             this.results = new LinkedList<>();
             this.screenshotContext = fileService.getRecordedContext(contextHash);
             this.contextHash = contextHash;
+            this.browsers = fileService.getBrowsers();
         }
 
         void addResult(ScreenshotComparisonResult result) {
@@ -94,6 +97,11 @@ public class HTMLReportWriter {
         @UsedInTemplate
         public int getWidth() {
             return screenshotContext.deviceConfig.width;
+        }
+
+        @UsedInTemplate
+        public String getBrowser(String step) {
+            return browsers.get(Step.valueOf(step));
         }
 
         @UsedInTemplate

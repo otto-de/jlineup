@@ -15,20 +15,23 @@ public class FileTracker {
 
     public final JobConfig jobConfig;
     public final Map<Integer, ScreenshotContextFileTracker> contexts;
+    public final Map<Step, String> browsers;
 
     //Used by Jackson
     private FileTracker() {
         jobConfig = null;
         contexts = null;
+        browsers = null;
     }
 
-    public FileTracker(JobConfig jobConfig, Map<Integer, ScreenshotContextFileTracker> contexts) {
+    public FileTracker(JobConfig jobConfig, Map<Integer, ScreenshotContextFileTracker> contexts, Map<Step, String> browsers) {
         this.jobConfig = jobConfig;
         this.contexts = contexts;
+        this.browsers = browsers;
     }
 
     public static FileTracker create(JobConfig jobConfig) {
-        return new FileTracker(jobConfig, new ConcurrentHashMap<>());
+        return new FileTracker(jobConfig, new ConcurrentHashMap<>(), new ConcurrentHashMap<>());
     }
 
     public ScreenshotContextFileTracker getScreenshotContextFileTracker(int hash) {
@@ -55,5 +58,11 @@ public class FileTracker {
             }
         }
         screenshotContextFileTracker.addScreenshot(screenshotContext, path, yPosition);
+    }
+
+    public void setBrowserAndVersion(ScreenshotContext screenshotContext, String browserAndVersion) {
+        if (browsers != null) {
+            browsers.put(screenshotContext.step, browserAndVersion);
+        }
     }
 }

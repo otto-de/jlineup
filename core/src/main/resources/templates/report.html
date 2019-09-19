@@ -121,8 +121,8 @@
         <table>
             <tr>
                 <th>Info</th>
-                <th>Before</th>
-                <th>After</th>
+                <th>Before ([[${resultContext.getBrowser("before")}]])</th>
+                <th>After ([[${resultContext.getBrowser("after")}]])</th>
                 <th>Difference</th>
             </tr>
             <tr th:each="result,iterationStatus : ${resultContext.results}">

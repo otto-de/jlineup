@@ -226,7 +226,8 @@ public class Browser implements AutoCloseable {
         } else localDriver = initializeWebDriver();
 
         if (printVersion.getAndSet(false)) {
-            LOG.info("User agent: " + getBrowserAndVersion());
+            LOG.info("User agent: " + getUserAgent());
+            fileService.setBrowserAndVersion(screenshotContext, getBrowserAndVersion(localDriver));
         }
 
         //No need to move the mouse out of the way for headless browsers, but this avoids hovering links in other browsers
@@ -298,7 +299,7 @@ public class Browser implements AutoCloseable {
         //Execute custom javascript if existing
         executeJavaScript(screenshotContext.urlConfig.javaScript);
 
-        if(screenshotContext.urlConfig.hideImages) {
+        if (screenshotContext.urlConfig.hideImages) {
             executeJavaScript(JS_HIDE_IMAGES);
         }
 
@@ -341,6 +342,14 @@ public class Browser implements AutoCloseable {
         //String dom = getDom();
         //fileService.writeHtml(dom, screenshotContext.step);
         fileService.writeFileTrackerData();
+    }
+
+    private String getBrowserAndVersion(WebDriver driver) {
+        Capabilities capabilities = ((HasCapabilities) driver).getCapabilities();
+        String browserName = capabilities.getBrowserName();
+        browserName = browserName.substring(0, 1).toUpperCase() + browserName.substring(1);
+        String browserVersion = capabilities.getVersion();
+        return browserName + " " + browserVersion;
     }
 
     private void resizeBrowser(WebDriver driver, int width, int height) {
@@ -499,7 +508,7 @@ public class Browser implements AutoCloseable {
         Thread.sleep(50);
     }
 
-    private String getBrowserAndVersion() {
+    private String getUserAgent() {
         LOG.debug("Getting browser user agent.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         return (String) jse.executeScript(JS_GET_USER_AGENT);
@@ -625,8 +634,7 @@ public class Browser implements AutoCloseable {
             WebDriver driver;
             if (webDrivers.containsKey(currentThreadName)) {
                 driver = webDrivers.get(currentThreadName);
-            }
-            else {
+            } else {
                 driver = createDriver();
                 webDrivers.put(currentThreadName, driver);
             }
