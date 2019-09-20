@@ -8,46 +8,46 @@ import java.util.*;
 
 public class CommandLineParameters {
 
-    @Parameter(names = {"-?", "--help"}, help = true, description = "Shows this help")
+    @Parameter(names = {"-?", "--help"}, help = true, description = "Shows this help", order = 0)
     private boolean help = false;
 
-    @Parameter(names = {"-s", "--step"}, description = "JLineup step - 'before' just takes screenshots, 'after' takes screenshots and compares them with the 'before'-screenshots in the screenshots directory. 'compare' just compares existing screenshots, it's also included in 'after'.")
+    @Parameter(names = {"-s", "--step"}, description = "JLineup step - 'before' just takes screenshots, 'after' takes screenshots and compares them with the 'before'-screenshots in the screenshots directory. 'compare' just compares existing screenshots, it's also included in 'after'.", order = 2)
     private Step step = Step.before;
 
-    @Parameter(names = {"--config", "-c"}, description = "JobConfig file")
+    @Parameter(names = {"--config", "-c"}, description = "JobConfig file", order = 3)
     private String configFile = "lineup.json";
 
-    @Parameter(names = {"--working-dir", "-d"}, description = "Path to the working directory")
+    @Parameter(names = {"--working-dir", "-d"}, description = "Path to the working directory", order = 4)
     private String workingDirectory = ".";
 
-    @Parameter(names = {"--screenshot-dir", "-sd"}, description = "Screenshots directory name - relative to working directory")
+    @Parameter(names = {"--screenshot-dir", "-sd"}, description = "Screenshots directory name - relative to working directory", order = 5)
     private String screenshotDirectory = "report/screenshots";
 
-    @Parameter(names = {"--report-dir", "-rd"}, description = "HTML report directory name - relative to working directory")
+    @Parameter(names = {"--report-dir", "-rd"}, description = "HTML report directory name - relative to working directory", order = 6)
     private String reportDirectory = "report";
 
-    @Parameter(names = {"--url", "-u"}, description = "If you run JLineup without config file, this is the one url that is tested with the default config.")
+    @Parameter(names = {"--url", "-u"}, description = "If you run JLineup without config file, this is the one url that is tested with the default config.", order = 1)
     private String url = null;
 
-    @Parameter(names = {"--print-config"}, description = "Prints the current (if found) or a default config file to standard out.")
+    @Parameter(names = {"--print-config"}, description = "Prints the current (if found) or a default config file to standard out.", order = 7)
     private boolean printConfig = false;
 
-    @Parameter(names = {"--print-example"}, description = "Prints an example default config file to standard out. Useful as quick start.")
+    @Parameter(names = {"--print-example"}, description = "Prints an example default config file to standard out. Useful as quick start.", order = 8)
     private boolean printExample = false;
 
-    @Parameter(names = {"--debug"}, description = "Sets the log level to DEBUG, produces verbose information about the current task.")
+    @Parameter(names = {"--debug"}, description = "Sets the log level to DEBUG, produces verbose information about the current task.", order = 9)
     private boolean debug = false;
 
-    @Parameter(names = {"--log"}, description = "Sets the log level to DEBUG and logs to a file in the current working directory.")
+    @Parameter(names = {"--log"}, description = "Sets the log level to DEBUG and logs to a file in the current working directory.", order = 10)
     private boolean logToFile = false;
 
-    @Parameter(names = {"--version", "-v"}, description = "Prints version information.")
+    @Parameter(names = {"--version", "-v"}, description = "Prints version information.", order = 11)
     private boolean version = false;
 
-    @Parameter(names = {"--chrome-parameter"}, description = "Additional command line parameters for spawned chrome processes. Example: --chrome-parameter \"--use-shm=false\"")
+    @Parameter(names = {"--chrome-parameter"}, description = "Additional command line parameters for spawned chrome processes. Example: --chrome-parameter \"--use-shm=false\"", order = 12)
     private List<String> chromeParameters = Collections.emptyList();
 
-    @Parameter(names = {"--firefox-parameter"}, description = "Additional command line parameters for spawned firefox processes.")
+    @Parameter(names = {"--firefox-parameter"}, description = "Additional command line parameters for spawned firefox processes.", order = 13)
     private List<String> firefoxParameters = Collections.emptyList();
 
     @DynamicParameter(names = {"--replace-in-url", "-R"}, description = "The given keys are replaced with the corresponding values in all urls that are tested.")
