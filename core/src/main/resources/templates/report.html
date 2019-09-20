@@ -23,6 +23,11 @@
             color: grey;
         }
 
+        table {
+            padding: 0 0 15px 20px;
+            display: none;
+        }
+
         table tr:nth-child(even) {
             background-color: #eee;
         }
@@ -36,16 +41,17 @@
             background-color: black;
         }
 
-        td {
+        table th .browser {
+            color: lightgray;
+            font-weight: normal;
+            font-size: smaller;
+        }
+
+        table td {
             padding: 0 0 0 0;
             border: 1px solid;
             border-collapse: collapse;
             vertical-align: top;
-        }
-
-        table {
-            padding: 0 0 15px 20px;
-            display: none;
         }
 
         p {
@@ -121,8 +127,8 @@
         <table>
             <tr>
                 <th>Info</th>
-                <th>Before ([[${resultContext.getBrowser("before")}]])</th>
-                <th>After ([[${resultContext.getBrowser("after")}]])</th>
+                <th>Before <span class="browser">([[${resultContext.getBrowser("before")}]])</span></th>
+                <th>After  <span class="browser">([[${resultContext.getBrowser("after")}]])</span></th>
                 <th>Difference</th>
             </tr>
             <tr th:each="result,iterationStatus : ${resultContext.results}">
