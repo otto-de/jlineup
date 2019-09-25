@@ -87,6 +87,9 @@ public class Main {
             }
         } catch (Exception e) {
             LOG.error(e.getMessage(),e);
+
+            Utils.writeInfosForCommonErrors(e.getMessage());
+
             exitWithExitCode(1);
         }
 

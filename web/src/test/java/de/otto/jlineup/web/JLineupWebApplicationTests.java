@@ -175,7 +175,8 @@ public class JLineupWebApplicationTests {
                                 new HttpCheckConfig(),
                                 false,
                                 false,
-                                false)))
+                                false,
+                                DEFAULT_MAX_COLOR_DISTANCE)))
                 .build();
     }
 }

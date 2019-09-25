@@ -1,5 +1,8 @@
 package de.otto.jlineup.image;
 
+import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.UrlConfig;
+
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -45,10 +48,10 @@ public class ImageService {
     }
 
     public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight) {
-        return this.compareImages(image1, image2, viewportHeight, false, true);
+        return this.compareImages(image1, image2, viewportHeight, false, true, JobConfig.DEFAULT_MAX_COLOR_DISTANCE);
     }
 
-    public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight, boolean ignoreAntiAliased, boolean strictColorComparison) {
+    public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight, boolean ignoreAntiAliased, boolean strictColorComparison, float maxColorDistance) {
 
         if (image1 == null || image2 == null) throw new NullPointerException("Can't compare null imagebuffers");
 
@@ -91,7 +94,7 @@ public class ImageService {
         for (int i1 = 0, i2 = 0, iD = 0, x = 0, y = 0; iD < maxPixelCount; ) {
             //mark same pixels with same_color and different pixels in highlight_color
             if (image1Pixels[i1] != image2Pixels[i2]) {
-                if (!strictColorComparison && doColorsLookSame(image1Pixels[i1], image2Pixels[i2])) {
+                if (!strictColorComparison && doColorsLookSame(image1Pixels[i1], image2Pixels[i2], x, y, maxColorDistance)) {
                     differenceImagePixels[iD] = LOOK_SAME_COLOR;
                     lookSameDiffPixelCounter++;
                 } else if (ignoreAntiAliased && AntiAliasingIgnoringComparator.checkIsAntialiased(image1, image2, x, y)) {
@@ -193,14 +196,17 @@ public class ImageService {
         return true;
     }
 
-    static boolean doColorsLookSame(int argbColor1, int argbColor2) {
+    static boolean doColorsLookSame(int argbColor1, int argbColor2, int x, int y, double maxColorDistance) {
         int[] argb1 = getARGB(argbColor1);
         int[] argb2 = getARGB(argbColor2);
         LAB lab1 = LAB.fromRGB(argb1[1], argb1[2], argb1[3], 0);
         LAB lab2 = LAB.fromRGB(argb2[1], argb2[2], argb2[3], 0);
 
         double distance = LAB.ciede2000(lab1, lab2);
-        return distance <= 2.3d;
+
+        // if (distance > maxColorDistance) System.err.println(distance);
+
+        return distance <= maxColorDistance;
     }
 
     //A very fast byte buffer based image comparison for images containing INT or BYTE type representations

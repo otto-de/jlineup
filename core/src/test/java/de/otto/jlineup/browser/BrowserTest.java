@@ -24,6 +24,7 @@ import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS;
 import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
 import static de.otto.jlineup.config.DeviceConfig.*;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_COLOR_DISTANCE;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
@@ -181,7 +182,8 @@ public class BrowserTest {
                 new HttpCheckConfig(),
                 true,
                 false,
-                false);
+                false,
+                DEFAULT_MAX_COLOR_DISTANCE);
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
@@ -264,7 +266,8 @@ public class BrowserTest {
                 new HttpCheckConfig(),
                 false,
                 false,
-                false);
+                false,
+                DEFAULT_MAX_COLOR_DISTANCE);
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
@@ -343,7 +346,8 @@ public class BrowserTest {
                 new HttpCheckConfig(),
                 false,
                 false,
-                false);
+                false,
+                DEFAULT_MAX_COLOR_DISTANCE);
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
@@ -413,7 +417,8 @@ public class BrowserTest {
                 new HttpCheckConfig(),
                 false,
                 false,
-                false);
+                false,
+                DEFAULT_MAX_COLOR_DISTANCE);
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(CHROME_HEADLESS)

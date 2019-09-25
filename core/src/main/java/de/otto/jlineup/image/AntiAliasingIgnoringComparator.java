@@ -43,7 +43,7 @@ public class AntiAliasingIgnoringComparator {
     public static boolean checkIsAntialiased(BufferedImage img1, BufferedImage img2, int x, int y) {
         boolean isPixelAntiAliased = isAntialiased(img2, x, y, img1)
                 || isAntialiased(img1, x, y, img2);
-        LOG.trace("Check if different pixel {}|{} is because of anti-aliasing: {}", x, y, isPixelAntiAliased);
+        LOG.info("Check if different pixel {}|{} is because of anti-aliasing: {}", x, y, isPixelAntiAliased);
         return isPixelAntiAliased;
     }
 

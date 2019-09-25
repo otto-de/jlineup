@@ -95,7 +95,7 @@ public class ScreenshotsComparator {
                         continue;
                     }
 
-                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, jobConfig.windowHeight, screenshotContext.urlConfig.ignoreAntiAliasing, screenshotContext.urlConfig.strictColorComparison);
+                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, jobConfig.windowHeight, screenshotContext.urlConfig.ignoreAntiAliasing, screenshotContext.urlConfig.strictColorComparison, screenshotContext.urlConfig.maxColorDistance);
                     String differenceImageFileName = null;
                     if ((imageComparisonResult.getDifference() > 0 || imageComparisonResult.getAcceptedDifferentPixels() > 0) && imageComparisonResult.getDifferenceImage().isPresent()) {
                         differenceImageFileName = fileService.writeScreenshot(screenshotContext, imageComparisonResult.getDifferenceImage().orElse(null), yPosition);

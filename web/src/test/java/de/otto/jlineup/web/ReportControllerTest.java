@@ -24,8 +24,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import static de.otto.jlineup.config.JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME;
-import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
+import static de.otto.jlineup.config.JobConfig.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
@@ -157,7 +156,8 @@ public class ReportControllerTest {
                                 new HttpCheckConfig(),
                                 false,
                                 false,
-                                false)))
+                                false,
+                                DEFAULT_MAX_COLOR_DISTANCE)))
                 .build();
 
     }

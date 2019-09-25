@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.rmi.ServerError;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -113,4 +114,12 @@ public class Utils {
         return String.format("%s [%s]%n", readVersion(), readCommit());
     }
 
+    public static void writeInfosForCommonErrors(String message) {
+        if (message.contains("session deleted because of page crash")) {
+            System.err.println("\n=====\n");
+            System.err.println("It looks like you're using Google Chrome or Chromium and it crashes while browsing to your configured page.");
+            System.err.println("Are you running inside a Docker container? Try to run JLineup with --chrome-parameter \"--disable-dev-shm-usage\" and this error might be gone.");
+            System.err.println("\n=====\n");
+        }
+    }
 }

@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_COLOR_DISTANCE;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,7 +35,7 @@ public class ScreenshotsComparatorTest {
 
     private RunStepConfig runStepConfig;
     private JobConfig jobConfig;
-    private final UrlConfig urlConfig = new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, singletonList(100), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(),false, false, false);
+    private final UrlConfig urlConfig = new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, singletonList(100), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(),false, false, false, DEFAULT_MAX_COLOR_DISTANCE);
 
     @Mock
     private FileService fileService;
@@ -96,7 +97,7 @@ public class ScreenshotsComparatorTest {
         when(fileService.readScreenshot("http_url_root_ff3c40c_1001_02002_after.png")).thenReturn(
                 afterBuffer);
         BufferedImage differenceBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
-        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, false, false)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10));
+        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, false, false, DEFAULT_MAX_COLOR_DISTANCE)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10));
         when(fileService.writeScreenshot(screenshotContext, differenceBuffer, 2002)).thenReturn("http_url_root_ff3c40c_1001_02002_compare.png");
 
         //when
