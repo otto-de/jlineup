@@ -23,20 +23,35 @@
             color: grey;
         }
 
-        .reporttable tr:nth-child(even) {
+        .context > table {
+            padding: 0 0 15px 20px;
+            display: none;
+        }
+
+        .context > table tr:nth-child(even) {
             background-color: #eee;
         }
 
-        .reporttable tr:nth-child(odd) {
+        .context > table tr:nth-child(odd) {
             background-color: #fff;
         }
 
-        .reporttable th {
+        .context > table th {
             color: white;
             background-color: black;
         }
 
-        .reporttable td {
+        .context > table th .browser {
+            color: lightgray;
+            font-weight: normal;
+            font-size: smaller;
+        }
+
+        .context > table td:first-child {
+            padding: 4px;
+        }
+
+        .context > table td {
             padding: 0 0 0 0;
             border: 1px solid;
             border-collapse: collapse;
@@ -44,16 +59,47 @@
             position: relative;
         }
 
-        #report {
-            padding: 0 0 15px 20px;
+        .legend {
+            font-size: small;
             display: none;
+        }
+
+        .legend > table {
+            background-color: white;
+            border-spacing: 2px;
+            border: 1px solid black;
+            #border-collapse: collapse;
+        }
+
+        .legend > table th {
+            background-color: black;
+            padding: 3px;
+            color: white;
+        }
+
+        .legend > table td {
+            padding: 3px;
+            border: 0;
+        }
+
+        .legend > table td:first-child {
+            padding: 4px;
+            border: 1px solid black;
+        }
+
+        .deviceinfo {
+            font-size: small;
+        }
+
+        .infotext {
+            font-size: small;
         }
 
         p {
             padding: 5px;
         }
 
-        label {
+        .report label {
             cursor: pointer;
             font-weight: bold;
             font-size: 18px;
@@ -63,7 +109,11 @@
             display: none;
         }
 
-        .context input[type=checkbox]:checked ~ #report {
+        .context input[type=checkbox]:checked ~ table {
+            display: block;
+        }
+
+        .context input[type=checkbox]:checked ~ .legend {
             display: block;
         }
 
@@ -80,7 +130,7 @@
             float: left;
             width: 0;
             height: 0;
-            margin: 5px 10px 0px 6px;
+            margin: 5px 10px 0 6px;
             border-top: 6px solid transparent;
             border-bottom: 6px solid transparent;
             border-left: 6px solid gray;
@@ -91,7 +141,7 @@
             float: left;
             width: 0;
             height: 0;
-            margin: 9px 7px 0px 3px;
+            margin: 9px 7px 0 3px;
             border-top: 6px solid gray;
             border-right: 6px solid transparent;
             border-left: 6px solid transparent;
@@ -293,16 +343,17 @@
         <table class="reporttable" id="report">
             <tr>
                 <th>Info</th>
-                <th>Before</th>
-                <th>After</th>
+                <th>Before <span class="browser">([[${resultContext.getBrowser("before")}]])</span></th>
+                <th>After <span class="browser">([[${resultContext.getBrowser("after")}]])</span></th>
                 <th>Difference</th>
             </tr>
             <tr th:each="result,iterationStatus : ${resultContext.results}">
                 <td>
-                    <p>Width: [[${resultContext.width}]]<br/>
-                        Scroll pos: [[${result.verticalScrollPosition}]]<br/>
-                        Difference: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%
-                    </p>
+                    <a th:href="${resultContext.url}" target="_blank" th:title="${resultContext.url}">[[${resultContext.getShortenedUrl()}]]</a><br/>
+                    <div class="deviceinfo" th:utext="${#strings.replace( #strings.escapeXml(resultContext.deviceInfo),'\n','&lt;br /&gt;')}"></div>
+                    <div class="infotext">Scroll pos: [[${result.verticalScrollPosition}]]<br/>
+                    Difference: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%
+                    </div>
                 </td>
                 <td th:switch="${result.screenshotBeforeFileName!=null}">
                     <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}" target="_blank"
@@ -349,6 +400,33 @@
                 </td>
             </tr>
         </table>
+        <div class="legend">
+            <table>
+                <tr>
+                    <th colspan="2">Difference image</th>
+                </tr>
+                <tr>
+                    <td th:style="${'background-color: ' + legend_same_rgb}">&nbsp;&nbsp;&nbsp;</td>
+                    <td>Same</td>
+                </tr>
+                <tr>
+                    <td th:style="${'background-color: ' + legend_look_same_rgb}">&nbsp;&nbsp;&nbsp;</td>
+                    <td>Look same</td>
+                </tr>
+                <tr>
+                    <td th:style="${'background-color: ' + legend_anti_alias_rgb}">&nbsp;&nbsp;&nbsp;</td>
+                    <td>Anti aliasing</td>
+                </tr>
+                <tr>
+                    <td th:style="${'background-color: ' + legend_different_rgb}">&nbsp;&nbsp;&nbsp;</td>
+                    <td>Different</td>
+                </tr>
+                <tr>
+                    <td th:style="${'background-color: ' + legend_different_size_rgb}">&nbsp;&nbsp;&nbsp;</td>
+                    <td>Different size</td>
+                </tr>
+            </table>
+        </div>
     </div>
 </div>
 

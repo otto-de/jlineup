@@ -88,11 +88,13 @@ public class ImageService {
         int diffPixelCounter = 0;
         int antiAliasedDiffPixelCounter = 0;
         int lookSameDiffPixelCounter = 0;
+        float maxDetectedColorDistance = 0f;
+
         final int[] differenceImagePixels = new int[maxPixelCount];
         //i1 and i2 are the indices in the image pixel arrays of image1pixels and image2pixels
         //iD is the index of the differenceSum image
         for (int i1 = 0, i2 = 0, iD = 0, x = 0, y = 0; iD < maxPixelCount; ) {
-            //mark same pixels with same_color and different pixels in highlight_color
+            //mark same pixels with same_color and different pixels in highlight_colors
             if (image1Pixels[i1] != image2Pixels[i2]) {
                 if (!strictColorComparison && doColorsLookSame(image1Pixels[i1], image2Pixels[i2], x, y, maxColorDistance)) {
                     differenceImagePixels[iD] = LOOK_SAME_COLOR;

@@ -4,8 +4,10 @@ import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.DeviceConfig;
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.image.ImageService;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -22,11 +24,11 @@ public class HTMLReportWriter {
     }
 
     public void writeReport(Report report) throws FileNotFoundException {
-        fileService.writeHtmlReport(renderReport("report", report.getFlatResultList()));
+        fileService.writeHtmlReport(renderReport("report", report.config, report.getFlatResultList()));
         //fileService.writeHtmlReport(renderReport("report_wip", report.getFlatResultList()), "report_new.html");
     }
 
-    String renderReport(String template, List<ScreenshotComparisonResult> screenshotComparisonResults) {
+    String renderReport(String template, JobConfig config, List<ScreenshotComparisonResult> screenshotComparisonResults) {
 
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setTemplateMode("HTML");
@@ -36,6 +38,7 @@ public class HTMLReportWriter {
         templateEngine.setTemplateResolver(templateResolver);
 
         final Map<String, Object> variables = prepareVariablesForReportTemplate(screenshotComparisonResults);
+        variables.put("config", config);
 
         return templateEngine.process(template, new Context(Locale.US, variables));
     }
@@ -59,6 +62,13 @@ public class HTMLReportWriter {
         variables.put("resultContexts", screenshotComparisonResultContexts);
         variables.put("jlineup_version", Utils.readVersion());
         variables.put("jlineup_commit", Utils.readCommit());
+
+        variables.put("legend_same_rgb", "#" + Integer.toHexString(ImageService.SAME_COLOR).substring(2));
+        variables.put("legend_look_same_rgb", "#" + Integer.toHexString(ImageService.LOOK_SAME_COLOR).substring(2));
+        variables.put("legend_anti_alias_rgb", "#" + Integer.toHexString(ImageService.ANTI_ALIAS_DETECTED_COLOR).substring(2));
+        variables.put("legend_different_rgb", "#" + Integer.toHexString(ImageService.HIGHLIGHT_COLOR).substring(2));
+        variables.put("legend_different_size_rgb", "#" + Integer.toHexString(ImageService.DIFFERENT_SIZE_COLOR).substring(2));
+
         return variables;
     }
 

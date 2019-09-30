@@ -61,8 +61,8 @@ public class HTMLReportWriterTest {
                 "    <title>JLineup Comparison Report</title>" + n +
                 "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>" + n +
                 "    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"/>" + n +
-                "    <META HTTP-EQUIV=\"Pragma\" CONTENT=\"no-cache\"/>" + n +
-                "    <META HTTP-EQUIV=\"Expires\" CONTENT=\"-1\"/>" + n +
+                "    <meta http-equiv=\"Pragma\" content=\"no-cache\"/>" + n +
+                "    <meta http-equiv=\"Expires\" content=\"-1\"/>" + n +
                 "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>";
 
         String expectedHtmlEnd = "</p>" + n +
@@ -70,7 +70,7 @@ public class HTMLReportWriterTest {
                 "</body>" + n +
                 "</html>";
 
-        final String report = testee.renderReport("report", screenshotComparisonResults);
+        final String report = testee.renderReport("report", JobConfig.exampleConfig(), screenshotComparisonResults);
 
         assertThat(report, startsWith(expectedHtmlStart));
         assertThat(report, endsWith(expectedHtmlEnd));
