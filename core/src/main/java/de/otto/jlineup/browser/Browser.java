@@ -159,7 +159,7 @@ public class Browser implements AutoCloseable {
                     tryToTakeScreenshotsForContextNTimes(screenshotContext, jobConfig.screenshotRetries);
                 } catch (Exception e) {
                     //There was an error, prevent pool from taking more tasks and let run fail
-                    LOG.error("Exception in Browser thread while browsing to '" + screenshotContext.url + "'.", e);
+                    LOG.error("Exception in Browser thread while working on '" + screenshotContext.url + "' with device config " + screenshotContext.deviceConfig + ".", e);
                     threadPool.shutdownNow();
                     throw new WebDriverException("Exception in Browser thread", e);
                 } finally {
@@ -397,6 +397,7 @@ public class Browser implements AutoCloseable {
         }
         LOG.debug("Going to {} to set cookies afterwards.", urlToSetCookie);
         driver.get(urlToSetCookie);
+        LOG.debug("Opened {}.", urlToSetCookie);
         logErrorChecker.checkForErrors(driver, jobConfig);
 
         //Set cookies
@@ -407,6 +408,7 @@ public class Browser implements AutoCloseable {
         } else {
             LOG.debug("Setting cookies on {}", urlToSetCookie);
             setCookies(cookies);
+            LOG.debug("Finished setting cookies on {}", urlToSetCookie);
         }
     }
 

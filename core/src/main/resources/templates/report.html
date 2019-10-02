@@ -349,7 +349,7 @@
                th:classappend="${resultContext.isSuccess()} ? success : failure">
             <div class="arrow-right"></div>
             <div class="arrow-down"></div>
-            [[${resultContext.url}]] ([[${resultContext.deviceInfo}]]) <a style="font-size: small"
+            [[${resultContext.url}]] ([[${#strings.replace(resultContext.deviceInfo,'\n',', ')}]]) <a style="font-size: small"
                                                                           th:href="${resultContext.url}" target="_blank"
                                                                           th:title="${resultContext.url}">[visit
             page]</a><br/>

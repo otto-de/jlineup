@@ -45,6 +45,8 @@ public class LogErrorChecker {
                     driver.manage().timeouts().implicitlyWait(Browser.DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS, TimeUnit.SECONDS);
                 }
             }
+        } else {
+            LOG.debug("Not checking for errors in browser log.");
         }
     }
 }
