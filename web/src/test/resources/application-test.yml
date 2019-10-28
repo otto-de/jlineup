@@ -4,3 +4,12 @@ jlineup:
 server:
   servlet:
     context-path: /jlineup-test-contextpath
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    loggers:
+      enabled: true
