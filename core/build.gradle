@@ -1,6 +1,5 @@
 def seleniumVersion = '3.141.59'
-def jacksonVersion = '2.9.9'
-def jacksonDatabindVersion = '2.9.9.3' //micro patch for some CVEs, see https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.9
+def jacksonVersion = '2.10.0'
 ext['selenium.version'] = seleniumVersion
 ext['jackson.version'] = jacksonVersion
 
@@ -15,7 +14,7 @@ dependencies {
     compile "io.github.bonigarcia:webdrivermanager:3.7.1"
     compile "com.codeborne:phantomjsdriver:1.4.4"
     compile "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
-    compile "com.fasterxml.jackson.core:jackson-databind:" + jacksonDatabindVersion
+    compile "com.fasterxml.jackson.core:jackson-databind:" + jacksonVersion
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:" + jacksonVersion
     compile "ch.qos.logback:logback-classic:1.2.3"
     compile "org.slf4j:slf4j-api:1.7.26"
