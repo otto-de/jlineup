@@ -2,10 +2,11 @@ def seleniumVersion = '3.141.59'
 ext['selenium.version'] = seleniumVersion
 
 apply plugin: 'org.springframework.boot'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
     compile project(":jlineup-core")
-    compile "com.beust:jcommander:1.72"
+    compile "info.picocli:picocli:4.0.4"
     compile "ch.qos.logback:logback-classic:1.2.3"
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')

@@ -1,9 +1,9 @@
 package de.otto.jlineup.cli;
 
-import com.beust.jcommander.JCommander;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.Step;
 import org.junit.Test;
+import picocli.CommandLine;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -13,15 +13,15 @@ public class RunStepConfigTest {
     @Test
     public void shouldConvertCommandlineParameters() {
 
-        CommandLineParameters commandLineParameters = new CommandLineParameters();
+        JLineup commandLineParameters = new JLineup();
         String[] params = {
                 "--screenshot-dir", "someScreenshotDirectory",
                 "--report-dir", "someReportDirectory",
                 "--working-dir", "someWorkingDirectory",
                 "--step", "after"
         };
-        JCommander jCommander = new JCommander(commandLineParameters);
-        jCommander.parse(params);
+        CommandLine commandLine = new CommandLine(commandLineParameters);
+        commandLine.parseArgs(params);
 
         RunStepConfig runStepConfig = Utils.convertCommandLineParametersToRunConfiguration(commandLineParameters);
 

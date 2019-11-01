@@ -96,7 +96,7 @@ public class JLineupCLIAcceptanceTest {
         exit.expectSystemExitWithStatus(1);
         exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), containsString("doesnotexist")));
 
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_wrong_js.lineup.json", "--replace-in-url###CWD###=" + CWD});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_wrong_js.lineup.json", "--replace-in-url=###CWD###=" + CWD});
     }
 
     @Test
@@ -131,8 +131,8 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_WithChrome() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
@@ -149,8 +149,8 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithSomeDevices_WithChrome() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path filesJson = Paths.get(tempDirectory.toString(), "report", "files.json");
         assertThat("Filetracker file exists", Files.exists(filesJson));
@@ -186,14 +186,14 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldPassCommandLineParametersToChrome() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before", "--chrome-parameter", "--user-agent=\"fakeuseragent\""});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before", "--chrome-parameter", "--user-agent=\"fakeuseragent\""});
         assertThat(systemOutCaptor.toString(), containsString("User agent: \"fakeuseragent\""));
     }
 
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_WithChromeHeadless() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-headless.lineup.json", "--replace-in-url###CWD###=" + CWD, " --step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-headless.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-headless.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-headless.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
@@ -210,8 +210,8 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_WithFirefox() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox.lineup.json", "--replace-in-url###CWD###=" + CWD, " --step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
@@ -228,8 +228,8 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_WithDifferentConfigsButSamePages_FixesContextHashBug() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox_variant1.lineup.json", "--replace-in-url###CWD###=" + CWD, " --step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox_variant2.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox_variant1.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox_variant2.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
@@ -246,8 +246,8 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_ReportFormat2() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_reportv2.lineup.json", "--replace-in-url###CWD###=" + CWD, " --step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_reportv2.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_reportv2.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_reportv2.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
@@ -264,8 +264,8 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_LegacyReportFormat() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_legacy.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_legacy.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_legacy.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_legacy.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
@@ -282,8 +282,8 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_DefaultReportFormat() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
@@ -304,14 +304,14 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithTestPageThatHasAVeryLongPath() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_long_url.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_long_url.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_long_url.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_long_url.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
     }
 
     @Test
     public void shouldNotCrashPhantomjsFontsNotLoaded() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_phantom_fonts.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_phantom_fonts.lineup.json", "--replace-in-url###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_phantom_fonts.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_phantom_fonts.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
         assertThat(systemOutCaptor.toString(), containsString("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature."));
     }
 

@@ -11,11 +11,11 @@ import static java.util.Collections.emptyMap;
 
 public class Utils {
 
-    public static JobConfig readConfig(final CommandLineParameters parameters) throws IOException {
+    public static JobConfig readConfig(final JLineup parameters) throws IOException {
         return JobConfig.readConfig(parameters.getWorkingDirectory(), parameters.getConfigFile());
     }
 
-    public static RunStepConfig convertCommandLineParametersToRunConfiguration(CommandLineParameters commandLineParameters) {
+    public static RunStepConfig convertCommandLineParametersToRunConfiguration(JLineup commandLineParameters) {
         return RunStepConfig.jLineupRunConfigurationBuilder()
                 .withWorkingDirectory(commandLineParameters.getWorkingDirectory())
                 .withScreenshotsDirectory(commandLineParameters.getScreenshotDirectory())
