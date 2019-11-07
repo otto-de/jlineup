@@ -2,7 +2,9 @@ package de.otto.jlineup.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
@@ -13,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
 
+@JsonNaming(PropertyNamingStrategy.class)
 @JsonDeserialize(builder = JLineupRunStatus.Builder.class)
 public class JLineupRunStatus {
 
@@ -95,6 +98,7 @@ public class JLineupRunStatus {
         return builder;
     }
 
+    @JsonNaming(PropertyNamingStrategy.class)
     public static final class Builder {
         private String id;
         private JobConfig jobConfig;
@@ -182,6 +186,7 @@ public class JLineupRunStatus {
 
 
     @JsonDeserialize(builder = Reports.Builder.class)
+    @JsonNaming(PropertyNamingStrategy.class)
     public static class Reports {
 
         private final String htmlUrl;
@@ -274,6 +279,7 @@ public class JLineupRunStatus {
             return Objects.hash(htmlUrl, jsonUrl, logUrl);
         }
 
+        @JsonNaming(PropertyNamingStrategy.class)
         public static final class Builder {
 
             private String htmlUrl;

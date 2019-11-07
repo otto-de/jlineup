@@ -265,7 +265,7 @@ public class JLineup implements Callable<Integer> {
         return NO_EXIT;
     }
 
-    private static JobConfig buildConfig(JLineup parameters) throws IOException {
+    private JobConfig buildConfig(JLineup parameters) throws IOException {
         JobConfig jobConfig;
         if (parameters.getUrl() != null) {
             String url = BrowserUtils.prependHTTPIfNotThereAndToLowerCase(parameters.getUrl());

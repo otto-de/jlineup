@@ -41,9 +41,9 @@ public class JSONReportWriterV1Test {
                 "  \"deviceConfig\" : {" + lineSeparator() +
                 "    \"width\" : 1337," + lineSeparator() +
                 "    \"height\" : 1887," + lineSeparator() +
-                "    \"pixel-ratio\" : 1.0," + lineSeparator() +
-                "    \"device-name\" : \"DESKTOP\"," + lineSeparator() +
-                "    \"user-agent\" : null," + lineSeparator() +
+                "    \"pixelRatio\" : 1.0," + lineSeparator() +
+                "    \"deviceName\" : \"DESKTOP\"," + lineSeparator() +
+                "    \"userAgent\" : null," + lineSeparator() +
                 "    \"touch\" : false" + lineSeparator() +
                 "  }," + lineSeparator() +
                 "  \"verticalScrollPosition\" : 1979," + lineSeparator() +

@@ -8,8 +8,6 @@ import java.util.Objects;
 
 public class Cookie {
 
-
-
     public static final String COOKIE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
 
     public final String name;
@@ -48,6 +46,54 @@ public class Cookie {
         this.expiry = null;
         this.secure = false;
     }
+
+    /*
+     *
+     *
+     *
+     *  BEGIN of getters block
+     *
+     *  For GraalVM (JSON is empty if no getters are here)
+     *
+     *
+     *
+     */
+
+    public String getName() {
+        return name;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public Date getExpiry() {
+        return expiry;
+    }
+
+    public boolean isSecure() {
+        return secure;
+    }
+
+    /*
+     *
+     *
+     *
+     *  END of getters block
+     *
+     *  For GraalVM (JSON is empty if no getters are here)
+     *
+     *
+     *
+     */
 
     @Override
     public boolean equals(Object o) {

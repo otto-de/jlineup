@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import static org.apache.http.HttpStatus.*;
 
-@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
+//@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HttpCheckConfig {
 

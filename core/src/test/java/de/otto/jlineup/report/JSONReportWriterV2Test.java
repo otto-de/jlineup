@@ -43,15 +43,15 @@ public class JSONReportWriterV2Test {
                 "{" + lineSeparator() +
                         "  \"summary\" : {" + lineSeparator() +
                         "    \"error\" : false," + lineSeparator() +
-                        "    \"differenceSum\" : 0.0," + lineSeparator() +
-                        "    \"differenceMax\" : 0.0" + lineSeparator() +
+                        "    \"difference-sum\" : 0.0," + lineSeparator() +
+                        "    \"difference-max\" : 0.0" + lineSeparator() +
                         "  }," + lineSeparator() +
-                        "  \"screenshotComparisonsForUrl\" : {" + lineSeparator() +
+                        "  \"screenshot-comparisons-for-url\" : {" + lineSeparator() +
                         "    \"test\" : {" + lineSeparator() +
-                        "      \"comparisonResults\" : [ {" + lineSeparator() +
-                        "        \"contextHash\" : 1887," + lineSeparator() +
+                        "      \"comparison-results\" : [ {" + lineSeparator() +
+                        "        \"context-hash\" : 1887," + lineSeparator() +
                         "        \"url\" : \"url\"," + lineSeparator() +
-                        "        \"deviceConfig\" : {" + lineSeparator() +
+                        "        \"device-config\" : {" + lineSeparator() +
                         "          \"width\" : 1337," + lineSeparator() +
                         "          \"height\" : 1887," + lineSeparator() +
                         "          \"pixel-ratio\" : 1.0," + lineSeparator() +
@@ -59,16 +59,16 @@ public class JSONReportWriterV2Test {
                         "          \"user-agent\" : null," + lineSeparator() +
                         "          \"touch\" : false" + lineSeparator() +
                         "        }," + lineSeparator() +
-                        "        \"verticalScrollPosition\" : 1979," + lineSeparator() +
+                        "        \"vertical-scroll-position\" : 1979," + lineSeparator() +
                         "        \"difference\" : 0.0," + lineSeparator() +
-                        "        \"screenshotBeforeFileName\" : \"before\"," + lineSeparator() +
-                        "        \"screenshotAfterFileName\" : \"after\"," + lineSeparator() +
-                        "        \"differenceImageFileName\" : \"differenceImageFileName\"" + lineSeparator() +
+                        "        \"screenshot-before-file-name\" : \"before\"," + lineSeparator() +
+                        "        \"screenshot-after-file-name\" : \"after\"," + lineSeparator() +
+                        "        \"difference-image-file-name\" : \"differenceImageFileName\"" + lineSeparator() +
                         "      } ]," + lineSeparator() +
                         "      \"summary\" : {" + lineSeparator() +
                         "        \"error\" : false," + lineSeparator() +
-                        "        \"differenceSum\" : 0.0," + lineSeparator() +
-                        "        \"differenceMax\" : 0.0" + lineSeparator() +
+                        "        \"difference-sum\" : 0.0," + lineSeparator() +
+                        "        \"difference-max\" : 0.0" + lineSeparator() +
                         "      }" + lineSeparator() +
                         "    }" + lineSeparator() +
                         "  }," + lineSeparator() +
@@ -113,10 +113,10 @@ public class JSONReportWriterV2Test {
                         "    \"wait-after-page-load\" : 0.0," + lineSeparator() +
                         "    \"timeout\" : 600" + lineSeparator() +
                         "  }," + lineSeparator() +
-                        "  \"flatResultList\" : [ {" + lineSeparator() +
-                        "    \"contextHash\" : 1887," + lineSeparator() +
+                        "  \"flat-result-list\" : [ {" + lineSeparator() +
+                        "    \"context-hash\" : 1887," + lineSeparator() +
                         "    \"url\" : \"url\"," + lineSeparator() +
-                        "    \"deviceConfig\" : {" + lineSeparator() +
+                        "    \"device-config\" : {" + lineSeparator() +
                         "      \"width\" : 1337," + lineSeparator() +
                         "      \"height\" : 1887," + lineSeparator() +
                         "      \"pixel-ratio\" : 1.0," + lineSeparator() +
@@ -124,12 +124,12 @@ public class JSONReportWriterV2Test {
                         "      \"user-agent\" : null," + lineSeparator() +
                         "      \"touch\" : false" + lineSeparator() +
                         "    }," + lineSeparator() +
-                        "    \"verticalScrollPosition\" : 1979," + lineSeparator() +
+                        "    \"vertical-scroll-position\" : 1979," + lineSeparator() +
                         "    \"difference\" : 0.0," + lineSeparator() +
-                        "    \"screenshotBeforeFileName\" : \"before\"," + lineSeparator() +
-                        "    \"screenshotAfterFileName\" : \"after\"," + lineSeparator() +
-                        "    \"differenceImageFileName\" : \"differenceImageFileName\"," + lineSeparator() +
-                        "    \"acceptedDifferentPixels\" : 0" + lineSeparator() +
+                        "    \"screenshot-before-file-name\" : \"before\"," + lineSeparator() +
+                        "    \"screenshot-after-file-name\" : \"after\"," + lineSeparator() +
+                        "    \"difference-image-file-name\" : \"differenceImageFileName\"," + lineSeparator() +
+                        "    \"accepted-different-pixels\" : 0" + lineSeparator() +
                         "  } ]" + lineSeparator() +
                         "}";
 

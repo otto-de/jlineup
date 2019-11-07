@@ -32,8 +32,7 @@ public class Utils {
         Properties prop = new Properties();
         try {
             prop.load(Utils.class.getClassLoader().getResourceAsStream("version.properties"));
-        }
-        catch (IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return prop.getProperty("jlineup.version");
@@ -43,8 +42,7 @@ public class Utils {
         Properties prop = new Properties();
         try {
             prop.load(Utils.class.getClassLoader().getResourceAsStream("version.properties"));
-        }
-        catch (IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return prop.getProperty("jlineup.commit");

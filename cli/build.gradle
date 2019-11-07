@@ -7,7 +7,9 @@ apply plugin: 'com.github.johnrengelman.shadow'
 dependencies {
     compile project(":jlineup-core")
     compile "info.picocli:picocli:4.0.4"
+    annotationProcessor 'info.picocli:picocli-codegen:4.0.4'
     compile "ch.qos.logback:logback-classic:1.2.3"
+    compile "com.oracle.substratevm:svm:19.2.0.1"
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
 }
@@ -23,6 +25,9 @@ tasks.bootDistTar {
     baseName = project.archivesBaseName
 }
 
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+}
 
 test {
     testLogging {

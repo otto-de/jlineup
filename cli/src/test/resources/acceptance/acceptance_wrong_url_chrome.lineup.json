@@ -13,5 +13,6 @@
   "browser": "chrome",
   "wait-after-page-load": 1,
   "threads": 4,
+  "check-for-errors-in-log": true,
   "report-format" : 2
 }

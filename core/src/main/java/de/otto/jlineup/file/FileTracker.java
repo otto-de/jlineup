@@ -1,7 +1,7 @@
 package de.otto.jlineup.file;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
@@ -10,12 +10,12 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
+@JsonDeserialize(builder = FileTracker.Builder.class)
 public class FileTracker {
 
     public final JobConfig jobConfig;
-    public final Map<Integer, ScreenshotContextFileTracker> contexts;
-    public final Map<Step, String> browsers;
+    public final ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts;
+    public final ConcurrentHashMap<Step, String> browsers;
 
     //Used by Jackson
     private FileTracker() {
@@ -24,11 +24,66 @@ public class FileTracker {
         browsers = null;
     }
 
-    public FileTracker(JobConfig jobConfig, Map<Integer, ScreenshotContextFileTracker> contexts, Map<Step, String> browsers) {
+    public FileTracker(JobConfig jobConfig, ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts, ConcurrentHashMap<Step, String> browsers) {
         this.jobConfig = jobConfig;
         this.contexts = contexts;
         this.browsers = browsers;
     }
+
+    private FileTracker(Builder builder) {
+        jobConfig = builder.jobConfig;
+        contexts = builder.contexts;
+        browsers = builder.browsers;
+    }
+
+    public static Builder fileTrackerBuilder() {
+        return new Builder();
+    }
+
+    public static Builder copyOfBuilder(FileTracker copy) {
+        Builder builder = new Builder();
+        builder.jobConfig = copy.getJobConfig();
+        builder.contexts = copy.getContexts();
+        builder.browsers = copy.getBrowsers();
+        return builder;
+    }
+
+    /*
+     *
+     *
+     *
+     *  BEGIN of getters block
+     *
+     *  For GraalVM (JSON is empty if no getters are here)
+     *
+     *
+     *
+     */
+
+    @JsonProperty("job-config")
+    public JobConfig getJobConfig() {
+        return jobConfig;
+    }
+
+    public ConcurrentHashMap<Integer, ScreenshotContextFileTracker> getContexts() {
+        return contexts;
+    }
+
+    public ConcurrentHashMap<Step, String> getBrowsers() {
+        return browsers;
+    }
+
+    /*
+     *
+     *
+     *
+     *  END of getters block
+     *
+     *  For GraalVM (JSON is empty if no getters are here)
+     *
+     *
+     *
+     */
 
     public static FileTracker create(JobConfig jobConfig) {
         return new FileTracker(jobConfig, new ConcurrentHashMap<>(), new ConcurrentHashMap<>());
@@ -63,6 +118,35 @@ public class FileTracker {
     public void setBrowserAndVersion(ScreenshotContext screenshotContext, String browserAndVersion) {
         if (browsers != null) {
             browsers.put(screenshotContext.step, browserAndVersion);
+        }
+    }
+
+
+    public static final class Builder {
+        private JobConfig jobConfig;
+        private ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts;
+        private ConcurrentHashMap<Step, String> browsers;
+
+        private Builder() {
+        }
+
+        public Builder withJobConfig(JobConfig val) {
+            jobConfig = val;
+            return this;
+        }
+
+        public Builder withContexts(ConcurrentHashMap<Integer, ScreenshotContextFileTracker> val) {
+            contexts = val;
+            return this;
+        }
+
+        public Builder withBrowsers(ConcurrentHashMap<Step, String> val) {
+            browsers = val;
+            return this;
+        }
+
+        public FileTracker build() {
+            return new FileTracker(this);
         }
     }
 }

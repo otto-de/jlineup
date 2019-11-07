@@ -11,4 +11,8 @@ classes
 lineup.json
 report
 report/**
-
+.vscode
+.project
+.classpath
+.settings
+bin

@@ -1,5 +1,6 @@
 package de.otto.jlineup.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.browser.Browser;
@@ -7,12 +8,17 @@ import de.otto.jlineup.config.HttpCheckConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.utils.RegexMatcher;
+import de.otto.jlineup.web.configuration.JacksonConfiguration;
 import io.restassured.RestAssured;
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
+import io.restassured.path.json.mapper.factory.Jackson2ObjectMapperFactory;
 import org.awaitility.Awaitility;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
 import static de.otto.jlineup.config.JobConfig.*;
@@ -32,7 +39,7 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = JLineupWebApplication.class)
+@ContextConfiguration(classes = {JLineupWebApplication.class, JacksonConfiguration.class})
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class JLineupWebApplicationTests {
 
@@ -42,9 +49,15 @@ public class JLineupWebApplicationTests {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Before
     public void setUp() {
         RestAssured.port = port;
+        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
+                (cls, charset) -> objectMapper
+        ));
     }
 
     @Test
@@ -101,7 +114,7 @@ public class JLineupWebApplicationTests {
                 .statusCode(200)
                 .and()
                 .assertThat()
-                .body("summary.differenceMax", is(0.0f));
+                .body("summary.difference-max", is(0.0f));
     }
 
     private String startBeforeRun(JobConfig jobConfig) {

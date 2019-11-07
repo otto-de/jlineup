@@ -13,7 +13,6 @@ import java.util.*;
 
 import static de.otto.jlineup.config.JobConfig.*;
 
-@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 @JsonDeserialize(builder = UrlConfig.Builder.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -92,6 +91,110 @@ public class UrlConfig {
         maxColorDistance = builder.maxColorDistance;
     }
 
+    /*
+     *
+     *
+     *
+     *  BEGIN of getters block
+     *
+     *  For GraalVM (JSON is empty if no getters are here)
+     *
+     *
+     *
+     */
+
+    public List<String> getPaths() {
+        return paths;
+    }
+
+    public float getMaxDiff() {
+        return maxDiff;
+    }
+
+    public List<Cookie> getCookies() {
+        return cookies;
+    }
+
+    public Map<String, String> getEnvMapping() {
+        return envMapping;
+    }
+
+    public Map<String, String> getLocalStorage() {
+        return localStorage;
+    }
+
+    public Map<String, String> getSessionStorage() {
+        return sessionStorage;
+    }
+
+    public List<Integer> getWindowWidths() {
+        return windowWidths;
+    }
+
+    public List<DeviceConfig> getDevices() {
+        return devices;
+    }
+
+    public int getMaxScrollHeight() {
+        return maxScrollHeight;
+    }
+
+    public float getWaitAfterPageLoad() {
+        return waitAfterPageLoad;
+    }
+
+    public float getWaitAfterScroll() {
+        return waitAfterScroll;
+    }
+
+    public float getWaitForNoAnimationAfterScroll() {
+        return waitForNoAnimationAfterScroll;
+    }
+
+    public float getWarmupBrowserCacheTime() {
+        return warmupBrowserCacheTime;
+    }
+
+    public float getWaitForFontsTime() {
+        return waitForFontsTime;
+    }
+
+    public String getJavaScript() {
+        return javaScript;
+    }
+
+    public HttpCheckConfig getHttpCheck() {
+        return httpCheck;
+    }
+
+    public boolean isHideImages() {
+        return hideImages;
+    }
+
+    public boolean isIgnoreAntiAliasing() {
+        return ignoreAntiAliasing;
+    }
+
+    public boolean isStrictColorComparison() {
+        return strictColorComparison;
+    }
+
+    public float getMaxColorDistance() {
+        return maxColorDistance;
+    }
+
+    /*
+     *
+     *
+     *
+     *  END of getters block
+     *
+     *  For GraalVM (JSON is empty if no getters are here)
+     *
+     *
+     *
+     */
+
     public static Builder urlConfigBuilder() {
         return new Builder();
     }
@@ -121,7 +224,7 @@ public class UrlConfig {
         return builder;
     }
 
-    @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
+    //@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
     public static final class Builder {
         private List<String> paths = ImmutableList.of(DEFAULT_PATH);
         private float maxDiff = DEFAULT_MAX_DIFF;

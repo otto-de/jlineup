@@ -13,6 +13,7 @@ dependencies {
     }
     compile "io.github.bonigarcia:webdrivermanager:3.7.1"
     compile "com.codeborne:phantomjsdriver:1.4.4"
+    compile "com.fasterxml.jackson.core:jackson-core:" + jacksonVersion
     compile "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
     compile "com.fasterxml.jackson.core:jackson-databind:" + jacksonVersion
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:" + jacksonVersion

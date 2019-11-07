@@ -1,0 +1,980 @@
+[
+  {
+    "name": "ch.qos.logback.classic.Level",
+    "methods": [
+      {
+        "name": "valueOf",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.PatternLayout",
+    "allPublicMethods": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.boolex.JaninoEventEvaluator",
+    "allPublicMethods": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.encoder.PatternLayoutEncoder",
+    "allPublicMethods": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.filter.LevelFilter",
+    "allPublicMethods": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.DateConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.LevelConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.LineSeparatorConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.LoggerConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.MessageConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.RootCauseFirstThrowableProxyConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.pattern.ThreadConverter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.sift.MDCBasedDiscriminator",
+    "allPublicMethods": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.sift.SiftingAppender",
+    "allPublicMethods": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.classic.spi.ILoggingEvent"
+  },
+  {
+    "name": "ch.qos.logback.classic.spi.IThrowableProxy"
+  },
+  {
+    "name": "ch.qos.logback.classic.spi.LoggerContextVO"
+  },
+  {
+    "name": "ch.qos.logback.core.ConsoleAppender",
+    "allPublicMethods": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.core.FileAppender",
+    "allPublicMethods": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.core.boolex.EvaluationException"
+  },
+  {
+    "name": "ch.qos.logback.core.filter.EvaluatorFilter",
+    "allPublicMethods": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "ch.qos.logback.core.spi.FilterReply",
+    "methods": [
+      {
+        "name": "valueOf",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.ext.Java7HandlersImpl",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.google.common.collect.BiMap",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.google.common.collect.ImmutableBiMap",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.google.common.collect.ImmutableBiMapFauxverideShim",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.google.common.collect.ImmutableCollection",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.google.common.collect.ImmutableList",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.google.common.collect.ImmutableMap",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.google.common.collect.SingletonImmutableBiMap",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.google.common.collect.SingletonImmutableList",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.google.gson.JsonElement"
+  },
+  {
+    "name": "de.otto.jlineup.browser.Browser$Type",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "de.otto.jlineup.browser.ScreenshotContext",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.browser.ScreenshotContext$Builder",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.cli.JLineup",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "de.otto.jlineup.config.Cookie",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.config.CustomDateDeserializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "de.otto.jlineup.config.DeviceConfig",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.config.DeviceConfig$Builder",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.config.HttpCheckConfig",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.config.HttpCheckFilter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "de.otto.jlineup.config.JobConfig",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.config.JobConfig$Builder",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.config.ReportFormatFilter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "de.otto.jlineup.config.Step",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "de.otto.jlineup.config.UrlConfig",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.config.UrlConfig$Builder",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.file.FileTracker",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.file.FileTracker$Builder",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.file.ScreenshotContextFileTracker",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.file.ScreenshotContextFileTracker$Builder",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.report.HTMLReportWriter$ScreenshotComparisonResultContext",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "de.otto.jlineup.report.Report",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.report.ScreenshotComparisonResult",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.report.Summary",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.report.UrlReport",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "double",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "float",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "io.github.bonigarcia.wdm.Config",
+    "allDeclaredFields": true
+  },
+  {
+    "name": "java.io.Serializable",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.lang.AbstractStringBuilder"
+  },
+  {
+    "name": "java.lang.Appendable"
+  },
+  {
+    "name": "java.lang.AssertionError"
+  },
+  {
+    "name": "java.lang.Boolean"
+  },
+  {
+    "name": "java.lang.Byte"
+  },
+  {
+    "name": "java.lang.CharSequence"
+  },
+  {
+    "name": "java.lang.Character"
+  },
+  {
+    "name": "java.lang.Class"
+  },
+  {
+    "name": "java.lang.Cloneable"
+  },
+  {
+    "name": "java.lang.Comparable",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.lang.Double"
+  },
+  {
+    "name": "java.lang.Enum",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.lang.Error"
+  },
+  {
+    "name": "java.lang.Exception"
+  },
+  {
+    "name": "java.lang.Float",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "java.lang.Integer",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "java.lang.Iterable",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.lang.Long"
+  },
+  {
+    "name": "java.lang.Number",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.lang.Object",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "java.lang.Override"
+  },
+  {
+    "name": "java.lang.RuntimeException"
+  },
+  {
+    "name": "java.lang.Short"
+  },
+  {
+    "name": "java.lang.String",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.lang.StringBuffer"
+  },
+  {
+    "name": "java.lang.StringBuilder",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "java.lang.System"
+  },
+  {
+    "name": "java.lang.Throwable",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.lang.annotation.Annotation"
+  },
+  {
+    "name": "java.lang.annotation.Retention"
+  },
+  {
+    "name": "java.nio.file.Path"
+  },
+  {
+    "name": "java.nio.file.Paths",
+    "methods": [
+      {
+        "name": "get",
+        "parameterTypes": [
+          "java.lang.String",
+          "java.lang.String[]"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.sql.Connection"
+  },
+  {
+    "name": "java.sql.Driver"
+  },
+  {
+    "name": "java.sql.DriverManager",
+    "methods": [
+      {
+        "name": "getConnection",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      },
+      {
+        "name": "getDriver",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.sql.Time",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "long"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.sql.Timestamp",
+    "methods": [
+      {
+        "name": "valueOf",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.Duration",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.Instant",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.LocalDate",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.LocalDateTime",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.LocalTime",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.MonthDay",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.OffsetDateTime",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.OffsetTime",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.Period",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.Year",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.YearMonth",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.ZoneId",
+    "methods": [
+      {
+        "name": "of",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.ZoneOffset",
+    "methods": [
+      {
+        "name": "of",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.time.ZonedDateTime",
+    "methods": [
+      {
+        "name": "parse",
+        "parameterTypes": [
+          "java.lang.CharSequence"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.util.AbstractCollection",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.util.Collection",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.util.Iterator",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.util.List",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.util.Map",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.util.RandomAccess",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "java.util.concurrent.ConcurrentHashMap",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "java.util.concurrent.ConcurrentSkipListMap",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "javassist.ClassPool"
+  },
+  {
+    "name": "javax.management.ObjectName"
+  },
+  {
+    "name": "ognl.OgnlRuntime$ClassPropertyMethodCache",
+    "methods": [
+      {
+        "name": "get",
+        "parameterTypes": [
+          "java.lang.Class",
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "org.apache.commons.logging.LogFactory"
+  },
+  {
+    "name": "org.apache.commons.logging.impl.Jdk14Logger",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "org.apache.commons.logging.impl.LogFactoryImpl",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "org.apache.commons.logging.impl.WeakHashtable",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "org.slf4j.Marker"
+  },
+  {
+    "name": "org.thymeleaf.context.AbstractEngineContext",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.thymeleaf.context.IEngineContext",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.thymeleaf.expression.Calendars",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.thymeleaf.expression.Numbers",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.thymeleaf.expression.Strings",
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.thymeleaf.standard.expression.AndExpression",
+    "methods": [
+      {
+        "name": "isLeftAllowed",
+        "parameterTypes": [
+          "org.thymeleaf.standard.expression.IStandardExpression"
+        ]
+      },
+      {
+        "name": "isRightAllowed",
+        "parameterTypes": [
+          "org.thymeleaf.standard.expression.IStandardExpression"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "org.thymeleaf.standard.expression.EqualsNotEqualsExpression",
+    "methods": [
+      {
+        "name": "isLeftAllowed",
+        "parameterTypes": [
+          "org.thymeleaf.standard.expression.IStandardExpression"
+        ]
+      },
+      {
+        "name": "isRightAllowed",
+        "parameterTypes": [
+          "org.thymeleaf.standard.expression.IStandardExpression"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "org.thymeleaf.standard.expression.GreaterLesserExpression",
+    "methods": [
+      {
+        "name": "isLeftAllowed",
+        "parameterTypes": [
+          "org.thymeleaf.standard.expression.IStandardExpression"
+        ]
+      },
+      {
+        "name": "isRightAllowed",
+        "parameterTypes": [
+          "org.thymeleaf.standard.expression.IStandardExpression"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "org.thymeleaf.standard.expression.MultiplicationDivisionRemainderExpression",
+    "methods": [
+      {
+        "name": "isLeftAllowed",
+        "parameterTypes": [
+          "org.thymeleaf.standard.expression.IStandardExpression"
+        ]
+      },
+      {
+        "name": "isRightAllowed",
+        "parameterTypes": [
+          "org.thymeleaf.standard.expression.IStandardExpression"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "org.thymeleaf.standard.expression.OrExpression",
+    "methods": [
+      {
+        "name": "isLeftAllowed",
+        "parameterTypes": [
+          "org.thymeleaf.standard.expression.IStandardExpression"
+        ]
+      },
+      {
+        "name": "isRightAllowed",
+        "parameterTypes": [
+          "org.thymeleaf.standard.expression.IStandardExpression"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "java.lang.Thread",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name":"sun.misc.JavaLangAccess",
+    "methods":[
+      {"name":"getStackTraceDepth","parameterTypes":["java.lang.Throwable"] },
+      {"name":"getStackTraceElement","parameterTypes":["java.lang.Throwable","int"] }
+    ]
+  },
+  {
+    "name":"sun.misc.SharedSecrets",
+    "methods":[{"name":"getJavaLangAccess","parameterTypes":[] }]
+  },
+  {
+    "name": "org.openqa.selenium.NoSuchElementException",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "org.thymeleaf.templateresolver.ClassLoaderTemplateResolver",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  }
+]

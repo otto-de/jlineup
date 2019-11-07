@@ -1,15 +1,10 @@
 package de.otto.jlineup.cli;
 
 import de.otto.jlineup.Utils;
-import de.otto.jlineup.browser.BrowserUtils;
-import de.otto.jlineup.config.JobConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
-import java.io.IOException;
-
-import static de.otto.jlineup.cli.Utils.readConfig;
 import static java.lang.invoke.MethodHandles.lookup;
 
 public class Main {
@@ -18,6 +13,12 @@ public class Main {
     static final int NO_EXIT = -1;
 
     public static void main(String[] args) {
+
+        //For GraalVM support in WebdriverManager
+        String arch = System.getProperty("os.arch");
+        if (arch.endsWith("64") && "Substrate VM".equals(System.getProperty("java.vm.name"))) {
+            System.setProperty("wdm.architecture", "X64");
+        }
 
         int exitCode = new CommandLine(new JLineup()).execute(args);
         exitWithExitCode(exitCode);

@@ -9,16 +9,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.browser.Browser;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,10 +25,11 @@ import java.util.*;
 import static com.fasterxml.jackson.annotation.JsonInclude.*;
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 
-@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public final class JobConfig {
+@JsonDeserialize(builder = JobConfig.Builder.class)
+//@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
+public final class JobConfig  {
 
     static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
     static final String EXAMPLE_URL = "https://www.example.com";
@@ -119,6 +118,86 @@ public final class JobConfig {
         }
     }
 
+    /*
+     *
+     *
+     *
+     *  BEGIN of getters block
+     *
+     *  For GraalVM (JSON is empty if no getters are here)
+     *
+     *
+     *
+     */
+
+    public Map<String, UrlConfig> getUrls() {
+        return urls;
+    }
+
+    public Browser.Type getBrowser() {
+        return browser;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Float getGlobalWaitAfterPageLoad() {
+        return globalWaitAfterPageLoad;
+    }
+
+    public int getPageLoadTimeout() {
+        return pageLoadTimeout;
+    }
+
+    public Integer getWindowHeight() {
+        return windowHeight;
+    }
+
+    public Integer getReportFormat() {
+        return reportFormat;
+    }
+
+    public int getScreenshotRetries() {
+        return screenshotRetries;
+    }
+
+    public int getThreads() {
+        return threads;
+    }
+
+    public int getGlobalTimeout() {
+        return globalTimeout;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public boolean isLogToFile() {
+        return logToFile;
+    }
+
+    public boolean isCheckForErrorsInLog() {
+        return checkForErrorsInLog;
+    }
+
+    public HttpCheckConfig getHttpCheck() {
+        return httpCheck;
+    }
+
+    /*
+     *
+     *
+     *
+     *  END of getters block
+     *
+     *  For GraalVM (JSON is empty if no getters are here)
+     *
+     *
+     *
+     */
+
     public static Builder copyOfBuilder(JobConfig jobConfig) {
         return jobConfigBuilder()
                 .withName(jobConfig.name)
@@ -188,7 +267,7 @@ public final class JobConfig {
     }
 
     public static JobConfig defaultConfig(String url) {
-        return jobConfigBuilder().withUrls(ImmutableMap.of(url, urlConfigBuilder().build())).build();
+        return jobConfigBuilder().withName("Default").withUrls(ImmutableMap.of(url, urlConfigBuilder().build())).build();
     }
 
     public static Builder jobConfigBuilder() {
@@ -201,6 +280,8 @@ public final class JobConfig {
 
     public static JobConfig.Builder exampleConfigBuilder() {
         return jobConfigBuilder()
+                .withName("Example")
+                .withCheckForErrorsInLog(true)
                 .withUrls(ImmutableMap.of("http://www.example.com",
                         new UrlConfig(
                                 ImmutableList.of("/", "someOtherPath"),
@@ -260,7 +341,7 @@ public final class JobConfig {
         private int globalTimeout = DEFAULT_GLOBAL_TIMEOUT;
         private boolean debug = false;
         private boolean logToFile = false;
-        private boolean checkForErrorsInLog = true;
+        private boolean checkForErrorsInLog = false;
         private HttpCheckConfig httpCheck = new HttpCheckConfig();
 
         private Builder() {
@@ -281,6 +362,8 @@ public final class JobConfig {
             return this;
         }
 
+        @JsonProperty("wait-after-page-load")
+        @JsonAlias({"async-wait"})
         public Builder withGlobalWaitAfterPageLoad(float val) {
             globalWaitAfterPageLoad = val;
             return this;
@@ -296,6 +379,7 @@ public final class JobConfig {
             return this;
         }
 
+        @JsonInclude(value = Include.CUSTOM, valueFilter = ReportFormatFilter.class)
         public Builder withReportFormat(int val) {
             reportFormat = val;
             return this;
@@ -321,6 +405,7 @@ public final class JobConfig {
             return this;
         }
 
+        @JsonProperty("timeout")
         public Builder withGlobalTimeout(int val) {
             globalTimeout = val;
             return this;
@@ -331,6 +416,7 @@ public final class JobConfig {
             return this;
         }
 
+        @JsonInclude(value = Include.CUSTOM, valueFilter = HttpCheckFilter.class)
         public Builder withHttpCheck(HttpCheckConfig val) {
             httpCheck = val;
             return this;
@@ -342,9 +428,11 @@ public final class JobConfig {
 
         public Builder addUrlConfig(String url, UrlConfig urlConfig) {
             if (urls == null) {
-                urls = new HashMap<>();
+                urls = ImmutableMap.of(url, urlConfig);
             }
-            urls.put(url, urlConfig);
+            else {
+                urls = ImmutableMap.<String, UrlConfig>builder().putAll(urls).put(url, urlConfig).build();
+            }
             return this;
         }
     }

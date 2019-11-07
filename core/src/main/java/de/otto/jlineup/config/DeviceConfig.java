@@ -2,16 +2,17 @@ package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 import java.util.Objects;
 
 import static de.otto.jlineup.config.JobConfig.*;
 
-@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
-public class DeviceConfig {
+@JsonDeserialize(builder = DeviceConfig.Builder.class)
+//@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
+public class DeviceConfig  {
 
     static final String DESKTOP_DEVICE_NAME = "DESKTOP";
     static final String MOBILE_DEVICE_NAME = "MOBILE";
@@ -69,6 +70,54 @@ public class DeviceConfig {
         return DeviceConfig.deviceConfigBuilder().withWidth(width).withHeight(height).build();
     }
 
+    /*
+     *
+     *
+     *
+     *  BEGIN of getters block
+     *
+     *  For GraalVM (JSON is empty if no getters are here)
+     *
+     *
+     *
+     */
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public float getPixelRatio() {
+        return pixelRatio;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+////@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
+    public boolean isTouch() {
+        return touch;
+    }
+
+    /*
+     *
+     *
+     *
+     *  END of getters block
+     *
+     *  For GraalVM (JSON is empty if no getters are here)
+     *
+     *
+     *
+     */
+
     public static Builder deviceConfigBuilder() {
         return new Builder();
     }
@@ -109,16 +158,19 @@ public class DeviceConfig {
             return this;
         }
 
+        @JsonAlias("pixelRatio")
         public Builder withPixelRatio(float val) {
             pixelRatio = val;
             return this;
         }
 
+        @JsonAlias("deviceName")
         public Builder withDeviceName(String val) {
             deviceName = val;
             return this;
         }
 
+        @JsonAlias("userAgent")
         public Builder withUserAgent(String val) {
             userAgent = val;
             return this;

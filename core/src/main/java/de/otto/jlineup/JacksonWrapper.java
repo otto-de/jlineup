@@ -2,6 +2,7 @@ package de.otto.jlineup;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileTracker;
 
@@ -14,15 +15,12 @@ import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 
 public class JacksonWrapper {
 
-    private static final ObjectMapper objectMapper;
-
-    static {
-        objectMapper = new ObjectMapper();
-        objectMapper.enable(INDENT_OUTPUT);
-        objectMapper.enable(ALLOW_COMMENTS);
-        objectMapper.enable(ALLOW_TRAILING_COMMA);
-        objectMapper.enable(ALLOW_UNQUOTED_CONTROL_CHARS);
-    }
+    private static final ObjectMapper objectMapper = new ObjectMapper()
+            .enable(INDENT_OUTPUT)
+            .enable(ALLOW_COMMENTS)
+            .enable(ALLOW_TRAILING_COMMA)
+            .enable(ALLOW_UNQUOTED_CONTROL_CHARS)
+            .setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
 
     private static ObjectMapper objectMapper() {
         return objectMapper;
@@ -31,6 +29,14 @@ public class JacksonWrapper {
     public static String serializeObject(Object object) {
         try {
             return objectMapper().writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("There is a problem while writing the " + object.getClass().getCanonicalName() + " with Jackson.", e);
+        }
+    }
+
+    public static String serializeObjectWithPropertyNamingStrategy(Object object, PropertyNamingStrategy propertyNamingStrategy) {
+        try {
+            return objectMapper().copy().setPropertyNamingStrategy(propertyNamingStrategy).writeValueAsString(object);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("There is a problem while writing the " + object.getClass().getCanonicalName() + " with Jackson.", e);
         }
