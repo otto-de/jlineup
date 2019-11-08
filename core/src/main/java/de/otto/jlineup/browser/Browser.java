@@ -9,6 +9,7 @@ import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
+import org.graalvm.nativeimage.ImageInfo;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.*;
@@ -231,7 +232,9 @@ public class Browser implements AutoCloseable {
         }
 
         //No need to move the mouse out of the way for headless browsers, but this avoids hovering links in other browsers
-        if (!jobConfig.browser.isHeadless()) {
+        if (!jobConfig.browser.isHeadless() &&
+                !ImageInfo.inImageCode() //we need to check if we're in native-image, because AWT does not work there, so no mouse movement
+        ) {
             moveMouseToZeroZero();
         }
 
