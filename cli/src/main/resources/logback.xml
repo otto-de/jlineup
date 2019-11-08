@@ -60,13 +60,7 @@
                 </layout>
             </appender>
         </sift>
-        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
-            <evaluator> <!-- defaults to type ch.qos.logback.classic.boolex.JaninoEventEvaluator -->
-                <expression>return ((String)mdc.get("reportlogname")) == null;</expression>
-            </evaluator>
-            <OnMismatch>NEUTRAL</OnMismatch>
-            <OnMatch>DENY</OnMatch>
-        </filter>
+        <filter class="de.otto.jlineup.cli.LogToFileFilter" />
     </appender>
 
     <root level="INFO">
