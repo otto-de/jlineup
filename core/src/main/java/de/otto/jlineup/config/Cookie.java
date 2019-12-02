@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Date;
 import java.util.Objects;
 
+@JsonDeserialize(builder = Cookie.Builder.class)
 public class Cookie {
 
     public static final String COOKIE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
@@ -18,16 +19,6 @@ public class Cookie {
     @JsonDeserialize(using = CustomDateDeserializer.class)
     public final Date expiry;
     public final boolean secure;
-
-    // default constructor for jackson
-    public Cookie() {
-        this.name = null;
-        this.value = null;
-        this.domain = null;
-        this.path = null;
-        this.expiry = null;
-        this.secure = false;
-    }
 
     public Cookie(String name, String value, String domain, String path, Date expiry, boolean secure) {
         this.name = name;
@@ -45,6 +36,30 @@ public class Cookie {
         this.path = null;
         this.expiry = null;
         this.secure = false;
+    }
+
+    private Cookie(Builder builder) {
+        name = builder.name;
+        value = builder.value;
+        domain = builder.domain;
+        path = builder.path;
+        expiry = builder.expiry;
+        secure = builder.secure;
+    }
+
+    public static Builder cookieBuilder() {
+        return new Builder();
+    }
+
+    public static Builder copyOfBuilder(Cookie copy) {
+        Builder builder = new Builder();
+        builder.name = copy.getName();
+        builder.value = copy.getValue();
+        builder.domain = copy.getDomain();
+        builder.path = copy.getPath();
+        builder.expiry = copy.getExpiry();
+        builder.secure = copy.isSecure();
+        return builder;
     }
 
     /*
@@ -132,5 +147,54 @@ public class Cookie {
                 ", expiry=" + expiry +
                 ", secure=" + secure +
                 '}';
+    }
+
+
+    public static final class Builder {
+        private String name;
+        private String value;
+        private String domain;
+        private String path;
+        private Date expiry;
+        private boolean secure;
+
+        private Builder() {
+        }
+
+        public Builder withName(String val) {
+            name = val;
+            return this;
+        }
+
+        public Builder withValue(String val) {
+            value = val;
+            return this;
+        }
+
+        public Builder withDomain(String val) {
+            domain = val;
+            return this;
+        }
+
+        public Builder withPath(String val) {
+            path = val;
+            return this;
+        }
+
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = COOKIE_TIME_FORMAT, timezone = "UTC")
+        @JsonDeserialize(using = CustomDateDeserializer.class)
+        public Builder withExpiry(Date val) {
+            expiry = val;
+            return this;
+        }
+
+        public Builder withSecure(boolean val) {
+            secure = val;
+            return this;
+        }
+
+        public Cookie build() {
+            return new Cookie(this);
+        }
     }
 }

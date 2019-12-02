@@ -2,9 +2,7 @@ package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +10,7 @@ import java.util.Objects;
 
 import static org.apache.http.HttpStatus.*;
 
-//@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
+@JsonDeserialize(builder = HttpCheckConfig.Builder.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HttpCheckConfig {
 
@@ -50,6 +48,22 @@ public class HttpCheckConfig {
         this.allowedCodes = DEFAULT_ALLOWED_CODES;
     }
 
+    private HttpCheckConfig(Builder builder) {
+        enabled = builder.enabled;
+        allowedCodes = builder.allowedCodes;
+    }
+
+    public static Builder copyOfBuilder() {
+        return new Builder();
+    }
+
+    public static Builder httpCheckConfigBuilder(HttpCheckConfig copy) {
+        Builder builder = new Builder();
+        builder.enabled = copy.isEnabled();
+        builder.allowedCodes = copy.getAllowedCodes();
+        return builder;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -78,5 +92,28 @@ public class HttpCheckConfig {
 
     public List<Integer> getAllowedCodes() {
         return allowedCodes;
+    }
+
+
+    public static final class Builder {
+        private boolean enabled;
+        private List<Integer> allowedCodes;
+
+        private Builder() {
+        }
+
+        public Builder withEnabled(boolean val) {
+            enabled = val;
+            return this;
+        }
+
+        public Builder withAllowedCodes(List<Integer> val) {
+            allowedCodes = val;
+            return this;
+        }
+
+        public HttpCheckConfig build() {
+            return new HttpCheckConfig(this);
+        }
     }
 }

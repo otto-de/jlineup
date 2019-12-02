@@ -579,7 +579,10 @@ public class Browser implements AutoCloseable {
             if (cookie.path != null) cookieBuilder.path(cookie.path);
             if (cookie.expiry != null) cookieBuilder.expiresOn(cookie.expiry);
             cookieBuilder.isSecure(cookie.secure);
-            getWebDriver().manage().addCookie(cookieBuilder.build());
+
+            org.openqa.selenium.Cookie seleniumCookie = cookieBuilder.build();
+            LOG.debug("Setting cookie through webdriver : {}", seleniumCookie);
+            getWebDriver().manage().addCookie(seleniumCookie);
         }
     }
 

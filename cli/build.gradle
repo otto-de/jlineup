@@ -9,7 +9,9 @@ dependencies {
     compile "info.picocli:picocli:4.0.4"
     annotationProcessor 'info.picocli:picocli-codegen:4.0.4'
     compile "ch.qos.logback:logback-classic:1.2.3"
-    compile "com.oracle.substratevm:svm:19.2.0.1"
+    compileOnly "com.oracle.substratevm:svm:19.2.1"
+    //compile "org.bouncycastle:bcprov-jdk15on:1.64"
+    //compile "org.bouncycastle:bctls-jdk15on:1.64"
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
 }

@@ -278,6 +278,12 @@
     "allDeclaredConstructors": true
   },
   {
+    "name": "de.otto.jlineup.config.Cookie$Builder",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
     "name": "de.otto.jlineup.config.CustomDateDeserializer",
     "methods": [
       {
@@ -300,6 +306,12 @@
   },
   {
     "name": "de.otto.jlineup.config.HttpCheckConfig",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "de.otto.jlineup.config.HttpCheckConfig$Builder",
     "allDeclaredFields": true,
     "allDeclaredMethods": true,
     "allDeclaredConstructors": true
@@ -942,33 +954,6 @@
     "allPublicMethods": true
   },
   {
-    "name": "sun.misc.JavaLangAccess",
-    "methods": [
-      {
-        "name": "getStackTraceDepth",
-        "parameterTypes": [
-          "java.lang.Throwable"
-        ]
-      },
-      {
-        "name": "getStackTraceElement",
-        "parameterTypes": [
-          "java.lang.Throwable",
-          "int"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "sun.misc.SharedSecrets",
-    "methods": [
-      {
-        "name": "getJavaLangAccess",
-        "parameterTypes": []
-      }
-    ]
-  },
-  {
     "name": "org.openqa.selenium.NoSuchElementException",
     "methods": [
       {
@@ -1002,6 +987,20 @@
   },
   {
     "name": "de.otto.jlineup.cli.LogToFileFilter",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "org.openqa.selenium.Cookie",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "org.openqa.selenium.Cookie$Builder",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,
