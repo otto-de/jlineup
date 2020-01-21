@@ -44,7 +44,7 @@ public class Browser implements AutoCloseable {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
-    public static final int THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
+    public static final int THREAD_POOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
     public static final int DEFAULT_SLEEP_AFTER_SCROLL_MILLIS = 50;
     public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;
 
@@ -169,7 +169,7 @@ public class Browser implements AutoCloseable {
             });
             screenshotResults.put(screenshotContext, takeScreenshotsResult);
             //submit screenshots to the browser with a slight delay, so not all instances open up in complete sync
-            Thread.sleep(THREADPOOL_SUBMIT_SHUFFLE_TIME_IN_MS);
+            Thread.sleep(THREAD_POOL_SUBMIT_SHUFFLE_TIME_IN_MS);
         }
         LOG.debug("All tasks have been sent to browser thread pool. Queuing shutdown.");
         threadPool.shutdown();
@@ -269,9 +269,8 @@ public class Browser implements AutoCloseable {
             checkBrowserCacheWarmup(screenshotContext, url, localDriver);
         }
 
-        //now get the real page
         LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height));
-
+        //now get the real page
         //Selenium's get() method blocks until the browser/page fires an onload event (files and images referenced in the html have been loaded,
         //but there might be JS calls that load more stuff dynamically afterwards).
         localDriver.get(url);
@@ -420,7 +419,12 @@ public class Browser implements AutoCloseable {
         if (warmupTime > JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
             final Set<String> browserCacheWarmupMarks = cacheWarmupMarksMap.computeIfAbsent(Thread.currentThread().getName(), k -> initializeCacheWarmupMarks());
             if (!browserCacheWarmupMarks.contains(url)) {
-                final Integer maxWidth = screenshotContext.urlConfig.windowWidths.stream().max(Integer::compareTo).get();
+                Integer maxWidth;
+                if (screenshotContext.urlConfig.windowWidths != null) {
+                    maxWidth = screenshotContext.urlConfig.windowWidths.stream().max(Integer::compareTo).get();
+                } else {
+                    maxWidth = screenshotContext.urlConfig.devices.stream().map(deviceConfig -> deviceConfig.width).max(Integer::compareTo).get();
+                }
                 LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, maxWidth, jobConfig.windowHeight));
                 resizeBrowser(driver, maxWidth, jobConfig.windowHeight);
                 LOG.debug("Getting url: {}", url);
@@ -549,7 +553,7 @@ public class Browser implements AutoCloseable {
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         for (Map.Entry<String, String> localStorageEntry : localStorage.entrySet()) {
 
-            final String entry = localStorageEntry.getValue().replace("'", "\"");
+            final String entry = localStorageEntry.getValue() != null ? localStorageEntry.getValue().replace("'", "\"") : null;
 
             String jsCall = String.format(JS_SET_LOCAL_STORAGE_CALL, localStorageEntry.getKey(), entry);
             jse.executeScript(jsCall);
