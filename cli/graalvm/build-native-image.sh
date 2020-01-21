@@ -14,8 +14,17 @@ JAVA_HOME=${GRAAL_HOME}
 
 set -e
 
+echo ""
+echo "BUILDING JAR"
+echo ""
+
 cd ..
 ./gradlew compileJava shadowJar
+
+echo ""
+echo "START BUILDING NATIVE IMAGE"
+echo ""
+
 cd cli
 #../../graalvm/graalvm/bin/java -agentlib:native-image-agent -jar jlineup-cli-4.0.0-SNAPSHOT-all.jar --url https://www.otto.de --step after
 #-J-Djava.security.properties=graalvm/java.security.overrides \
@@ -45,7 +54,15 @@ echo ""
 
 #exit
 
+echo ""
+echo "STARTING TEST RUN"
+echo ""
+
 mv jlineup-cli-4.0.0-SNAPSHOT-all build/libs/jlineup-cli-4.0.0-SNAPSHOT-all
 rm ~/.m2/repository/webdriver -rf
 ./build/libs/jlineup-cli-4.0.0-SNAPSHOT-all -Dwdm.architecture=X64 --config graalvm/lineup.json --step before
 ./build/libs/jlineup-cli-4.0.0-SNAPSHOT-all -Dwdm.architecture=X64 --config graalvm/lineup.json --step after
+
+echo ""
+echo "FINISHED"
+echo ""
