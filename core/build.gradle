@@ -11,7 +11,7 @@ dependencies {
         exclude module: "selenium-safari-driver"
         exclude module: "htmlunit"
     }
-    compile "io.github.bonigarcia:webdrivermanager:3.7.1"
+    compile "io.github.bonigarcia:webdrivermanager:3.8.1"
     compile "com.codeborne:phantomjsdriver:1.4.4"
     compile "com.fasterxml.jackson.core:jackson-core:" + jacksonVersion
     compile "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
