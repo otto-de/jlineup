@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
 if [ -z ${GRAAL_HOME+x} ]; then
-  GRAAL_HOME="../../graalvm/graalvm-ce-java11-19.3.0"
-  #GRAAL_HOME="../../graalvm/graalvm-ce-java8-19.3.0"
-  #GRAAL_HOME="../../graalvm/graalvm-ce-19.2.1"
+  GRAAL_HOME="../../graalvm/graalvm-ce-java8-19.3.1"
 fi
 
 echo "GRAAL_HOME is set to '$GRAAL_HOME'"
@@ -37,15 +35,15 @@ cd cli
 --initialize-at-build-time=com.fasterxml.jackson,javassist.ClassPool \
 --verbose \
 `#--static` \
--H:+TraceSecurityServices \
--H:+TraceClassInitialization \
+`#-H:+TraceSecurityServices` \
+`#-H:+TraceClassInitialization` \
 -jar build/libs/jlineup-cli-4.0.0-SNAPSHOT-all.jar
 
 echo ""
 echo "DONE BUILDING NATIVE IMAGE"
 echo ""
 
-exit
+#exit
 
 mv jlineup-cli-4.0.0-SNAPSHOT-all build/libs/jlineup-cli-4.0.0-SNAPSHOT-all
 rm ~/.m2/repository/webdriver -rf

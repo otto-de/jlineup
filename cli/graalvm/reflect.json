@@ -530,10 +530,6 @@
     "name": "java.lang.System"
   },
   {
-    "name": "java.lang.Throwable",
-    "allDeclaredMethods": true
-  },
-  {
     "name": "java.lang.annotation.Annotation"
   },
   {
@@ -947,13 +943,6 @@
     ]
   },
   {
-    "name": "java.lang.Thread",
-    "allDeclaredConstructors": true,
-    "allPublicConstructors": true,
-    "allDeclaredMethods": true,
-    "allPublicMethods": true
-  },
-  {
     "name": "org.openqa.selenium.NoSuchElementException",
     "methods": [
       {
@@ -1165,5 +1154,12 @@
   {
     "name": "ch.qos.logback.classic.pattern.LineSeparatorConverter",
     "allDeclaredConstructors": true
+  },
+  {
+    "name": "java.lang.Thread",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
   }
 ]
