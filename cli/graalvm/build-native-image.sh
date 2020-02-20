@@ -61,7 +61,17 @@ echo ""
 mv jlineup-cli-4.0.0-SNAPSHOT-all build/libs/jlineup-cli-4.0.0-SNAPSHOT-all
 rm ~/.m2/repository/webdriver -rf
 ./build/libs/jlineup-cli-4.0.0-SNAPSHOT-all -Dwdm.architecture=X64 --config graalvm/lineup.json --step before
+
+set +e
+
 ./build/libs/jlineup-cli-4.0.0-SNAPSHOT-all -Dwdm.architecture=X64 --config graalvm/lineup.json --step after
+
+set -e
+
+mv ./build/libs/jlineup-cli-*-all ./build/libs/jlineup
+cd ./build/libs
+
+tar -czf jlineup-cli-linux-amd64.tar.gz jlineup
 
 echo ""
 echo "FINISHED"

@@ -21,7 +21,7 @@ import static de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfigu
 import static de.otto.jlineup.cli.Utils.readConfig;
 import static java.lang.invoke.MethodHandles.lookup;
 
-@Command(sortOptions = false)
+@Command(name = "jlineup", sortOptions = false)
 public class JLineup implements Callable<Integer> {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
