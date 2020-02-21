@@ -5,7 +5,7 @@ RUN mkdir -p /usr/share/man/man1
 RUN apt-get update \
     && apt-get install -y wget \
     && apt-get install -yf default-jre-headless chromium firefox-esr libjpeg-progs \
-    && wget -U "jlineup-docker" -O jlineup-web.jar http://central.maven.org/maven2/de/otto/jlineup-web/4.0.0-rc4/jlineup-web-4.0.0-rc4.jar
+    && wget -U "jlineup-docker" -O jlineup-web.jar http://central.maven.org/maven2/de/otto/jlineup-web/4.0.0/jlineup-web-4.0.0.jar
 ADD docker/application.yml application.yml
 RUN apt-get remove --auto-remove perl -yf && apt-get purge --auto-remove perl -yf
 EXPOSE 8080
