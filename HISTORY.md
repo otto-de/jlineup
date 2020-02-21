@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.0.0
+* New device-config feature (which adds mobile emulation support in chrome and more)
+
 ## Release 4.0.0-rc4
 * Use only relevant fields in context hash calculation (fixes bugs if 'before' and 'after' configs differ)
 
