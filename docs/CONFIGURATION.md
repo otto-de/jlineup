@@ -200,8 +200,8 @@ What are all those options about? Here are all the details.
  * Example: `"paths": [ "/", "someOtherPath" ]`
 
 
----      
-      
+---
+
 ### `window-widths`
   
  Every path in the site config will be screenshotted in these given window-widths of the browser
@@ -482,6 +482,20 @@ What are all those options about? Here are all the details.
 
 ### `device-config`
 
+ In older versions, you just could define a global window height and several window widths for your JLineup run.
+ To be backwards compatible, this still works, but you should prefer the new `device-config` option.
+
+ Device config allows you to use custom pixel-ratio and mobile emulation in Chrome, and it brings custom user agents.
+
+ The device name "DESKTOP" is generic and leads to the default behavior which works in all browsers: You can specify
+ window width and height and the user agent of the used browser is used.
+
+ If you want mobile emulation in Chrome, just specify "MOBILE" as device name. Chrome will be in mobile emulation mode
+ for this config. You can also use the device names that Chrome shows in Dev Tools when doing mobile emulation manually,
+ like "iPhone X". See https://chromedriver.chromium.org/mobile-emulation for more details on this feature.
+
+ Other browsers ignore this feature and just use window size and user agent
+
  * Scope: Site
  * Type: Map
  * Default: 
@@ -505,6 +519,7 @@ What are all those options about? Here are all the details.
            "device-name": "MOBILE",
            "width": 600,
            "height": 1200,
+           "pixel-ratio": 2.0,
            "user-agent": "My special mobile"
        }
    `
