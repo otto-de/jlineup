@@ -13,6 +13,9 @@ import org.graalvm.nativeimage.ImageInfo;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.*;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -338,6 +341,17 @@ public class Browser implements AutoCloseable {
             //Refresh to check if page grows during scrolling
             pageHeight = getPageHeight();
             LOG.debug("Page height is {}", pageHeight);
+        }
+
+        if (LOG.isDebugEnabled()) {
+            try {
+                LogEntries logEntries = localDriver.manage().logs().get(LogType.BROWSER);
+                for (LogEntry logEntry : logEntries) {
+                    LOG.debug("Browser console: {}", logEntry.toString());
+                }
+            } catch (Exception e) {
+                LOG.debug("No browser console available.");
+            }
         }
 
         //TODO what about this feature?
