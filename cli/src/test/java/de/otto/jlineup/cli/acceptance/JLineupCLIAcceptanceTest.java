@@ -209,6 +209,47 @@ public class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    public void shouldRunJLineupWithWaitForSelectors() throws Exception {
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-wait_for_selectors.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-wait_for_selectors.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
+
+        final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
+        assertThat("Report JSON exists", Files.exists(reportJson));
+
+        final String jsonReportText = getTextFileContentAsString(reportJson);
+        final Report report = gson.fromJson(jsonReportText, Report.class);
+        assertThat(report.summary.differenceSum, is(0.0d));
+    }
+
+    @Test
+    public void shouldRemoveNodes() throws Exception {
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-remove_selectors.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--replace-in-url=###NUM###=1", "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-remove_selectors.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--replace-in-url=###NUM###=2", "--step", "after"});
+
+        final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
+        assertThat("Report JSON exists", Files.exists(reportJson));
+
+        final String jsonReportText = getTextFileContentAsString(reportJson);
+        final Report report = gson.fromJson(jsonReportText, Report.class);
+        assertThat(report.summary.differenceSum, is(0.0d));
+    }
+
+    @Test
+    public void shouldFailBecauseSelectorNotFound() throws Exception {
+
+        exit.expectSystemExitWithStatus(1);
+        exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), containsString("Didn't find element with selector '#willNeverBeHere'.")));
+
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-wait_for_selectors_fails_with_error.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+    }
+
+    @Test
+    public void shouldNotFailBecauseSelectorNotFound() throws Exception {
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-wait_for_selectors_fails_but_no_error.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        //No exception
+    }
+
+    @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_WithFirefox() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});

@@ -1,0 +1,15 @@
+<html>
+<head>
+    <title>Testpage</title></head>
+    <script type="application/javascript">
+        function addText() {
+            let newElement = document.createElement("p");
+            let bodyElement = document.querySelector("body");
+            newElement.textContent = "I was added later...";
+            newElement.className = "later";
+            bodyElement.appendChild(newElement);
+        }
+        setTimeout(() => addText(), 2500);
+    </script>
+<body><h1 class="hallo">Hallo!</h1></body>
+</html>

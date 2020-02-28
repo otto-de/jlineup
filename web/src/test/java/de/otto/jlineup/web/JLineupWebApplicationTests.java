@@ -3,6 +3,7 @@ package de.otto.jlineup.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.config.HttpCheckConfig;
 import de.otto.jlineup.config.JobConfig;
@@ -13,7 +14,6 @@ import io.restassured.RestAssured;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
-import io.restassured.path.json.mapper.factory.Jackson2ObjectMapperFactory;
 import org.awaitility.Awaitility;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.reflect.Type;
 import java.util.concurrent.TimeUnit;
 
 import static de.otto.jlineup.config.JobConfig.*;
@@ -189,7 +188,11 @@ public class JLineupWebApplicationTests {
                                 false,
                                 false,
                                 false,
-                                DEFAULT_MAX_COLOR_DISTANCE)))
+                                DEFAULT_MAX_COLOR_DISTANCE,
+                                ImmutableSet.of(),
+                                ImmutableSet.of(),
+                                0,
+                                false)))
                 .build();
     }
 }

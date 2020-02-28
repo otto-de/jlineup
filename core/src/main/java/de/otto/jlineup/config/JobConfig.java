@@ -4,15 +4,13 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.browser.Browser;
 
@@ -54,6 +52,7 @@ public final class JobConfig  {
     static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
     static final int DEFAULT_GLOBAL_TIMEOUT = 600;
+    public static final float DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT = 10.0f;
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
@@ -304,7 +303,11 @@ public final class JobConfig  {
                                 false,
                                 false,
                                 false,
-                                DEFAULT_MAX_COLOR_DISTANCE)));
+                                DEFAULT_MAX_COLOR_DISTANCE,
+                                ImmutableSet.of("#removeNodeWithThisId", ".removeNodesWithThisClass"),
+                                ImmutableSet.of("#waitForMe"),
+                                DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT,
+                                false)));
     }
 
 

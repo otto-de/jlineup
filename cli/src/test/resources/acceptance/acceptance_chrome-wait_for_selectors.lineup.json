@@ -1,0 +1,14 @@
+{
+  "urls": {
+    "file://###CWD###/src/test/resources/acceptance/webpage/": {
+      "paths": [
+        "test_dom.html"
+      ],
+      "wait-for-selectors": [
+        ".later"
+      ],
+      "fail-if-selectors-not-found": true
+    }
+  },
+  "browser" : "chrome-headless"
+}

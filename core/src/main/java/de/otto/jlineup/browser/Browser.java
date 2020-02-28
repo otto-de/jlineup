@@ -106,6 +106,9 @@ public class Browser implements AutoCloseable {
 
     static final String JS_GET_DOM = "return document.getElementsByTagName('body')[0].innerHTML;";
 
+    static final String JS_REMOVE_FROM_DOM_CALL = "document.querySelectorAll('%s').forEach(el => el.remove());";
+    static final String JS_CHECK_FOR_ELEMENT_CALL = "return document.querySelector('%s') !== null;";
+
     private final JobConfig jobConfig;
     private final FileService fileService;
     private final BrowserUtils browserUtils;
@@ -277,6 +280,11 @@ public class Browser implements AutoCloseable {
         //Selenium's get() method blocks until the browser/page fires an onload event (files and images referenced in the html have been loaded,
         //but there might be JS calls that load more stuff dynamically afterwards).
         localDriver.get(url);
+
+        waitForSelectors(screenshotContext.urlConfig.waitForSelectors,
+                screenshotContext.urlConfig.waitForSelectorsTimeout,
+                screenshotContext.urlConfig.failIfSelectorsNotFound);
+
         logErrorChecker.checkForErrors(localDriver, jobConfig);
 
         Long pageHeight = getPageHeight();
@@ -292,7 +300,7 @@ public class Browser implements AutoCloseable {
         }
 
         if (jobConfig.globalWaitAfterPageLoad > 0) {
-            LOG.debug(String.format("Waiting for %s seconds (global wait-after-page-load)", jobConfig.globalWaitAfterPageLoad));
+            LOG.debug(String.format("Waiting for %f seconds (global wait-after-page-load)", jobConfig.globalWaitAfterPageLoad));
             Thread.sleep(Math.round(jobConfig.globalWaitAfterPageLoad * 1000));
         }
 
@@ -307,6 +315,8 @@ public class Browser implements AutoCloseable {
         if (screenshotContext.urlConfig.hideImages) {
             executeJavaScript(JS_HIDE_IMAGES);
         }
+
+        removeNodes(screenshotContext);
 
         //Wait for fonts
         if (screenshotContext.urlConfig.waitForFontsTime > 0) {
@@ -561,6 +571,10 @@ public class Browser implements AutoCloseable {
         setSessionStorage(screenshotContext.urlConfig.sessionStorage);
     }
 
+    private void removeNodes(ScreenshotContext screenshotContext) {
+        removeNodes(screenshotContext.urlConfig.removeSelectors);
+    }
+
     void setLocalStorage(Map<String, String> localStorage) {
         if (localStorage == null) return;
 
@@ -572,6 +586,38 @@ public class Browser implements AutoCloseable {
             String jsCall = String.format(JS_SET_LOCAL_STORAGE_CALL, localStorageEntry.getKey(), entry);
             jse.executeScript(jsCall);
             LOG.debug("LocalStorage call: {}", jsCall);
+        }
+    }
+
+    void removeNodes(Set<String> cssSelectors) {
+        if (cssSelectors == null || cssSelectors.isEmpty()) return;
+
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
+        for (String cssSelector : cssSelectors) {
+            String jsCall = String.format(JS_REMOVE_FROM_DOM_CALL, cssSelector);
+            jse.executeScript(jsCall);
+            LOG.debug("Remove from DOM call: {}", jsCall);
+        }
+    }
+
+    void waitForSelectors(Set<String> cssSelectors, float timeout, boolean failIfNotFound) throws InterruptedException {
+        if (cssSelectors == null || cssSelectors.isEmpty()) return;
+
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
+        int retries = Double.valueOf(Math.ceil(timeout)).intValue();
+        for (String cssSelector : cssSelectors) {
+            boolean found = false;
+            String jsCall = String.format(JS_CHECK_FOR_ELEMENT_CALL, cssSelector);
+            while(!found && retries > 0) {
+                found = (Boolean) (jse.executeScript(jsCall));
+                LOG.debug("Wait for CSS selector call: {}, retries left: {}", jsCall, retries);
+                Thread.sleep(1000);
+                retries--;
+            }
+            LOG.info("{} '{}' with {} retries left.", found ? "Found" : "Didn't find", cssSelector, retries);
+            if (!found && failIfNotFound) {
+                throw new RuntimeException("Didn't find element with selector '" + cssSelector + "'.");
+            }
         }
     }
 

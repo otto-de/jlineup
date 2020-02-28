@@ -2,13 +2,13 @@ package de.otto.jlineup.browser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.*;
 import de.otto.jlineup.file.FileService;
 import org.junit.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
@@ -183,7 +183,11 @@ public class BrowserTest {
                 true,
                 false,
                 false,
-                DEFAULT_MAX_COLOR_DISTANCE);
+                DEFAULT_MAX_COLOR_DISTANCE,
+                ImmutableSet.of(),
+                ImmutableSet.of(),
+                0,
+                false);
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
@@ -267,7 +271,11 @@ public class BrowserTest {
                 false,
                 false,
                 false,
-                DEFAULT_MAX_COLOR_DISTANCE);
+                DEFAULT_MAX_COLOR_DISTANCE,
+                ImmutableSet.of(),
+                ImmutableSet.of(),
+                0,
+                false);
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
@@ -347,7 +355,11 @@ public class BrowserTest {
                 false,
                 false,
                 false,
-                DEFAULT_MAX_COLOR_DISTANCE);
+                DEFAULT_MAX_COLOR_DISTANCE,
+                ImmutableSet.of(),
+                ImmutableSet.of(),
+                0,
+                false);
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
@@ -418,7 +430,11 @@ public class BrowserTest {
                 false,
                 false,
                 false,
-                DEFAULT_MAX_COLOR_DISTANCE);
+                DEFAULT_MAX_COLOR_DISTANCE,
+                ImmutableSet.of(),
+                ImmutableSet.of(),
+                0,
+                false);
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(CHROME_HEADLESS)

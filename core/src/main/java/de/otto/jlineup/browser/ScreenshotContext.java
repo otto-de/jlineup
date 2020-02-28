@@ -21,8 +21,10 @@ public final class ScreenshotContext  {
     final String fullPathOfReportDir;
     @JsonIgnore
     final boolean dontShareBrowser;
+    @JsonIgnore
+    final String originalUrl;
 
-    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser) {
+    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String originalUrl) {
         this.url = url;
         this.urlSubPath = urlSubPath;
         this.deviceConfig = deviceConfig;
@@ -30,6 +32,7 @@ public final class ScreenshotContext  {
         this.urlConfig = urlConfig;
         this.fullPathOfReportDir = fullPathOfReportDir;
         this.dontShareBrowser = dontShareBrowser;
+        this.originalUrl = originalUrl;
     }
 
     //Used by Jackson
@@ -45,11 +48,12 @@ public final class ScreenshotContext  {
         urlConfig = builder.urlConfig;
         fullPathOfReportDir = builder.fullPathOfReportDir;
         dontShareBrowser = builder.dontShareBrowser;
+        originalUrl = builder.originalUrl;
     }
 
     //Used in Tests only
     public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig) {
-        return new ScreenshotContext(url, path, deviceConfig, step, urlConfig, null, false);
+        return new ScreenshotContext(url, path, deviceConfig, step, urlConfig, null, false, url);
     }
 
     public static Builder screenshotContextBuilder() {
@@ -65,6 +69,7 @@ public final class ScreenshotContext  {
         builder.urlConfig = copy.urlConfig;
         builder.fullPathOfReportDir = copy.fullPathOfReportDir;
         builder.dontShareBrowser = copy.dontShareBrowser;
+        builder.originalUrl = copy.originalUrl;
         return builder;
     }
 
@@ -105,12 +110,7 @@ public final class ScreenshotContext  {
      */
 
     public int contextHash() {
-        return Objects.hash(url, urlSubPath, deviceConfig);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(url, urlSubPath, deviceConfig, step, urlConfig, fullPathOfReportDir, dontShareBrowser);
+        return Objects.hash(originalUrl, urlSubPath, deviceConfig);
     }
 
     public boolean equalsIgnoreStep(ScreenshotContext that) {
@@ -120,7 +120,8 @@ public final class ScreenshotContext  {
                 Objects.equals(urlSubPath, that.urlSubPath) &&
                 Objects.equals(deviceConfig, that.deviceConfig) &&
                 Objects.equals(urlConfig, that.urlConfig) &&
-                Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir);
+                Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir) &&
+                Objects.equals(originalUrl, that.originalUrl);
     }
 
     @Override
@@ -134,7 +135,13 @@ public final class ScreenshotContext  {
                 Objects.equals(deviceConfig, that.deviceConfig) &&
                 step == that.step &&
                 Objects.equals(urlConfig, that.urlConfig) &&
-                Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir);
+                Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir) &&
+                Objects.equals(originalUrl, that.originalUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url, urlSubPath, deviceConfig, step, urlConfig, fullPathOfReportDir, dontShareBrowser, originalUrl);
     }
 
     @Override
@@ -147,6 +154,7 @@ public final class ScreenshotContext  {
                 ", urlConfig=" + urlConfig +
                 ", fullPathOfReportDir='" + fullPathOfReportDir + '\'' +
                 ", dontShareBrowser=" + dontShareBrowser +
+                ", originalUrl='" + originalUrl + '\'' +
                 '}';
     }
 
@@ -158,6 +166,7 @@ public final class ScreenshotContext  {
         private UrlConfig urlConfig;
         private String fullPathOfReportDir;
         private boolean dontShareBrowser;
+        private String originalUrl;
 
         private Builder() {
         }
@@ -194,6 +203,11 @@ public final class ScreenshotContext  {
 
         public Builder withDontShareBrowser(boolean val) {
             dontShareBrowser = val;
+            return this;
+        }
+
+        public Builder withOriginalUrl(String val) {
+            originalUrl = val;
             return this;
         }
 

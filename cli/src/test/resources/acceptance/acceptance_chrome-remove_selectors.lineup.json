@@ -1,0 +1,12 @@
+{
+  "urls": {
+    "file://###CWD###/src/test/resources/acceptance/webpage/test_remove###NUM###.html": {
+      "remove-selectors": [
+        ".removeMe",
+        "#removeMeToo"
+      ],
+      "wait-after-page-load": 15
+    }
+  },
+  "browser" : "chrome"
+}

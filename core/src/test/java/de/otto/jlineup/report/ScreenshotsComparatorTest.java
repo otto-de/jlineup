@@ -2,6 +2,7 @@ package de.otto.jlineup.report;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
@@ -35,7 +36,7 @@ public class ScreenshotsComparatorTest {
 
     private RunStepConfig runStepConfig;
     private JobConfig jobConfig;
-    private final UrlConfig urlConfig = new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, singletonList(100), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(),false, false, false, DEFAULT_MAX_COLOR_DISTANCE);
+    private final UrlConfig urlConfig = new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, singletonList(100), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(),false, false, false, DEFAULT_MAX_COLOR_DISTANCE, ImmutableSet.of(), ImmutableSet.of(), 0, false);
 
     @Mock
     private FileService fileService;

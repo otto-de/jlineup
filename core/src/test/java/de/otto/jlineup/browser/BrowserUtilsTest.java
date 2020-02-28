@@ -2,6 +2,7 @@ package de.otto.jlineup.browser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.*;
 import org.junit.Test;
@@ -18,8 +19,7 @@ import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_COLOR_DISTANCE;
-import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
+import static de.otto.jlineup.config.JobConfig.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
@@ -105,11 +105,11 @@ public class BrowserUtilsTest {
     }
 
     public static UrlConfig getExpectedUrlConfigForOttoDe() {
-        return new UrlConfig(ImmutableList.of("/", "multimedia"), 0.05f, ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600, 800, 1200), 50000, 2, 1, 0, 3, "console.log('Moin!');", 0, new HttpCheckConfig(), false, false, false, DEFAULT_MAX_COLOR_DISTANCE);
+        return new UrlConfig(ImmutableList.of("/", "multimedia"), 0.05f, ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600, 800, 1200), 50000, 2, 1, 0, 3, "console.log('Moin!');", 0, new HttpCheckConfig(), false, false, false, DEFAULT_MAX_COLOR_DISTANCE, null, null, DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT, false);
     }
 
     public static UrlConfig getExpectedUrlConfigForGoogleDe() {
-        return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1200), 100000, 0, 0, 0, 0, null,0, new HttpCheckConfig(), false,false,false, DEFAULT_MAX_COLOR_DISTANCE);
+        return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1200), 100000, 0, 0, 0, 0, null,0, new HttpCheckConfig(), false,false,false, DEFAULT_MAX_COLOR_DISTANCE, null, null, DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT, false);
     }
 
     @Test
