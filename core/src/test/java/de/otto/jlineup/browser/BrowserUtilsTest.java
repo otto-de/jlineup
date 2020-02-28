@@ -2,7 +2,6 @@ package de.otto.jlineup.browser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.*;
 import org.junit.Test;
