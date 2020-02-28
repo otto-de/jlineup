@@ -4,9 +4,8 @@
       "remove-selectors": [
         ".removeMe",
         "#removeMeToo"
-      ],
-      "wait-after-page-load": 15
+      ]
     }
   },
-  "browser" : "chrome"
+  "browser" : "chrome-headless"
 }
