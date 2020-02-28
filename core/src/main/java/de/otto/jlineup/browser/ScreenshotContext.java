@@ -52,6 +52,11 @@ public final class ScreenshotContext  {
     }
 
     //Used in Tests only
+    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, String originalUrl) {
+        return new ScreenshotContext(url, path, deviceConfig, step, urlConfig, null, false, originalUrl);
+    }
+
+    //Used in Tests only
     public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig) {
         return new ScreenshotContext(url, path, deviceConfig, step, urlConfig, null, false, url);
     }

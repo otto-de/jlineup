@@ -82,7 +82,7 @@ public class BrowserUtilsTest {
                 ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(600, expectedHeight), Step.before, expectedUrlConfigForOttoDe),
                 ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(800, expectedHeight), Step.before, expectedUrlConfigForOttoDe),
                 ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(1200, expectedHeight), Step.before, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("http://www.doodle.de", "/",         deviceConfig(1200, expectedHeight), Step.before, expectedUrlConfigForGoogleDe)
+                ScreenshotContext.of("http://www.doodle.de", "/",         deviceConfig(1200, expectedHeight), Step.before, expectedUrlConfigForGoogleDe, "http://www.google.de")
         );
 
         //when
