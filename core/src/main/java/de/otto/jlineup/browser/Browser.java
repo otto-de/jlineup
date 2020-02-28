@@ -591,7 +591,7 @@ public class Browser implements AutoCloseable {
 
     void removeNodes(Set<String> cssSelectors) {
         if (cssSelectors == null || cssSelectors.isEmpty()) return;
-
+        LOG.debug("Removing nodes with CSS selectors.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         for (String cssSelector : cssSelectors) {
             String jsCall = String.format(JS_REMOVE_FROM_DOM_CALL, cssSelector);
