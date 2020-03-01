@@ -438,7 +438,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) {
+    private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) throws InterruptedException {
         float warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
             final Set<String> browserCacheWarmupMarks = cacheWarmupMarksMap.computeIfAbsent(Thread.currentThread().getName(), k -> initializeCacheWarmupMarks());
@@ -456,12 +456,8 @@ public class Browser implements AutoCloseable {
                 logErrorChecker.checkForErrors(driver, jobConfig);
                 LOG.debug(String.format("First call of %s - waiting %f seconds for cache warmup", url, warmupTime));
                 browserCacheWarmupMarks.add(url);
-                try {
-                    LOG.debug("Sleeping for {} seconds", warmupTime);
-                    Thread.sleep(Math.round(warmupTime * 1000));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                LOG.debug("Sleeping for {} seconds", warmupTime);
+                Thread.sleep(Math.round(warmupTime * 1000));
                 resizeBrowser(driver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
                 LOG.debug("Cache warmup time is over. Getting " + url + " again.");
             }
@@ -608,7 +604,7 @@ public class Browser implements AutoCloseable {
         for (String cssSelector : cssSelectors) {
             boolean found = false;
             String jsCall = String.format(JS_CHECK_FOR_ELEMENT_CALL, cssSelector);
-            while(!found && retries > 0) {
+            while (!found && retries > 0) {
                 found = (Boolean) (jse.executeScript(jsCall));
                 LOG.debug("Wait for CSS selector call: {}, retries left: {}", jsCall, retries);
                 Thread.sleep(1000);
