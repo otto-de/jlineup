@@ -129,7 +129,15 @@ This is a full configuration with example values:
         "enabled": false
       },
       "ignore-antialiasing": false,
-      "strict-color-comparison": false
+      "strict-color-comparison": false,
+      "wait-for-selectors": [
+        ".wait-for-class"
+      ],
+      "wait-for-selectors-timeout": 20.0,
+      "fail-if-selectors-not-found": false,
+      "remove-selectors": [
+        "#remove-id"
+      ]
     }
   },
   "browser": "PhantomJS",
@@ -430,6 +438,60 @@ What are all those options about? Here are all the details.
  * Example: `"hide-images": true`
  
 --- 
+
+### `wait-for-selectors`
+
+ Instead of waiting for a fixed time until your page may be loaded, you can specify certain CSS selectors that should
+ be in the DOM until JLineup starts to make screenshots. The `wait-for-page-load` will happen afterwards.
+ 
+ * Scope: Site
+ * Type: Set of Strings
+ * Default: `null`
+ * Example: `"wait-for-selectors": [ ".wait-for-class", "#wait-for-id" ]`
+
+---
+
+### `wait-for-selectors-timeout`
+
+ If you use `wait-for-selectors` to check if your page is loaded, this is the time that will be waited for until all
+ selectors have been found. If the selector(s) didn't appear in time, it depends on `fail-if-selectors-not-found` if
+ JLineup will throw an error or goes on with screenshots regardless of the missing DOM objects. 
+
+ * Scope: Site
+ * Type: Float
+ * Unit: Seconds
+ * Default: 15
+ * Example: `"wait-for-selectors-timeout": 20.0`
+
+---
+
+### `fail-if-selectors-not-found`
+
+ See `wait-for-selectors-timeout` above.
+
+  * Scope: Site
+  * Type: Boolean
+  * Default: false
+  * Example: `"fail-if-selectors-not-found": true`
+
+---
+
+### `remove-selectors`
+
+ You can specify a set of CSS selectors that will be used to remove all nodes found by these selectors from the DOM.
+ This is useful if you have content on your site that you don't want in your screenshot comparison. Real life cases
+ are animated things, third party content you can't control or content that changes on every call.
+ 
+ The remove operation happens after `wait-for-page-load` and `wait-for-selectors` are finished.
+ 
+ Note: Advanced replacements of dom objects can be realized using the `javascript` feature.
+ 
+ * Scope: Site
+ * Type: Set of Strings
+ * Default: `null`
+ * Example: `"remove-selectors": [ "#remove-id", ".remove-class" ]`
+
+---
 
 ### `wait-for-fonts-time`
 

@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.1.0
+* New `wait-for-selectors` and `remove-selectors` features.
+
 ## Release 4.0.0
 * New device-config feature (which adds mobile emulation support in chrome and more)
 
