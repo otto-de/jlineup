@@ -21,7 +21,7 @@ plugins {
 
 //
 //
-def jlineup_version = "4.0.1-SNAPSHOT"
+def jlineup_version = "4.1.0"
 //
 //
 

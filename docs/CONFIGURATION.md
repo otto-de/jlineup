@@ -448,6 +448,8 @@ What are all those options about? Here are all the details.
  * Type: Set of Strings
  * Default: `null`
  * Example: `"wait-for-selectors": [ ".wait-for-class", "#wait-for-id" ]`
+ 
+  Since: 4.1.0
 
 ---
 
@@ -462,6 +464,8 @@ What are all those options about? Here are all the details.
  * Unit: Seconds
  * Default: 15
  * Example: `"wait-for-selectors-timeout": 20.0`
+ 
+  Since: 4.1.0
 
 ---
 
@@ -473,6 +477,8 @@ What are all those options about? Here are all the details.
   * Type: Boolean
   * Default: false
   * Example: `"fail-if-selectors-not-found": true`
+
+ Since: 4.1.0
 
 ---
 
@@ -490,6 +496,8 @@ What are all those options about? Here are all the details.
  * Type: Set of Strings
  * Default: `null`
  * Example: `"remove-selectors": [ "#remove-id", ".remove-class" ]`
+ 
+ Since: 4.1.0
 
 ---
 
@@ -596,6 +604,8 @@ What are all those options about? Here are all the details.
           }
       `
 ---
+
+Since: 4.0.0
 
 ### `page-load-timeout`
 
