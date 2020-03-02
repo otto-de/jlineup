@@ -467,7 +467,7 @@ public class Browser implements AutoCloseable {
     private void browserCacheWarmupForHeadless(ScreenshotContext screenshotContext, String url, WebDriver driver) throws Exception {
         float warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
-            LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height));
+            LOG.info(String.format("Browsing to %s with device config %s for cache warmup", url, screenshotContext.deviceConfig.toString()));
             LOG.debug("Getting url: {}", url);
             driver.get(url);
             logErrorChecker.checkForErrors(driver, jobConfig);
