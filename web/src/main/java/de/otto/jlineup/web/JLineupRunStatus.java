@@ -22,6 +22,8 @@ public class JLineupRunStatus {
     private final String id;
     private final State state;
     private final Instant startTime;
+    private final Instant pauseTime;
+    private final Instant resumeTime;
     private final Instant endTime;
     private final Reports reports;
 
@@ -41,6 +43,8 @@ public class JLineupRunStatus {
         jobConfig = builder.jobConfig;
         state = builder.state;
         startTime = builder.startTime;
+        pauseTime = builder.pauseTime;
+        resumeTime = builder.resumeTime;
         endTime = builder.endTime;
         currentJobStepFuture = builder.currentJobStepFuture;
         reports = builder.reports;
@@ -64,6 +68,14 @@ public class JLineupRunStatus {
 
     public Optional<Instant> getEndTime() {
         return Optional.ofNullable(endTime);
+    }
+
+    public Optional<Instant> getPauseTime() {
+        return Optional.ofNullable(pauseTime);
+    }
+
+    public Optional<Instant> getResumeTime() {
+        return Optional.ofNullable(resumeTime);
     }
 
     @JsonIgnore
@@ -92,6 +104,8 @@ public class JLineupRunStatus {
                 .withJobConfig(jLineupRunStatus.getJobConfig())
                 .withState(jLineupRunStatus.getState())
                 .withStartTime(jLineupRunStatus.getStartTime())
+                .withPauseTime(jLineupRunStatus.pauseTime)
+                .withResumeTime(jLineupRunStatus.resumeTime)
                 .withReports(jLineupRunStatus.getReports());
         jLineupRunStatus.getEndTime().ifPresent(builder::withEndTime);
         jLineupRunStatus.getCurrentJobStepFuture().ifPresent(builder::withCurrentJobStepFuture);
@@ -104,6 +118,8 @@ public class JLineupRunStatus {
         private JobConfig jobConfig;
         private State state;
         private Instant startTime = Instant.now();
+        private Instant pauseTime;
+        private Instant resumeTime;
         private Instant endTime;
         private CompletableFuture<State> currentJobStepFuture;
         private Reports reports;
@@ -136,6 +152,16 @@ public class JLineupRunStatus {
             return this;
         }
 
+        public Builder withPauseTime(Instant val) {
+            pauseTime = val;
+            return this;
+        }
+
+        public Builder withResumeTime(Instant val) {
+            resumeTime = val;
+            return this;
+        }
+
         public Builder withCurrentJobStepFuture(CompletableFuture<State> val) {
             currentJobStepFuture = val;
             return this;
@@ -156,12 +182,14 @@ public class JLineupRunStatus {
     public String toString() {
         return "JLineupRunStatus{" +
                 "id='" + id + '\'' +
-                ", jobConfig=" + jobConfig +
                 ", state=" + state +
                 ", startTime=" + startTime +
+                ", pauseTime=" + pauseTime +
+                ", resumeTime=" + resumeTime +
                 ", endTime=" + endTime +
                 ", reports=" + reports +
                 ", currentJobStepFuture=" + currentJobStepFuture +
+                ", jobConfig=" + jobConfig +
                 '}';
     }
 
@@ -171,19 +199,20 @@ public class JLineupRunStatus {
         if (o == null || getClass() != o.getClass()) return false;
         JLineupRunStatus that = (JLineupRunStatus) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(jobConfig, that.jobConfig) &&
                 state == that.state &&
                 Objects.equals(startTime, that.startTime) &&
+                Objects.equals(pauseTime, that.pauseTime) &&
+                Objects.equals(resumeTime, that.resumeTime) &&
                 Objects.equals(endTime, that.endTime) &&
                 Objects.equals(reports, that.reports) &&
-                Objects.equals(currentJobStepFuture, that.currentJobStepFuture);
+                Objects.equals(currentJobStepFuture, that.currentJobStepFuture) &&
+                Objects.equals(jobConfig, that.jobConfig);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, jobConfig, state, startTime, endTime, reports, currentJobStepFuture);
+        return Objects.hash(id, state, startTime, pauseTime, resumeTime, endTime, reports, currentJobStepFuture, jobConfig);
     }
-
 
     @JsonDeserialize(builder = Reports.Builder.class)
     @JsonNaming(PropertyNamingStrategy.class)

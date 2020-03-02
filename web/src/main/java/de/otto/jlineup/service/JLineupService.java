@@ -125,6 +125,14 @@ public class JLineupService {
                     .build());
         }
 
+        if (state == State.BEFORE_DONE) {
+            runStatusBuilder.withPauseTime(Instant.now());
+        }
+
+        if (state == State.AFTER_RUNNING) {
+            runStatusBuilder.withResumeTime(Instant.now());
+        }
+
         if (state == State.ERROR || state == State.DEAD) {
             runStatusBuilder.withEndTime(Instant.now());
         }

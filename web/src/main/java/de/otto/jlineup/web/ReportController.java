@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -45,9 +46,20 @@ public class ReportController {
     }
 
     private static String getDurationAsString(JLineupRunStatus status) {
-        Instant endTime = status.getEndTime().orElse(Instant.now());
+
+        final AtomicLong durationMillis = new AtomicLong();
         Instant startTime = status.getStartTime();
-        return DurationFormatUtils.formatDuration(Duration.between(startTime, endTime).toMillis(), "HH:mm:ss");
+
+        status.getPauseTime().ifPresent(pauseTime -> durationMillis.addAndGet(Duration.between(startTime, pauseTime).toMillis()));
+        status.getEndTime().ifPresent(endTime -> durationMillis.addAndGet(Duration.between(status.getResumeTime().get(), endTime).toMillis()));
+
+        if (status.getState() == State.BEFORE_RUNNING) {
+           durationMillis.addAndGet(Duration.between(startTime, Instant.now()).toMillis());
+        } else if (status.getState() == State.AFTER_RUNNING) {
+            durationMillis.addAndGet(Duration.between(status.getResumeTime().get(), Instant.now()).toMillis());
+        }
+
+        return DurationFormatUtils.formatDuration(durationMillis.get(), "HH:mm:ss");
     }
 
     private static String formatTime(Instant time) {

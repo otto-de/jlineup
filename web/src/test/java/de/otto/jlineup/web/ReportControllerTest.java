@@ -68,7 +68,9 @@ public class ReportControllerTest {
 
         JLineupRunStatus runStatus1 = JLineupRunStatus.runStatusBuilder()
                 .withStartTime(now.minus(5, ChronoUnit.HOURS))
-                .withEndTime(now.plus(1, ChronoUnit.HOURS))
+                .withPauseTime(now.minus(4, ChronoUnit.HOURS))
+                .withResumeTime(now.minus(3, ChronoUnit.HOURS))
+                .withEndTime(now.minus(2, ChronoUnit.HOURS))
                 .withState(State.FINISHED_WITHOUT_DIFFERENCES)
                 .withId("someOldId")
                 .withReports(JLineupRunStatus.Reports.reportsBuilder().withHtmlUrl("/reportHtmlUrlOld").build())
@@ -77,6 +79,8 @@ public class ReportControllerTest {
 
         JLineupRunStatus runStatus2 = JLineupRunStatus.runStatusBuilder()
                 .withStartTime(now)
+                .withPauseTime(now.plus(1, ChronoUnit.MINUTES))
+                .withResumeTime(now.plus(2, ChronoUnit.MINUTES))
                 .withEndTime(now.plus(1, ChronoUnit.HOURS))
                 .withState(State.FINISHED_WITHOUT_DIFFERENCES)
                 .withId("someId")
@@ -86,7 +90,8 @@ public class ReportControllerTest {
 
         JLineupRunStatus runStatus3 = JLineupRunStatus.runStatusBuilder()
                 .withStartTime(now.minus(1, ChronoUnit.HOURS))
-                .withEndTime(now.plus(1, ChronoUnit.HOURS))
+                .withPauseTime(now.minus(30, ChronoUnit.MINUTES))
+                .withResumeTime(now.minus(2, ChronoUnit.MINUTES))
                 .withState(State.AFTER_RUNNING)
                 .withId("someOtherId")
                 .withJobConfig(createJobConfigWithUrlAndName("www.other1.de", null))
@@ -127,13 +132,13 @@ public class ReportControllerTest {
 
         assertThat(reportList.get(0).getId(), is("someId"));
         assertThat(reportList.get(0).getName(), is("someName"));
-        assertThat(reportList.get(0).getDuration(), is("01:00:00"));
+        assertThat(reportList.get(0).getDuration(), is("00:59:00"));
         assertThat(reportList.get(0).getReportUrl(), is("http://localhost/jlineup-ctxpath/reportHtmlUrl"));
         assertThat(reportList.get(1).getId(), is("someOtherId"));
         assertThat(reportList.get(1).getName(), is(nullValue()));
-        assertThat(reportList.get(1).getDuration(), is("02:00:00"));
+        assertThat(reportList.get(1).getDuration(), is("00:32:00"));
         assertThat(reportList.get(2).getId(), is("someOldId"));
-        assertThat(reportList.get(2).getDuration(), is("06:00:00"));
+        assertThat(reportList.get(2).getDuration(), is("02:00:00"));
 
     }
 
