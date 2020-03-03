@@ -212,16 +212,16 @@ public class BrowserTest {
         testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
 
         //then
-        verify(webDriverWindowMock, times(2)).setSize(new Dimension(600, 100));
-        verify(webDriverWindowMock, times(2)).setSize(new Dimension(800, 100));
+        verify(webDriverWindowMock, times(1)).setSize(new Dimension(600, 100));
+        verify(webDriverWindowMock, times(1)).setSize(new Dimension(800, 100));
         verify(webDriverMock, times(2)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(2)).executeScript("testJS();");
         verify(webDriverMock, times(2)).executeScript(String.format(JS_HIDE_IMAGES, 500));
         verify(webDriverMock, times(10)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         //Two times the cookie -> goes to url
         verify(webDriverMock, times(2)).get("http://testurl");
-        //One time cache warmup, then the two calls for the two contexts with full url + subpath
-        verify(webDriverMock, times(3)).get("http://testurl/");
+        //Two times cache warmup, then the two calls for the two contexts with full url + subpath
+        verify(webDriverMock, times(4)).get("http://testurl/");
         verify(webDriverMock, times(2)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
         verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
@@ -298,7 +298,7 @@ public class BrowserTest {
         testee.takeScreenshots(ImmutableList.of(screenshotContext));
 
         //then
-        verify(webDriverWindowMock, times(3)).setSize(new Dimension(600, 100));
+        verify(webDriverWindowMock, times(1)).setSize(new Dimension(600, 100));
         verify(webDriverMock, times(1)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(5)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         verify(webDriverMock, times(1)).get("http://cookieurl");
@@ -382,7 +382,7 @@ public class BrowserTest {
         testee.takeScreenshots(ImmutableList.of(screenshotContext));
 
         //then
-        verify(webDriverWindowMock, times(3)).setSize(new Dimension(600, 100));
+        verify(webDriverWindowMock, times(1)).setSize(new Dimension(600, 100));
         verify(webDriverMock, times(1)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(5)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         verify(webDriverMock, times(1)).get("https://cookieurl");

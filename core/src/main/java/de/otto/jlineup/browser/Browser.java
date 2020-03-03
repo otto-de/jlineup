@@ -118,7 +118,6 @@ public class Browser implements AutoCloseable {
     /* Every thread has it's own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
     private ExecutorService threadPool;
     private final ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, Set<String>> cacheWarmupMarksMap = new ConcurrentHashMap<>();
 
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
 
@@ -269,11 +268,7 @@ public class Browser implements AutoCloseable {
             setSessionStorage(screenshotContext);
         }
 
-        if (headlessRealBrowserOrMobileEmulation) {
-            browserCacheWarmupForHeadless(screenshotContext, url, localDriver);
-        } else {
-            checkBrowserCacheWarmup(screenshotContext, url, localDriver);
-        }
+        browserCacheWarmup(screenshotContext, url, localDriver);
 
         LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height));
         //now get the real page
@@ -383,10 +378,6 @@ public class Browser implements AutoCloseable {
         driver.manage().window().setSize(new Dimension(width, height));
     }
 
-    private Set<String> initializeCacheWarmupMarks() {
-        return new HashSet<>();
-    }
-
     private boolean areThereCookies(ScreenshotContext screenshotContext) {
         return (screenshotContext.urlConfig.cookies != null && !screenshotContext.urlConfig.cookies.isEmpty());
     }
@@ -438,33 +429,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    private void checkBrowserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) throws InterruptedException {
-        float warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
-        if (warmupTime > JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
-            final Set<String> browserCacheWarmupMarks = cacheWarmupMarksMap.computeIfAbsent(Thread.currentThread().getName(), k -> initializeCacheWarmupMarks());
-            if (!browserCacheWarmupMarks.contains(url)) {
-                Integer maxWidth;
-                if (screenshotContext.urlConfig.windowWidths != null) {
-                    maxWidth = screenshotContext.urlConfig.windowWidths.stream().max(Integer::compareTo).get();
-                } else {
-                    maxWidth = screenshotContext.urlConfig.devices.stream().map(deviceConfig -> deviceConfig.width).max(Integer::compareTo).get();
-                }
-                LOG.info(String.format("Browsing to %s with window size %dx%d for cache warmup", url, maxWidth, jobConfig.windowHeight));
-                resizeBrowser(driver, maxWidth, jobConfig.windowHeight);
-                LOG.debug("Getting url: {}", url);
-                driver.get(url);
-                logErrorChecker.checkForErrors(driver, jobConfig);
-                LOG.debug(String.format("First call of %s - waiting %f seconds for cache warmup", url, warmupTime));
-                browserCacheWarmupMarks.add(url);
-                LOG.debug("Sleeping for {} seconds", warmupTime);
-                Thread.sleep(Math.round(warmupTime * 1000));
-                resizeBrowser(driver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
-                LOG.debug("Cache warmup time is over. Getting " + url + " again.");
-            }
-        }
-    }
-
-    private void browserCacheWarmupForHeadless(ScreenshotContext screenshotContext, String url, WebDriver driver) throws Exception {
+    private void browserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) throws Exception {
         float warmupTime = screenshotContext.urlConfig.warmupBrowserCacheTime;
         if (warmupTime > JobConfig.DEFAULT_WARMUP_BROWSER_CACHE_TIME) {
             LOG.info(String.format("Browsing to %s with device config %s for cache warmup", url, screenshotContext.deviceConfig.toString()));
