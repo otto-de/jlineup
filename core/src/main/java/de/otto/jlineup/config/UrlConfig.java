@@ -422,6 +422,11 @@ public class UrlConfig {
             return this;
         }
 
+        public Builder withPath(String val) {
+            paths = ImmutableList.of(val);
+            return this;
+        }
+
         public UrlConfig build() {
             //If both are not set, use default window width
             if (windowWidths == null && devices == null) {

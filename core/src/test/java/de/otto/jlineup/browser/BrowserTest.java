@@ -2,7 +2,6 @@ package de.otto.jlineup.browser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.*;
 import de.otto.jlineup.file.FileService;
@@ -23,9 +22,10 @@ import java.util.*;
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS;
 import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
-import static de.otto.jlineup.config.DeviceConfig.*;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_COLOR_DISTANCE;
+import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
+import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -164,30 +164,17 @@ public class BrowserTest {
         final Long viewportHeight = 500L;
         final Long pageHeight = 2000L;
 
-        UrlConfig urlConfig = new UrlConfig(
-                ImmutableList.of("/"),
-                0f,
-                ImmutableList.of(new Cookie("testcookiename", "testcookievalue")),
-                ImmutableMap.of(),
-                ImmutableMap.of("key", "value"),
-                ImmutableMap.of("key", "value"),
-                ImmutableList.of(600, 800),
-                5000,
-                0,
-                0,
-                0,
-                3,
-                "testJS();",
-                5,
-                new HttpCheckConfig(),
-                true,
-                false,
-                false,
-                DEFAULT_MAX_COLOR_DISTANCE,
-                ImmutableSet.of(),
-                ImmutableSet.of(),
-                0,
-                false);
+        UrlConfig urlConfig = urlConfigBuilder()
+                .withPath("/")
+                .withCookies(ImmutableList.of(new Cookie("testcookiename", "testcookievalue")))
+                .withLocalStorage(ImmutableMap.of("localStorageKey", "localStorageValue"))
+                .withSessionStorage(ImmutableMap.of("sessionStorageKey", "sessionStorageValue"))
+                .withWarmupBrowserCacheTime(3)
+                .withWaitForFontsTime(5)
+                .withJavaScript("testJS();")
+                .withHideImages(true)
+                .withWindowWidths(singletonList(600))
+                .build();
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
@@ -198,7 +185,7 @@ public class BrowserTest {
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600,100), Step.before, urlConfig);
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), Step.before, urlConfig);
         ScreenshotContext screenshotContext2 = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 100), Step.before, urlConfig);
 
         when(webDriverMock.getCurrentUrl()).thenReturn("http://testurl");
@@ -224,8 +211,8 @@ public class BrowserTest {
         verify(webDriverMock, times(4)).get("http://testurl/");
         verify(webDriverMock, times(2)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
         verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue"));
-        verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
-        verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value"));
+        verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "localStorageKey", "localStorageValue"));
+        verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "sessionStorageKey", "sessionStorageValue"));
         verify(webDriverMock, times(1)).executeScript(JS_GET_USER_AGENT);
         verify(webDriverMock, times(3)).executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL);
         verify(webDriverMock, times(3)).executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL);
@@ -252,30 +239,14 @@ public class BrowserTest {
                 new Cookie("testcookiename2", "testcookievalue2", "anotherCookieurl", "/", cookieExpiry, false),
                 new Cookie("testcookiename3", "testcookievalue3")
         );
-        UrlConfig urlConfig = new UrlConfig(
-                ImmutableList.of("/"),
-                0f,
-                expectedCookies,
-                ImmutableMap.of(),
-                ImmutableMap.of("key", "value"),
-                ImmutableMap.of("key", "value"),
-                ImmutableList.of(600),
-                5000,
-                0,
-                0,
-                0,
-                3,
-                null,
-                5,
-                new HttpCheckConfig(),
-                false,
-                false,
-                false,
-                DEFAULT_MAX_COLOR_DISTANCE,
-                ImmutableSet.of(),
-                ImmutableSet.of(),
-                0,
-                false);
+
+        UrlConfig urlConfig = urlConfigBuilder()
+                .withPath("/")
+                .withCookies(expectedCookies)
+                .withLocalStorage(ImmutableMap.of("localStorageKey", "localStorageValue"))
+                .withSessionStorage(ImmutableMap.of("sessionStorageKey", "sessionStorageValue"))
+                .withWindowWidths(singletonList(600))
+                .build();
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
@@ -304,7 +275,7 @@ public class BrowserTest {
         verify(webDriverMock, times(1)).get("http://cookieurl");
         verify(webDriverMock, times(1)).get("http://anotherCookieurl");
         verify(webDriverMock, times(1)).get("http://testurl");
-        verify(webDriverMock, times(2)).get("http://testurl/");
+        verify(webDriverMock, times(1)).get("http://testurl/");
         verify(webDriverMock, times(1)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
 
         ArgumentCaptor<org.openqa.selenium.Cookie> cookieCaptor = ArgumentCaptor.forClass(org.openqa.selenium.Cookie.class);
@@ -313,8 +284,8 @@ public class BrowserTest {
         assertThatCookieContentIsIdentical(cookieCaptor.getAllValues().get(1), expectedCookies.get(1));
         assertThatCookieContentIsIdentical(cookieCaptor.getAllValues().get(2), expectedCookies.get(2));
 
-        verify(webDriverMock, times(1)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "key", "value"));
-        verify(webDriverMock, times(1)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "key", "value"));
+        verify(webDriverMock, times(1)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "localStorageKey", "localStorageValue"));
+        verify(webDriverMock, times(1)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "sessionStorageKey", "sessionStorageValue"));
         verify(webDriverMock, times(1)).executeScript(String.format(JS_SCROLL_TO_CALL, 500));
         verify(webDriverMock, times(1)).executeScript(String.format(JS_SCROLL_TO_CALL, 1000));
         verify(webDriverMock, times(1)).executeScript(String.format(JS_SCROLL_TO_CALL, 1500));
@@ -336,30 +307,7 @@ public class BrowserTest {
                 new Cookie("testcookiename3", "testcookievalue3", "cookieurl", "/", cookieExpiry, false)
         );
 
-        UrlConfig urlConfig = new UrlConfig(
-                ImmutableList.of("/"),
-                0f,
-                expectedCookies,
-                ImmutableMap.of(),
-                ImmutableMap.of("key", "value"),
-                ImmutableMap.of("key", "value"),
-                ImmutableList.of(600),
-                5000,
-                0,
-                0,
-                0,
-                3,
-                null,
-                5,
-                new HttpCheckConfig(),
-                false,
-                false,
-                false,
-                DEFAULT_MAX_COLOR_DISTANCE,
-                ImmutableSet.of(),
-                ImmutableSet.of(),
-                0,
-                false);
+        UrlConfig urlConfig = urlConfigBuilder().withPath("/").withWindowWidths(singletonList(600)).withCookies(expectedCookies).build();
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
@@ -386,7 +334,7 @@ public class BrowserTest {
         verify(webDriverMock, times(1)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(5)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         verify(webDriverMock, times(1)).get("https://cookieurl");
-        verify(webDriverMock, times(2)).get("http://testurl/");
+        verify(webDriverMock, times(1)).get("http://testurl/");
         verify(webDriverMock, times(1)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
 
         ArgumentCaptor<org.openqa.selenium.Cookie> cookieCaptor = ArgumentCaptor.forClass(org.openqa.selenium.Cookie.class);
@@ -411,31 +359,7 @@ public class BrowserTest {
         final Long viewportHeight = 500L;
         final Long pageHeight = 2000L;
 
-        UrlConfig urlConfig = new UrlConfig(
-                ImmutableList.of("/"),
-                0f,
-                ImmutableList.of(),
-                ImmutableMap.of(),
-                ImmutableMap.of(),
-                ImmutableMap.of(),
-                ImmutableList.of(600, 800),
-                5000,
-                0,
-                0,
-                0,
-                3,
-                null,
-                5,
-                new HttpCheckConfig(),
-                false,
-                false,
-                false,
-                DEFAULT_MAX_COLOR_DISTANCE,
-                ImmutableSet.of(),
-                ImmutableSet.of(),
-                0,
-                false);
-
+        UrlConfig urlConfig = urlConfigBuilder().withPath("/").withWindowWidths(ImmutableList.of(600, 800)).build();
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(CHROME_HEADLESS)
                 .withUrls(ImmutableMap.of("testurl", urlConfig))
@@ -458,6 +382,41 @@ public class BrowserTest {
         testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
 
         verifyNoMoreInteractions(webDriverWindowMock);
+    }
+
+    @Test
+    public void shouldExecuteSpecialJLineupJS() throws Exception {
+        //given
+        final Long viewportHeight = 2500L;
+        final Long pageHeight = 2000L;
+
+        UrlConfig urlConfig = urlConfigBuilder()
+                .withPath("/")
+                .withWindowWidths(ImmutableList.of(600))
+                .withJavaScript("console.log(1);jlineup.sleep(5);console.log(2);console.log(3);jlineup.sleep(2);console.log(4);jlineup.sleep(1);")
+                .build();
+        JobConfig jobConfig = jobConfigBuilder()
+                .withBrowser(CHROME_HEADLESS)
+                .withUrls(ImmutableMap.of("testurl", urlConfig))
+                .withWindowHeight(2500)
+                .build();
+
+        testee.close();
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
+
+        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", deviceConfig(600, 100), Step.before, urlConfig);
+
+        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
+        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
+
+        //when
+        testee.takeScreenshots(ImmutableList.of(screenshotContext));
+
+        verify(webDriverMock, times(1)).executeScript("console.log(1);");
+        verify(webDriverMock, times(1)).executeScript("console.log(2);console.log(3);");
+        verify(webDriverMock, times(1)).executeScript("console.log(4);");
+
     }
 
     @Test

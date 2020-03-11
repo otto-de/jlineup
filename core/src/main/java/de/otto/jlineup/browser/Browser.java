@@ -50,6 +50,7 @@ public class Browser implements AutoCloseable {
     public static final int THREAD_POOL_SUBMIT_SHUFFLE_TIME_IN_MS = 233;
     public static final int DEFAULT_SLEEP_AFTER_SCROLL_MILLIS = 50;
     public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;
+    public static final String JLINEUP_SLEEP_JS_OPENER = "jlineup.sleep";
 
     public enum Type {
         @JsonProperty(value = "Firefox")
@@ -499,13 +500,41 @@ public class Browser implements AutoCloseable {
     }
 
     private void executeJavaScript(String javaScript) throws InterruptedException {
-        if (javaScript == null) {
+        if (javaScript == null || "".equals(javaScript)) {
             return;
         }
+
+        if (javaScript.contains(JLINEUP_SLEEP_JS_OPENER)) {
+            executeJavaScriptWithJlineupAdditions(javaScript);
+            return;
+        }
+
         LOG.debug("Executing JavaScript: {}", javaScript);
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(javaScript);
         Thread.sleep(50);
+    }
+
+    private void executeJavaScriptWithJlineupAdditions(String javaScript) throws InterruptedException {
+        LOG.debug("Executing JavaScript with JLineup additions: {}", javaScript);
+
+        String[] parts = javaScript.split(JLINEUP_SLEEP_JS_OPENER + "\\(");
+
+        //Execute first javascript block
+        executeJavaScript(parts[0]);
+
+        for (int i=1; i<parts.length; i++) {
+
+            String secondsFollowedByClosingBracketAndSemicolonAndMoreJavaScript = parts[i];
+            String[] secondsAndRemainingJS = secondsFollowedByClosingBracketAndSemicolonAndMoreJavaScript.split("\\);", 2);
+
+            int milliseconds = Integer.parseInt(secondsAndRemainingJS[0]);
+            LOG.debug("Sleeping for {} milliseconds", milliseconds);
+            Thread.sleep(milliseconds);
+            String js = secondsAndRemainingJS[1];
+            executeJavaScript(js);
+        }
+
     }
 
     private String getUserAgent() {
