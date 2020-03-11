@@ -229,7 +229,9 @@ public class Browser implements AutoCloseable {
         final WebDriver localDriver;
         if (headlessRealBrowserOrMobileEmulation) {
             localDriver = initializeWebDriver(screenshotContext.deviceConfig);
-        } else localDriver = initializeWebDriver();
+        } else {
+            localDriver = initializeWebDriver();
+        }
 
         if (printVersion.getAndSet(false)) {
             LOG.info("User agent: " + getUserAgent());
@@ -322,6 +324,10 @@ public class Browser implements AutoCloseable {
                 LOG.warn("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.");
             }
         }
+
+        //
+        // Start with screenshots
+        //
 
         for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += viewportHeight) {
             LOG.debug("Scrolling info: yPosition: {}, pageHeight: {}, maxScrollHeight: {}, viewPortHeight: {}", yPosition, pageHeight, screenshotContext.urlConfig.maxScrollHeight, viewportHeight);
