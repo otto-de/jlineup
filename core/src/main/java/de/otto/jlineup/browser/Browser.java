@@ -517,24 +517,23 @@ public class Browser implements AutoCloseable {
 
     private void executeJavaScriptWithJlineupAdditions(String javaScript) throws InterruptedException {
         LOG.debug("Executing JavaScript with JLineup additions: {}", javaScript);
-
         String[] parts = javaScript.split(JLINEUP_SLEEP_JS_OPENER + "\\(");
 
         //Execute first javascript block
         executeJavaScript(parts[0]);
 
         for (int i=1; i<parts.length; i++) {
-
             String secondsFollowedByClosingBracketAndSemicolonAndMoreJavaScript = parts[i];
             String[] secondsAndRemainingJS = secondsFollowedByClosingBracketAndSemicolonAndMoreJavaScript.split("\\);", 2);
-
             int milliseconds = Integer.parseInt(secondsAndRemainingJS[0]);
             LOG.debug("Sleeping for {} milliseconds", milliseconds);
             Thread.sleep(milliseconds);
-            String js = secondsAndRemainingJS[1];
-            executeJavaScript(js);
+            executeJavaScript("/* sleeping " + milliseconds + " milliseconds */");
+            if (secondsAndRemainingJS.length > 1) {
+                String js = secondsAndRemainingJS[1];
+                executeJavaScript(js);
+            }
         }
-
     }
 
     private String getUserAgent() {

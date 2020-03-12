@@ -414,8 +414,11 @@ public class BrowserTest {
         testee.takeScreenshots(ImmutableList.of(screenshotContext));
 
         verify(webDriverMock, times(1)).executeScript("console.log(1);");
+        verify(webDriverMock, times(1)).executeScript("/* sleeping 5 milliseconds */");
         verify(webDriverMock, times(1)).executeScript("console.log(2);console.log(3);");
+        verify(webDriverMock, times(1)).executeScript("/* sleeping 2 milliseconds */");
         verify(webDriverMock, times(1)).executeScript("console.log(4);");
+        verify(webDriverMock, times(1)).executeScript("/* sleeping 1 milliseconds */");
 
     }
 
