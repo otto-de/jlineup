@@ -51,12 +51,12 @@ public class ReportController {
         Instant startTime = status.getStartTime();
 
         status.getPauseTime().ifPresent(pauseTime -> durationMillis.addAndGet(Duration.between(startTime, pauseTime).toMillis()));
-        status.getEndTime().ifPresent(endTime -> durationMillis.addAndGet(Duration.between(status.getResumeTime().get(), endTime).toMillis()));
+        status.getEndTime().ifPresent(endTime -> durationMillis.addAndGet(Duration.between(status.getResumeTime().orElse(endTime), endTime).toMillis()));
 
         if (status.getState() == State.BEFORE_RUNNING) {
            durationMillis.addAndGet(Duration.between(startTime, Instant.now()).toMillis());
         } else if (status.getState() == State.AFTER_RUNNING) {
-            durationMillis.addAndGet(Duration.between(status.getResumeTime().get(), Instant.now()).toMillis());
+            durationMillis.addAndGet(Duration.between(status.getResumeTime().orElse(Instant.now()), Instant.now()).toMillis());
         }
 
         return DurationFormatUtils.formatDuration(durationMillis.get(), "HH:mm:ss");

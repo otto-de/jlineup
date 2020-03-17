@@ -527,8 +527,8 @@ public class Browser implements AutoCloseable {
             String[] secondsAndRemainingJS = secondsFollowedByClosingBracketAndSemicolonAndMoreJavaScript.split("\\);", 2);
             int milliseconds = Integer.parseInt(secondsAndRemainingJS[0]);
             LOG.debug("Sleeping for {} milliseconds", milliseconds);
-            Thread.sleep(milliseconds);
             executeJavaScript("/* sleeping " + milliseconds + " milliseconds */");
+            Thread.sleep(milliseconds);
             if (secondsAndRemainingJS.length > 1) {
                 String js = secondsAndRemainingJS[1];
                 executeJavaScript(js);
