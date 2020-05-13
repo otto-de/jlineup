@@ -11,6 +11,10 @@ edison:
     description: Takes screenshots of webpages and checks for differences
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
   endpoint:
     loggers:
       enabled: true
