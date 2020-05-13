@@ -10,6 +10,11 @@ edison:
     title: JLineup
     description: Takes screenshots of webpages and checks for differences
 
+management:
+  endpoint:
+    loggers:
+      enabled: true
+
 spring:
   application:
     name: JLineup
