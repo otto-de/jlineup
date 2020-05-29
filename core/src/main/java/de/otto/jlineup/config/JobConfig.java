@@ -282,32 +282,24 @@ public final class JobConfig  {
                 .withName("Example")
                 .withCheckForErrorsInLog(true)
                 .withUrls(ImmutableMap.of("http://www.example.com",
-                        new UrlConfig(
-                                ImmutableList.of("/", "someOtherPath"),
-                                DEFAULT_MAX_DIFF,
-                                ImmutableList.of(
+
+                        urlConfigBuilder()
+                                .withPaths(ImmutableList.of("/", "someOtherPath"))
+                                .withCookies(ImmutableList.of(
                                         new Cookie("exampleCookieName", "exampleValue", "http://www.example.com", "/", new Date(1000L), true)
-                                ),
-                                ImmutableMap.of("live", "www"),
-                                ImmutableMap.of("exampleLocalStorageKey", "value"),
-                                ImmutableMap.of("exampleSessionStorageKey", "value"),
-                                ImmutableList.of(600, 800, 1000),
-                                DEFAULT_MAX_SCROLL_HEIGHT,
-                                DEFAULT_WAIT_AFTER_PAGE_LOAD,
-                                DEFAULT_WAIT_AFTER_SCROLL,
-                                DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL,
-                                DEFAULT_WARMUP_BROWSER_CACHE_TIME,
-                                "console.log('This is JavaScript!')",
-                                DEFAULT_WAIT_FOR_FONTS_TIME,
-                                new HttpCheckConfig(true),
-                                false,
-                                false,
-                                false,
-                                DEFAULT_MAX_COLOR_DISTANCE,
-                                ImmutableSet.of("#removeNodeWithThisId", ".removeNodesWithThisClass"),
-                                ImmutableSet.of("#waitForMe"),
-                                DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT,
-                                false)));
+                                ))
+                                .withEnvMapping(ImmutableMap.of("live", "www"))
+                                .withLocalStorage(ImmutableMap.of("exampleLocalStorageKey", "value"))
+                                .withSessionStorage(ImmutableMap.of("exampleSessionStorageKey", "value"))
+                                .withWindowWidths(ImmutableList.of(600,800,1000))
+                                .withJavaScript("console.log('This is JavaScript!')")
+                                .withHttpCheck(new HttpCheckConfig(true))
+                                .withStrictColorComparison(false)
+                                .withRemoveSelectors(ImmutableSet.of("#removeNodeWithThisId", ".removeNodesWithThisClass"))
+                                .withWaitForSelectors(ImmutableSet.of("#waitForMe"))
+                                .withFailIfSelectorsNotFound(false)
+                                .build())
+                );
     }
 
 

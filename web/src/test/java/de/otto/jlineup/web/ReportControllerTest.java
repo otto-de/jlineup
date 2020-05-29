@@ -146,29 +146,7 @@ public class ReportControllerTest {
         return jobConfigBuilder()
                 .withName(name)
                 .withUrls(ImmutableMap.of(url,
-                        new UrlConfig(
-                                ImmutableList.of("/"),
-                                0,
-                                ImmutableList.of(),
-                                ImmutableMap.of(),
-                                ImmutableMap.of(),
-                                ImmutableMap.of(),
-                                ImmutableList.of(600),
-                                100000,
-                                0,
-                                0,
-                                0,
-                                DEFAULT_WARMUP_BROWSER_CACHE_TIME,
-                                null,
-                                0,
-                                new HttpCheckConfig(),
-                                false,
-                                false,
-                                false,
-                                DEFAULT_MAX_COLOR_DISTANCE,
-                                ImmutableSet.of(), ImmutableSet.of(),
-                                0,
-                                false)))
+                        UrlConfig.urlConfigBuilder().withWindowWidths(ImmutableList.of(600)).withMaxScrollHeight(100000).build()))
                 .build();
 
     }

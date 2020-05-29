@@ -104,11 +104,31 @@ public class BrowserUtilsTest {
     }
 
     public static UrlConfig getExpectedUrlConfigForOttoDe() {
-        return new UrlConfig(ImmutableList.of("/", "multimedia"), 0.05f, ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")), ImmutableMap.of("live", "www"), ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"), ImmutableList.of(600, 800, 1200), 50000, 2, 1, 0, 3, "console.log('Moin!');", 0, new HttpCheckConfig(), false, false, false, DEFAULT_MAX_COLOR_DISTANCE, null, null, DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT, false);
+
+        return UrlConfig.urlConfigBuilder()
+                .withPaths(ImmutableList.of("/", "multimedia"))
+                .withMaxDiff(0.05f)
+                .withCookies(ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")))
+                .withEnvMapping(ImmutableMap.of("live", "www"))
+                .withLocalStorage(ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"))
+                .withSessionStorage(ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"))
+                .withWindowWidths(ImmutableList.of(600, 800, 1200))
+                .withMaxScrollHeight(50000)
+                .withWaitAfterPageLoad(2)
+                .withWaitAfterScroll(1)
+                .withWarmupBrowserCacheTime(3)
+                .withJavaScript("console.log('Moin!');")
+                .build();
     }
 
     public static UrlConfig getExpectedUrlConfigForGoogleDe() {
-        return new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, ImmutableList.of(1200), 100000, 0, 0, 0, 0, null,0, new HttpCheckConfig(), false,false,false, DEFAULT_MAX_COLOR_DISTANCE, null, null, DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT, false);
+
+        return UrlConfig.urlConfigBuilder()
+                .withPath("/")
+                .withMaxDiff(0.05f)
+                .withWindowWidths(ImmutableList.of(1200))
+                .withMaxScrollHeight(100000)
+                .build();
     }
 
     @Test

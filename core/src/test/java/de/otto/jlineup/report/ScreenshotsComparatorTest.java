@@ -36,7 +36,14 @@ public class ScreenshotsComparatorTest {
 
     private RunStepConfig runStepConfig;
     private JobConfig jobConfig;
-    private final UrlConfig urlConfig = new UrlConfig(ImmutableList.of("/"), 0.05f, null, null, null, null, singletonList(100), 10000, 2, 0, 0, 0, null, 5, new HttpCheckConfig(),false, false, false, DEFAULT_MAX_COLOR_DISTANCE, ImmutableSet.of(), ImmutableSet.of(), 0, false);
+
+    private final UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
+            .withPath("/")
+            .withMaxDiff(0.05f)
+            .withWindowWidths(singletonList(100))
+            .withMaxScrollHeight(10000)
+            .withWaitAfterPageLoad(2)
+            .build();
 
     @Mock
     private FileService fileService;

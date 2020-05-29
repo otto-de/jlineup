@@ -49,33 +49,6 @@ public class UrlConfig {
     public final boolean strictColorComparison;
     public final float maxColorDistance;
 
-    public UrlConfig(List<String> paths, float maxDiff, List<Cookie> cookies, Map<String, String> envMapping, Map<String, String> localStorage, Map<String, String> sessionStorage, List<Integer> windowWidths, int maxScrollHeight, float waitAfterPageLoad, float waitAfterScroll, float waitForNoAnimationAfterScroll, float warmupBrowserCacheTime, String javaScript, float waitForFontsTime, HttpCheckConfig httpCheck, boolean hideImages, boolean ignoreAntiAliasing, boolean strictColorComparison, float maxColorDistance, Set<String> removeSelectors, Set<String> waitForSelectors, float waitForSelectorsTimeout, boolean failIfSelectorsNotFound) {
-        this.paths = paths != null ? paths : ImmutableList.of(DEFAULT_PATH);
-        this.windowWidths = windowWidths;
-        this.removeSelectors = removeSelectors;
-        this.waitForSelectors = waitForSelectors;
-        this.waitForSelectorsTimeout = waitForSelectorsTimeout;
-        this.failIfSelectorsNotFound = failIfSelectorsNotFound;
-        this.devices = null;
-        this.maxDiff = maxDiff;
-        this.cookies = cookies;
-        this.envMapping = envMapping;
-        this.localStorage = localStorage;
-        this.sessionStorage = sessionStorage;
-        this.maxScrollHeight = maxScrollHeight;
-        this.waitAfterPageLoad = waitAfterPageLoad;
-        this.waitAfterScroll = waitAfterScroll;
-        this.waitForNoAnimationAfterScroll = waitForNoAnimationAfterScroll;
-        this.warmupBrowserCacheTime = warmupBrowserCacheTime;
-        this.javaScript = javaScript;
-        this.waitForFontsTime = waitForFontsTime;
-        this.httpCheck = httpCheck;
-        this.hideImages = hideImages;
-        this.ignoreAntiAliasing = ignoreAntiAliasing;
-        this.strictColorComparison = strictColorComparison;
-        this.maxColorDistance = maxColorDistance;
-    }
-
     private UrlConfig(Builder builder) {
         paths = builder.paths;
         maxDiff = builder.maxDiff;
