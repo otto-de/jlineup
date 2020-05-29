@@ -1,5 +1,6 @@
 package de.otto.jlineup.report;
 
+import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
@@ -7,6 +8,7 @@ import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.file.FileUtils;
 import de.otto.jlineup.image.ImageService;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -19,8 +21,17 @@ public class HTMLReportWriter {
 
     private FileService fileService;
 
+    ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+    TemplateEngine templateEngine = new TemplateEngine();
+
     public HTMLReportWriter(FileService fileService) {
         this.fileService = fileService;
+
+        templateResolver.setTemplateMode("HTML");
+        templateResolver.setPrefix("templates/");
+        templateResolver.setSuffix(".html");
+        templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
     }
 
     public void writeReport(Report report) throws FileNotFoundException {
@@ -28,17 +39,25 @@ public class HTMLReportWriter {
         //fileService.writeHtmlReport(renderReport("report_wip", report.getFlatResultList()), "report_new.html");
     }
 
-    String renderReport(String template, JobConfig config, List<ScreenshotComparisonResult> screenshotComparisonResults) {
+    public void writeNotFinishedReport(RunStepConfig runStepConfig, JobConfig jobConfig) throws FileNotFoundException {
+        fileService.writeHtmlReport(renderNotFinishedReport("report_not_finished", runStepConfig, jobConfig));
+    }
 
-        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setTemplateMode("HTML");
-        templateResolver.setPrefix("templates/");
-        templateResolver.setSuffix(".html");
-        TemplateEngine templateEngine = new TemplateEngine();
-        templateEngine.setTemplateResolver(templateResolver);
+    String renderReport(String template, JobConfig config, List<ScreenshotComparisonResult> screenshotComparisonResults) {
 
         final Map<String, Object> variables = prepareVariablesForReportTemplate(screenshotComparisonResults);
         variables.put("config", config);
+
+        return templateEngine.process(template, new Context(Locale.US, variables));
+    }
+
+    String renderNotFinishedReport(String template, RunStepConfig runStepConfig, JobConfig config) {
+        Map<String, Object> variables = new HashMap<>();
+        enrichVariables(variables);
+        variables.put("config", config);
+        variables.put("report_dir", runStepConfig.getReportDirectory());
+        variables.put("working_dir", runStepConfig.getWorkingDirectory());
+
 
         return templateEngine.process(template, new Context(Locale.US, variables));
     }
@@ -60,6 +79,12 @@ public class HTMLReportWriter {
         }
 
         variables.put("resultContexts", screenshotComparisonResultContexts);
+        enrichVariables(variables);
+
+        return variables;
+    }
+
+    private void enrichVariables(Map<String, Object> variables) {
         variables.put("jlineup_version", Utils.readVersion());
         variables.put("jlineup_commit", Utils.readCommit());
 
@@ -68,8 +93,6 @@ public class HTMLReportWriter {
         variables.put("legend_anti_alias_rgb", "#" + Integer.toHexString(ImageService.ANTI_ALIAS_DETECTED_COLOR).substring(2));
         variables.put("legend_different_rgb", "#" + Integer.toHexString(ImageService.HIGHLIGHT_COLOR).substring(2));
         variables.put("legend_different_size_rgb", "#" + Integer.toHexString(ImageService.DIFFERENT_SIZE_COLOR).substring(2));
-
-        return variables;
     }
 
     private int getContextHash(final ScreenshotComparisonResult screenshotComparisonResult) {

@@ -39,8 +39,9 @@ public class JLineupRunner {
 
     public boolean run() {
 
-        FileService fileService = new FileService(runStepConfig, jobConfig);
-        ImageService imageService = new ImageService();
+        final FileService fileService = new FileService(runStepConfig, jobConfig);
+        final ImageService imageService = new ImageService();
+        final HTMLReportWriter htmlReportWriter = new HTMLReportWriter(fileService);
 
         //Make sure the working dir exists
         if (runStepConfig.getStep() == Step.before) {
@@ -48,6 +49,7 @@ public class JLineupRunner {
                 fileService.createWorkingDirectoryIfNotExists();
                 fileService.createOrClearReportDirectory();
                 fileService.createOrClearScreenshotsDirectory();
+                htmlReportWriter.writeNotFinishedReport(runStepConfig, jobConfig);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -80,8 +82,6 @@ public class JLineupRunner {
                     jsonReportWriter = new JSONReportWriter_V2(fileService);
                 }
                 jsonReportWriter.writeComparisonReportAsJson(report);
-
-                final HTMLReportWriter htmlReportWriter = new HTMLReportWriter(fileService);
                 htmlReportWriter.writeReport(report);
 
                 final Set<Map.Entry<String, UrlReport>> entries = report.screenshotComparisonsForUrl.entrySet();

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>JLineup in progress...</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="-1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <style>
+
+        body {
+            background-color: white;
+            font-family: Arial, Helvetica, sans-serif;
+            margin-left: 10px;
+            margin-top: 10px;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 10px;
+            color: grey;
+        }
+
+        .context > table {
+            padding: 0 0 15px 20px;
+            display: none;
+        }
+
+        .context > table tr:nth-child(even) {
+            background-color: #eee;
+        }
+
+        .context > table tr:nth-child(odd) {
+            background-color: #fff;
+        }
+
+        .context > table th {
+            color: white;
+            background-color: black;
+        }
+
+        .context > table th .browser {
+            color: lightgray;
+            font-weight: normal;
+            font-size: smaller;
+        }
+
+        .context > table td:first-child {
+            padding: 4px;
+        }
+
+        .context > table td {
+            padding: 0 0 0 0;
+            border: 1px solid;
+            border-collapse: collapse;
+            vertical-align: top;
+            position: relative;
+        }
+
+        p {
+            padding: 5px;
+        }
+
+        .report label {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="report">
+    <h2>JLineup unfinished report</h2>
+    <h3 th:if="${config.name}" th:text="${config.name}"></h3>
+    <p>The JLineup run was not finished yet. If you came here, because there was an error somewhere, a look into the <a th:href="jlineup.log">JLineup run log file</a> may help.</p>
+</div>
+
+<p class="footer">Generated with Jlineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
+    [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]]</p>
+
+</body>
+</html>

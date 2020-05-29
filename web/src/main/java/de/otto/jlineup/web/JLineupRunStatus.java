@@ -325,7 +325,6 @@ public class JLineupRunStatus {
                 return this;
             }
 
-
             public JLineupRunStatus.Reports.Builder withLogUrl(String logUrl) {
                 this.logUrl = logUrl;
                 return this;
