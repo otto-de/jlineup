@@ -156,7 +156,7 @@ public class Browser implements AutoCloseable {
 
     void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws Exception {
 
-        Map<ScreenshotContext, Future> screenshotResults = new HashMap<>();
+        Map<ScreenshotContext, Future<?>> screenshotResults = new HashMap<>();
 
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             final Future<?> takeScreenshotsResult = threadPool.submit(() -> {
@@ -190,7 +190,7 @@ public class Browser implements AutoCloseable {
         }
 
         //Get and propagate possible exceptions
-        for (Map.Entry<ScreenshotContext, Future> screenshotResult : screenshotResults.entrySet()) {
+        for (Map.Entry<ScreenshotContext, Future<?>> screenshotResult : screenshotResults.entrySet()) {
             try {
                 screenshotResult.getValue().get(10, TimeUnit.SECONDS);
             } catch (TimeoutException e) {
@@ -217,7 +217,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    private AtomicBoolean printVersion = new AtomicBoolean(true);
+    private final AtomicBoolean printVersion = new AtomicBoolean(true);
 
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws Exception {
 
@@ -411,6 +411,12 @@ public class Browser implements AutoCloseable {
     }
 
     private void setCookiesForDomain(WebDriver driver, String domain, List<Cookie> cookies) {
+
+        if (cookies == null || cookies.isEmpty()) {
+            LOG.debug("There are no cookies for domain {}", domain);
+            return;
+        }
+
         boolean secure = cookies.stream().anyMatch(cookie -> cookie.secure);
         String urlToSetCookie = domain;
         if (!urlToSetCookie.startsWith("http")) {
