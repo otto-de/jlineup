@@ -373,7 +373,8 @@ What are all those options about? Here are all the details.
  Since JLineup 4.2.0, the JavaScript can be enriched with a special function:
  `jlineup.sleep(int milliseconds)`
  You can mix this into your JavaScript to have real execution pauses, without having to write additional
- async/await or setTimeout functions.
+ async/await or setTimeout functions. This only works in simple, procedural JavaScript blocks, for example in click sequences.
+ Don't use it inside of function definitions, only in top level code.
  
  * Scope: Site
  * Type: String
