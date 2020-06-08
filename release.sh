@@ -32,7 +32,7 @@ set -e
 
 #"${SCRIPT_DIR}"/gradlew clean
 #"${SCRIPT_DIR}"/gradlew check
-"${SCRIPT_DIR}"/gradlew -Dorg.gradle.internal.http.socketTimeout=200000 -Dorg.gradle.internal.http.connectionTimeout=200000 build installBootDist publish
+"${SCRIPT_DIR}"/gradlew -Dorg.gradle.internal.http.socketTimeout=200000 -Dorg.gradle.internal.http.connectionTimeout=200000 clean build installBootDist publish
 
 if [[ $SNAPSHOT == 1 ]]; then
   echo "Closing and releasing into Sonatype OSS repository"

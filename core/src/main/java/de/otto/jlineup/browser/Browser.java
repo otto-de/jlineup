@@ -158,7 +158,7 @@ public class Browser implements AutoCloseable {
                     runTestSetupOrCleanup(testSetupContexts);
                     LOG.debug("Test setup done.");
                 }
-                runSetupAndTakeScreenshots(screenshotContextList);
+                takeScreenshots(screenshotContextList);
             } finally {
                 if (!testCleanupContexts.isEmpty()) {
                     LOG.debug("Running test cleanup.");
@@ -176,10 +176,8 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    void runSetupAndTakeScreenshots(final List<ScreenshotContext> screenshotContextList) throws Exception {
-
+    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws Exception {
         Map<ScreenshotContext, Future<?>> screenshotResults = new HashMap<>();
-
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
             final Future<?> takeScreenshotsResult = threadPool.submit(() -> {
                 //This activates the sifting appender in logback.xml to have a log in the report dir.
@@ -550,7 +548,7 @@ public class Browser implements AutoCloseable {
         //Execute first javascript block
         executeJavaScript(parts[0]);
 
-        for (int i=1; i<parts.length; i++) {
+        for (int i = 1; i < parts.length; i++) {
             String secondsFollowedByClosingBracketAndSemicolonAndMoreJavaScript = parts[i];
             String[] secondsAndRemainingJS = secondsFollowedByClosingBracketAndSemicolonAndMoreJavaScript.split("\\);", 2);
             int milliseconds = Integer.parseInt(secondsAndRemainingJS[0]);
