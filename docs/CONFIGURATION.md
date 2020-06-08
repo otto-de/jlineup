@@ -370,6 +370,11 @@ What are all those options about? Here are all the details.
  screenshots. This can be used for various things, like throwing things out of the DOM by id or class, replacing images etc.
  Be creative but careful :D
  
+ Since JLineup 4.2.0, the JavaScript can be enriched with a special function:
+ `jlineup.sleep(int milliseconds)`
+ You can mix this into your JavaScript to have real execution pauses, without having to write additional
+ async/await or setTimeout functions.
+ 
  * Scope: Site
  * Type: String
  * Default: `null`
