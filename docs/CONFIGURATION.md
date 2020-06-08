@@ -88,6 +88,8 @@ This is a full configuration with example values:
 {
   "urls": {
     "http://www.example.com": {
+      "setup-paths": ["/internal/do/some/setup"],
+      "cleanup-paths": ["/internal/do/some/cleanup"],
       "paths": [
         "/",
         "someOtherPath"
@@ -603,9 +605,40 @@ What are all those options about? Here are all the details.
               "touch": true
           }
       `
----
 
 Since: 4.0.0
+
+---
+
+### `setup-paths`         
+               
+ These paths are called before doing the JLineup screenshot run.
+ You can use this to setup test data at your target service.
+ The cookies that are used for the screenshots are also used for these calls.
+                                 
+ * Scope: Site
+ * Type: List of Strings
+ * Default: `null`
+ * Example: `"setup-paths": [ "/some/setup/path", "/some/other/setup/path" ]`
+ 
+Since: 4.2.0
+ 
+---
+
+### `cleanup-paths`         
+               
+ These paths are called after doing the JLineup screenshot run.
+ You can use this to cleanup test data at your target service.
+ The cookies that are used for the screenshots are also used for these calls.
+                                 
+ * Scope: Site
+ * Type: List of Strings
+ * Default: `null`
+ * Example: `"cleanup-paths": [ "/some/cleanup/path", "/some/other/cleanup/path" ]`
+ 
+Since: 4.2.0
+ 
+---
 
 ### `page-load-timeout`
 
