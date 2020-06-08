@@ -182,8 +182,29 @@ public class BrowserUtils {
                         deviceConfigs.stream()
                                 .map(deviceConfig ->
                                         new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getKey()), path, deviceConfig,
-                                                runStepConfig.getStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey()))
+                                                runStepConfig.getStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey()))
                                 .collect(Collectors.toList()));
+            }
+        }
+        return screenshotContextList;
+    }
+
+    public static List<ScreenshotContext> buildTestSetupContexts(RunStepConfig runStepConfig, JobConfig jobConfig) {
+        return buildTestContexts(runStepConfig, jobConfig, true);
+    }
+
+    public static List<ScreenshotContext> buildTestCleanupContexts(RunStepConfig runStepConfig, JobConfig jobConfig) {
+        return buildTestContexts(runStepConfig, jobConfig, false);
+    }
+
+    private static List<ScreenshotContext> buildTestContexts(RunStepConfig runStepConfig, JobConfig jobConfig, boolean setupPhase) {
+        final List<ScreenshotContext> screenshotContextList = new ArrayList<>();
+        final Map<String, UrlConfig> urls = jobConfig.urls;
+        for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
+            final List<String> paths = setupPhase ? urlConfigEntry.getValue().setupPaths : urlConfigEntry.getValue().cleanupPaths;
+            for (final String path : paths) {
+                screenshotContextList.add(new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getKey()), path, deviceConfigBuilder().build(),
+                        runStepConfig.getStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig), false, urlConfigEntry.getKey()));
             }
         }
         return screenshotContextList;

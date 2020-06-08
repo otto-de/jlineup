@@ -61,7 +61,7 @@ public class JLineupRunner {
         if (runStepConfig.getStep() == Step.before || runStepConfig.getStep() == Step.after) {
             BrowserUtils browserUtils = new BrowserUtils();
             try (Browser browser = new Browser(runStepConfig, jobConfig, fileService, browserUtils)) {
-                browser.takeScreenshots();
+                browser.runSetupAndTakeScreenshots();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

@@ -147,14 +147,36 @@ public class Browser implements AutoCloseable {
         LOG.debug("Closing webdrivers done.");
     }
 
-    public void takeScreenshots() throws Exception {
+    public void runSetupAndTakeScreenshots() throws Exception {
+        List<ScreenshotContext> testSetupContexts = BrowserUtils.buildTestSetupContexts(runStepConfig, jobConfig);
+        List<ScreenshotContext> testCleanupContexts = BrowserUtils.buildTestCleanupContexts(runStepConfig, jobConfig);
         List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig);
         if (screenshotContextList.size() > 0) {
-            takeScreenshots(screenshotContextList);
+            try {
+                if (!testSetupContexts.isEmpty()) {
+                    LOG.debug("Running test setup.");
+                    runTestSetupOrCleanup(testSetupContexts);
+                    LOG.debug("Test setup done.");
+                }
+                runSetupAndTakeScreenshots(screenshotContextList);
+            } finally {
+                if (!testCleanupContexts.isEmpty()) {
+                    LOG.debug("Running test cleanup.");
+                    runTestSetupOrCleanup(testCleanupContexts);
+                    LOG.debug("Test cleanup done.");
+                }
+            }
         }
     }
 
-    void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws Exception {
+    private void runTestSetupOrCleanup(List<ScreenshotContext> testSetupContexts) throws Exception {
+        JLineupHttpClient jLineupHttpClient = new JLineupHttpClient();
+        for (ScreenshotContext testSetupContext : testSetupContexts) {
+            jLineupHttpClient.callUrl(testSetupContext);
+        }
+    }
+
+    void runSetupAndTakeScreenshots(final List<ScreenshotContext> screenshotContextList) throws Exception {
 
         Map<ScreenshotContext, Future<?>> screenshotResults = new HashMap<>();
 
@@ -316,7 +338,7 @@ public class Browser implements AutoCloseable {
 
         removeNodes(screenshotContext);
 
-        //Wait for fonts
+        //Wait for fonts //TODO: Do we really need this any more?
         if (screenshotContext.urlConfig.waitForFontsTime > 0) {
             if (!jobConfig.browser.isPhantomJS()) {
                 WebDriverWait wait = new WebDriverWait(getWebDriver(), new Double(Math.ceil(screenshotContext.urlConfig.waitForFontsTime)).longValue());

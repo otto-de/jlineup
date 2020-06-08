@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -30,20 +31,32 @@ class JLineupHttpClient {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
+    void callUrl(ScreenshotContext screenshotContext) throws Exception {
+        CookieStore cookieStore = prepareCookieStore(screenshotContext);
+        try (CloseableHttpClient client = HttpClientBuilder.create()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setCookieSpec(CookieSpecs.STANDARD).build())
+                .setDefaultCookieStore(cookieStore)
+                .build()) {
+
+            String uri = buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
+            final HttpGet request = new HttpGet(uri);
+            LOG.debug("Calling uri {} for setup or cleanup", uri);
+            HttpResponse response = client.execute(request);
+            int statusCode = response.getStatusLine().getStatusCode();
+            LOG.debug("Status code was {}", statusCode);
+            if (!DEFAULT_ALLOWED_CODES.contains(statusCode)) {
+                throw new JLineupException("Calling setup or cleanup path " + request.getURI() + " returned status code " + statusCode);
+            } else {
+                LOG.info("Setup or cleanup at {} done. Return code was: {}", request.getURI(), statusCode);
+            }
+        }
+    }
+
     void checkPageAccessibility(ScreenshotContext screenshotContext, JobConfig jobConfig) throws Exception {
 
-        List<Cookie> cookies = screenshotContext.urlConfig.cookies;
         HttpCheckConfig httpCheck = screenshotContext.urlConfig.httpCheck.isEnabled() ? screenshotContext.urlConfig.httpCheck : jobConfig.httpCheck;
-        CookieStore cookieStore = new BasicCookieStore();
-
-        //If a cookie is added without a domain, Apache HTTP Client 4.5.5 throws a NullPointerException, so we extract the domain from the URL here
-        String domain;
-        if (isUrlLocalHost(screenshotContext.url)) {
-            domain = ".localhost";
-        } else {
-            domain = ".".concat(InternetDomainName.from(new URL(screenshotContext.url).getHost()).topPrivateDomain().toString());
-        }
-        if (cookies != null) addCookiesToStore(cookies, cookieStore, domain);
+        CookieStore cookieStore = prepareCookieStore(screenshotContext);
 
         try (CloseableHttpClient client = HttpClientBuilder.create()
                 .setDefaultRequestConfig(RequestConfig.custom()
@@ -67,6 +80,21 @@ class JLineupHttpClient {
                 LOG.info("Accessibility of {} checked and considered good! Return code was: {}", request.getURI(), statusCode);
             }
         }
+    }
+
+    private CookieStore prepareCookieStore(ScreenshotContext screenshotContext) throws MalformedURLException {
+        List<Cookie> cookies = screenshotContext.urlConfig.cookies;
+        CookieStore cookieStore = new BasicCookieStore();
+
+        //If a cookie is added without a domain, Apache HTTP Client 4.5.5 throws a NullPointerException, so we extract the domain from the URL here
+        String domain;
+        if (isUrlLocalHost(screenshotContext.url)) {
+            domain = ".localhost";
+        } else {
+            domain = ".".concat(InternetDomainName.from(new URL(screenshotContext.url).getHost()).topPrivateDomain().toString());
+        }
+        if (cookies != null) addCookiesToStore(cookies, cookieStore, domain);
+        return cookieStore;
     }
 
     private boolean isUrlLocalHost(String url) {

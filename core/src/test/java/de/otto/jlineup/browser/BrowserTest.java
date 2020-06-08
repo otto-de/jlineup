@@ -196,7 +196,7 @@ public class BrowserTest {
         when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
 
         //when
-        testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
+        testee.runSetupAndTakeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
 
         //then
         verify(webDriverWindowMock, times(1)).setSize(new Dimension(600, 100));
@@ -266,7 +266,7 @@ public class BrowserTest {
         when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
 
         //when
-        testee.takeScreenshots(ImmutableList.of(screenshotContext));
+        testee.runSetupAndTakeScreenshots(ImmutableList.of(screenshotContext));
 
         //then
         verify(webDriverWindowMock, times(1)).setSize(new Dimension(600, 100));
@@ -327,7 +327,7 @@ public class BrowserTest {
         when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
 
         //when
-        testee.takeScreenshots(ImmutableList.of(screenshotContext));
+        testee.runSetupAndTakeScreenshots(ImmutableList.of(screenshotContext));
 
         //then
         verify(webDriverWindowMock, times(1)).setSize(new Dimension(600, 100));
@@ -379,7 +379,7 @@ public class BrowserTest {
         when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
 
         //when
-        testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
+        testee.runSetupAndTakeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
 
         verifyNoMoreInteractions(webDriverWindowMock);
     }
@@ -411,7 +411,7 @@ public class BrowserTest {
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
 
         //when
-        testee.takeScreenshots(ImmutableList.of(screenshotContext));
+        testee.runSetupAndTakeScreenshots(ImmutableList.of(screenshotContext));
 
         verify(webDriverMock, times(1)).executeScript("console.log(1);");
         verify(webDriverMock, times(1)).executeScript("/* sleeping 5 milliseconds */");
