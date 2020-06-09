@@ -8,7 +8,7 @@ Site specific settings always have precedence before global settings.
 
 ### Format
 
-A JLineup job config is a json document. 
+A JLineup job config is a JSON document. Additionally to JSON standard, JLineup can work with line or multiline comments in it's config. `// comment` or `/* comment */` are ok. Also ok are [trailing commas](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Trailing_commas).
 
 For JLineup CLI, the default name of the config file is ___lineup.json___.
 It's searched in the current working directory. A different path can be specified with the
