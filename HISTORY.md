@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 4.2.0
+* New `setup-paths` and `cleanup-paths` feature to set up and cleanup test data on target systems.
+* New `jlineup.sleep(milliseconds)` function inside simple JS blocks
+
 ## Release 4.1.0
 * New `wait-for-selectors` and `remove-selectors` features.
 
