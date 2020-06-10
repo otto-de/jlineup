@@ -1,6 +1,6 @@
 # JLineup Release History
 
-## Release 4.2.0
+## Release 4.2.0 - 2020-06-09
 * New `setup-paths` and `cleanup-paths` feature to set up and cleanup test data on target systems.
 * New `jlineup.sleep(milliseconds)` function inside simple JS blocks
 
