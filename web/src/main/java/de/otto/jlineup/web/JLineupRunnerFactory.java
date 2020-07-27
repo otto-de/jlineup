@@ -9,6 +9,8 @@ import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 import static de.otto.jlineup.config.JobConfig.DEFAULT_REPORT_FORMAT;
 
 @Component
@@ -37,7 +39,7 @@ public class JLineupRunnerFactory {
                 .withWorkingDirectory(properties.getWorkingDirectory())
                 .withScreenshotsDirectory(properties.getScreenshotsDirectory().replace("{id}", id))
                 .withReportDirectory(properties.getReportDirectory().replace("{id}", id))
-                .withChromeParameters(properties.getChromeLaunchParameters())
+                .withChromeParameters(properties.getChromeLaunchParameters()).withChromeParameters(properties.getChromeLaunchParameters().stream().map(param -> param.replace("{id}", id)).collect(Collectors.toList()))
                 .withFirefoxParameters(properties.getFirefoxLaunchParameters())
                 .withStep(step)
                 .build());
