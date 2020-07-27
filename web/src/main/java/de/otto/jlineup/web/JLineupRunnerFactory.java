@@ -39,8 +39,8 @@ public class JLineupRunnerFactory {
                 .withWorkingDirectory(properties.getWorkingDirectory())
                 .withScreenshotsDirectory(properties.getScreenshotsDirectory().replace("{id}", id))
                 .withReportDirectory(properties.getReportDirectory().replace("{id}", id))
-                .withChromeParameters(properties.getChromeLaunchParameters()).withChromeParameters(properties.getChromeLaunchParameters().stream().map(param -> param.replace("{id}", id)).collect(Collectors.toList()))
-                .withFirefoxParameters(properties.getFirefoxLaunchParameters())
+                .withChromeParameters(properties.getChromeLaunchParameters().stream().map(param -> param.replace("{id}", id)).collect(Collectors.toList()))
+                .withFirefoxParameters(properties.getFirefoxLaunchParameters().stream().map(param -> param.replace("{id}", id)).collect(Collectors.toList()))
                 .withStep(step)
                 .build());
     }
