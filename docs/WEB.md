@@ -233,6 +233,9 @@ Chrome installed, you can narrow the settings.
 
 You can specify any Chrome command line parameters,
 that you want to handle to the Chrome instances launched by JLineup.
+You can use `{id}` as placeholder in parameters. This will be replaced
+with the job id at Chrome launch time. This is useful if you want isolated
+profiles for every job, just specify something like this: `--user-data-dir=/tmp/jlineup-chrome-profile-{id}`
 
 See [here](https://peter.sh/experiments/chromium-command-line-switches/)
 for a list of Chrome command line switches
@@ -246,6 +249,8 @@ for a list of Chrome command line switches
 
 You can specify any Firefox command line parameters,
 that you want to handle to the Firefox instances launched by JLineup.
+You can use `{id}` as placeholder in parameters. This will be replaced
+with the job id at Firefox launch time. 
 
 See [here](https://developer.mozilla.org/en-US/docs/Mozilla/Command_Line_Options)
 for a list of Firefox command line options.
