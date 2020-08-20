@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static org.apache.http.HttpStatus.*;
+import static org.apache.hc.core5.http.HttpStatus.*;
 
 @JsonDeserialize(builder = HttpCheckConfig.Builder.class)
 @JsonIgnoreProperties(ignoreUnknown = true)

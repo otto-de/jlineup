@@ -71,7 +71,7 @@ public class BrowserUtils {
     synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig, DeviceConfig device) {
         WebDriver driver;
         if (jobConfig.browser.isFirefox()) {
-            WebDriverManager.firefoxdriver().forceCache().setup();
+            WebDriverManager.firefoxdriver().setup();
             FirefoxOptions options = new FirefoxOptions();
 
             FirefoxProfile firefoxProfileWithDisabledAnimatedGifs = getFirefoxProfileWithDisabledAnimatedGifs();
@@ -86,7 +86,7 @@ public class BrowserUtils {
             LOG.debug("Creating firefox with options: {}", options.toString());
             driver = new FirefoxDriver(options);
         } else if (jobConfig.browser.isChrome()) {
-            WebDriverManager.chromedriver().forceCache().setup();
+            WebDriverManager.chromedriver().setup();
             ChromeOptions options = new ChromeOptions();
 
             //To work in a headless env, this is needed
@@ -138,7 +138,7 @@ public class BrowserUtils {
             java.util.logging.Logger.getLogger(PhantomJSDriverService.class.getName()).setLevel(Level.OFF);
             java.util.logging.Logger.getLogger(ProtocolHandshake.class.getName()).setLevel(Level.OFF);
 
-            WebDriverManager.phantomjs().forceCache().setup();
+            WebDriverManager.phantomjs().setup();
             String[] args = new String[]{"--webdriver-loglevel=NONE", "--webdriver-logfile=" + System.getProperty("java.io.tmpdir") + File.separator + "jlineup-phantomjsdriver.log"};
             DesiredCapabilities capabilities = new DesiredCapabilities();
             capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, args);

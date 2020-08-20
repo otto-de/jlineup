@@ -4,16 +4,15 @@ import com.google.common.net.InternetDomainName;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.HttpCheckConfig;
 import de.otto.jlineup.config.JobConfig;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.cookie.ClientCookie;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.BasicCookieStore;
+import org.apache.hc.client5.http.cookie.CookieStore;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.cookie.BasicClientCookie;
+import org.apache.hc.core5.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +34,7 @@ class JLineupHttpClient {
         CookieStore cookieStore = prepareCookieStore(screenshotContext);
         try (CloseableHttpClient client = HttpClientBuilder.create()
                 .setDefaultRequestConfig(RequestConfig.custom()
-                        .setCookieSpec(CookieSpecs.STANDARD).build())
+                        .setCookieSpec(StandardCookieSpec.RELAXED).build())
                 .setDefaultCookieStore(cookieStore)
                 .build()) {
 
@@ -43,12 +42,12 @@ class JLineupHttpClient {
             final HttpGet request = new HttpGet(uri);
             LOG.debug("Calling uri {} for setup or cleanup", uri);
             HttpResponse response = client.execute(request);
-            int statusCode = response.getStatusLine().getStatusCode();
+            int statusCode = response.getCode();
             LOG.debug("Status code was {}", statusCode);
             if (!DEFAULT_ALLOWED_CODES.contains(statusCode)) {
-                throw new JLineupException("Calling setup or cleanup path " + request.getURI() + " returned status code " + statusCode);
+                throw new JLineupException("Calling setup or cleanup path " + request.getRequestUri() + " returned status code " + statusCode);
             } else {
-                LOG.info("Setup or cleanup at {} done. Return code was: {}", request.getURI(), statusCode);
+                LOG.info("Setup or cleanup at {} done. Return code was: {}", request.getRequestUri(), statusCode);
             }
         }
     }
@@ -60,14 +59,14 @@ class JLineupHttpClient {
 
         try (CloseableHttpClient client = HttpClientBuilder.create()
                 .setDefaultRequestConfig(RequestConfig.custom()
-                        .setCookieSpec(CookieSpecs.STANDARD).build())
+                        .setCookieSpec(StandardCookieSpec.RELAXED).build())
                 .setDefaultCookieStore(cookieStore)
                 .build()) {
 
             final HttpGet request = new HttpGet(buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping));
 
             HttpResponse response = client.execute(request);
-            int statusCode = response.getStatusLine().getStatusCode();
+            int statusCode = response.getCode();
 
             List<Integer> allowedCodes = httpCheck.getAllowedCodes();
             if (allowedCodes == null) {
@@ -75,9 +74,9 @@ class JLineupHttpClient {
             }
 
             if (!allowedCodes.contains(statusCode)) {
-                throw new JLineupException("Accessibility check of " + request.getURI() + " returned status code " + statusCode);
+                throw new JLineupException("Accessibility check of " + request.getRequestUri() + " returned status code " + statusCode);
             } else {
-                LOG.info("Accessibility of {} checked and considered good! Return code was: {}", request.getURI(), statusCode);
+                LOG.info("Accessibility of {} checked and considered good! Return code was: {}", request.getRequestUri(), statusCode);
             }
         }
     }
@@ -110,7 +109,7 @@ class JLineupHttpClient {
     private void addCookiesToStore(List<Cookie> cookies, CookieStore cookieStore, String domain) {
         for (Cookie cookie : cookies) {
             BasicClientCookie apacheCookie = new BasicClientCookie(cookie.name, cookie.value);
-            apacheCookie.setAttribute(ClientCookie.DOMAIN_ATTR, "true");
+            apacheCookie.setAttribute("domain", "true");
             if (cookie.domain != null) {
                 apacheCookie.setDomain(cookie.domain);
             } else {
