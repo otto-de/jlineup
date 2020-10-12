@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.2.1 - 2020-10-12
+* Add possibility to use runId ({id}) in browser launch parameters
+
 ## Release 4.2.0 - 2020-06-09
 * New `setup-paths` and `cleanup-paths` feature to set up and cleanup test data on target systems.
 * New `jlineup.sleep(milliseconds)` function inside simple JS blocks
