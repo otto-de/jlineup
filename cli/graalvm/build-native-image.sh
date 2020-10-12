@@ -46,7 +46,7 @@ cd cli
 `#--static` \
 `#-H:+TraceSecurityServices` \
 `#-H:+TraceClassInitialization` \
--jar build/libs/jlineup-cli-4.1.1-SNAPSHOT-all.jar
+-jar build/libs/jlineup-cli-4.2.1-all.jar
 
 echo ""
 echo "DONE BUILDING NATIVE IMAGE"
@@ -58,13 +58,13 @@ echo ""
 echo "STARTING TEST RUN"
 echo ""
 
-mv jlineup-cli-4.1.1-SNAPSHOT-all build/libs/jlineup-cli-4.1.1-SNAPSHOT-all
+mv jlineup-cli-4.2.1-all build/libs/jlineup-cli-4.2.1-all
 rm ~/.m2/repository/webdriver -rf
-./build/libs/jlineup-cli-4.1.1-SNAPSHOT-all -Dwdm.architecture=X64 --config graalvm/lineup.json --step before
+./build/libs/jlineup-cli-4.2.1-all -Dwdm.architecture=X64 --config graalvm/lineup.json --step before
 
 set +e
 
-./build/libs/jlineup-cli-4.1.1-SNAPSHOT-all -Dwdm.architecture=X64 --config graalvm/lineup.json --step after
+./build/libs/jlineup-cli-4.2.1-all -Dwdm.architecture=X64 --config graalvm/lineup.json --step after
 
 set -e
 
