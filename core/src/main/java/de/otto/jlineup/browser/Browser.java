@@ -139,7 +139,16 @@ public class Browser implements AutoCloseable {
             LOG.debug("Setting shutdown called to true");
             webDrivers.forEach((key, value) -> {
                 LOG.debug("Removing webdriver for thread {} ({})", key, value.getClass().getCanonicalName());
-                value.quit();
+                try {
+                    value.close();
+                } catch (Exception e) {
+                    LOG.debug("Exception while closing webdriver: " + e.getMessage(), e);
+                }
+                try {
+                    value.quit();
+                } catch (Exception e) {
+                    LOG.debug("Exception while quitting webdriver: " + e.getMessage(), e);
+                }
             });
             webDrivers.clear();
             //grepChromedrivers();
@@ -710,7 +719,16 @@ public class Browser implements AutoCloseable {
             if (webDrivers.containsKey(currentThreadName)) {
                 WebDriver oldDriver = webDrivers.get(currentThreadName);
                 LOG.debug("Removing webdriver for thread {} ({})", currentThreadName, oldDriver.getClass().getCanonicalName());
-                oldDriver.quit();
+                try {
+                    oldDriver.close();
+                } catch (Exception e) {
+                    LOG.debug("Exception while closing webdriver: " + e.getMessage(), e);
+                }
+                try {
+                    oldDriver.quit();
+                } catch (Exception e) {
+                    LOG.debug("Exception while quitting webdriver: " + e.getMessage(), e);
+                }
             }
             WebDriver driver = createDriverWithEmulatedDevice(device);
             webDrivers.put(currentThreadName, driver);

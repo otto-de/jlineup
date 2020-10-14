@@ -20,4 +20,8 @@ public enum State {
     public String getHumanReadableName() {
         return humanReadableName;
     }
+
+    public boolean isDone() {
+        return this == FINISHED_WITH_DIFFERENCES || this == FINISHED_WITHOUT_DIFFERENCES || this == ERROR || this == DEAD;
+    }
 }

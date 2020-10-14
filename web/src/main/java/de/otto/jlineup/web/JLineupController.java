@@ -1,6 +1,8 @@
 package de.otto.jlineup.web;
 
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
+import com.google.common.collect.ImmutableMap;
+import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.service.BrowserNotInstalledException;
@@ -16,11 +18,16 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 
 @RestController
 public class JLineupController {
 
     private final JLineupService jLineupService;
+
+    private AtomicReference<String> currentExampleRun = new AtomicReference<>();
 
     @Autowired
     public JLineupController(JLineupService jLineupService) {
@@ -42,6 +49,46 @@ public class JLineupController {
         return ResponseEntity.accepted()
                 .headers(headers)
                 .body(new RunBeforeResponse(id));
+    }
+
+    @GetMapping(value = "/exampleRun")
+    public String exampleRun(@RequestParam(value = "url", required = false) String url,
+                             @RequestParam(value = "browser", required = false) String browser,
+                             HttpServletRequest request) throws Exception {
+
+        String exampleRunId = currentExampleRun.get();
+        if (exampleRunId != null) {
+            Optional<JLineupRunStatus> run = jLineupService.getRun(exampleRunId);
+            if (run.isPresent()) {
+                State state = run.get().getState();
+                if (!state.isDone()) {
+                    if (state == State.BEFORE_DONE) {
+                        jLineupService.startAfterRun(run.get().getId());
+                        return "Example run entered 'after' step.";
+
+                    } else {
+                        return "Example run is currently running. The current state is " + state;
+                    }
+                }
+            }
+        }
+
+        if (url == null) {
+            url = "https://www.example.com";
+        }
+
+        JobConfig.Builder jobConfigBuilder = JobConfig.jobConfigBuilder().withName("Example run").withUrls(ImmutableMap.of(url, urlConfigBuilder().build()));
+        if (browser != null) {
+            try {
+                Browser.Type type = Browser.Type.forValue(browser);
+                jobConfigBuilder.withBrowser(type);
+            } catch (Exception e) {
+                //Ouch
+            }
+        }
+
+        currentExampleRun.set(jLineupService.startBeforeRun(jobConfigBuilder.build()).getId());
+        return "Example run startet with 'before' step with Browser '" + jobConfigBuilder.build().browser + "'.";
     }
 
     @PostMapping("/runs/{runId}")

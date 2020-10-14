@@ -44,10 +44,8 @@ public class HTMLReportWriter {
     }
 
     String renderReport(String template, JobConfig config, List<ScreenshotComparisonResult> screenshotComparisonResults) {
-
         final Map<String, Object> variables = prepareVariablesForReportTemplate(screenshotComparisonResults);
         variables.put("config", config);
-
         return templateEngine.process(template, new Context(Locale.US, variables));
     }
 
@@ -57,8 +55,6 @@ public class HTMLReportWriter {
         variables.put("config", config);
         variables.put("report_dir", runStepConfig.getReportDirectory());
         variables.put("working_dir", runStepConfig.getWorkingDirectory());
-
-
         return templateEngine.process(template, new Context(Locale.US, variables));
     }
 
