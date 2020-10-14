@@ -137,17 +137,17 @@ public class Browser implements AutoCloseable {
         shutdownCalled.getAndSet(true);
         synchronized (webDrivers) {
             LOG.debug("Setting shutdown called to true");
-            webDrivers.forEach((key, value) -> {
-                LOG.debug("Removing webdriver for thread {} ({})", key, value.getClass().getCanonicalName());
+            webDrivers.forEach((threadName, webDriver) -> {
+                LOG.debug("Removing webdriver for thread {} ({})", threadName, webDriver.getClass().getCanonicalName());
                 try {
-                    value.close();
+                    webDriver.close();
                 } catch (Exception e) {
-                    LOG.debug("Exception while closing webdriver: " + e.getMessage(), e);
+                    LOG.error("Exception while closing webdriver: " + e.getMessage(), e);
                 }
                 try {
-                    value.quit();
+                    webDriver.quit();
                 } catch (Exception e) {
-                    LOG.debug("Exception while quitting webdriver: " + e.getMessage(), e);
+                    LOG.error("Exception while quitting webdriver: " + e.getMessage(), e);
                 }
             });
             webDrivers.clear();
@@ -769,7 +769,9 @@ public class Browser implements AutoCloseable {
     }
 
     private WebDriver getWebDriver() {
-        return webDrivers.get(Thread.currentThread().getName());
+        synchronized (webDrivers) {
+            return webDrivers.get(Thread.currentThread().getName());
+        }
     }
 
     private void moveMouseToZeroZero() {
