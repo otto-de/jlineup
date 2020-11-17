@@ -37,11 +37,18 @@ public class JLineupService {
     private final AtomicInteger runningJobs = new AtomicInteger();
 
     private final JLineupRunnerFactory jLineupRunnerFactory;
+    private final JLineupWebProperties jLineupWebProperties;
+    private final RunPersistenceService runPersistenceService;
 
     @Autowired
-    public JLineupService(JLineupRunnerFactory jLineupRunnerFactory, JLineupWebProperties jLineupWebProperties) {
+    public JLineupService(JLineupRunnerFactory jLineupRunnerFactory,
+                          JLineupWebProperties jLineupWebProperties,
+                          RunPersistenceService runPersistenceService) {
         this.jLineupRunnerFactory = jLineupRunnerFactory;
+        this.jLineupWebProperties = jLineupWebProperties;
+        this.runPersistenceService = runPersistenceService;
         this.executorService = Executors.newFixedThreadPool(jLineupWebProperties.getMaxParallelJobs());
+        this.runs.putAll(runPersistenceService.readRuns());
     }
 
     public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) throws Exception {
@@ -55,6 +62,8 @@ public class JLineupService {
 
         final JLineupRunner jLineupRunner = jLineupRunnerFactory.createBeforeRun(runId, jobConfig);
         runs.put(runId, beforeStatus);
+        runPersistenceService.persistRuns(runs);
+
         runningJobs.incrementAndGet();
 
         CompletableFuture<State> state = supplyAsync(
@@ -149,8 +158,11 @@ public class JLineupService {
 
         JLineupRunStatus newStatus = runStatusBuilder.build();
         runs.put(runId, newStatus);
+        runPersistenceService.persistRuns(runs);
         return newStatus;
     }
+
+
 
     public Optional<JLineupRunStatus> getRun(String id) {
         return Optional.ofNullable(runs.get(id));

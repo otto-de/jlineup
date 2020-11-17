@@ -3,9 +3,7 @@ package de.otto.jlineup.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import de.otto.jlineup.browser.Browser;
-import de.otto.jlineup.config.HttpCheckConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.utils.RegexMatcher;
@@ -28,7 +26,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.TimeUnit;
 
-import static de.otto.jlineup.config.JobConfig.*;
+import static de.otto.jlineup.config.JobConfig.copyOfBuilder;
+import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.hamcrest.CoreMatchers.is;

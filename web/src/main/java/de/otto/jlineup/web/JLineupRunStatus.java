@@ -35,7 +35,7 @@ public class JLineupRunStatus {
 
     @JsonIgnore
     private final CompletableFuture<State> currentJobStepFuture;
-    @JsonIgnore
+
     private final JobConfig jobConfig;
 
     private JLineupRunStatus(Builder builder) {

@@ -26,6 +26,7 @@ public class JLineupServiceTest {
     private JLineupRunnerFactory jLineupRunnerFactory;
     private JLineupRunner jLineupRunnerBefore;
     private JLineupRunner jLineupRunnerAfter;
+    private RunPersistenceService runPersistenceService;
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
@@ -36,10 +37,12 @@ public class JLineupServiceTest {
         jLineupRunnerBefore = mock(JLineupRunner.class);
         jLineupRunnerAfter = mock(JLineupRunner.class);
         jLineupWebProperties = mock(JLineupWebProperties.class);
+        runPersistenceService = mock(RunPersistenceService.class);
+
         when(jLineupRunnerFactory.createBeforeRun(any(), any())).thenReturn(jLineupRunnerBefore);
         when(jLineupRunnerFactory.createAfterRun(any(), any())).thenReturn(jLineupRunnerAfter);
         when(jLineupWebProperties.getMaxParallelJobs()).thenReturn(1);
-        testee = new JLineupService(jLineupRunnerFactory, jLineupWebProperties);
+        testee = new JLineupService(jLineupRunnerFactory, jLineupWebProperties, runPersistenceService);
     }
 
     @Test

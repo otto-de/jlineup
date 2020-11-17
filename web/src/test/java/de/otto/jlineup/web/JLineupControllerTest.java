@@ -1,7 +1,6 @@
 package de.otto.jlineup.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.service.BrowserNotInstalledException;
