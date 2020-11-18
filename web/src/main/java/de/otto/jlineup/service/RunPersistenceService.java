@@ -3,7 +3,6 @@ package de.otto.jlineup.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.otto.jlineup.web.JLineupRunStatus;
-import de.otto.jlineup.web.ReportController;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,12 +15,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.lang.invoke.MethodHandles.lookup;
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class RunPersistenceService {
