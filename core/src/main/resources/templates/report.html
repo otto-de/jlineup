@@ -153,6 +153,22 @@
             border-left: 6px solid transparent;
         }
 
+        .context input[type=checkbox]:checked ~ label .open-report {
+            display: none;
+        }
+
+        .context input[type=checkbox]:checked ~ label .close-report {
+            display: inline;
+        }
+
+        .open-report {
+            display: inline;
+        }
+
+        .close-report {
+            display: none;
+        }
+
         .success {
             color: green;
         }
@@ -207,6 +223,10 @@
 
         #zoombox div table {
             position: relative;
+        }
+
+        a, a:visited, a:hover, a:active {
+            color: inherit;
         }
 
     </style>
@@ -349,10 +369,10 @@
                th:classappend="${resultContext.isSuccess()} ? success : failure">
             <div class="arrow-right"></div>
             <div class="arrow-down"></div>
-            [[${resultContext.url}]] ([[${#strings.replace(resultContext.deviceInfo,'\n',', ')}]]) <a style="font-size: small"
-                                                                          th:href="${resultContext.url}" target="_blank"
-                                                                          th:title="${resultContext.url}">[visit
-            page]</a><br/>
+            [[${resultContext.url}]] ([[${#strings.replace(resultContext.deviceInfo,'\n',', ')}]])
+            <span class="open-report" style="font-size: small; text-decoration: underline;">[open report]</span>
+            <span class="close-report" style="font-size: small; text-decoration: underline;">[close report]</span>
+            <a style="font-size: small" th:href="${resultContext.url}" target="_blank" th:title="${resultContext.url}">[visit page]</a><br/>
         </label>
         <table>
             <tr>
