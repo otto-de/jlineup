@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static de.otto.jlineup.service.RunPersistenceService.MAX_PERSISTED_RUNS;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -41,6 +42,7 @@ public class ReportController {
             addObject("reportList", jLineupService.getRunStatus().stream()
                     .sorted(Comparator.comparing(JLineupRunStatus::getStartTime).reversed())
                     .map(Report::new)
+                    .limit(MAX_PERSISTED_RUNS)
                     .collect(toList()));
         }};
     }

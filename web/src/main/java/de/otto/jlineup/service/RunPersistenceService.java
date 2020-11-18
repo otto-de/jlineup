@@ -3,6 +3,7 @@ package de.otto.jlineup.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.otto.jlineup.web.JLineupRunStatus;
+import de.otto.jlineup.web.ReportController;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,15 +15,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.lang.invoke.MethodHandles.lookup;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class RunPersistenceService {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
     private static final String RUNS_FILENAME = "runs.json";
+    public static final int MAX_PERSISTED_RUNS = 100;
 
     private final JLineupWebProperties jLineupWebProperties;
     private final ObjectMapper objectMapper;
@@ -35,8 +41,15 @@ public class RunPersistenceService {
 
 
     void persistRuns(Map<String, JLineupRunStatus> runs) {
+
+        Comparator<JLineupRunStatus> comparator = Comparator.comparing(JLineupRunStatus::getStartTime);
+
         try {
-            String serializedRuns = objectMapper.writeValueAsString(runs);
+            Map<String, JLineupRunStatus> mapWithLatestEntries = runs.entrySet().stream()
+                    .sorted(Map.Entry.<String, JLineupRunStatus>comparingByValue(comparator).reversed())
+                    .limit(MAX_PERSISTED_RUNS)
+                    .collect(Collectors.toMap(Map.Entry<String, JLineupRunStatus>::getKey, Map.Entry<String, JLineupRunStatus>::getValue));
+            String serializedRuns = objectMapper.writeValueAsString(mapWithLatestEntries);
             Path path = getRunsFilePath();
             Files.write(path, serializedRuns.getBytes());
         } catch (IOException e) {
