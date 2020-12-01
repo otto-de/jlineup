@@ -71,6 +71,11 @@ public class Utils {
         otto.setLevel(Level.DEBUG);
     }
 
+    public static void setDebugLogLevelsOfSelectedThirdPartyLibsToWarn() {
+        ch.qos.logback.classic.Logger apache = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.apache.hc");
+        apache.setLevel(Level.WARN);
+    }
+
     public static void logToFile(String workingDir) {
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         PatternLayoutEncoder ple = new PatternLayoutEncoder();

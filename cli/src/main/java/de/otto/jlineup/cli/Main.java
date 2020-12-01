@@ -20,6 +20,8 @@ public class Main {
             System.setProperty("wdm.architecture", "X64");
         }
 
+        Utils.setDebugLogLevelsOfSelectedThirdPartyLibsToWarn();
+
         int exitCode = new CommandLine(new JLineup()).execute(args);
         exitWithExitCode(exitCode);
     }
