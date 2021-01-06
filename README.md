@@ -2,6 +2,7 @@
 
 ## Status
 
+![Java CI with Gradle](https://github.com/otto-de/jlineup/workflows/Java%20CI%20with%20Gradle/badge.svg)
 [![Travis CI](https://travis-ci.org/otto-de/jlineup.svg?branch=master)](https://travis-ci.org/otto-de/jlineup)
 [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=build.gradle)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli)
