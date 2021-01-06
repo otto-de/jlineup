@@ -24,4 +24,8 @@ public enum State {
     public boolean isDone() {
         return this == FINISHED_WITH_DIFFERENCES || this == FINISHED_WITHOUT_DIFFERENCES || this == ERROR || this == DEAD;
     }
+
+    public boolean isNonPersistable() {
+        return this == BEFORE_PENDING || this == BEFORE_RUNNING || this == AFTER_PENDING || this == AFTER_RUNNING;
+    }
 }

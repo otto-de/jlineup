@@ -13,11 +13,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Maps.toMap;
+import static de.otto.jlineup.web.State.DEAD;
 import static java.lang.invoke.MethodHandles.lookup;
 
 @Service
@@ -59,7 +59,17 @@ public class RunPersistenceService {
             try {
                 TypeReference<Map<String, JLineupRunStatus>> typeRef = new TypeReference<Map<String, JLineupRunStatus>>() {
                 };
-                return objectMapper.readValue(getRunsFilePath().toFile(), typeRef);
+                Map<String, JLineupRunStatus> loadedRuns = objectMapper.readValue(getRunsFilePath().toFile(), typeRef);
+                return loadedRuns
+                        .entrySet()
+                        .stream()
+                        .map(entry -> {
+                            if (entry.getValue().getState().isNonPersistable()) {
+                                return new AbstractMap.SimpleEntry<>(entry.getKey(), JLineupRunStatus.copyOfRunStatusBuilder(entry.getValue()).withState(DEAD).build());
+                            } else return entry;
+                        })
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
             } catch (IOException e) {
                 LOG.error("Could not read runs file, it seems to be broken or incompatible. If this problem reappears, delete '{}'.", getRunsFilePath().toString(), e);
             }
