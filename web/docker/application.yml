@@ -4,7 +4,7 @@ jlineup:
   workingDirectory: /tmp/jlineup/
   screenshotsDirectory: report-{id}
   reportDirectory: report-{id}
-  installedBrowsers: chrome-headless, firefox-headless, phantomjs
+  installedBrowsers: chrome-headless, firefox-headless
   maxParallelJobs: 2
   maxThreadsPerJob: 6
   chromeLaunchParameters: --use-spdy=off,--disable-dev-shm-usage

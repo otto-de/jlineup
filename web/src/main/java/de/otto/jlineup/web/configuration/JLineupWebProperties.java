@@ -26,8 +26,7 @@ public class JLineupWebProperties {
 
     private List<Browser.Type> installedBrowsers = Arrays.asList(
             CHROME_HEADLESS,
-            FIREFOX_HEADLESS,
-            PHANTOMJS);
+            FIREFOX_HEADLESS);
 
     public String getWorkingDirectory() {
         return workingDirectory;
