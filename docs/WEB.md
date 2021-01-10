@@ -1,7 +1,7 @@
 # Web server instructions
 
 JLineup can be run as a small web service which offers a simple REST
-interface to take JLineup jobs.
+interface to take JLineup jobs. JLineup WEB requires at least Java 11.
 
 ## Installation
 
@@ -18,9 +18,14 @@ moment. As JLineup is written in Java, you need a Java Runtime
 Environment in version 8 or higher. OpenJDK is fine!
 
 JLineup can use PhantomJS internally, if no other browser is available.
-This is not recommended, as PhantomJS is not maintained any more. More
+This is not recommended, as PhantomJS is not maintained anymore. More
 and more modern web features don't work in PhantomJS, so it's only an
-emergency fallback for very simple websites.
+emergency fallback for very simple websites. It also has a security
+vulnerability described in https://nvd.nist.gov/vuln/detail/CVE-2019-17221
+which could be misused to get access to arbitrary files on the running
+web server. To enable PhantomJS nonetheless, it has to be added to
+application.yml manually, see `jlineup.installed-browsers` config option
+for this.
 
 If those prerequisites are fulfilled, you can start the JLineup server:
 
@@ -225,7 +230,7 @@ not in the list of installed browsers. If you want to allow
 only a subset of installed browsers or if you don't have Firefox and
 Chrome installed, you can narrow the settings.
 
-* Default: `chrome-headless, firefox-headless, phantomjs`
+* Default: `chrome-headless, firefox-headless`
 
 ---
 
