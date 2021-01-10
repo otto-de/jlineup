@@ -11,7 +11,15 @@ dependencies {
         exclude module: "selenium-safari-driver"
         exclude module: "htmlunit"
     }
+    //Update guava because selenium brings version 25 with CVEs
+    compile "com.google.guava:guava:30.1-jre"
+    //Update okhttp because selenium brings older one with 4.9.0
+    compile "com.squareup.okhttp3:okhttp:4.9.0"
+
     compile "io.github.bonigarcia:webdrivermanager:4.2.2"
+    //Update apache httpclient to 5.0.3 because webdrivermanager brings 5.0.1 with CVE
+    compile "org.apache.httpcomponents.client5:httpclient5:5.0.3"
+
     compile "com.codeborne:phantomjsdriver:1.4.4"
     compile "com.fasterxml.jackson.core:jackson-core:" + jacksonVersion
     compile "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
@@ -21,7 +29,7 @@ dependencies {
     compile "ch.qos.logback:logback-classic:1.2.3"
     compile "org.slf4j:slf4j-api:1.7.30"
     compile "org.codehaus.janino:janino:3.1.2"
-    compile "org.thymeleaf:thymeleaf:3.0.11.RELEASE"
+    compile "org.thymeleaf:thymeleaf:3.0.12.RELEASE"
     compile "org.graalvm.sdk:graal-sdk:19.3.1"
     testCompile "org.hamcrest:hamcrest-core:2.2"
     testCompile "org.hamcrest:hamcrest-library:2.2"
