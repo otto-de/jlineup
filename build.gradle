@@ -44,6 +44,11 @@ nexusStaging {
     packageGroup = 'de.otto'
 }
 
+dependencyCheck {
+    failBuildOnCVSS = 4
+    suppressionFiles = ["${rootDir}/dependency-check-suppressions.xml"]
+}
+
 apply plugin: 'idea'
 idea {
     project {
