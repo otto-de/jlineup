@@ -1,5 +1,12 @@
 # JLineup Release History
 
+## Release 4.3.0 - 2021-01-12
+* Disable PhantomJS by default in web version (Reason: https://nvd.nist.gov/vuln/detail/CVE-2019-17221)
+* Add /exampleRun controller endpoint for quick testing
+* Java 11 or later is required for web version now, cli variant works with Java 8
+* Web version has a basic job persistence in file system now which survives service restarts
+* Add OWASP dependency check to build for improved security
+
 ## Release 4.2.1 - 2020-10-12
 * Add possibility to use runId ({id}) in browser launch parameters
 
