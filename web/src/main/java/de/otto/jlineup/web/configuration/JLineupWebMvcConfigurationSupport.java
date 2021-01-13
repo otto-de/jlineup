@@ -18,18 +18,17 @@ import java.util.List;
 import static java.lang.invoke.MethodHandles.lookup;
 
 @Configuration
-public class MyWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
+public class JLineupWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
     private final ObjectMapper objectMapper;
+    private final JLineupWebProperties properties;
 
     @Autowired
-    private JLineupWebProperties properties;
-
-    @Autowired
-    public MyWebMvcConfigurationSupport(ObjectMapper objectMapper) {
+    public JLineupWebMvcConfigurationSupport(ObjectMapper objectMapper, JLineupWebProperties properties) {
         super();
         this.objectMapper = objectMapper;
+        this.properties = properties;
     }
 
     @Override

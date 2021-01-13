@@ -7,7 +7,9 @@ import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.service.RunNotFoundException;
+import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import de.otto.jlineup.web.configuration.JacksonConfiguration;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,16 +52,23 @@ public class JLineupControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    private AutoCloseable autoCloseable;
+
     private MockMvc mvc;
 
     @Before
     public void setUp() {
-        initMocks(this);
+        autoCloseable = openMocks(this);
         MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new
                 MappingJackson2HttpMessageConverter();
         mappingJackson2HttpMessageConverter.setObjectMapper(objectMapper);
-        JLineupController jLineupController = new JLineupController(jLineupService);
+        JLineupController jLineupController = new JLineupController(jLineupService, new JLineupWebProperties());
         mvc = standaloneSetup(jLineupController).setMessageConverters(mappingJackson2HttpMessageConverter).build();
+    }
+
+    @After
+    public void cleanUp() throws Exception {
+        autoCloseable.close();
     }
 
     @Test

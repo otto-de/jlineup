@@ -9,6 +9,7 @@ import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.service.RunNotFoundException;
+import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,11 +28,14 @@ public class JLineupController {
 
     private final JLineupService jLineupService;
 
+    private final JLineupWebProperties properties;
+
     private AtomicReference<String> currentExampleRun = new AtomicReference<>();
 
     @Autowired
-    public JLineupController(JLineupService jLineupService) {
+    public JLineupController(JLineupService jLineupService, JLineupWebProperties properties) {
         this.jLineupService = jLineupService;
+        this.properties = properties;
     }
 
     @GetMapping("/")
@@ -77,7 +81,7 @@ public class JLineupController {
             url = "https://www.example.com";
         }
 
-        JobConfig.Builder jobConfigBuilder = JobConfig.jobConfigBuilder().withName("Example run").withUrls(ImmutableMap.of(url, urlConfigBuilder().build()));
+        JobConfig.Builder jobConfigBuilder = JobConfig.jobConfigBuilder().withBrowser(properties.getInstalledBrowsers().get(0)).withName("Example run").withUrls(ImmutableMap.of(url, urlConfigBuilder().build()));
         if (browser != null) {
             try {
                 Browser.Type type = Browser.Type.forValue(browser);
