@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ -z ${GRAAL_HOME+x} ]; then
-  GRAAL_HOME="../../graalvm/graalvm-ce-java8-19.3.1"
+  GRAAL_HOME="../../graalvm/graalvm-ce-java11-21.1.0-dev/"
 fi
 
 echo "GRAAL_HOME is set to '$GRAAL_HOME'"
@@ -28,6 +28,9 @@ echo ""
 cd cli
 #../../graalvm/graalvm/bin/java -agentlib:native-image-agent -jar jlineup-cli-4.1.1-SNAPSHOT-all.jar --url https://www.otto.de --step after
 #-J-Djava.security.properties=graalvm/java.security.overrides \
+
+"${GRAAL_HOME}"/bin/gu install native-image
+
 "${GRAAL_HOME}"/bin/native-image \
 --no-server \
 -H:IncludeResources='.*properties$|.*html$|.*xml$' \
@@ -43,6 +46,7 @@ cd cli
 -H:ReflectionConfigurationFiles=graalvm/reflect.json \
 --initialize-at-build-time=com.fasterxml.jackson,javassist.ClassPool \
 --verbose \
+`#--report-unsupported-elements-at-runtime` \
 `#--static` \
 `#-H:+TraceSecurityServices` \
 `#-H:+TraceClassInitialization` \

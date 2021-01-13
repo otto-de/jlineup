@@ -424,7 +424,7 @@
     "allDeclaredMethods": true
   },
   {
-    "name": "io.github.bonigarcia.wdm.Config",
+    "name": "io.github.bonigarcia.wdm.config.Config",
     "allDeclaredFields": true
   },
   {
@@ -1157,6 +1157,13 @@
   },
   {
     "name": "java.lang.Thread",
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true
+  },
+  {
+    "name": "sun.java2d.Disposer",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
     "allDeclaredMethods": true,
