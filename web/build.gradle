@@ -7,6 +7,8 @@ dependencies {
     compile("de.otto.edison:edison-core:2.4.1") {
         exclude group: 'software.amazon.awssdk', module: "*"
     }
+    //Update hibernate validator that comes with edison-core
+    compile("org.hibernate.validator:hibernate-validator:6.0.22.Final")
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
