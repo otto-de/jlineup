@@ -5,8 +5,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
     implementation("de.otto.edison:edison-core:2.4.1") {
+        //Ignored by Snyk?!?! :( TODO: Check this
         exclude group: 'software.amazon.awssdk', module: '*'
     }
+    //Those two fix Snyk false positives
+    //compileOnly("com.beust:jcommander:1.78")
+    implementation("software.amazon.awssdk:netty-nio-client:2.15.62")
+
     //Update hibernate validator that comes with edison-core
     implementation("org.hibernate.validator:hibernate-validator:6.0.22.Final")
     //Update commons-codec
@@ -14,8 +19,7 @@ dependencies {
     //Update embedded tomcat
     implementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.41")
 
-    compileOnly("com.beust:jcommander:1.78")
-    compileOnly("io.netty:netty-handler:4.1.58.Final")
+
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
