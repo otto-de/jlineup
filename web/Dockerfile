@@ -3,6 +3,7 @@ FROM debian:buster-slim
 USER root
 RUN mkdir -p /usr/share/man/man1
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -y wget \
     && apt-get install -yf default-jre-headless chromium firefox-esr libjpeg-progs \
     && wget -U "jlineup-docker" -O jlineup-web.jar http://central.maven.org/maven2/de/otto/jlineup-web/4.3.0/jlineup-web-4.3.0.jar
