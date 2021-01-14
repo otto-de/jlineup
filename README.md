@@ -3,9 +3,10 @@
 ## Status
 
 ![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg)
-[![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=build.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=build.gradle)
+Core: [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=core/build.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=core/build.gradle)
+CLI: [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=cli/build.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=cli/build.gradle)
+Web: [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=web/build.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=web/build.gradle)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli)
-<!--- [![Dependency Status](https://www.versioneye.com/user/projects/58175e12d33a712754f2ab3d/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58175e12d33a712754f2ab3d)) -->
 
 ## About
 
