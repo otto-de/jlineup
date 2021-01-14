@@ -1,12 +1,13 @@
 [![JLineup](docs/jlineup-logo_small.png)](#)
 
 ## Status
-
 ![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg)
-Core: [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=core/build.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=core/build.gradle)
-CLI: [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=cli/build.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=cli/build.gradle)
-Web: [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=web/build.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=web/build.gradle)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli)
+
+### Known Vulnerabilities
+| Core | CLI  | Web  |
+| ---- | ---- | ---- |
+| [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=core%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup)      | [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=cli%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup) | [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=web%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup) |
 
 ## About
 
