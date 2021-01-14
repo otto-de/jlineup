@@ -1,18 +1,21 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
-    compile project(":jlineup-core")
-    compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    compile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
-    compile("de.otto.edison:edison-core:2.4.1") {
-        exclude group: 'software.amazon.awssdk', module: "*"
+    implementation project(":jlineup-core")
+    implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
+    implementation("de.otto.edison:edison-core:2.4.1") {
+        exclude group: 'software.amazon.awssdk', module: '*'
     }
     //Update hibernate validator that comes with edison-core
-    compile("org.hibernate.validator:hibernate-validator:6.0.22.Final")
+    implementation("org.hibernate.validator:hibernate-validator:6.0.22.Final")
     //Update commons-codec
-    compile("commons-codec:commons-codec:1.15")
+    implementation("commons-codec:commons-codec:1.15")
     //Update embedded tomcat
-    compile("org.apache.tomcat.embed:tomcat-embed-core:9.0.41")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.41")
+
+    compileOnly("com.beust:jcommander:1.78")
+    compileOnly("io.netty:netty-handler:4.1.58.Final")
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
