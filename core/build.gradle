@@ -1,5 +1,5 @@
 def seleniumVersion = '3.141.59'
-def jacksonVersion = '2.11.2'
+def jacksonVersion = '2.12.1'
 ext['selenium.version'] = seleniumVersion
 ext['jackson.version'] = jacksonVersion
 
@@ -145,10 +145,20 @@ signing {
     sign publishing.publications.mavenJava
 }
 
-
 javadoc {
     if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
+    }
+}
+
+targetCompatibility = '1.8'
+sourceCompatibility = '1.8'
+
+project.afterEvaluate {
+    tasks.withType(JavaCompile) {
+        def version = compat(sourceCompatibility)
+        project.logger.info("Configuring $name to use --release $version")
+        options.compilerArgs.addAll(['--release', version])
     }
 }
 

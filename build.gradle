@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        springBootVersion = '2.4.1'
-        springVersion = '5.3.2.RELEASE'
+        springBootVersion = '2.4.2'
+        springVersion = '5.3.3.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -79,9 +79,6 @@ subprojects {
     version = jlineup_version
     group = 'de.otto'
 
-    targetCompatibility = '1.8'
-    sourceCompatibility = '1.8'
-
     repositories {
         mavenLocal()
         mavenCentral()
@@ -121,5 +118,14 @@ subprojects {
                 }
             }
         }
+    }
+}
+
+// This function converts 1.8 -> 8
+static String compat(String src) {
+    if (src.contains('.')) {
+        src.substring(src.lastIndexOf('.')+1)
+    } else {
+        src
     }
 }

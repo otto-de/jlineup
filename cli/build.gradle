@@ -25,8 +25,20 @@ tasks.bootDistTar {
     baseName = project.archivesBaseName
 }
 
+targetCompatibility = '1.8'
+sourceCompatibility = '1.8'
+
 compileJava {
-    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+    options.compilerArgs.addAll(["-Aproject=${project.group}/${project.name}"])
+}
+
+project.afterEvaluate {
+    tasks.withType(JavaCompile) {
+        def version = compat(sourceCompatibility)
+        project.logger.info("Configuring $name to use --release $version")
+        println("Configuring $name to use --release $version")
+        options.compilerArgs.addAll(['--release', version])
+    }
 }
 
 test {
