@@ -4,7 +4,7 @@ dependencies {
     implementation project(":jlineup-core")
     implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
-    implementation("de.otto.edison:edison-core:2.4.1") {
+    implementation("de.otto.edison:edison-core:2.4.2-SNAPSHOT") {
         //Ignored by Snyk?!?! :( TODO: Check this
         exclude group: 'software.amazon.awssdk', module: 'ssm'
     }
