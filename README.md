@@ -3,13 +3,13 @@
 ## Status
 | CI  | CLI Release | Web Release |
 | --- | ---------- | ------------ |
-| ![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg) | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli) | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-web/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-web)
+| [![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg)](https://github.com/otto-de/jlineup/actions?query=workflow%3ABuild) | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli) | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-web/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-web)
 
 
 ### Known Vulnerabilities
 | Core | CLI  | Web  |
 | ---- | ---- | ---- |
-| [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=core%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup)      | [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=cli%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup) | [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=web%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup/) |
+| [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=core%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=core/build.gradle)      | [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=cli%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=cli/build.gradle) | [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=web%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=web/build.gradle) |
 
 ## About
 
