@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 4.3.1 - 2021-01-16
+* Bugfix: CLI version is compiled with Java 8 compatibility again
+* Dependency updates
+
 ## Release 4.3.0 - 2021-01-12
 * Disable PhantomJS by default in web version (Reason: https://nvd.nist.gov/vuln/detail/CVE-2019-17221)
 * Add /exampleRun controller endpoint for quick testing
