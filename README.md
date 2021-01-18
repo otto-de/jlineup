@@ -2,15 +2,12 @@
 
 ## Status
 [![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg)](https://github.com/otto-de/jlineup/actions?query=workflow%3ABuild)
-[![Maven Central](https://img.shields.io/maven-central/v/de.otto/jlineup-cli?label=maven-central&nbsp;cli)](https://search.maven.org/artifact/de.otto/jlineup-cli/4.3.1/jar)
-[![Maven Central](https://img.shields.io/maven-central/v/de.otto/jlineup-web?label=maven-central&nbsp;web)](https://search.maven.org/artifact/de.otto/jlineup-web/4.3.1/jar)
+[![Maven Central](https://img.shields.io/maven-central/v/de.otto/jlineup-cli?label=maven-central&nbsp;cli)](https://search.maven.org/search?q=g:de.otto%20a:jlineup-cli%20v:RELEASE%20p:jar)
+[![Maven Central](https://img.shields.io/maven-central/v/de.otto/jlineup-web?label=maven-central&nbsp;web)](https://search.maven.org/search?q=g:de.otto%20a:jlineup-web%20v:RELEASE%20p:jar)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/otto-de/jlineup?label=GitHub&nbsp;Release)](https://github.com/otto-de/jlineup/releases)
-
-
-### Known Vulnerabilities
-| Core | CLI  | Web  |
-| ---- | ---- | ---- |
-| [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=core%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=core/build.gradle)      | [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=cli%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=cli/build.gradle) | [![Known Vulnerabilities](https://snyk.io/test/github/otto-de/jlineup/badge.svg?targetFile=web%2Fbuild.gradle)](https://snyk.io/test/github/otto-de/jlineup?targetFile=web/build.gradle) |
+[![Known Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/otto-de/jlineup/core/build.gradle?label=vulnerabilities%20core)](https://snyk.io/test/github/otto-de/jlineup?targetFile=core/build.gradle)
+[![Known Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/otto-de/jlineup/cli/build.gradle?label=vulnerabilities%20cli)](https://snyk.io/test/github/otto-de/jlineup?targetFile=cli/build.gradle)
+[![Known Vulnerabilities](https://img.shields.io/snyk/vulnerabilities/github/otto-de/jlineup/web/build.gradle?label=vulnerabilities%20web)](https://snyk.io/test/github/otto-de/jlineup?targetFile=web/build.gradle)
 
 ## About
 
