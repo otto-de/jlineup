@@ -25,6 +25,10 @@ tasks.bootDistTar {
     archiveBaseName = project.archivesBaseName
 }
 
+tasks.shadowJar {
+    mainClassName = application.mainClass
+}
+
 targetCompatibility = '1.8'
 sourceCompatibility = '1.8'
 
