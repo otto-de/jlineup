@@ -1,9 +1,10 @@
 [![JLineup](docs/jlineup-logo_small.png)](#)
 
 ## Status
-| CI  | CLI Release | Web Release |
-| --- | ---------- | ------------ |
-| [![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg)](https://github.com/otto-de/jlineup/actions?query=workflow%3ABuild) | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-cli) | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-web/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.otto/jlineup-web)
+[![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg)](https://github.com/otto-de/jlineup/actions?query=workflow%3ABuild)
+[![Maven Central](https://img.shields.io/maven-central/v/de.otto/jlineup-cli?label=maven-central&nbsp;cli)](https://search.maven.org/artifact/de.otto/jlineup-cli/4.3.1/jar)
+[![Maven Central](https://img.shields.io/maven-central/v/de.otto/jlineup-web?label=maven-central&nbsp;web)](https://search.maven.org/artifact/de.otto/jlineup-web/4.3.1/jar)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/otto-de/jlineup?label=GitHub&nbsp;Release)](https://github.com/otto-de/jlineup/releases)
 
 
 ### Known Vulnerabilities
