@@ -44,7 +44,7 @@ jar {
 }
 
 application {
-    mainClassName = "de.otto.jlineup.web.JLineupWebApplication"
+    mainClass.set("de.otto.jlineup.web.JLineupWebApplication")
 }
 
 bootJar {

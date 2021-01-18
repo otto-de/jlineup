@@ -11,7 +11,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath 'org.owasp:dependency-check-gradle:6.0.5'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:5.1.0'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
     }
 }
 
@@ -53,28 +53,6 @@ dependencyCheck {
     suppressionFiles = ["${rootDir}/dependency-check-suppressions.xml"]
 }
 
-apply plugin: 'idea'
-idea {
-    project {
-        languageLevel = '1.8'
-        ipr.withXml { provider ->
-            provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping.@vcs = 'Git'
-        }
-    }
-    workspace {
-        iws {
-            withXml { xmlFile ->
-                def runManager = xmlFile.asNode().component.find { it.@name == 'RunManager' }
-                // setup JUnit's default run configuration
-                def junitDefaults = runManager.configuration.find { it.@default == 'true' && it.@type == 'JUnit' }
-                junitDefaults.option.find { it.@name == 'WORKING_DIRECTORY' }.replaceNode {
-                    option(name: 'WORKING_DIRECTORY', value: '$MODULE_DIR$')
-                }
-            }
-        }
-    }
-}
-
 subprojects {
     version = jlineup_version
     group = 'de.otto'
@@ -90,7 +68,6 @@ subprojects {
 
     apply plugin: 'application'
     apply plugin: 'maven-publish'
-    //apply plugin: 'com.github.johnrengelman.shadow'
 
     apply plugin: 'project-report'
     apply plugin: 'signing'
@@ -98,26 +75,6 @@ subprojects {
 
     jar {
         manifest.attributes provider: 'gradle'
-    }
-
-    idea {
-        module {
-            iml {
-                withXml {
-                    def moduleRoot = it.asNode()
-                    def facetManager = moduleRoot.component.find { component -> component.'@name' == 'FacetManager' }
-                    if (!facetManager) {
-                        facetManager = moduleRoot.appendNode('component', [name: 'FacetManager'])
-                    }
-
-                    def springFacet = facetManager.facet.find { facet -> facet.'@type' == 'Spring' && facet.'@name' == 'Spring' }
-                    if (!springFacet) {
-                        springFacet = facetManager.appendNode('facet', [type: 'Spring', name: 'Spring'])
-                        springFacet.appendNode('configuration')
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -128,4 +85,18 @@ static String compat(String src) {
     } else {
         src
     }
+}
+
+static String runCommand(command) {
+    Process proc = command.execute()
+    def out = new StringBuffer()
+    proc.consumeProcessOutputStream(out)
+    proc.consumeProcessErrorStream(out)
+    proc.waitFor()
+    def errorlevel = proc.exitValue()
+    if (errorlevel != 0) {
+        throw new RuntimeException("exec failed on command: '${command}' with errorlevel ${errorlevel}".toString())
+    }
+    //System.err.println("Git Hash: " + out.toString().trim())
+    out.toString().trim()
 }

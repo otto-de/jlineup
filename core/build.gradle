@@ -46,7 +46,7 @@ dependencies {
 }
 
 application {
-    mainClassName = 'de.otto.jlineup.core.Main'
+    mainClass.set("de.otto.jlineup.core.Main")
 }
 
 test {
@@ -160,18 +160,4 @@ project.afterEvaluate {
         project.logger.info("Configuring $name to use --release $version")
         options.compilerArgs.addAll(['--release', version])
     }
-}
-
-static String runCommand(command) {
-    Process proc = command.execute()
-    def out = new StringBuffer()
-    proc.consumeProcessOutputStream(out)
-    proc.consumeProcessErrorStream(out)
-    proc.waitFor()
-    def errorlevel = proc.exitValue()
-    if (errorlevel != 0) {
-        throw new RuntimeException("exec failed on command: '${command}' with errorlevel ${errorlevel}".toString())
-    }
-    //System.err.println("Git Hash: " + out.toString().trim())
-    out.toString().trim()
 }

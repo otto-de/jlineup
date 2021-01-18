@@ -18,11 +18,11 @@ tasks.distZip.enabled = false
 tasks.distTar.enabled = false
 
 tasks.bootDistZip {
-    baseName = project.archivesBaseName
+    archiveBaseName = project.archivesBaseName
 }
 
 tasks.bootDistTar {
-    baseName = project.archivesBaseName
+    archiveBaseName = project.archivesBaseName
 }
 
 targetCompatibility = '1.8'
@@ -63,7 +63,7 @@ jar {
 }
 
 application {
-    mainClassName = 'de.otto.jlineup.cli.Main'
+    mainClass.set("de.otto.jlineup.cli.Main")
 }
 
 bootJar {
@@ -138,18 +138,4 @@ javadoc {
     if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
     }
-}
-
-static String runCommand(command) {
-    Process proc = command.execute()
-    def out = new StringBuffer()
-    proc.consumeProcessOutputStream(out)
-    proc.consumeProcessErrorStream(out)
-    proc.waitFor()
-    def errorlevel = proc.exitValue()
-    if (errorlevel != 0) {
-        throw new RuntimeException("exec failed on command: '${command}' with errorlevel ${errorlevel}".toString())
-    }
-    //System.err.println("Git Hash: " + out.toString().trim())
-    out.toString().trim()
 }
