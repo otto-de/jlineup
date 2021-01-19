@@ -8,7 +8,7 @@ out
 **/*.log
 build
 classes
-lineup.json
+/lineup.json
 report
 report/**
 .vscode

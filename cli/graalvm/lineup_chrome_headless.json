@@ -1,0 +1,26 @@
+{
+  "urls" : {
+    "http://www.otto.de" : {
+      "paths" : [ "" ],
+      "max-diff" : 0.0,
+      "window-widths" : [ 800 ],
+      "max-scroll-height" : 100000,
+      "wait-after-page-load" : 0.0,
+      "wait-after-scroll" : 0.0,
+      "ignore-anti-aliasing" : false,
+      "strict-color-comparison" : false,
+      "max-color-distance" : 2.3
+    }
+  },
+  "browser" : "Chrome_Headless",
+  "name" : "Default",
+  "page-load-timeout" : 120,
+  "window-height" : 800,
+  "debug" : false,
+  "check-for-errors-in-log" : false,
+  "wait-after-page-load" : 0.0,
+  "http-check": {
+    "enabled": true
+  },
+  "timeout" : 600
+}

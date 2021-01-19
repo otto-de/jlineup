@@ -17,9 +17,7 @@ dependencies {
     //Update okhttp because selenium brings older one with 4.9.0
     compile "com.squareup.okhttp3:okhttp:4.9.0"
 
-    compile "io.github.bonigarcia:webdrivermanager:4.2.2"
-    //Update apache httpclient to 5.0.3 because webdrivermanager brings 5.0.1 with CVE
-    compile "org.apache.httpcomponents.client5:httpclient5:5.0.3"
+    compile "io.github.bonigarcia:webdrivermanager:4.3.1"
 
     compile "com.codeborne:phantomjsdriver:1.4.4"
     //Update legacy apache http client that is introduced by phantomjsdriver
@@ -37,7 +35,7 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-core:2.2"
     testCompile "org.hamcrest:hamcrest-library:2.2"
     testCompile "junit:junit:4.13"
-    testCompile "org.mockito:mockito-core:2.28.2"
+    testCompile "org.mockito:mockito-core:3.7.0"
     testCompile "com.github.stefanbirkner:system-rules:1.19.0"
 
     testCompile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")

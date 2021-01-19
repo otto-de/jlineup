@@ -1,0 +1,16 @@
+{
+  "resources":{
+  "includes":[
+    {"pattern":"\\Qlogback.xml\\E"}, 
+    {"pattern":"\\Qmozilla/public-suffix-list.txt\\E"}, 
+    {"pattern":"\\Qorg/apache/hc/client5/version.properties\\E"}, 
+    {"pattern":"\\Qorg/openqa/selenium/firefox/webdriver_prefs.json\\E"}, 
+    {"pattern":"\\Qorg/slf4j/impl/StaticLoggerBinder.class\\E"}, 
+    {"pattern":"\\Qorg/thymeleaf/thymeleaf.properties\\E"}, 
+    {"pattern":"\\Qtemplates/report.html\\E"}, 
+    {"pattern":"\\Qtemplates/report_not_finished.html\\E"}, 
+    {"pattern":"\\Qversion.properties\\E"}, 
+    {"pattern":"\\Qwebdrivermanager.properties\\E"}
+  ]},
+  "bundles":[{"name":"sun.awt.resources.awt"}]
+}

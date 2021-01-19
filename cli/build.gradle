@@ -26,7 +26,7 @@ tasks.bootDistTar {
 }
 
 tasks.shadowJar {
-    mainClassName = application.mainClass
+    mainClassName = "de.otto.jlineup.cli.Main"
 }
 
 targetCompatibility = '1.8'

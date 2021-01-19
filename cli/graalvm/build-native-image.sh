@@ -1,10 +1,20 @@
 #!/usr/bin/env bash
 
+## Uncomment to downloaded latest nightly
+#set -x
+#wget -O ../../graalvm/graalvm-dev.tar.gz https://github.com/graalvm/graalvm-ce-dev-builds/releases/latest/download/graalvm-ce-java11-linux-amd64-dev.tar.gz
+#mkdir ../../graalvm/graal-dev && tar -xzf ../../graalvm/graalvm-dev.tar.gz -C ../../graalvm/graal-dev --strip-components 1
+#set +x
+
 if [ -z ${GRAAL_HOME+x} ]; then
-  GRAAL_HOME="../../graalvm/graalvm-ce-java11-21.1.0-dev/"
+  GRAAL_HOME="../../graalvm/graal-dev/"
+  #GRAAL_HOME="../../graalvm/graalvm-ce-java11-19.3.1/"
 fi
 
+"${GRAAL_HOME}"/bin/gu install native-image
 echo "GRAAL_HOME is set to '$GRAAL_HOME'"
+
+#"${GRAAL_HOME}"/bin/native-image --expert-options-all
 
 BASEDIR=$(dirname "$0")
 cd "${BASEDIR}"/..
@@ -29,8 +39,6 @@ cd cli
 #../../graalvm/graalvm/bin/java -agentlib:native-image-agent -jar jlineup-cli-4.1.1-SNAPSHOT-all.jar --url https://www.otto.de --step after
 #-J-Djava.security.properties=graalvm/java.security.overrides \
 
-"${GRAAL_HOME}"/bin/gu install native-image
-
 "${GRAAL_HOME}"/bin/native-image \
 --no-server \
 -H:IncludeResources='.*properties$|.*html$|.*xml$' \
@@ -43,7 +51,8 @@ cd cli
 --no-fallback \
 --allow-incomplete-classpath \
 -H:+AddAllCharsets \
--H:ReflectionConfigurationFiles=graalvm/reflect.json \
+`#-H:ReflectionConfigurationFiles=graalvm/reflect.json` \
+-H:ConfigurationFileDirectories=graalvm/ \
 --initialize-at-build-time=com.fasterxml.jackson,javassist.ClassPool \
 --verbose \
 `#--report-unsupported-elements-at-runtime` \
@@ -64,11 +73,11 @@ echo ""
 
 mv jlineup-cli-4.3.1-all build/libs/jlineup-cli-4.3.1-all
 rm ~/.m2/repository/webdriver -rf
-./build/libs/jlineup-cli-4.3.1-all -Dwdm.architecture=X64 --config graalvm/lineup.json --step before
+./build/libs/jlineup-cli-4.3.1-all -Dwdm.architecture=X64 --config graalvm/lineup_chrome_headless.json --step before
 
 set +e
 
-./build/libs/jlineup-cli-4.3.1-all -Dwdm.architecture=X64 --config graalvm/lineup.json --step after
+./build/libs/jlineup-cli-4.3.1-all -Dwdm.architecture=X64 --config graalvm/lineup_chrome_headless.json --step after
 
 set -e
 
