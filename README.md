@@ -137,6 +137,10 @@ JLineup uses some third party tools and libraries
 
 * [Spring Boot](http://spring.io/projects/spring-boot) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
 
+##### GraalVM Community Edition
+
+* The binary cli version is built with [GraalVM Community Edition](https://github.com/oracle/graal/). GraalVM CE brings it's own [Product License](https://github.com/oracle/graal/blob/master/LICENSE).
+
 
 
 ### Contact
