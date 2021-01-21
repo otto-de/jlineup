@@ -20,13 +20,6 @@ It does a pixel by pixel comparison of both runs and generates a HTML and a JSON
 Behind the scenes, it uses Selenium and a browser of choice (currently Chrome, Firefox and
 PhantomJS¹ are supported).
 
-JLineup is a configuration compatible replacement
-for Lineup, implemented in Java. The original
-[Lineup](https://github.com/otto-de/lineup) is
-a Ruby tool, but is not maintained any more.
-
-Credit for original Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
-
 JLineup has no other dependencies than a JVM and a browser.
 
 ## Example
@@ -141,6 +134,15 @@ JLineup uses some third party tools and libraries
 
 * The binary cli version is built with [GraalVM Community Edition](https://github.com/oracle/graal/). GraalVM CE brings it's own [Product License](https://github.com/oracle/graal/blob/master/LICENSE).
 
+
+### Historic Facts
+
+JLineup is a configuration compatible replacement
+for Lineup, implemented in Java. The original
+[Lineup](https://github.com/otto-de-legacy/lineup) was
+a Ruby tool, but is not maintained any more.
+
+Credit for original Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
 
 
 ### Contact
