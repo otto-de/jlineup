@@ -20,7 +20,8 @@ It does a pixel by pixel comparison of both runs and generates a HTML and a JSON
 Behind the scenes, it uses Selenium and a browser of choice (currently Chrome, Firefox and
 PhantomJS¹ are supported).
 
-JLineup has no other dependencies than a JVM and a browser.
+JLineup has no other dependencies than web browser (Firefox or Chrome/Chromium) and a JVM.
+*Experimental*: There's also a self contained Linux AMD64 build of the CLI version that doesn't even require a JVM.
 
 ## Example
 
