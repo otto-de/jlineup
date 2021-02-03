@@ -1,10 +1,8 @@
 package de.otto.jlineup.image;
 
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.UrlConfig;
 
 import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
@@ -96,7 +94,7 @@ public class ImageService {
         for (int i1 = 0, i2 = 0, iD = 0, x = 0, y = 0; iD < maxPixelCount; ) {
             //mark same pixels with same_color and different pixels in highlight_colors
             if (image1Pixels[i1] != image2Pixels[i2]) {
-                if (!strictColorComparison && doColorsLookSame(image1Pixels[i1], image2Pixels[i2], x, y, maxColorDistance)) {
+                if (!strictColorComparison && doColorsLookSame(image1Pixels[i1], image2Pixels[i2], maxColorDistance)) {
                     differenceImagePixels[iD] = LOOK_SAME_COLOR;
                     lookSameDiffPixelCounter++;
                 } else if (ignoreAntiAliased && AntiAliasingIgnoringComparator.checkIsAntialiased(image1, image2, x, y)) {
@@ -198,16 +196,13 @@ public class ImageService {
         return true;
     }
 
-    static boolean doColorsLookSame(int argbColor1, int argbColor2, int x, int y, double maxColorDistance) {
+    static boolean doColorsLookSame(int argbColor1, int argbColor2, double maxColorDistance) {
         int[] argb1 = getARGB(argbColor1);
         int[] argb2 = getARGB(argbColor2);
         LAB lab1 = LAB.fromRGB(argb1[1], argb1[2], argb1[3], 0);
         LAB lab2 = LAB.fromRGB(argb2[1], argb2[2], argb2[3], 0);
 
         double distance = LAB.ciede2000(lab1, lab2);
-
-        // if (distance > maxColorDistance) System.err.println(distance);
-
         return distance <= maxColorDistance;
     }
 

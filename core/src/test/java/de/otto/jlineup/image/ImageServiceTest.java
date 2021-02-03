@@ -1,7 +1,7 @@
 package de.otto.jlineup.image;
 
-import de.otto.jlineup.file.FileService;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -12,8 +12,8 @@ import java.io.IOException;
 import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_COLOR_DISTANCE;
 import static de.otto.jlineup.image.ImageService.bufferedImagesEqual;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
 
 public class ImageServiceTest {
 
@@ -78,6 +78,20 @@ public class ImageServiceTest {
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/shoppromo_before.png"));
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/shoppromo_after.png"));
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false, DEFAULT_MAX_COLOR_DISTANCE);
+        //then
+        assertThat(result.getDifference(), is(0.0));
+    }
+
+    @Test
+    @Ignore("TODO: Fix this issue somehow :)")
+    public void shouldIgnoreIdenticalLookingHeartIcon() throws IOException {
+        //given
+        final int viewportHeight = 800;
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_after.png"));
 
         //when
         ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false, DEFAULT_MAX_COLOR_DISTANCE);

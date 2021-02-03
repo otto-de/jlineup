@@ -1,0 +1,7 @@
+      "max-diff": 0.0,
+      "ignore-anti-aliasing": true,
+      "strict-color-comparison": false,
+      "max-color-distance": 3.6
+    }
+  },
+  "browser": "chrome-headless",

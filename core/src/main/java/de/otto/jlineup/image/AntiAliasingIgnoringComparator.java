@@ -47,15 +47,19 @@ public class AntiAliasingIgnoringComparator {
         return isPixelAntiAliased;
     }
 
-    private static boolean isAntialiased(BufferedImage img1, int x1, int y1, BufferedImage img2) {
+    private static boolean isAntialiased(BufferedImage img1, int xPos, int yPos, BufferedImage img2) {
 
-        final Color color1 = ImageService.getColor(img1.getRGB(x1, y1));
+        if (xPos >= img1.getWidth() || yPos >= img1.getHeight()) {
+            return false;
+        }
+
+        final Color color1 = ImageService.getColor(img1.getRGB(xPos, yPos));
         final int width = img1.getWidth();
         final int height = img1.getHeight();
-        final int x0 = Math.max(x1 - 1, 0);
-        final int y0 = Math.max(y1 - 1, 0);
-        final int x2 = Math.min(x1 + 1, width - 1);
-        final int y2 = Math.min(y1 + 1, height - 1);
+        final int x0 = Math.max(xPos - 1, 0);
+        final int y0 = Math.max(yPos - 1, 0);
+        final int x2 = Math.min(xPos + 1, width - 1);
+        final int y2 = Math.min(yPos + 1, height - 1);
 
         boolean checkExtremePixels = img2 == null;
         double brightnessTolerance = checkExtremePixels ? JUST_NOTICEABLE_DIFFERENCE : DEFAULT_BRIGHTNESS_TOLERANCE;
@@ -69,7 +73,7 @@ public class AntiAliasingIgnoringComparator {
 
         for (int y = y0; y <= y2; y++) {
             for (int x = x0; x <= x2; x++) {
-                if (x == x1 && y == y1) {
+                if (x == xPos && y == yPos) {
                     continue;
                 }
 
