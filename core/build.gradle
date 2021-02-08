@@ -16,6 +16,8 @@ dependencies {
     compile "com.google.guava:guava:30.1-jre"
     //Update okhttp because selenium brings older one with 4.9.0
     compile "com.squareup.okhttp3:okhttp:4.9.0"
+    //Update kotlin because okhttp 4.9.0 brings 1.4.10
+    compile "org.jetbrains.kotlin:kotlin-stdlib:1.4.30"
 
     compile "io.github.bonigarcia:webdrivermanager:4.3.1"
 
