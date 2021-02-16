@@ -153,8 +153,8 @@ javadoc {
     }
 }
 
-targetCompatibility = '1.8'
-sourceCompatibility = '1.8'
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {
