@@ -629,7 +629,7 @@ Since: 4.0.0
  * Example: `"setup-paths": [ "/some/setup/path", "/some/other/setup/path" ]`
  
 Since: 4.2.0
- 
+
 ---
 
 ### `cleanup-paths`         
@@ -644,7 +644,7 @@ Since: 4.2.0
  * Example: `"cleanup-paths": [ "/some/cleanup/path", "/some/other/cleanup/path" ]`
  
 Since: 4.2.0
- 
+
 ---
 
 ### `page-load-timeout`
@@ -679,6 +679,7 @@ Since: 4.2.0
 ### `window-height`
 
  This is the height of the browser window which JLineup uses.
+ Since JLineup 4.0.0, there is a newer devices option which replaces window-widths, see `devices`
  
  * Scope: Global
  * Type: Integer
