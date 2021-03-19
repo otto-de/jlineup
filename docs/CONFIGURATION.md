@@ -216,7 +216,7 @@ What are all those options about? Here are all the details.
   
  Every path in the site config will be screenshotted in these given window-widths of the browser
  
- Since JLineup 4.0.0, there is a new device-config option which replaces window-widths, see `device-config`
+ Since JLineup 4.0.0, there is a newer devices option which replaces window-widths, see `devices`
  
 * Scope: Site
 * Type: List of integers
@@ -558,10 +558,10 @@ What are all those options about? Here are all the details.
 
 ---
 
-### `device-config`
+### `devices`
 
  In older versions, you just could define a global window height and several window widths for your JLineup run.
- To be backwards compatible, this still works, but you should prefer the new `device-config` option.
+ To be backwards compatible, this still works, but you should prefer the newer `devices` option.
 
  Device config allows you to use custom pixel-ratio and mobile emulation in Chrome, and it brings custom user agents.
 
@@ -572,45 +572,46 @@ What are all those options about? Here are all the details.
  for this config. You can also use the device names that Chrome shows in Dev Tools when doing mobile emulation manually,
  like "iPhone X". See https://chromedriver.chromium.org/mobile-emulation for more details on this feature.
 
- Other browsers ignore this feature and just use window size and user agent
+ Other browsers ignore this feature and just use window size and user agent.
 
  * Scope: Site
  * Type: Map
  * Default: 
-    `
+    `"devices":[
         { 
             "device-name": "DESKTOP",
             "width": 800,
             "height": 800
         }
+    ]
     `
  * Examples:
    
    `
+   "devices":[
         {
             "device-name": "iPhone X"
         }
+   ]
    `
    
    `
+   "devices":[
        { 
            "device-name": "MOBILE",
            "width": 600,
            "height": 1200,
            "pixel-ratio": 2.0,
            "user-agent": "My special mobile"
+       },{ 
+           "device-name": "DESKTOP",
+           "width": 600,
+           "height": 1200,
+           "user-agent": "My special user agent string"
+           "touch": true 
        }
+   ]
    `
-   
-   `
-          { 
-              "device-name": "DESKTOP",
-              "width": 600,
-              "height": 1200,
-              "user-agent": "My special user agent string"
-              "touch": true
-          }
-      `
 
 Since: 4.0.0
 
