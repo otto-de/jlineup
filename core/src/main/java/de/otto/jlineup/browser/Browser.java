@@ -196,7 +196,9 @@ public class Browser implements AutoCloseable {
                 } catch (Exception e) {
                     //There was an error, prevent pool from taking more tasks and let run fail
                     LOG.error("Exception in Browser thread while working on '" + screenshotContext.url + "' with device config " + screenshotContext.deviceConfig + ".", e);
-                    threadPool.shutdownNow();
+                    synchronized(webDrivers) {
+                        threadPool.shutdownNow();
+                    }
                     throw new WebDriverException("Exception in Browser thread", e);
                 } finally {
                     MDC.remove(REPORT_LOG_NAME_KEY);
