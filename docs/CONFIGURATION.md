@@ -114,11 +114,16 @@ This is a full configuration with example values:
       "session-storage": {
         "exampleSessionStorageKey": "value"
       },
-      "window-widths": [
-        600,
-        800,
-        1000
-      ],
+      "devices" : [ {
+        "width" : 800,
+        "height" : 600
+      }, {
+        "width" : 1000,
+        "height" : 800
+      }, {
+        "width" : 1200,
+        "height" : 1000
+      } ],
       "max-scroll-height": 100000,
       "wait-after-page-load": 0.0,
       "wait-after-scroll": 0.0,
@@ -145,7 +150,6 @@ This is a full configuration with example values:
   "browser": "PhantomJS",
   "wait-after-page-load": 0.0,
   "page-load-timeout": 120,
-  "window-height": 800,
   "report-format": 2,
   "screenshot-retries": 0,
   "threads": 0,
