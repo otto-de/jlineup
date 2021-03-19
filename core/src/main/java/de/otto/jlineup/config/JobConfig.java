@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.*;
+import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -291,7 +292,7 @@ public final class JobConfig  {
                                 .withEnvMapping(ImmutableMap.of("live", "www"))
                                 .withLocalStorage(ImmutableMap.of("exampleLocalStorageKey", "value"))
                                 .withSessionStorage(ImmutableMap.of("exampleSessionStorageKey", "value"))
-                                .withWindowWidths(ImmutableList.of(600,800,1000))
+                                .withDevices(ImmutableList.of(deviceConfig(850,600), deviceConfig(1000, 850), deviceConfig(1200, 1000)))
                                 .withJavaScript("console.log('This is JavaScript!')")
                                 .withHttpCheck(new HttpCheckConfig(true))
                                 .withStrictColorComparison(false)

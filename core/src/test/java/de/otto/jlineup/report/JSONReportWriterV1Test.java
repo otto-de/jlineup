@@ -43,7 +43,6 @@ public class JSONReportWriterV1Test {
                 "    \"height\" : 1887," + lineSeparator() +
                 "    \"pixelRatio\" : 1.0," + lineSeparator() +
                 "    \"deviceName\" : \"DESKTOP\"," + lineSeparator() +
-                "    \"userAgent\" : null," + lineSeparator() +
                 "    \"touch\" : false" + lineSeparator() +
                 "  }," + lineSeparator() +
                 "  \"verticalScrollPosition\" : 1979," + lineSeparator() +

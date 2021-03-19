@@ -24,7 +24,9 @@ public class UrlConfig {
     public final Map<String, String> envMapping;
     public final Map<String, String> localStorage;
     public final Map<String, String> sessionStorage;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public final List<Integer> windowWidths;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public final List<DeviceConfig> devices;
     public final int maxScrollHeight;
     public final float waitAfterPageLoad;

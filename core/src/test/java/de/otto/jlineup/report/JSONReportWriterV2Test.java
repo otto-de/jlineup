@@ -56,7 +56,6 @@ public class JSONReportWriterV2Test {
                         "          \"height\" : 1887," + lineSeparator() +
                         "          \"pixel-ratio\" : 1.0," + lineSeparator() +
                         "          \"device-name\" : \"DESKTOP\"," + lineSeparator() +
-                        "          \"user-agent\" : null," + lineSeparator() +
                         "          \"touch\" : false" + lineSeparator() +
                         "        }," + lineSeparator() +
                         "        \"vertical-scroll-position\" : 1979," + lineSeparator() +
@@ -94,7 +93,6 @@ public class JSONReportWriterV2Test {
                         "        \"session-storage\" : {" + lineSeparator() +
                         "          \"exampleSessionStorageKey\" : \"value\"" + lineSeparator() +
                         "        }," + lineSeparator() +
-                        "        \"window-widths\" : [ 600, 800, 1000 ]," + lineSeparator() +
                         "        \"max-scroll-height\" : 100000," + lineSeparator() +
                         "        \"wait-after-page-load\" : 0.0," + lineSeparator() +
                         "        \"wait-after-scroll\" : 0.0," + lineSeparator() +
@@ -121,7 +119,6 @@ public class JSONReportWriterV2Test {
                         "      \"height\" : 1887," + lineSeparator() +
                         "      \"pixel-ratio\" : 1.0," + lineSeparator() +
                         "      \"device-name\" : \"DESKTOP\"," + lineSeparator() +
-                        "      \"user-agent\" : null," + lineSeparator() +
                         "      \"touch\" : false" + lineSeparator() +
                         "    }," + lineSeparator() +
                         "    \"vertical-scroll-position\" : 1979," + lineSeparator() +
