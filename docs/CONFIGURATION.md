@@ -55,9 +55,10 @@ This basic example shows the concept of global and url settings:
       "paths": [
         "/"
       ],
-      "window-widths": [
-        1200
-      ],
+      "devices" : [{
+        "width" : 800,
+        "height" : 600
+      }],
       "max-scroll-height":50000
     },
     "http://www.example.com": {
@@ -65,10 +66,13 @@ This basic example shows the concept of global and url settings:
         "/",
         "somepath"
       ],
-      "window-widths": [
-        800,
-        1000
-      ],
+      "devices" : [{
+        "width" : 800,
+        "height" : 600
+      },{
+        "width" : 1000,
+        "height" : 800
+      }],
       "max-scroll-height":10000
     }
   },
