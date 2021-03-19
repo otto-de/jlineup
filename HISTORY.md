@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.3.2 - 2021-03-19
+* Dependency updates
+
 ## Release 4.3.1 - 2021-01-16
 * Bugfix: CLI version is compiled with Java 8 compatibility again
 * Dependency updates
