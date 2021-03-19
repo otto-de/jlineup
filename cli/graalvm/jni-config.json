@@ -1,5 +1,9 @@
 [
 {
+  "name":"de.otto.jlineup.cli.Main",
+  "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]
+},
+{
   "name":"java.awt.AWTEvent",
   "fields":[
     {"name":"bdata"}, 

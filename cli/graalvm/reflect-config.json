@@ -134,10 +134,6 @@
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
-  "name":"com.sun.crypto.provider.HmacCore$HmacSHA256",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
-{
   "name":"com.sun.crypto.provider.TlsKeyMaterialGenerator",
   "methods":[{"name":"<init>","parameterTypes":[] }]
 },
@@ -321,43 +317,19 @@
 {
   "name":"io.github.bonigarcia.wdm.online.BitBucketApi",
   "allDeclaredFields":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }],
-  "allDeclaredConstructors" : true,
-  "allPublicConstructors" : true,
-  "allDeclaredMethods" : true,
-  "allPublicMethods" : true,
-  "allDeclaredClasses" : true,
-  "allPublicClasses" : true
+  "methods":[{"name":"<init>","parameterTypes":[] }]
 },
 {
   "name":"io.github.bonigarcia.wdm.online.BitBucketApi$BitBucketLink",
-  "allDeclaredFields":true,
-  "allDeclaredConstructors" : true,
-  "allPublicConstructors" : true,
-  "allDeclaredMethods" : true,
-  "allPublicMethods" : true,
-  "allDeclaredClasses" : true,
-  "allPublicClasses" : true
+  "allDeclaredFields":true
 },
 {
   "name":"io.github.bonigarcia.wdm.online.BitBucketApi$BitBucketSelf",
-  "allDeclaredFields" : true,
-  "allDeclaredConstructors" : true,
-  "allPublicConstructors" : true,
-  "allDeclaredMethods" : true,
-  "allPublicMethods" : true,
-  "allDeclaredClasses" : true,
-  "allPublicClasses" : true
+  "allDeclaredFields":true
 },
 {
   "name":"io.github.bonigarcia.wdm.online.BitBucketApi$BitBucketValue",
-  "allDeclaredFields" : true,
-  "allDeclaredConstructors" : true,
-  "allPublicConstructors" : true,
-  "allDeclaredMethods" : true,
-  "allPublicMethods" : true,
-  "allDeclaredClasses" : true,
-  "allPublicClasses" : true
+  "allDeclaredFields":true
 },
 {
   "name":"java.beans.PropertyVetoException"
@@ -415,6 +387,13 @@
   "name":"java.lang.String[]"
 },
 {
+  "name":"java.lang.System",
+  "methods":[
+    {"name":"console","parameterTypes":[] }, 
+    {"name":"exit","parameterTypes":["int"] }
+  ]
+},
+{
   "name":"java.lang.Throwable",
   "methods":[{"name":"getSuppressed","parameterTypes":[] }]
 },
@@ -423,7 +402,11 @@
 },
 {
   "name":"java.lang.reflect.AccessibleObject",
-  "fields":[{"name":"override"}]
+  "fields":[{"name":"override"}],
+  "methods":[
+    {"name":"setAccessible","parameterTypes":["boolean"] }, 
+    {"name":"setAccessible","parameterTypes":["java.lang.reflect.AccessibleObject[]","boolean"] }
+  ]
 },
 {
   "name":"java.net.NetPermission"
@@ -634,7 +617,19 @@
   "allPublicMethods":true
 },
 {
+  "name":"org.thymeleaf.context.IContext",
+  "allDeclaredMethods":true
+},
+{
   "name":"org.thymeleaf.context.IEngineContext",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.thymeleaf.context.IExpressionContext",
+  "allDeclaredMethods":true
+},
+{
+  "name":"org.thymeleaf.context.ITemplateContext",
   "allDeclaredMethods":true
 },
 {

@@ -55,7 +55,7 @@ cd cli
 -H:ConfigurationFileDirectories=graalvm/ \
 --initialize-at-build-time=com.fasterxml.jackson,javassist.ClassPool \
 --verbose \
-`#--report-unsupported-elements-at-runtime` \
+--report-unsupported-elements-at-runtime \
 `#--static` \
 `#-H:+TraceSecurityServices` \
 `#-H:+TraceClassInitialization` \
