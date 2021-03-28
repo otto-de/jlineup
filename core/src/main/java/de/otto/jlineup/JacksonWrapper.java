@@ -2,6 +2,7 @@ package de.otto.jlineup;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileTracker;
@@ -20,7 +21,7 @@ public class JacksonWrapper {
             .enable(ALLOW_COMMENTS)
             .enable(ALLOW_TRAILING_COMMA)
             .enable(ALLOW_UNQUOTED_CONTROL_CHARS)
-            .setPropertyNamingStrategy(PropertyNamingStrategy.KEBAB_CASE);
+            .setPropertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE);
 
     private static ObjectMapper objectMapper() {
         return objectMapper;

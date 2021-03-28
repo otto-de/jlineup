@@ -1,0 +1,148 @@
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    implementation project(":jlineup-core")
+    implementation "org.slf4j:slf4j-api:1.7.30"
+    implementation platform('com.amazonaws:aws-xray-recorder-sdk-bom:2.7.1')
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.8.0'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.11.986'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-core'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor'
+    runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
+}
+
+configurations {
+    [apiElements, runtimeElements].each {
+        it.outgoing.artifacts.removeIf {
+            it.buildDependencies.getDependencies(null).contains(jar)
+        }
+        it.outgoing.artifact(bootJar)
+    }
+}
+
+tasks.distZip.enabled = false
+tasks.distTar.enabled = false
+
+tasks.bootDistZip {
+    archiveBaseName = project.archivesBaseName
+}
+
+tasks.bootDistTar {
+    archiveBaseName = project.archivesBaseName
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        exceptionFormat = 'full'
+        showStandardStreams = true
+    }
+}
+
+jar {
+    enabled = false
+}
+
+application {
+    mainClass.set("de.otto.jlineup.lambda.JLineupHandler")
+}
+
+bootJar {
+    enabled = true
+    mainClass = "de.otto.jlineup.lambda.JLineupHandler"
+    launchScript()
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    from 'build/docs/javadoc'
+    archiveClassifier = 'javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier = 'sources'
+}
+
+sourceCompatibility = 8
+targetCompatibility = 8
+
+project.afterEvaluate {
+    tasks.withType(JavaCompile) {
+        def version = compat(sourceCompatibility)
+        project.logger.info("Configuring $name to use --release $version")
+        options.compilerArgs.addAll(['--release', version])
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'jlineup-lambda'
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'JLineup Web'
+                description = 'The AWS lambda handler of JLineup'
+                url = 'https://github.com/otto-de/jlineup'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'MediaMarco'
+                        name = 'Marco Geweke'
+                        email = 'marco.geweke@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git@github.com:otto-de/jlineup.git'
+                    developerConnection = 'scm:git@github.com:otto-de/jlineup.git'
+                    url = 'https://github.com/otto-de/jlineup'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+            if (project.debugUpload) {
+                releasesRepoUrl = "$buildDir/repos/releases"
+                snapshotsRepoUrl = "$buildDir/repos/snapshots"
+            } else {
+                credentials {
+                    username = sonatypeUsername
+                    password = sonatypePassword
+                }
+            }
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
+}
+
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
