@@ -5,6 +5,7 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
+import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.event.S3EventNotification.S3EventNotificationRecord;
@@ -27,7 +28,7 @@ public class JLineupHandler implements RequestHandler<S3Event, String> {
         try {
 
             LOG.info("Event: " + Jackson.toJsonString(s3event));
-            S3EventNotificationRecord record = s3event.getRecords().get(0);
+            S3EventNotification.S3EventNotificationRecord record = s3event.getRecords().get(0);
 
             String srcBucket = record.getS3().getBucket().getName();
             String srcKey = record.getS3().getObject().getUrlDecodedKey();
