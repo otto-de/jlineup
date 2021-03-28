@@ -1,8 +1,3 @@
-def seleniumVersion = '3.141.59'
-def jacksonVersion = '2.12.1'
-ext['selenium.version'] = seleniumVersion
-ext['jackson.version'] = jacksonVersion
-
 dependencies {
     compile("org.seleniumhq.selenium:selenium-java:" + seleniumVersion) {
         exclude module: "selenium-edge-driver"
@@ -160,6 +155,7 @@ project.afterEvaluate {
     tasks.withType(JavaCompile) {
         def version = compat(sourceCompatibility)
         project.logger.info("Configuring $name to use --release $version")
+        println("Configuring $name to use --release $version")
         options.compilerArgs.addAll(['--release', version])
     }
 }

@@ -10,6 +10,7 @@ dependencies {
     implementation 'com.amazonaws:aws-xray-recorder-sdk-core'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-joda:' + jacksonVersion
     runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
@@ -74,6 +75,7 @@ project.afterEvaluate {
     tasks.withType(JavaCompile) {
         def version = compat(sourceCompatibility)
         project.logger.info("Configuring $name to use --release $version")
+        println("Configuring $name to use --release $version")
         options.compilerArgs.addAll(['--release', version])
     }
 }
@@ -94,7 +96,7 @@ publishing {
                 }
             }
             pom {
-                name = 'JLineup Web'
+                name = 'JLineup Lambda'
                 description = 'The AWS lambda handler of JLineup'
                 url = 'https://github.com/otto-de/jlineup'
                 licenses {

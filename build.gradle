@@ -2,6 +2,10 @@ buildscript {
     ext {
         springBootVersion = '2.4.4'
         springVersion = '5.3.4.RELEASE'
+        seleniumVersion = '3.141.59'
+        jacksonVersion = '2.12.2'
+        ext['selenium.version'] = ext.seleniumVersion
+        ext['jackson.version'] = ext.jacksonVersion
     }
     repositories {
         mavenCentral()

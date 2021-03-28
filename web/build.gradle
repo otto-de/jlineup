@@ -80,6 +80,7 @@ project.afterEvaluate {
     tasks.withType(JavaCompile) {
         def version = compat(sourceCompatibility)
         project.logger.info("Configuring $name to use --release $version")
+        println("Configuring $name to use --release $version")
         options.compilerArgs.addAll(['--release', version])
     }
 }

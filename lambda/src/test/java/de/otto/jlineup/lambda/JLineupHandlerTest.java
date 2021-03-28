@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.CognitoIdentity;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.amazonaws.services.s3.event.S3EventNotification.*;
+import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.amazonaws.xray.AWSXRay;
 import com.amazonaws.xray.AWSXRayRecorderBuilder;
 import com.amazonaws.xray.strategy.sampling.NoSamplingStrategy;
@@ -32,25 +32,25 @@ class JLineupHandlerTest {
     void invokeTest() throws IOException {
         AWSXRay.beginSegment("s3-jlineup-handler-test");
         String bucket = "someTextBucket";
-        S3EventNotificationRecord record = new S3EventNotificationRecord("eu-central-1",
+        S3EventNotification.S3EventNotificationRecord record = new S3EventNotification.S3EventNotificationRecord("eu-central-1",
                 "ObjectCreated:Put",
                 "aws:s3",
                 "2021-03-28T16:30:00.000Z",
                 "2.1",
-                new RequestParametersEntity("1.2.3.4"),
-                new ResponseElementsEntity("a/b/c", "requestId"),
-                new S3Entity("682bbb7a-xmpl-48ca-94b1-7f77c4d6dbf0",
-                        new S3BucketEntity(bucket,
-                                new UserIdentityEntity("1234"),
+                new S3EventNotification.RequestParametersEntity("1.2.3.4"),
+                new S3EventNotification.ResponseElementsEntity("a/b/c", "requestId"),
+                new S3EventNotification.S3Entity("682bbb7a-xmpl-48ca-94b1-7f77c4d6dbf0",
+                        new S3EventNotification.S3BucketEntity(bucket,
+                                new S3EventNotification.UserIdentityEntity("1234"),
                                 "arn:aws:s3:::" + bucket),
-                        new S3ObjectEntity("inbound/lineup.json",
+                        new S3EventNotification.S3ObjectEntity("inbound/lineup.json",
                                 12345L,
                                 "etag",
                                 "",
                                 "SEQUENCER"),
                         "1.0"),
-                new UserIdentityEntity("AWS:5678"), null);
-        ArrayList<S3EventNotificationRecord> records = new ArrayList<>();
+                new S3EventNotification.UserIdentityEntity("AWS:5678"));
+        ArrayList<S3EventNotification.S3EventNotificationRecord> records = new ArrayList<>();
         records.add(record);
         S3Event event = new S3Event(records);
 

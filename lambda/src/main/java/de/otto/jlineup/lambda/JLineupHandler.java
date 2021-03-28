@@ -13,6 +13,7 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.Region;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.util.json.Jackson;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,8 @@ public class JLineupHandler implements RequestHandler<S3Event, String> {
     public String handleRequest(S3Event s3event, Context context) {
         try {
 
-            LOG.info("Event: " + Jackson.toJsonString(s3event));
+            Jackson.getObjectMapper().registerModule(new JodaModule());
+            LOG.info("Event: " + Jackson.getObjectMapper().writer().writeValueAsString(s3event));
             S3EventNotification.S3EventNotificationRecord record = s3event.getRecords().get(0);
 
             String srcBucket = record.getS3().getBucket().getName();
