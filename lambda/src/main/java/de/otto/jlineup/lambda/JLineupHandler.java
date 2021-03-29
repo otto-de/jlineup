@@ -1,23 +1,10 @@
 package de.otto.jlineup.lambda;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.event.S3EventNotification.S3EventNotificationRecord;
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.Region;
-import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.util.json.Jackson;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.Browser;
@@ -30,13 +17,8 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
 import static de.otto.jlineup.browser.BrowserUtils.prepareDomain;
@@ -54,7 +36,6 @@ public class JLineupHandler implements RequestHandler<Map<String,String>, String
     public String handleRequest(Map<String,String> event, Context context) {
         try {
 
-            Jackson.getObjectMapper().registerModule(new JodaModule());
             LOG.info("Event: " + Jackson.getObjectMapper().writer().writeValueAsString(event));
 
             // Download the config from S3

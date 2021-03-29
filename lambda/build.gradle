@@ -10,7 +10,6 @@ dependencies {
     implementation 'com.amazonaws:aws-xray-recorder-sdk-core'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-joda:' + jacksonVersion
     runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
