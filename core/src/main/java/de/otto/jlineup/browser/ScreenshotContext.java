@@ -24,7 +24,7 @@ public final class ScreenshotContext  {
     @JsonIgnore
     final String originalUrl;
 
-    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String originalUrl) {
+    public ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String originalUrl) {
         this.url = url;
         this.urlSubPath = urlSubPath;
         this.deviceConfig = deviceConfig;

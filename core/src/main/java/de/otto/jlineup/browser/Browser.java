@@ -139,11 +139,13 @@ public class Browser implements AutoCloseable {
             LOG.debug("Setting shutdown called to true");
             webDrivers.forEach((threadName, webDriver) -> {
                 LOG.debug("Removing webdriver for thread {} ({})", threadName, webDriver.getClass().getCanonicalName());
+                /*
                 try {
                     webDriver.close();
                 } catch (Exception e) {
                     LOG.error("Exception while closing webdriver: " + e.getMessage(), e);
                 }
+                */
                 try {
                     webDriver.quit();
                 } catch (Exception e) {
@@ -795,6 +797,10 @@ public class Browser implements AutoCloseable {
         LOG.debug("Fonts loaded: {} ", fontsLoaded);
         return fontsLoaded;
     };
+
+    public void runForScreenshotContext(ScreenshotContext screenshotContext) throws Exception {
+        this.takeScreenshotsForContext(screenshotContext);
+    }
 
     void grepChromedrivers() throws IOException {
         ProcessBuilder pb = new ProcessBuilder();

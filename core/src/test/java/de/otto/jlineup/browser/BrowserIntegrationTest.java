@@ -42,7 +42,7 @@ public class BrowserIntegrationTest {
     @Before
     public void setup() throws IOException {
         tempDirectory = Files.createTempDirectory("jlineup-browser-integration-test");
-        Utils.setLogLevelToDebug();
+        //Utils.setLogLevelToDebug();
     }
 
     @After

@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.CognitoIdentity;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.amazonaws.xray.AWSXRay;
 import com.amazonaws.xray.AWSXRayRecorderBuilder;
@@ -15,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,29 +33,10 @@ class JLineupHandlerTest {
 
     @Test
     void invokeTest() throws IOException {
-        AWSXRay.beginSegment("s3-jlineup-handler-test");
-        String bucket = "someTextBucket";
-        S3EventNotification.S3EventNotificationRecord record = new S3EventNotification.S3EventNotificationRecord("eu-central-1",
-                "ObjectCreated:Put",
-                "aws:s3",
-                "2021-03-28T16:30:00.000Z",
-                "2.1",
-                new S3EventNotification.RequestParametersEntity("1.2.3.4"),
-                new S3EventNotification.ResponseElementsEntity("a/b/c", "requestId"),
-                new S3EventNotification.S3Entity("682bbb7a-xmpl-48ca-94b1-7f77c4d6dbf0",
-                        new S3EventNotification.S3BucketEntity(bucket,
-                                new S3EventNotification.UserIdentityEntity("1234"),
-                                "arn:aws:s3:::" + bucket),
-                        new S3EventNotification.S3ObjectEntity("inbound/lineup.json",
-                                12345L,
-                                "etag",
-                                "",
-                                "SEQUENCER"),
-                        "1.0"),
-                new S3EventNotification.UserIdentityEntity("AWS:5678"));
-        ArrayList<S3EventNotification.S3EventNotificationRecord> records = new ArrayList<>();
-        records.add(record);
-        S3Event event = new S3Event(records);
+        AWSXRay.beginSegment("jlineup-handler-test");
+
+        HashMap<String, String> event = new HashMap<>();
+        event.put("payload", "hello world!");
 
         Context context = new TestContext();
         JLineupHandler handler = new JLineupHandler();

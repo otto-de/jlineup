@@ -2,6 +2,7 @@ package de.otto.jlineup;
 
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
+import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.JobConfigValidator;
 import de.otto.jlineup.config.Step;
