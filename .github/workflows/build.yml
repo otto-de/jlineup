@@ -19,7 +19,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     env:
       DISPLAY: :0
     steps:
@@ -37,9 +37,10 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew dependencyCheckAggregate build
-    - name: Archive dependency check report
-      uses: actions/upload-artifact@v2
-      with:
-        name: dependency-check-report
-        path: build/reports/dependency-check-report.html
+      run: ./gradlew build
+#      run: ./gradlew dependencyCheckAggregate build TODO: reactivate dependencyCheck when NullPointer is fixed
+#    - name: Archive dependency check report
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: dependency-check-report
+#        path: build/reports/dependency-check-report.html
