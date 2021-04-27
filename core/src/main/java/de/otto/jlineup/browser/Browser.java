@@ -52,6 +52,8 @@ public class Browser implements AutoCloseable {
     public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;
     public static final String JLINEUP_SLEEP_JS_OPENER = "jlineup.sleep";
 
+    private boolean localRun = false;
+
     public enum Type {
         @JsonProperty(value = "Firefox")
         FIREFOX,
@@ -169,7 +171,12 @@ public class Browser implements AutoCloseable {
                     runTestSetupOrCleanup(testSetupContexts);
                     LOG.debug("Test setup done.");
                 }
-                takeScreenshots(screenshotContextList);
+                if (localRun) {
+                    takeScreenshots(screenshotContextList);
+                } else {
+                    CloudBrowser cloudBrowser = CloudBrowserFactory.createCloudBrowser(jobConfig, fileService);
+                    cloudBrowser.takeScreenshots(screenshotContextList);
+                }
             } finally {
                 if (!testCleanupContexts.isEmpty()) {
                     LOG.debug("Running test cleanup.");

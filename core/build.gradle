@@ -13,9 +13,7 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp:4.9.1"
     //Update kotlin because okhttp 4.9.0 brings 1.4.10
     compile "org.jetbrains.kotlin:kotlin-stdlib:1.4.31"
-
     compile "io.github.bonigarcia:webdrivermanager:4.3.1"
-
     compile "com.codeborne:phantomjsdriver:1.4.4"
     //Update legacy apache http client that is introduced by phantomjsdriver
     compile "org.apache.httpcomponents:httpclient:4.5.13"

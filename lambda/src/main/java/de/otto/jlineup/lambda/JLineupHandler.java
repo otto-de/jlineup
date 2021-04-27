@@ -4,27 +4,15 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.util.json.Jackson;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
-import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.ScreenshotContext;
-import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
-import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Map;
-
-import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
-import static de.otto.jlineup.browser.BrowserUtils.prepareDomain;
-import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
-
-public class JLineupHandler implements RequestHandler<Map<String,String>, String> {
+public class JLineupHandler implements RequestHandler<LambdaRequestPayload, String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(JLineupHandler.class);
 
@@ -33,7 +21,7 @@ public class JLineupHandler implements RequestHandler<Map<String,String>, String
     }
 
     @Override
-    public String handleRequest(Map<String,String> event, Context context) {
+    public String handleRequest(LambdaRequestPayload event, Context context) {
         try {
 
             LOG.info("Event: " + Jackson.getObjectMapper().writer().writeValueAsString(event));
@@ -56,50 +44,24 @@ public class JLineupHandler implements RequestHandler<Map<String,String>, String
                 System.exit(1);
             }
             */
-            return exampleRun("https://www.otto.de", "FIREFOX_HEADLESS");
+
+            LambdaRunner runner = createRun(event.runId, event.jobConfig, event.screenshotContext);
+            runner.run();
+            return "Ok!";
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String exampleRun(String url,
-                             String browser) throws Exception {
-
-        if (url == null) {
-            url = "https://www.example.com";
-        }
-
-        JobConfig.Builder jobConfigBuilder = JobConfig.jobConfigBuilder().withBrowser(Browser.Type.CHROME_HEADLESS).withName("Example run").withUrls(ImmutableMap.of(url, urlConfigBuilder().withDevices(Collections.singletonList(DeviceConfig.deviceConfig(1920, 1080))).build()));
-        if (browser != null) {
-            try {
-                Browser.Type type = Browser.Type.forValue(browser);
-                jobConfigBuilder.withBrowser(type);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        LambdaRunner lambdaRunner = createRun("lambdaRunnerId", jobConfigBuilder.build(), Step.before);
-        boolean run = lambdaRunner.run();
-
-        return "Ok! Example run successful with 'before' step with Browser '" + jobConfigBuilder.build().browser + "'.";
-    }
-
-    private LambdaRunner createRun(String id, JobConfig jobConfig, Step step) throws Exception {
-        //JobConfig webJobConfig = sanitizeJobConfig(jobConfig);
+    private LambdaRunner createRun(String id, JobConfig jobConfig, ScreenshotContext screenshotContext) {
         WebDriverManager.globalConfig().setCachePath("/tmp/jlineup/webdrivers");
         RunStepConfig runStepConfig = RunStepConfig.jLineupRunConfigurationBuilder()
                 .withWorkingDirectory("/tmp")
                 .withScreenshotsDirectory("jlineup-{id}".replace("{id}", id))
                 .withReportDirectory("jlineup-{id}".replace("{id}", id))
                 .withChromeParameters(ImmutableList.of("--use-spdy=off", "--disable-dev-shm-usage", "--disable-web-security", "--user-data-dir=/tmp/jlineup/chrome-profile-" + id))
-                .withStep(step)
+                .withStep(screenshotContext.step)
                 .build();
-
-        Map.Entry<String, UrlConfig> urlConfigEntry = jobConfig.urls.entrySet().stream().findFirst().get();
-        String firstUrl = urlConfigEntry.getKey();
-        UrlConfig urlConfig = urlConfigEntry.getValue();
-        return new LambdaRunner(jobConfig, runStepConfig, new ScreenshotContext(prepareDomain(runStepConfig, firstUrl), urlConfig.paths.get(0), urlConfig.devices.get(0),
-                runStepConfig.getStep(), urlConfig, getFullPathOfReportDir(runStepConfig), true, firstUrl));
+        return new LambdaRunner(jobConfig, runStepConfig, screenshotContext);
     }
 }

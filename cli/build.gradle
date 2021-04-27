@@ -11,6 +11,8 @@ dependencies {
     compile "ch.qos.logback:logback-classic:1.2.3"
     compileOnly "org.graalvm.nativeimage:svm:21.0.0.2"
 
+    runtimeOnly project(":jlineup-lambda")
+
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
 }
 

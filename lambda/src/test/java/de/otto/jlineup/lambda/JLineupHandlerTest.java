@@ -4,20 +4,21 @@ import com.amazonaws.services.lambda.runtime.ClientContext;
 import com.amazonaws.services.lambda.runtime.CognitoIdentity;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
-import com.amazonaws.services.lambda.runtime.events.S3Event;
-import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.amazonaws.xray.AWSXRay;
 import com.amazonaws.xray.AWSXRayRecorderBuilder;
 import com.amazonaws.xray.strategy.sampling.NoSamplingStrategy;
+import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.browser.Browser;
+import de.otto.jlineup.browser.BrowserUtils;
+import de.otto.jlineup.browser.ScreenshotContext;
+import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.Step;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,15 +33,17 @@ class JLineupHandlerTest {
     }
 
     @Test
-    void invokeTest() throws IOException {
+    void invokeTest() {
         AWSXRay.beginSegment("jlineup-handler-test");
 
-        HashMap<String, String> event = new HashMap<>();
-        event.put("payload", "hello world!");
+
+        JobConfig jobConfig = JobConfig.exampleConfigBuilder().withBrowser(Browser.Type.CHROME_HEADLESS).build();
+        List<ScreenshotContext> screenshotContexts = BrowserUtils.buildScreenshotContextListFromConfigAndState(RunStepConfig.jLineupRunConfigurationBuilder().withStep(Step.before).build(), jobConfig);
+        LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContexts.get(0));
 
         Context context = new TestContext();
         JLineupHandler handler = new JLineupHandler();
-        String result = handler.handleRequest(event, context);
+        String result = handler.handleRequest(lambdaRequestPayload, context);
         assertTrue(result.contains("Ok"));
         AWSXRay.endSegment();
     }
