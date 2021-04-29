@@ -5,7 +5,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
     implementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.45")
-    implementation("de.otto.edison:edison-core:2.4.6")
+    implementation("de.otto.edison:edison-core:2.4.7")
 
     //Update hibernate validator that comes with edison-core
     implementation("org.hibernate.validator:hibernate-validator:6.2.0.Final")
