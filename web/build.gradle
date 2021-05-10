@@ -17,7 +17,7 @@ dependencies {
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testCompile("io.rest-assured:rest-assured:4.3.3")
-    testCompile("org.awaitility:awaitility:4.0.3")
+    testCompile("org.awaitility:awaitility:4.1.0")
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
 }
