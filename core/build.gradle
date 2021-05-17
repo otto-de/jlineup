@@ -19,7 +19,7 @@ dependencies {
     //Update kotlin because okhttp 4.9.0 brings 1.4.10
     compile "org.jetbrains.kotlin:kotlin-stdlib:1.5.0"
 
-    compile "io.github.bonigarcia:webdrivermanager:4.4.1"
+    compile "io.github.bonigarcia:webdrivermanager:4.4.3"
 
     compile "com.codeborne:phantomjsdriver:1.4.4"
     //Update legacy apache http client that is introduced by phantomjsdriver
@@ -39,7 +39,7 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-core:2.2"
     testCompile "org.hamcrest:hamcrest-library:2.2"
     testCompile "junit:junit:4.13.2"
-    testCompile "org.mockito:mockito-core:3.9.0"
+    testCompile "org.mockito:mockito-core:3.10.0"
     testCompile "com.github.stefanbirkner:system-rules:1.19.0"
 
     testCompile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
