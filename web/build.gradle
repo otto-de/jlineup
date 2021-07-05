@@ -11,7 +11,7 @@ dependencies {
     //Update commons-codec
     implementation("commons-codec:commons-codec:1.15")
     //Update embedded tomcat
-    implementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.48")
+    implementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.50")
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
