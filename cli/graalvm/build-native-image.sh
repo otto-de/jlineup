@@ -7,7 +7,7 @@
 #set +x
 
 if [ -z ${GRAAL_HOME+x} ]; then
-  GRAAL_HOME="../../graalvm/graal-dev/"
+  GRAAL_HOME="../../graalvm/graalvm-ce-java11-21.1.0/"
   #GRAAL_HOME="../../graalvm/graalvm-ce-java11-19.3.1/"
 fi
 

@@ -23,7 +23,7 @@ plugins {
 //\
 ///\
 ////\
-def jlineup_version = "4.3.3"
+def jlineup_version = "4.3.4-SNAPSHOT"
 /////
 ////
 ///
