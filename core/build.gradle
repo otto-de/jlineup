@@ -35,7 +35,7 @@ dependencies {
     compile "org.slf4j:slf4j-api:1.7.32"
     compile "org.codehaus.janino:janino:3.1.4"
     compile "org.thymeleaf:thymeleaf:3.0.12.RELEASE"
-    compile "org.graalvm.sdk:graal-sdk:21.1.0"
+    compile "org.graalvm.sdk:graal-sdk:21.2.0"
     testCompile "org.hamcrest:hamcrest-core:2.2"
     testCompile "org.hamcrest:hamcrest-library:2.2"
     testCompile "junit:junit:4.13.2"
