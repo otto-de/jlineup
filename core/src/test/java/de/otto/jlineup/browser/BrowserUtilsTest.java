@@ -107,7 +107,7 @@ public class BrowserUtilsTest {
 
         return UrlConfig.urlConfigBuilder()
                 .withPaths(ImmutableList.of("/", "multimedia"))
-                .withMaxDiff(0.05f)
+                .withMaxDiff(0.05d)
                 .withCookies(ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")))
                 .withEnvMapping(ImmutableMap.of("live", "www"))
                 .withLocalStorage(ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"))
@@ -125,7 +125,7 @@ public class BrowserUtilsTest {
 
         return UrlConfig.urlConfigBuilder()
                 .withPath("/")
-                .withMaxDiff(0.05f)
+                .withMaxDiff(0.05d)
                 .withWindowWidths(ImmutableList.of(1200))
                 .withMaxScrollHeight(100000)
                 .build();

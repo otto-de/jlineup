@@ -38,7 +38,7 @@ public class ScreenshotsComparatorTest {
 
     private final UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
             .withPath("/")
-            .withMaxDiff(0.05f)
+            .withMaxDiff(0.05d)
             .withWindowWidths(singletonList(100))
             .withMaxScrollHeight(10000)
             .withWaitAfterPageLoad(2)

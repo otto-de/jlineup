@@ -19,7 +19,7 @@ public class UrlConfig {
     public final List<String> paths;
     public final List<String> setupPaths;
     public final List<String> cleanupPaths;
-    public final float maxDiff;
+    public final double maxDiff;
     public final List<Cookie> cookies;
     public final Map<String, String> envMapping;
     public final Map<String, String> localStorage;
@@ -99,7 +99,7 @@ public class UrlConfig {
         return paths;
     }
 
-    public float getMaxDiff() {
+    public double getMaxDiff() {
         return maxDiff;
     }
 
@@ -242,7 +242,7 @@ public class UrlConfig {
         private List<String> paths = ImmutableList.of(DEFAULT_PATH);
         private List<String> setupPaths = Collections.emptyList();
         private List<String> cleanupPaths = Collections.emptyList();
-        private float maxDiff = DEFAULT_MAX_DIFF;
+        private double maxDiff = DEFAULT_MAX_DIFF;
         private List<Cookie> cookies;
         private Map<String, String> envMapping;
         private Map<String, String> localStorage;
@@ -284,7 +284,7 @@ public class UrlConfig {
             return this;
         }
 
-        public Builder withMaxDiff(float val) {
+        public Builder withMaxDiff(double val) {
             maxDiff = val;
             return this;
         }
@@ -433,7 +433,7 @@ public class UrlConfig {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UrlConfig urlConfig = (UrlConfig) o;
-        return Float.compare(urlConfig.maxDiff, maxDiff) == 0 &&
+        return Double.compare(urlConfig.maxDiff, maxDiff) == 0 &&
                 maxScrollHeight == urlConfig.maxScrollHeight &&
                 Float.compare(urlConfig.waitAfterPageLoad, waitAfterPageLoad) == 0 &&
                 Float.compare(urlConfig.waitAfterScroll, waitAfterScroll) == 0 &&
