@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.3.4 - 2021-08-26
+* Fix rounding bug in maxDiff configuration (https://github.com/otto-de/jlineup/issues/82)
+
 ## Release 4.3.3 - 2021-07-08
 * Dependency updates
 

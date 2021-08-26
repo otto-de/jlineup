@@ -1,7 +1,7 @@
 buildscript {
     ext {
         springBootVersion = '2.5.4'
-        springVersion = '5.3.8.RELEASE'
+        springVersion = '5.3.9.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -23,7 +23,7 @@ plugins {
 //\
 ///\
 ////\
-def jlineup_version = "4.3.4-SNAPSHOT"
+def jlineup_version = "4.3.4"
 /////
 ////
 ///
