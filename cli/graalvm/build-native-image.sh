@@ -7,8 +7,13 @@
 #set +x
 
 if [ -z ${GRAAL_HOME+x} ]; then
-  GRAAL_HOME="../../graalvm/graalvm-ce-java11-21.1.0/"
-  #GRAAL_HOME="../../graalvm/graalvm-ce-java11-19.3.1/"
+
+  if [[ $JAVA_HOME == *"grl"* ]]; then
+    GRAAL_HOME=$JAVA_HOME
+  else
+    GRAAL_HOME="../../graalvm/graalvm-ce-java11-21.1.0/"
+    #GRAAL_HOME="../../graalvm/graalvm-ce-java11-19.3.1/"
+  fi
 fi
 
 "${GRAAL_HOME}"/bin/gu install native-image
