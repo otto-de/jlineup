@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:11-slim
 
 USER root
 RUN mkdir -p /usr/share/man/man1
