@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Main (before)" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="de.otto.jlineup.cli.Main" />
+    <module name="jlineup.jlineup-cli.main" />
+    <option name="PROGRAM_PARAMETERS" value="--chrome-parameter=&quot;--hide-scrollbars&quot;" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="de.otto.jlineup.cli.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
