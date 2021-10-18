@@ -73,7 +73,9 @@ public class JLineupRunner {
                 final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
 
                 final ReportGenerator reportGenerator = new ReportGenerator();
+                final ReportGeneratorV2 reportGeneratorV2 = new ReportGeneratorV2(fileService);
                 final Report report = reportGenerator.generateReport(comparisonResults, jobConfig);
+                final ReportV2 reportV2 = reportGeneratorV2.generateReport(comparisonResults, jobConfig);
 
                 JSONReportWriter jsonReportWriter;
                 if (Utils.shouldUseLegacyReportFormat(jobConfig)) {
@@ -83,6 +85,7 @@ public class JLineupRunner {
                 }
                 jsonReportWriter.writeComparisonReportAsJson(report);
                 htmlReportWriter.writeReport(report);
+                htmlReportWriter.writeReportV2(reportV2);
 
                 final Set<Map.Entry<String, UrlReport>> urlReports = report.screenshotComparisonsForUrl.entrySet();
                 for (Map.Entry<String, UrlReport> urlReport : urlReports) {

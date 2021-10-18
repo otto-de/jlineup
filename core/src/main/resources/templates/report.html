@@ -340,6 +340,8 @@
     <h2>JLineup Comparison Report</h2>
     <h3 th:if="${config.name}" th:text="${config.name}"></h3>
 
+    <p><a href="report.html">Click here for the new experience.</a></p>
+
     <div id="zoombox" class="invisible">
         <div id="zoomfix">
             <table>
@@ -465,7 +467,7 @@
     </div>
 </div>
 
-<p class="footer">Generated with Jlineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
+<p class="footer">Generated with JLineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
     [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]]</p>
 
 </body>

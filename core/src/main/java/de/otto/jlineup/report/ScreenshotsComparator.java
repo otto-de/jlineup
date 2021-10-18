@@ -37,6 +37,8 @@ public class ScreenshotsComparator {
         this.imageService = imageService;
     }
 
+
+
     public Map<String, List<ScreenshotComparisonResult>> compare() throws IOException {
         LOG.debug("Comparing images...");
         if (jobConfig.urls == null) {

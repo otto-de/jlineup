@@ -19,7 +19,7 @@ import java.util.*;
 
 public class HTMLReportWriter {
 
-    private FileService fileService;
+    private final FileService fileService;
 
     ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
     TemplateEngine templateEngine = new TemplateEngine();
@@ -36,7 +36,10 @@ public class HTMLReportWriter {
 
     public void writeReport(Report report) throws FileNotFoundException {
         fileService.writeHtmlReport(renderReport("report", report.config, report.getFlatResultList()));
-        //fileService.writeHtmlReport(renderReport("report_wip", report.getFlatResultList()), "report_new.html");
+    }
+
+    public void writeReportV2(ReportV2 report) throws FileNotFoundException {
+        fileService.writeHtmlReport(renderReportV2("report_wip", report), FileService.REPORT_HTML_FILENAME);
     }
 
     public void writeNotFinishedReport(RunStepConfig runStepConfig, JobConfig jobConfig) throws FileNotFoundException {
@@ -47,6 +50,19 @@ public class HTMLReportWriter {
         final Map<String, Object> variables = prepareVariablesForReportTemplate(screenshotComparisonResults);
         variables.put("config", config);
         return templateEngine.process(template, new Context(Locale.US, variables));
+    }
+
+    private String renderReport(String templateName, Report report) {
+        final Map<String, Object> variables = new HashMap<>();
+        variables.put("report", report);
+        return templateEngine.process(templateName, new Context(Locale.US, variables));
+    }
+
+    private String renderReportV2(String templateName, ReportV2 report) {
+        final Map<String, Object> variables = new HashMap<>();
+        variables.put("report", report);
+        enrichVariables(variables);
+        return templateEngine.process(templateName, new Context(Locale.US, variables));
     }
 
     String renderNotFinishedReport(String template, RunStepConfig runStepConfig, JobConfig config) {
@@ -94,8 +110,8 @@ public class HTMLReportWriter {
     private int getContextHash(final ScreenshotComparisonResult screenshotComparisonResult) {
         return screenshotComparisonResult.contextHash;
     }
-
     private class ScreenshotComparisonResultContext {
+
 
         private final List<ScreenshotComparisonResult> results;
         private final ScreenshotContext screenshotContext;
@@ -187,6 +203,6 @@ public class HTMLReportWriter {
 
             return true;
         }
-    }
 
+    }
 }
