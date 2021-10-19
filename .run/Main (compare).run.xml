@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Main (compare)" type="Application" factoryName="Application">
-    <option name="ALTERNATIVE_JRE_PATH" value="adopt-openjdk-11 (WSL)" />
+    <option name="ALTERNATIVE_JRE_PATH" value="temurin-11" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="de.otto.jlineup.cli.Main" />
     <module name="jlineup.jlineup-cli.main" />

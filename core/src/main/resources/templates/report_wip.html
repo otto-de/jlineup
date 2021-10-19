@@ -24,45 +24,38 @@
 
         body {
             background-color: white;
-            font-family: 'Lato', Arial, Helvetica, sans-serif;
             font-weight: 400;
             margin-left: 10px;
             margin-top: 10px;
         }
 
         h1 {
-            font-family: 'Lato', sans-serif;
             font-weight: 700;
             font-size: 2.4em;
             margin: 5px 0 15px 0;
         }
 
         h2 {
-            font-family: 'Lato', sans-serif;
             font-weight: 700;
             font-size: 2em;
             margin: 5px 0 15px 0;
         }
 
         h3 {
-            font-family: 'Lato', sans-serif;
             font-weight: 700;
             font-size: 1.6em;
             margin: 5px 0 5px 0;
         }
 
         h4 {
-            font-family: 'Lato', sans-serif;
             font-weight: 700;
             font-size: 1.4em;
             margin: 0;
         }
 
         h5 {
-            font-family: 'Lato', sans-serif;
             font-weight: 700;
             font-size: 1.2em;
-            margin: 0;
         }
 
         .footer {
@@ -484,7 +477,7 @@
 <body>
 
 <div class="report">
-    <h5>JLineup Comparison Report</h5>
+    <h5 style="color: #777777; margin: 0;">JLineup Comparison Report</h5>
     <h1 th:if="${report.config.name}" th:text="${report.config.name}"></h1>
 
     <p style="font-size: 0.6em"><a href="report_legacy.html">Click here for the legacy experience.</a></p>
@@ -661,9 +654,13 @@
     </div>
 </div>
 
+<div id="clickdiff" class="invisible">
+
+</div>
+
 <p class="footer">Generated with JLineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
-    [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]]. The 'before' step was rendered with
-    "[[${report.getBrowser("before")}]]" and the 'after' step was rendered with "[[${report.getBrowser("after")}]]".</p>
+    [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]]. <span th:unless="${#strings.equals(report.getBrowser('before'), report.getBrowser('after'))}">The 'before' step was rendered with
+        "[[${report.getBrowser("before")}]]" and the 'after' step was rendered with "[[${report.getBrowser("after")}]]".</span><span th:if="${#strings.equals(report.getBrowser('before'), report.getBrowser('after'))}">Both steps were rendered with "[[${report.getBrowser("after")}]]".</span></p>
 
 </body>
 </html>
