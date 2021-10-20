@@ -115,8 +115,9 @@
 
         div.legend {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
+            z-index: 51;
         }
 
         .legend {
@@ -171,9 +172,9 @@
             display: block;
         }
 
-        .urlReport input[type=checkbox]:checked ~ .legend {
-            display: block;
-        }
+        /*.urlReport input[type=checkbox]:checked ~ .legend {*/
+        /*    display: block;*/
+        /*}*/
 
         .urlReport input[type=checkbox]:checked ~ label .open-icon {
             display: none;
@@ -431,11 +432,13 @@
 
             document.getElementById("clickdiff").style.display = "block";
             document.getElementById("black").style.display = "block";
+            document.getElementsByClassName("legend")[0].style.display = "block";
         }
 
         function closeClickDiff() {
             document.getElementById("clickdiff").style.display = "none";
             document.getElementById("black").style.display = "none";
+            document.getElementsByClassName("legend")[0].style.display = "none";
         }
 
         function initZoom(element) {
