@@ -17,8 +17,8 @@
 
         @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
 
-        *{
-            font-family:'Lato', Arial, Helvetica, sans-serif;
+        * {
+            font-family: 'Lato', Arial, Helvetica, sans-serif;
             box-sizing: border-box;
         }
 
@@ -225,6 +225,7 @@
             width: 44px;
             height: 44px;
             z-index: 20;
+            cursor: pointer;
         }
 
         .zoom {
@@ -291,10 +292,11 @@
 
         .screenshot-difference {
             display: block;
+            cursor: pointer;
         }
 
         .screenshot-transparent {
-            opacity: 0%;
+            opacity: 0;
         }
 
         .info {
@@ -316,11 +318,125 @@
         }
 
         .result-col {
-            writing-mode: vertical-rl; vertical-align: middle !important; text-align: center;
+            writing-mode: vertical-rl;
+            vertical-align: middle !important;
+            text-align: center;
+        }
+
+        #black {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 49;
+            display: none;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        #clickdiff {
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            display: none;
+        }
+
+        #imagediv {
+
+        }
+
+        #imagediv img {
+            position: fixed;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            z-index: 51;
+        }
+
+        #clickclose {
+            position: fixed;
+            color: white;
+            top: 30px;
+            right: 30px;
+            font-size: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: block;
+            border-radius: 10px;
+            padding: 4px 16px 4px 16px;
+            z-index: 51;
+        }
+
+        #clickimagelabel {
+            position: fixed;
+            color: white;
+            top: 30px;
+            left: 30px;
+            font-size: 50px;
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: block;
+            border-radius: 10px;
+            padding: 4px 8px 8px 8px;
+            z-index: 51;
         }
 
     </style>
     <script type="application/javascript">
+
+        function initClickImage(file1, file2, file3) {
+            let current = document.getElementById("clickimage").src;
+
+            function setAfter() {
+                if (file2 === "null") {
+                    setDifference()
+                } else {
+                    document.getElementById("clickimage").src = file2
+                    document.getElementById("clickimagelabel").innerText = "After";
+                }
+            }
+
+            function setDifference() {
+                if (file3 === "null") {
+                    setBefore()
+                } else {
+                    document.getElementById("clickimage").src = file3;
+                    document.getElementById("clickimagelabel").innerText = "Difference";
+                }
+            }
+
+            function setBefore() {
+                if (file1 === "null") {
+                    setAfter()
+                } else {
+                    document.getElementById("clickimage").src = file1;
+                    document.getElementById("clickimagelabel").innerText = "Before";
+                }
+            }
+
+            if (current && current.includes(file1)) {
+                setAfter();
+            }
+            else if (current && current.includes(file2)) {
+                setDifference();
+            }
+            else {
+                setBefore();
+            }
+            document.getElementById("clickimage").onclick = () => initClickImage(file1, file2, file3);
+
+            document.getElementById("clickdiff").style.display = "block";
+            document.getElementById("black").style.display = "block";
+        }
+
+        function closeClickDiff() {
+            document.getElementById("clickdiff").style.display = "none";
+            document.getElementById("black").style.display = "none";
+        }
 
         function initZoom(element) {
             document.getElementById("zoombox").classList.remove("invisible");
@@ -535,10 +651,15 @@
                             <div>
                                 <a th:href="${contextReport.url}" target="_blank" th:title="${contextReport.url}">&#8599;&nbsp;Open&nbsp;page</a>
                             </div>
+                            <div style="margin-top: 2em;">
+                                <a href="#"
+                                   th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">Diff clicker</a>
+                            </div>
                         </div>
                     </td>
                     <td>
-                        <div class="image-compare" th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML != null}">
+                        <div class="image-compare"
+                             th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML != null}">
                             <div class="zoom-lens invisible keep" th:classappend="${'lens-' + contextReport.contextHash + '-' +
                     result.verticalScrollPosition}" th:id="${'lens-before_' + contextReport.contextHash + '-' +
                     result.verticalScrollPosition}">
@@ -553,13 +674,15 @@
                                  th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
                         </div>
-                        <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}" class="icv">
+                        <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}"
+                             class="icv">
                             <img class="screenshot-difference" width="100%"
                                  th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
                             <span class="icv__label icv__label-after keep on-hover">Before (only)</span>
                         </div>
-                        <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}" class="icv">
+                        <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}"
+                             class="icv">
                             <img class="screenshot-difference" width="100%"
                                  th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
@@ -567,14 +690,14 @@
                         </div>
                     </td>
                     <td th:switch="${result.difference > 0}" class="result-col">
-                        <input type="checkbox" th:attr="id=${'opendiff-' + contextReport.contextHash}"/><label th:attr="for=${'opendiff-' + contextReport.contextHash}">
-                        <h5><span th:case="${true}" class="failure">different</span><span th:case="${false}" class="success">match</span></h5></label></td>
+                        <h5><span th:case="${true}" class="failure">different</span><span th:case="${false}" class="success">match</span></h5>
+                    </td>
                     <td th:switch="${result.differenceImageFileName!=null}">
                         <div th:case="${true}"
                              th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
                              onmouseenter="initZoom(this)"
                              onmouseleave="stopZoom()"
-                             th:attr="onclick=|openPicturesInTabs('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">
+                             th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">
                             <div class="zoom-lens"
                                  th:classappend="${'lens-' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  th:id="${'lens-difference_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"></div>
@@ -583,14 +706,21 @@
                                  th:id="${'diff_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                             />
                         </div>
-                        <div th:case="${false}" th:style="${'background-color: ' + legend_different_size_rgb}">
-                            <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}">
+                        <div th:case="${false}"
+                             th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                             th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">
+                            <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}" th:style="${'background-color: ' + legend_different_size_rgb}">
                                 <img class="screenshot-difference screenshot-transparent" width="100%"
                                      th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
 
                             </div>
-                            <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}">
+                            <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}" th:style="${'background-color: ' + legend_different_size_rgb}">
+                                <img class="screenshot-difference screenshot-transparent" width="100%"
+                                     th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                     th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
+                            </div>
+                            <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML != null}" th:style="${'background-color: ' + legend_same_rgb}">
                                 <img class="screenshot-difference screenshot-transparent" width="100%"
                                      th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
@@ -654,13 +784,22 @@
     </div>
 </div>
 
-<div id="clickdiff" class="invisible">
+<div id="black" onclick="closeClickDiff()"></div>
 
+<div id="clickdiff">
+    <div id="imagediv">
+        <img id="clickimage"/>
+        <div id="clickimagelabel">Before</div>
+        <div id="clickclose" onclick="closeClickDiff()">&#10006;</div>
+    </div>
 </div>
 
 <p class="footer">Generated with JLineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
-    [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]]. <span th:unless="${#strings.equals(report.getBrowser('before'), report.getBrowser('after'))}">The 'before' step was rendered with
-        "[[${report.getBrowser("before")}]]" and the 'after' step was rendered with "[[${report.getBrowser("after")}]]".</span><span th:if="${#strings.equals(report.getBrowser('before'), report.getBrowser('after'))}">Both steps were rendered with "[[${report.getBrowser("after")}]]".</span></p>
+    [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]]. <span
+            th:unless="${#strings.equals(report.getBrowser('before'), report.getBrowser('after'))}">The 'before' step was rendered with
+        "[[${report.getBrowser("before")}]]" and the 'after' step was rendered with "[[${report.getBrowser("after")}]]".</span><span
+            th:if="${#strings.equals(report.getBrowser('before'), report.getBrowser('after'))}">Both steps were rendered with "[[${report.getBrowser("after")}]]".</span>
+</p>
 
 </body>
 </html>
