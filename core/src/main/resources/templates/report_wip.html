@@ -599,6 +599,13 @@
     <h5 style="color: #777777; margin: 0;">JLineup Comparison Report</h5>
     <h1 th:if="${report.config.name}" th:text="${report.config.name}"></h1>
 
+    <div style="background-color: #eeeeee; border-radius: 5px; padding: 5px;">
+    <h5 style="margin: 5px;">Results</h5>
+    <p style="margin: 5px; border-radius: 5px;" th:styleappend="${report.summary.error ? 'background-color: red;' : 'background-color: green;'}">Run status: <strong>[[${report.summary.error ? 'Difference detected!' : 'Success'}]]</strong></p>
+        <p style="margin: 5px; border-radius: 5px; background-color: #c3c3c3">Total difference: <strong>[[${#numbers.formatDecimal(report.summary.differenceSum*100,1,2)}]]%</strong> - Maximum difference of a single screenshot: <strong>[[${#numbers.formatDecimal(report.summary.differenceMax*100,1,2)}]]%</strong></p>
+    <!--<p>Accepted different pixels: [[${report.summary.acceptedDifferentPixels}]]</p>-->
+    </div>
+
     <p style="font-size: 0.6em"><a href="report_legacy.html">Click here for the legacy experience.</a></p>
 
     <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}">
