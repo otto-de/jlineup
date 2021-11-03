@@ -30,6 +30,8 @@ dependencies {
     compile 'org.jsoup:jsoup:1.14.3'
     //Update commons compress (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGAPACHECOMMONS-1316638)
     compile "org.apache.commons:commons-compress:1.21"
+    //Update gson (coming with webdrivermanager)
+    compile 'com.google.code.gson:gson:2.8.9'
 
     compile "com.fasterxml.jackson.core:jackson-core:" + jacksonVersion
     compile "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
@@ -39,7 +41,7 @@ dependencies {
     compile "org.slf4j:slf4j-api:1.7.32"
     compile "org.codehaus.janino:janino:3.1.6"
     compile "org.thymeleaf:thymeleaf:3.0.12.RELEASE"
-    compile "org.graalvm.sdk:graal-sdk:21.2.0"
+    compile "org.graalvm.sdk:graal-sdk:21.3.0"
     testCompile "org.hamcrest:hamcrest-core:2.2"
     testCompile "org.hamcrest:hamcrest-library:2.2"
     testCompile "junit:junit:4.13.2"
