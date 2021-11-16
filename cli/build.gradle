@@ -6,7 +6,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
     compile project(":jlineup-core")
-    compile "info.picocli:picocli:4.6.1"
+    compile "info.picocli:picocli:4.6.2"
     annotationProcessor 'info.picocli:picocli-codegen:4.6.2'
     compile "ch.qos.logback:logback-classic:1.2.6"
     compileOnly "org.graalvm.nativeimage:svm:21.3.0"
