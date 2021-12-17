@@ -417,7 +417,7 @@ public class Browser implements AutoCloseable {
     }
 
     private boolean areThereCookies(ScreenshotContext screenshotContext) {
-        return (screenshotContext.urlConfig.cookies != null && !screenshotContext.urlConfig.cookies.isEmpty());
+        return (screenshotContext.cookies != null && !screenshotContext.cookies.isEmpty());
     }
 
     private boolean isThereStorage(ScreenshotContext screenshotContext) {
@@ -427,7 +427,7 @@ public class Browser implements AutoCloseable {
 
     private void setCookies(ScreenshotContext screenshotContext, WebDriver localDriver) {
         //First: Set cookies on different domains which are explicitly set
-        Map<String, List<Cookie>> cookiesByDomainDifferentFromDomainToScreenshot = screenshotContext.urlConfig.cookies
+        Map<String, List<Cookie>> cookiesByDomainDifferentFromDomainToScreenshot = screenshotContext.cookies
                 .stream()
                 .filter(cookie -> cookie.domain != null)
                 .collect(groupingBy(cookie -> cookie.domain));
@@ -437,7 +437,7 @@ public class Browser implements AutoCloseable {
         });
 
         //Second: Set my cookies on same domain
-        List<Cookie> cookiesForSameDomain = screenshotContext.urlConfig.cookies.stream().filter(cookie -> cookie.domain == null).collect(Collectors.toList());
+        List<Cookie> cookiesForSameDomain = screenshotContext.cookies.stream().filter(cookie -> cookie.domain == null).collect(Collectors.toList());
         setCookiesForDomain(localDriver, screenshotContext.url, cookiesForSameDomain);
     }
 

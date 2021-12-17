@@ -3,7 +3,10 @@ package de.otto.jlineup.browser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.config.*;
+import de.otto.jlineup.config.Cookie;
+import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.UrlConfig;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -13,15 +16,17 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
-import static de.otto.jlineup.config.JobConfig.*;
+import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class BrowserUtilsTest {
@@ -75,13 +80,14 @@ public class BrowserUtilsTest {
         int expectedHeight = jobConfig.windowHeight;
 
         final List<ScreenshotContext> expectedScreenshotContextList = ImmutableList.of(
-                ScreenshotContext.of("https://www.otto.de", "/", deviceConfig(600, expectedHeight), Step.before, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "/", deviceConfig(800, expectedHeight), Step.before, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "/", deviceConfig(1200, expectedHeight), Step.before, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(600, expectedHeight), Step.before, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(800, expectedHeight), Step.before, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(1200, expectedHeight), Step.before, expectedUrlConfigForOttoDe),
-                ScreenshotContext.of("http://www.doodle.de", "/",         deviceConfig(1200, expectedHeight), Step.before, expectedUrlConfigForGoogleDe, "http://www.google.de")
+                ScreenshotContext.of("https://www.otto.de", "/", deviceConfig(600, expectedHeight), Step.before, expectedUrlConfigForOttoDe, expectedUrlConfigForOttoDe.cookies),
+                ScreenshotContext.of("https://www.otto.de", "/", deviceConfig(800, expectedHeight), Step.before, expectedUrlConfigForOttoDe, expectedUrlConfigForOttoDe.cookies),
+                ScreenshotContext.of("https://www.otto.de", "/", deviceConfig(1200, expectedHeight), Step.before, expectedUrlConfigForOttoDe, expectedUrlConfigForOttoDe.cookies),
+                ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(600, expectedHeight), Step.before, expectedUrlConfigForOttoDe, expectedUrlConfigForOttoDe.cookies),
+                ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(800, expectedHeight), Step.before, expectedUrlConfigForOttoDe, expectedUrlConfigForOttoDe.cookies),
+                ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(1200, expectedHeight), Step.before, expectedUrlConfigForOttoDe, expectedUrlConfigForOttoDe.cookies),
+                ScreenshotContext.of("http://www.doodle.de", "/",         deviceConfig(1200, expectedHeight), Step.before, expectedUrlConfigForGoogleDe, Stream.concat(expectedUrlConfigForGoogleDe.cookies.stream(), expectedUrlConfigForGoogleDe.alternatingCookies.get(0).stream()).collect(Collectors.toList()),"http://www.google.de"),
+                ScreenshotContext.of("http://www.doodle.de", "/",         deviceConfig(1200, expectedHeight), Step.before, expectedUrlConfigForGoogleDe, Stream.concat(expectedUrlConfigForGoogleDe.cookies.stream(), expectedUrlConfigForGoogleDe.alternatingCookies.get(1).stream()).collect(Collectors.toList()),"http://www.google.de")
         );
 
         //when
@@ -126,6 +132,8 @@ public class BrowserUtilsTest {
         return UrlConfig.urlConfigBuilder()
                 .withPath("/")
                 .withMaxDiff(0.05d)
+                .withCookies(ImmutableList.of(new Cookie("classic", "true")))
+                .withAlternatingCookies(ImmutableList.of(ImmutableList.of(new Cookie("alternating", "case1")), ImmutableList.of(new Cookie("alternating", "case2"))))
                 .withWindowWidths(ImmutableList.of(1200))
                 .withMaxScrollHeight(100000)
                 .build();

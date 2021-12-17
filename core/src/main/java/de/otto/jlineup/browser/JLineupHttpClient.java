@@ -82,7 +82,7 @@ class JLineupHttpClient {
     }
 
     private CookieStore prepareCookieStore(ScreenshotContext screenshotContext) throws MalformedURLException {
-        List<Cookie> cookies = screenshotContext.urlConfig.cookies;
+        List<Cookie> cookies = screenshotContext.cookies;
         CookieStore cookieStore = new BasicCookieStore();
 
         //If a cookie is added without a domain, Apache HTTP Client 4.5.5 throws a NullPointerException, so we extract the domain from the URL here

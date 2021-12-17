@@ -21,6 +21,8 @@ public class UrlConfig {
     public final List<String> cleanupPaths;
     public final double maxDiff;
     public final List<Cookie> cookies;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public final List<List<Cookie>> alternatingCookies;
     public final Map<String, String> envMapping;
     public final Map<String, String> localStorage;
     public final Map<String, String> sessionStorage;
@@ -59,6 +61,7 @@ public class UrlConfig {
         cleanupPaths = builder.cleanupPaths;
         maxDiff = builder.maxDiff;
         cookies = builder.cookies;
+        alternatingCookies = builder.alternatingCookies;
         envMapping = builder.envMapping;
         localStorage = builder.localStorage;
         sessionStorage = builder.sessionStorage;
@@ -99,12 +102,24 @@ public class UrlConfig {
         return paths;
     }
 
+    public List<String> getSetupPaths() {
+        return setupPaths;
+    }
+
+    public List<String> getCleanupPaths() {
+        return cleanupPaths;
+    }
+
     public double getMaxDiff() {
         return maxDiff;
     }
 
     public List<Cookie> getCookies() {
         return cookies;
+    }
+
+    public List<List<Cookie>> getAlternatingCookies() {
+        return alternatingCookies;
     }
 
     public Map<String, String> getEnvMapping() {
@@ -212,6 +227,7 @@ public class UrlConfig {
         builder.paths = copy.paths;
         builder.maxDiff = copy.maxDiff;
         builder.cookies = copy.cookies;
+        builder.alternatingCookies = copy.alternatingCookies;
         builder.envMapping = copy.envMapping;
         builder.localStorage = copy.localStorage;
         builder.sessionStorage = copy.sessionStorage;
@@ -244,6 +260,7 @@ public class UrlConfig {
         private List<String> cleanupPaths = Collections.emptyList();
         private double maxDiff = DEFAULT_MAX_DIFF;
         private List<Cookie> cookies;
+        private List<List<Cookie>> alternatingCookies = Collections.emptyList();
         private Map<String, String> envMapping;
         private Map<String, String> localStorage;
         private Map<String, String> sessionStorage;
@@ -296,6 +313,11 @@ public class UrlConfig {
 
         public Builder withCookie(Cookie val) {
             cookies = Collections.singletonList(val);
+            return this;
+        }
+
+        public Builder withAlternatingCookies(List<List<Cookie>> val) {
+            alternatingCookies = val;
             return this;
         }
 
@@ -429,44 +451,6 @@ public class UrlConfig {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UrlConfig urlConfig = (UrlConfig) o;
-        return Double.compare(urlConfig.maxDiff, maxDiff) == 0 &&
-                maxScrollHeight == urlConfig.maxScrollHeight &&
-                Float.compare(urlConfig.waitAfterPageLoad, waitAfterPageLoad) == 0 &&
-                Float.compare(urlConfig.waitAfterScroll, waitAfterScroll) == 0 &&
-                Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 &&
-                Float.compare(urlConfig.warmupBrowserCacheTime, warmupBrowserCacheTime) == 0 &&
-                Float.compare(urlConfig.waitForFontsTime, waitForFontsTime) == 0 &&
-                hideImages == urlConfig.hideImages &&
-                Float.compare(urlConfig.waitForSelectorsTimeout, waitForSelectorsTimeout) == 0 &&
-                failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound &&
-                ignoreAntiAliasing == urlConfig.ignoreAntiAliasing &&
-                strictColorComparison == urlConfig.strictColorComparison &&
-                Float.compare(urlConfig.maxColorDistance, maxColorDistance) == 0 &&
-                Objects.equals(paths, urlConfig.paths) &&
-                Objects.equals(setupPaths, urlConfig.setupPaths) &&
-                Objects.equals(cleanupPaths, urlConfig.cleanupPaths) &&
-                Objects.equals(cookies, urlConfig.cookies) &&
-                Objects.equals(envMapping, urlConfig.envMapping) &&
-                Objects.equals(localStorage, urlConfig.localStorage) &&
-                Objects.equals(sessionStorage, urlConfig.sessionStorage) &&
-                Objects.equals(windowWidths, urlConfig.windowWidths) &&
-                Objects.equals(devices, urlConfig.devices) &&
-                Objects.equals(javaScript, urlConfig.javaScript) &&
-                Objects.equals(httpCheck, urlConfig.httpCheck) &&
-                Objects.equals(removeSelectors, urlConfig.removeSelectors) &&
-                Objects.equals(waitForSelectors, urlConfig.waitForSelectors);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(paths, setupPaths, cleanupPaths, maxDiff, cookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, strictColorComparison, maxColorDistance);
-    }
-
-    @Override
     public String toString() {
         return "UrlConfig{" +
                 "paths=" + paths +
@@ -474,6 +458,7 @@ public class UrlConfig {
                 ", cleanupPaths=" + cleanupPaths +
                 ", maxDiff=" + maxDiff +
                 ", cookies=" + cookies +
+                ", alternatingCookies=" + alternatingCookies +
                 ", envMapping=" + envMapping +
                 ", localStorage=" + localStorage +
                 ", sessionStorage=" + sessionStorage +
@@ -498,4 +483,16 @@ public class UrlConfig {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UrlConfig urlConfig = (UrlConfig) o;
+        return Double.compare(urlConfig.maxDiff, maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(urlConfig.waitAfterPageLoad, waitAfterPageLoad) == 0 && Float.compare(urlConfig.waitAfterScroll, waitAfterScroll) == 0 && Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 && Float.compare(urlConfig.warmupBrowserCacheTime, warmupBrowserCacheTime) == 0 && Float.compare(urlConfig.waitForFontsTime, waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(urlConfig.waitForSelectorsTimeout, waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && strictColorComparison == urlConfig.strictColorComparison && Float.compare(urlConfig.maxColorDistance, maxColorDistance) == 0 && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, strictColorComparison, maxColorDistance);
+    }
 }

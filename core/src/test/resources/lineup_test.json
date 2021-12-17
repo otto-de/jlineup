@@ -16,11 +16,11 @@
           "value": "1"
         }
       ],
-      "local-storage" : {
-        "teststorage" : "{'testkey':{'value':true,'timestamp':9467812242358}}"
+      "local-storage": {
+        "teststorage": "{'testkey':{'value':true,'timestamp':9467812242358}}"
       },
-      "session-storage" : {
-        "testsession" : "{'testkey':{'value':true,'timestamp':9467812242358}}"
+      "session-storage": {
+        "testsession": "{'testkey':{'value':true,'timestamp':9467812242358}}"
       },
       "env-mapping": {
         "live": "www"
@@ -43,6 +43,26 @@
       "max-diff": 0.05,
       "resolutions": [
         1200
+      ],
+      "cookies": [
+        {
+          "name": "classic",
+          "value": "true"
+        }
+      ],
+      "alternating-cookies": [
+        [
+          {
+            "name": "alternating",
+            "value": "case1"
+          }
+        ],
+        [
+          {
+            "name": "alternating",
+            "value": "case2"
+          }
+        ]
       ]
     }
   },

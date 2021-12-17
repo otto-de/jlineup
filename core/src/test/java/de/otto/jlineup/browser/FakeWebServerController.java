@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,6 +51,12 @@ public class FakeWebServerController {
     @GetMapping("/somerootpath/somevalidsubpath")
     public ResponseEntity<String> getPageOnDeeperPath() {
         return new ResponseEntity<>("Hallo! This is valid!", HttpStatus.OK);
+    }
+
+    @GetMapping("/cookies")
+    public ResponseEntity<String> testAlteringCookies(@CookieValue("alternating") String alternatingCookieValue) {
+        System.out.println("ACV: " + alternatingCookieValue);
+        return new ResponseEntity<>("Alternating cookie value is " + alternatingCookieValue, HttpStatus.valueOf(alternatingCookieValue));
     }
 
 }

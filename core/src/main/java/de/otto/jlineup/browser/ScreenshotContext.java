@@ -2,10 +2,13 @@ package de.otto.jlineup.browser;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.config.UrlConfig;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 @JsonDeserialize(builder = ScreenshotContext.Builder.class)
@@ -13,6 +16,7 @@ public final class ScreenshotContext  {
     public final String url;
     public final String urlSubPath;
     public final DeviceConfig deviceConfig;
+    public final List<Cookie> cookies;
     @JsonIgnore
     public final Step step;
     @JsonIgnore
@@ -24,10 +28,11 @@ public final class ScreenshotContext  {
     @JsonIgnore
     final String originalUrl;
 
-    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String originalUrl) {
+    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, List<Cookie> cookies, Step step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String originalUrl) {
         this.url = url;
         this.urlSubPath = urlSubPath;
         this.deviceConfig = deviceConfig;
+        this.cookies = cookies;
         this.step = step;
         this.urlConfig = urlConfig;
         this.fullPathOfReportDir = fullPathOfReportDir;
@@ -44,6 +49,7 @@ public final class ScreenshotContext  {
         url = builder.url;
         urlSubPath = builder.urlSubPath;
         deviceConfig = builder.deviceConfig;
+        cookies = builder.cookies;
         step = builder.step;
         urlConfig = builder.urlConfig;
         fullPathOfReportDir = builder.fullPathOfReportDir;
@@ -52,13 +58,18 @@ public final class ScreenshotContext  {
     }
 
     //Used in Tests only
-    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, String originalUrl) {
-        return new ScreenshotContext(url, path, deviceConfig, step, urlConfig, null, false, originalUrl);
+    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, List<Cookie> cookies, String originalUrl) {
+        return new ScreenshotContext(url, path, deviceConfig, cookies, step, urlConfig, null, false, originalUrl);
+    }
+
+    //Used in Tests only
+    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, List<Cookie> cookies) {
+        return new ScreenshotContext(url, path, deviceConfig, cookies, step, urlConfig, null, false, url);
     }
 
     //Used in Tests only
     public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig) {
-        return new ScreenshotContext(url, path, deviceConfig, step, urlConfig, null, false, url);
+        return new ScreenshotContext(url, path, deviceConfig, urlConfig.cookies, step, urlConfig, null, false, url);
     }
 
     public static Builder screenshotContextBuilder() {
@@ -70,6 +81,7 @@ public final class ScreenshotContext  {
         builder.url = copy.url;
         builder.urlSubPath = copy.urlSubPath;
         builder.deviceConfig = copy.deviceConfig;
+        builder.cookies = copy.cookies;
         builder.step = copy.step;
         builder.urlConfig = copy.urlConfig;
         builder.fullPathOfReportDir = copy.fullPathOfReportDir;
@@ -102,6 +114,10 @@ public final class ScreenshotContext  {
         return deviceConfig;
     }
 
+    public List<Cookie> getCookies() {
+        return cookies;
+    }
+
     /*
      *
      *
@@ -115,7 +131,7 @@ public final class ScreenshotContext  {
      */
 
     public int contextHash() {
-        return Objects.hash(originalUrl, urlSubPath, deviceConfig);
+        return Objects.hash(originalUrl, urlSubPath, deviceConfig, cookies);
     }
 
     public boolean equalsIgnoreStep(ScreenshotContext that) {
@@ -134,19 +150,12 @@ public final class ScreenshotContext  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ScreenshotContext that = (ScreenshotContext) o;
-        return dontShareBrowser == that.dontShareBrowser &&
-                Objects.equals(url, that.url) &&
-                Objects.equals(urlSubPath, that.urlSubPath) &&
-                Objects.equals(deviceConfig, that.deviceConfig) &&
-                step == that.step &&
-                Objects.equals(urlConfig, that.urlConfig) &&
-                Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir) &&
-                Objects.equals(originalUrl, that.originalUrl);
+        return dontShareBrowser == that.dontShareBrowser && Objects.equals(url, that.url) && Objects.equals(urlSubPath, that.urlSubPath) && Objects.equals(deviceConfig, that.deviceConfig) && Objects.equals(cookies, that.cookies) && step == that.step && Objects.equals(urlConfig, that.urlConfig) && Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir) && Objects.equals(originalUrl, that.originalUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, urlSubPath, deviceConfig, step, urlConfig, fullPathOfReportDir, dontShareBrowser, originalUrl);
+        return Objects.hash(url, urlSubPath, deviceConfig, cookies, step, urlConfig, fullPathOfReportDir, dontShareBrowser, originalUrl);
     }
 
     @Override
@@ -155,6 +164,7 @@ public final class ScreenshotContext  {
                 "url='" + url + '\'' +
                 ", urlSubPath='" + urlSubPath + '\'' +
                 ", deviceConfig=" + deviceConfig +
+                ", cookies=" + cookies +
                 ", step=" + step +
                 ", urlConfig=" + urlConfig +
                 ", fullPathOfReportDir='" + fullPathOfReportDir + '\'' +
@@ -167,6 +177,7 @@ public final class ScreenshotContext  {
         private String url;
         private String urlSubPath;
         private DeviceConfig deviceConfig;
+        private List<Cookie> cookies = Collections.emptyList();
         private Step step;
         private UrlConfig urlConfig;
         private String fullPathOfReportDir;
@@ -188,6 +199,11 @@ public final class ScreenshotContext  {
 
         public Builder withDeviceConfig(DeviceConfig val) {
             deviceConfig = val;
+            return this;
+        }
+
+        public Builder withCookies(List<Cookie> val) {
+            cookies = val;
             return this;
         }
 

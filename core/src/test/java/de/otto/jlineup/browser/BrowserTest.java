@@ -167,6 +167,7 @@ public class BrowserTest {
         UrlConfig urlConfig = urlConfigBuilder()
                 .withPath("/")
                 .withCookies(ImmutableList.of(new Cookie("testcookiename", "testcookievalue")))
+                .withAlternatingCookies(ImmutableList.of(ImmutableList.of(new Cookie("alternating", "one"))))
                 .withLocalStorage(ImmutableMap.of("localStorageKey", "localStorageValue"))
                 .withSessionStorage(ImmutableMap.of("sessionStorageKey", "sessionStorageValue"))
                 .withWarmupBrowserCacheTime(3)
@@ -185,8 +186,8 @@ public class BrowserTest {
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), Step.before, urlConfig);
-        ScreenshotContext screenshotContext2 = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 100), Step.before, urlConfig);
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), Step.before, urlConfig, ImmutableList.of(new Cookie("testcookiename", "testcookievalue"), new Cookie("alternating", "one")));
+        ScreenshotContext screenshotContext2 = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 100), Step.before, urlConfig, ImmutableList.of(new Cookie("testcookiename", "testcookievalue"), new Cookie("alternating", "one")));
 
         when(webDriverMock.getCurrentUrl()).thenReturn("http://testurl");
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
@@ -211,6 +212,7 @@ public class BrowserTest {
         verify(webDriverMock, times(4)).get("http://testurl/");
         verify(webDriverMock, times(2)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
         verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue"));
+        verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("alternating", "one"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "localStorageKey", "localStorageValue"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "sessionStorageKey", "sessionStorageValue"));
         verify(webDriverMock, times(1)).executeScript(JS_GET_USER_AGENT);
