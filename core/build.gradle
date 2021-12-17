@@ -46,7 +46,7 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-library:2.2"
     testCompile "junit:junit:4.13.2"
 
-    testCompile "org.mockito:mockito-core:4.1.0"
+    testCompile "org.mockito:mockito-core:4.2.0"
     testCompile("com.github.stefanbirkner:system-rules:1.19.0") {
         exclude group: 'junit', module: 'junit-dep'
     }
