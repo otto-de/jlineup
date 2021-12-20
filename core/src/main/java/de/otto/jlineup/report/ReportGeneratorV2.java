@@ -30,7 +30,7 @@ public class ReportGeneratorV2 {
                 contextReports.add(contextReport);
             }
 
-            contextReports.sort(Comparator.comparing(ContextReport::getUrl).thenComparing(ContextReport::getWidth));
+            contextReports.sort(Comparator.comparing(ContextReport::getUrl).thenComparing(ContextReport::getWidth).thenComparing(ContextReport::getShownCookiesString));
 
             UrlReportV2 urlReport = new UrlReportV2(resultForUrl.getKey(), urlSummary, contextReports);
             urlReports.add(urlReport);

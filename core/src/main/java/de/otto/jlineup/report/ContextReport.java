@@ -2,11 +2,17 @@ package de.otto.jlineup.report;
 
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
+import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.DeviceConfig;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ContextReport {
 
@@ -44,6 +50,22 @@ public class ContextReport {
     @UsedInTemplate
     public int getWidth() {
         return screenshotContext.deviceConfig.width;
+    }
+
+    @UsedInTemplate
+    public List<Cookie> getShownCookies() {
+        return screenshotContext.cookies.stream().filter(cookie -> cookie.showInReport != null && cookie.showInReport).collect(Collectors.toList());
+    }
+
+    @UsedInTemplate
+    public String getShownCookiesString() {
+        String cookiesString = getShownCookies().stream().filter(Objects::nonNull).map(cookie -> cookie.name + ": " + cookie.value).collect(Collectors.joining(", "));
+        try {
+            cookiesString = URLDecoder.decode(cookiesString, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            //URLDecode failed, go on without it
+        }
+        return cookiesString;
     }
 
     @UsedInTemplate

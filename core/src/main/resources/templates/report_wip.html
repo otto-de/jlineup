@@ -618,6 +618,7 @@
                     <span class="close-icon">[-]</span>
                     [[${#strings.substringAfter(contextReport.url,urlReport.url)}]]
                     <span class="inline-size">([[${#strings.replace(contextReport.deviceInfo,'\n',', ')}]])</span>
+                    <span th:if="${!#strings.isEmpty(contextReport.shownCookiesString)}" class="inline-size">([[${contextReport.shownCookiesString}]])</span>
                     <span th:if="${contextReport.isSuccess()}"
                           th:classappend="${contextReport.isSuccess()} ? success : failure">[matching]</span>
                     <span th:if="${contextReport.isSuccess() == false}"
