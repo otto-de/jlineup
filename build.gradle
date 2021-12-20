@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.owasp:dependency-check-gradle:6.5.0.1'
+        classpath 'org.owasp:dependency-check-gradle:6.5.1'
         classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
     }
 }
