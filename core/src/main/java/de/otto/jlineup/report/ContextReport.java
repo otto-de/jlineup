@@ -54,11 +54,17 @@ public class ContextReport {
 
     @UsedInTemplate
     public List<Cookie> getShownCookies() {
+        if (screenshotContext.cookies == null) {
+            return null;
+        }
         return screenshotContext.cookies.stream().filter(cookie -> cookie.showInReport != null && cookie.showInReport).collect(Collectors.toList());
     }
 
     @UsedInTemplate
     public String getShownCookiesString() {
+        if (getShownCookies() == null) {
+            return null;
+        }
         String cookiesString = getShownCookies().stream().filter(Objects::nonNull).map(cookie -> cookie.name + ": " + cookie.value).collect(Collectors.joining(", "));
         try {
             cookiesString = URLDecoder.decode(cookiesString, StandardCharsets.UTF_8.name());

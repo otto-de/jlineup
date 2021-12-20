@@ -82,8 +82,8 @@ public class BrowserTest {
         //given
         ArgumentCaptor<org.openqa.selenium.Cookie> cookieCaptor = ArgumentCaptor.forClass(org.openqa.selenium.Cookie.class);
 
-        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true);
-        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(10000000000L), false);
+        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true, false);
+        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(10000000000L), false, false);
         //when
         testee.setCookies(ImmutableList.of(cookieOne, cookieTwo));
         //then
@@ -108,8 +108,8 @@ public class BrowserTest {
     @Test
     public void shouldSetCookiesThroughJavascript() {
         //given
-        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true);
-        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(100000067899L), false);
+        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true, false);
+        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(100000067899L), false, false);
         //when
         testee.setCookiesPhantomJS(ImmutableList.of(cookieOne, cookieTwo));
         //then
@@ -237,8 +237,8 @@ public class BrowserTest {
         //Set to something without milliseconds (selenium strips it!)
         Date cookieExpiry = new Date(100000);
         List<Cookie> expectedCookies = Arrays.asList(
-                new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false),
-                new Cookie("testcookiename2", "testcookievalue2", "anotherCookieurl", "/", cookieExpiry, false),
+                new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false, false),
+                new Cookie("testcookiename2", "testcookievalue2", "anotherCookieurl", "/", cookieExpiry, false, false),
                 new Cookie("testcookiename3", "testcookievalue3")
         );
 
@@ -304,9 +304,9 @@ public class BrowserTest {
         //Set to something without milliseconds (selenium strips it!)
         Date cookieExpiry = new Date(100000);
         List<Cookie> expectedCookies = Arrays.asList(
-                new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false),
-                new Cookie("testcookiename2", "testcookievalue2", "cookieurl", "/", cookieExpiry, true),
-                new Cookie("testcookiename3", "testcookievalue3", "cookieurl", "/", cookieExpiry, false)
+                new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false, false),
+                new Cookie("testcookiename2", "testcookievalue2", "cookieurl", "/", cookieExpiry, true, false),
+                new Cookie("testcookiename3", "testcookievalue3", "cookieurl", "/", cookieExpiry, false, false)
         );
 
         UrlConfig urlConfig = urlConfigBuilder().withPath("/").withWindowWidths(singletonList(600)).withCookies(expectedCookies).build();
