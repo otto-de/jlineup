@@ -8,7 +8,7 @@ dependencies {
     compile project(":jlineup-core")
     compile "info.picocli:picocli:4.6.2"
     annotationProcessor 'info.picocli:picocli-codegen:4.6.2'
-    compile "ch.qos.logback:logback-classic:1.2.9"
+    compile "ch.qos.logback:logback-classic:1.2.10"
     compileOnly "org.graalvm.nativeimage:svm:21.3.0"
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
