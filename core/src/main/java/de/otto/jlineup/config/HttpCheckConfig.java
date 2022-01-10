@@ -37,19 +37,19 @@ public class HttpCheckConfig {
     public HttpCheckConfig(boolean enabled, List<Integer> allowedCodes) {
         this.enabled = enabled;
         this.allowedCodes = allowedCodes == null ? DEFAULT_ALLOWED_CODES : allowedCodes;
-        this.errorSignals = Collections.emptyList();
+        this.errorSignals = null;
     }
 
     public HttpCheckConfig() {
         this.enabled = false;
         this.allowedCodes = null;
-        this.errorSignals = Collections.emptyList();
+        this.errorSignals = null;
     }
 
     public HttpCheckConfig(boolean enabled) {
         this.enabled = enabled;
         this.allowedCodes = DEFAULT_ALLOWED_CODES;
-        this.errorSignals = Collections.emptyList();
+        this.errorSignals = null;
     }
 
     private HttpCheckConfig(Builder builder) {
