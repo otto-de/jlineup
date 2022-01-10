@@ -10,9 +10,12 @@ import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.cookie.CookieStore;
 import org.apache.hc.client5.http.cookie.StandardCookieSpec;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.cookie.BasicClientCookie;
+import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +68,7 @@ class JLineupHttpClient {
 
             final HttpGet request = new HttpGet(buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping));
 
-            HttpResponse response = client.execute(request);
+            CloseableHttpResponse response = client.execute(request);
             int statusCode = response.getCode();
 
             List<Integer> allowedCodes = httpCheck.getAllowedCodes();
@@ -75,9 +78,23 @@ class JLineupHttpClient {
 
             if (!allowedCodes.contains(statusCode)) {
                 throw new JLineupException("Accessibility check of " + request.getRequestUri() + " returned status code " + statusCode);
-            } else {
-                LOG.info("Accessibility of {} checked and considered good! Return code was: {}", request.getRequestUri(), statusCode);
             }
+
+            List<String> errorSignals = httpCheck.getErrorSignals();
+            if (errorSignals != null && !errorSignals.isEmpty()) {
+                HttpEntity entity = response.getEntity();
+                if (entity != null) {
+                    String body = EntityUtils.toString(entity);
+                    if (body != null) {
+                        for (String errorSignal : errorSignals) {
+                            if (body.contains(errorSignal)) {
+                                throw new JLineupException("Accessibility check of " + request.getRequestUri() + " returned error signal '" + errorSignal + "' in body ");
+                            }
+                        }
+                    }
+                }
+            }
+            LOG.info("Accessibility of {} checked and considered good! Return code was: {}", request.getRequestUri(), statusCode);
         }
     }
 

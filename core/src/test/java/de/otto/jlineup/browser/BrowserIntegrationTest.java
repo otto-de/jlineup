@@ -22,7 +22,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -177,6 +180,21 @@ public class BrowserIntegrationTest {
         } catch (Exception e) {
             assertThat(e.getCause().getCause().getCause().getMessage(), containsString("Accessibility check"));
             assertThat(e.getCause().getCause().getCause().getMessage(), containsString("returned status code 200"));
+        }
+    }
+
+    @Test
+    public void shouldDetectErrorSignal() throws ValidationError {
+        UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
+                .withHttpCheck(HttpCheckConfig.httpCheckConfigBuilder().withEnabled(true).withErrorSignals(singletonList("Hallo!")).build())
+                .withPaths(ImmutableList.of("/")).build();
+        JobConfig jobConfig = localTestConfig("somerootpath/somevalidsubpath", Browser.Type.CHROME_HEADLESS, true, urlConfig);
+        try {
+            runJLineup(jobConfig, Step.before);
+            fail();
+        } catch (Exception e) {
+            assertThat(e.getCause().getCause().getCause().getMessage(), containsString("Accessibility check"));
+            assertThat(e.getCause().getCause().getCause().getMessage(), containsString("returned error signal"));
         }
     }
 
