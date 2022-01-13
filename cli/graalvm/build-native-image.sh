@@ -58,7 +58,7 @@ cd cli
 -H:+AddAllCharsets \
 `#-H:ReflectionConfigurationFiles=graalvm/reflect.json` \
 -H:ConfigurationFileDirectories=graalvm/ \
---initialize-at-build-time=com.fasterxml.jackson,javassist.ClassPool \
+`#--initialize-at-build-time=com.fasterxml.jackson,javassist.ClassPool` \
 --verbose \
 --report-unsupported-elements-at-runtime \
 `#--static` \

@@ -476,9 +476,8 @@ If you want to see the different cookies in the HTML report, you can specify `sh
             "env-mapping": {
                 "live": "www"
             }
-            `
-            
---- 
+            `  
+---
 
 ### `hide-images`
 
@@ -490,7 +489,7 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Default: `false`
  * Example: `"hide-images": true`
  
---- 
+---
 
 ### `wait-for-selectors`
 

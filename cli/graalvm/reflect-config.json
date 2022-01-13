@@ -1,700 +1,961 @@
 [
 {
-  "name":"byte[]"
-},
+  "name":"[B"}
+,
+{
+  "name":"[Ljava.lang.Object;"}
+,
+{
+  "name":"[Ljava.lang.String;"}
+,
+{
+  "name":"[Lsun.security.pkcs.SignerInfo;"}
+,
 {
   "name":"ch.qos.logback.classic.Level",
-  "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
-},
+  "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]}
+,
 {
   "name":"ch.qos.logback.classic.PatternLayout",
-  "allPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"ch.qos.logback.classic.encoder.PatternLayoutEncoder",
-  "allPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"ch.qos.logback.classic.filter.LevelFilter",
-  "allPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setLevel","parameterTypes":["ch.qos.logback.classic.Level"] }
+  ]}
+,
 {
   "name":"ch.qos.logback.classic.pattern.DateConverter",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"ch.qos.logback.classic.pattern.LevelConverter",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"ch.qos.logback.classic.pattern.LineSeparatorConverter",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"ch.qos.logback.classic.pattern.LoggerConverter",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"ch.qos.logback.classic.pattern.MessageConverter",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"ch.qos.logback.classic.pattern.RootCauseFirstThrowableProxyConverter",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"ch.qos.logback.classic.pattern.ThreadConverter",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"ch.qos.logback.classic.sift.MDCBasedDiscriminator",
-  "allPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setDefaultValue","parameterTypes":["java.lang.String"] }, 
+    {"name":"setKey","parameterTypes":["java.lang.String"] }
+  ]}
+,
 {
   "name":"ch.qos.logback.classic.sift.SiftingAppender",
-  "allPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setDiscriminator","parameterTypes":["ch.qos.logback.core.sift.Discriminator"] }
+  ]}
+,
+{
+  "name":"ch.qos.logback.core.AppenderBase",
+  "methods":[{"name":"addFilter","parameterTypes":["ch.qos.logback.core.filter.Filter"] }]}
+,
 {
   "name":"ch.qos.logback.core.ConsoleAppender",
-  "allPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setTarget","parameterTypes":["java.lang.String"] }
+  ]}
+,
 {
   "name":"ch.qos.logback.core.FileAppender",
-  "allPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"setFile","parameterTypes":["java.lang.String"] }
+  ]}
+,
+{
+  "name":"ch.qos.logback.core.OutputStreamAppender",
+  "methods":[
+    {"name":"setEncoder","parameterTypes":["ch.qos.logback.core.encoder.Encoder"] }, 
+    {"name":"setLayout","parameterTypes":["ch.qos.logback.core.Layout"] }
+  ]}
+,
+{
+  "name":"ch.qos.logback.core.UnsynchronizedAppenderBase",
+  "methods":[{"name":"addFilter","parameterTypes":["ch.qos.logback.core.filter.Filter"] }]}
+,
+{
+  "name":"ch.qos.logback.core.encoder.LayoutWrappingEncoder",
+  "methods":[{"name":"setParent","parameterTypes":["ch.qos.logback.core.spi.ContextAware"] }]}
+,
+{
+  "name":"ch.qos.logback.core.filter.AbstractMatcherFilter",
+  "methods":[
+    {"name":"setOnMatch","parameterTypes":["ch.qos.logback.core.spi.FilterReply"] }, 
+    {"name":"setOnMismatch","parameterTypes":["ch.qos.logback.core.spi.FilterReply"] }
+  ]}
+,
+{
+  "name":"ch.qos.logback.core.pattern.PatternLayoutBase",
+  "methods":[{"name":"setPattern","parameterTypes":["java.lang.String"] }]}
+,
+{
+  "name":"ch.qos.logback.core.pattern.PatternLayoutEncoderBase",
+  "methods":[{"name":"setPattern","parameterTypes":["java.lang.String"] }]}
+,
 {
   "name":"ch.qos.logback.core.spi.FilterReply",
-  "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
-},
+  "queriedMethods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]}
+,
 {
   "name":"com.fasterxml.jackson.databind.ext.Java7HandlersImpl",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"com.fasterxml.jackson.databind.ext.Java7SupportImpl",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"com.google.common.collect.BiMap",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"com.google.common.collect.ImmutableBiMap",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"com.google.common.collect.ImmutableBiMapFauxverideShim",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"com.google.common.collect.ImmutableCollection",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"com.google.common.collect.ImmutableList",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"com.google.common.collect.ImmutableMap",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"com.google.common.collect.SingletonImmutableBiMap",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true}
+,
 {
   "name":"com.google.common.collect.SingletonImmutableList",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true}
+,
 {
-  "name":"com.google.gson.JsonElement"
-},
+  "name":"com.google.gson.JsonElement"}
+,
 {
   "name":"com.sun.crypto.provider.AESCipher$General",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"com.sun.crypto.provider.DHParameters",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"com.sun.crypto.provider.HmacCore$HmacSHA256",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"com.sun.crypto.provider.TlsKeyMaterialGenerator",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"com.sun.crypto.provider.TlsMasterSecretGenerator",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"com.sun.crypto.provider.TlsPrfGenerator$V12",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"de.otto.jlineup.browser.Browser$Type",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"forValue","parameterTypes":["java.lang.String"] }]}
+,
 {
   "name":"de.otto.jlineup.browser.ScreenshotContext",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getCookies","parameterTypes":[] }, 
+    {"name":"getDeviceConfig","parameterTypes":[] }, 
+    {"name":"getUrl","parameterTypes":[] }, 
+    {"name":"getUrlSubPath","parameterTypes":[] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.browser.ScreenshotContext$Builder",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"build","parameterTypes":[] }, 
+    {"name":"withCookies","parameterTypes":["java.util.List"] }, 
+    {"name":"withDeviceConfig","parameterTypes":["de.otto.jlineup.config.DeviceConfig"] }, 
+    {"name":"withUrl","parameterTypes":["java.lang.String"] }, 
+    {"name":"withUrlSubPath","parameterTypes":["java.lang.String"] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.cli.JLineup",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"de.otto.jlineup.cli.LogToFileFilter",
-  "allPublicMethods":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"de.otto.jlineup.config.Cookie$Builder",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true}
+,
 {
   "name":"de.otto.jlineup.config.CustomDateDeserializer",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"de.otto.jlineup.config.DeviceConfig",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getDeviceName","parameterTypes":[] }, 
+    {"name":"getHeight","parameterTypes":[] }, 
+    {"name":"getPixelRatio","parameterTypes":[] }, 
+    {"name":"getUserAgent","parameterTypes":[] }, 
+    {"name":"getWidth","parameterTypes":[] }, 
+    {"name":"isTouch","parameterTypes":[] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.config.DeviceConfig$Builder",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"build","parameterTypes":[] }, 
+    {"name":"withDeviceName","parameterTypes":["java.lang.String"] }, 
+    {"name":"withHeight","parameterTypes":["int"] }, 
+    {"name":"withPixelRatio","parameterTypes":["float"] }, 
+    {"name":"withTouch","parameterTypes":["boolean"] }, 
+    {"name":"withWidth","parameterTypes":["int"] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.config.HttpCheckConfig",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getAllowedCodes","parameterTypes":[] }, 
+    {"name":"getErrorSignals","parameterTypes":[] }, 
+    {"name":"isEnabled","parameterTypes":[] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.config.HttpCheckConfig$Builder",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"build","parameterTypes":[] }, 
+    {"name":"withEnabled","parameterTypes":["boolean"] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.config.HttpCheckFilter",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"de.otto.jlineup.config.JobConfig",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allPublicMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getBrowser","parameterTypes":[] }, 
+    {"name":"getGlobalTimeout","parameterTypes":[] }, 
+    {"name":"getGlobalWaitAfterPageLoad","parameterTypes":[] }, 
+    {"name":"getHttpCheck","parameterTypes":[] }, 
+    {"name":"getName","parameterTypes":[] }, 
+    {"name":"getPageLoadTimeout","parameterTypes":[] }, 
+    {"name":"getReportFormat","parameterTypes":[] }, 
+    {"name":"getScreenshotRetries","parameterTypes":[] }, 
+    {"name":"getThreads","parameterTypes":[] }, 
+    {"name":"getUrls","parameterTypes":[] }, 
+    {"name":"getWindowHeight","parameterTypes":[] }, 
+    {"name":"isCheckForErrorsInLog","parameterTypes":[] }, 
+    {"name":"isDebug","parameterTypes":[] }, 
+    {"name":"isLogToFile","parameterTypes":[] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.config.JobConfig$Builder",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"build","parameterTypes":[] }, 
+    {"name":"withBrowser","parameterTypes":["de.otto.jlineup.browser.Browser$Type"] }, 
+    {"name":"withCheckForErrorsInLog","parameterTypes":["boolean"] }, 
+    {"name":"withDebug","parameterTypes":["boolean"] }, 
+    {"name":"withGlobalTimeout","parameterTypes":["int"] }, 
+    {"name":"withGlobalWaitAfterPageLoad","parameterTypes":["float"] }, 
+    {"name":"withHttpCheck","parameterTypes":["de.otto.jlineup.config.HttpCheckConfig"] }, 
+    {"name":"withName","parameterTypes":["java.lang.String"] }, 
+    {"name":"withPageLoadTimeout","parameterTypes":["int"] }, 
+    {"name":"withUrls","parameterTypes":["java.util.Map"] }, 
+    {"name":"withWindowHeight","parameterTypes":["int"] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.config.ReportFormatFilter",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"de.otto.jlineup.config.Step",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"de.otto.jlineup.config.UrlConfig",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getAlternatingCookies","parameterTypes":[] }, 
+    {"name":"getCleanupPaths","parameterTypes":[] }, 
+    {"name":"getCookies","parameterTypes":[] }, 
+    {"name":"getDevices","parameterTypes":[] }, 
+    {"name":"getEnvMapping","parameterTypes":[] }, 
+    {"name":"getHttpCheck","parameterTypes":[] }, 
+    {"name":"getJavaScript","parameterTypes":[] }, 
+    {"name":"getLocalStorage","parameterTypes":[] }, 
+    {"name":"getMaxColorDistance","parameterTypes":[] }, 
+    {"name":"getMaxDiff","parameterTypes":[] }, 
+    {"name":"getMaxScrollHeight","parameterTypes":[] }, 
+    {"name":"getPaths","parameterTypes":[] }, 
+    {"name":"getRemoveSelectors","parameterTypes":[] }, 
+    {"name":"getSessionStorage","parameterTypes":[] }, 
+    {"name":"getSetupPaths","parameterTypes":[] }, 
+    {"name":"getWaitAfterPageLoad","parameterTypes":[] }, 
+    {"name":"getWaitAfterScroll","parameterTypes":[] }, 
+    {"name":"getWaitForFontsTime","parameterTypes":[] }, 
+    {"name":"getWaitForNoAnimationAfterScroll","parameterTypes":[] }, 
+    {"name":"getWaitForSelectors","parameterTypes":[] }, 
+    {"name":"getWaitForSelectorsTimeout","parameterTypes":[] }, 
+    {"name":"getWarmupBrowserCacheTime","parameterTypes":[] }, 
+    {"name":"getWindowWidths","parameterTypes":[] }, 
+    {"name":"isFailIfSelectorsNotFound","parameterTypes":[] }, 
+    {"name":"isHideImages","parameterTypes":[] }, 
+    {"name":"isIgnoreAntiAliasing","parameterTypes":[] }, 
+    {"name":"isStrictColorComparison","parameterTypes":[] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.config.UrlConfig$Builder",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"build","parameterTypes":[] }, 
+    {"name":"withFailIfSelectorsNotFound","parameterTypes":["boolean"] }, 
+    {"name":"withIgnoreAntiAliasing","parameterTypes":["boolean"] }, 
+    {"name":"withMaxColorDistance","parameterTypes":["float"] }, 
+    {"name":"withMaxDiff","parameterTypes":["double"] }, 
+    {"name":"withMaxScrollHeight","parameterTypes":["int"] }, 
+    {"name":"withPaths","parameterTypes":["java.util.List"] }, 
+    {"name":"withStrictColorComparison","parameterTypes":["boolean"] }, 
+    {"name":"withWaitAfterPageLoad","parameterTypes":["float"] }, 
+    {"name":"withWaitAfterScroll","parameterTypes":["float"] }, 
+    {"name":"withWaitForSelectorsTimeout","parameterTypes":["float"] }, 
+    {"name":"withWindowWidths","parameterTypes":["java.util.List"] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.file.FileTracker",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getBrowsers","parameterTypes":[] }, 
+    {"name":"getContexts","parameterTypes":[] }, 
+    {"name":"getJobConfig","parameterTypes":[] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.file.FileTracker$Builder",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"build","parameterTypes":[] }, 
+    {"name":"withBrowsers","parameterTypes":["java.util.concurrent.ConcurrentHashMap"] }, 
+    {"name":"withContexts","parameterTypes":["java.util.concurrent.ConcurrentHashMap"] }, 
+    {"name":"withJobConfig","parameterTypes":["de.otto.jlineup.config.JobConfig"] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.file.ScreenshotContextFileTracker",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getScreenshotContext","parameterTypes":[] }, 
+    {"name":"getScreenshots","parameterTypes":[] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.file.ScreenshotContextFileTracker$Builder",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"<init>","parameterTypes":[] }, 
+    {"name":"build","parameterTypes":[] }, 
+    {"name":"withScreenshotContext","parameterTypes":["de.otto.jlineup.browser.ScreenshotContext"] }, 
+    {"name":"withScreenshots","parameterTypes":["java.util.concurrent.ConcurrentSkipListMap"] }
+  ]}
+,
+{
+  "name":"de.otto.jlineup.report.ContextReport",
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"getContextHash","parameterTypes":[] }, 
+    {"name":"getDeviceInfo","parameterTypes":[] }, 
+    {"name":"getResults","parameterTypes":[] }, 
+    {"name":"getShownCookiesString","parameterTypes":[] }, 
+    {"name":"getUrl","parameterTypes":[] }, 
+    {"name":"isSuccess","parameterTypes":[] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.report.HTMLReportWriter$ScreenshotComparisonResultContext",
-  "allDeclaredMethods":true,
-  "allPublicMethods":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "methods":[
+    {"name":"getBrowser","parameterTypes":["java.lang.String"] }, 
+    {"name":"getContextHash","parameterTypes":[] }, 
+    {"name":"getDeviceInfo","parameterTypes":[] }, 
+    {"name":"getResults","parameterTypes":[] }, 
+    {"name":"getShortenedUrl","parameterTypes":[] }, 
+    {"name":"getUrl","parameterTypes":[] }, 
+    {"name":"isSuccess","parameterTypes":[] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.report.Report",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"getFlatResultList","parameterTypes":[] }]}
+,
+{
+  "name":"de.otto.jlineup.report.ReportV2",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "methods":[{"name":"getBrowser","parameterTypes":["java.lang.String"] }]}
+,
 {
   "name":"de.otto.jlineup.report.ScreenshotComparisonResult",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allPublicMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[
+    {"name":"getDifferenceImageFileNameForHtml","parameterTypes":[] }, 
+    {"name":"getScreenshotAfterFileNameForHTML","parameterTypes":[] }, 
+    {"name":"getScreenshotBeforeFileNameForHTML","parameterTypes":[] }
+  ]}
+,
 {
   "name":"de.otto.jlineup.report.Summary",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true,
+  "queryAllDeclaredConstructors":true}
+,
 {
   "name":"de.otto.jlineup.report.UrlReport",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true}
+,
+{
+  "name":"de.otto.jlineup.report.UrlReportV2",
+  "allDeclaredFields":true,
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true}
+,
 {
   "name":"double",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"float",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"io.github.bonigarcia.wdm.config.Config",
-  "allDeclaredFields":true
-},
+  "allDeclaredFields":true}
+,
 {
   "name":"io.github.bonigarcia.wdm.online.BitBucketApi",
   "allDeclaredFields":true,
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"io.github.bonigarcia.wdm.online.BitBucketApi$BitBucketLink",
-  "allDeclaredFields":true
-},
+  "allDeclaredFields":true}
+,
 {
   "name":"io.github.bonigarcia.wdm.online.BitBucketApi$BitBucketSelf",
-  "allDeclaredFields":true
-},
+  "allDeclaredFields":true}
+,
 {
   "name":"io.github.bonigarcia.wdm.online.BitBucketApi$BitBucketValue",
-  "allDeclaredFields":true
-},
+  "allDeclaredFields":true}
+,
 {
-  "name":"java.beans.PropertyVetoException"
-},
+  "name":"java.beans.PropertyVetoException"}
+,
 {
-  "name":"java.io.FilePermission"
-},
+  "name":"java.io.FilePermission"}
+,
 {
   "name":"java.io.Serializable",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"java.lang.ClassLoader",
-  "methods":[
+  "queriedMethods":[
     {"name":"defineClass","parameterTypes":["java.lang.String","byte[]","int","int"] }, 
     {"name":"defineClass","parameterTypes":["java.lang.String","byte[]","int","int","java.security.ProtectionDomain"] }, 
     {"name":"definePackage","parameterTypes":["java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.lang.String","java.net.URL"] }
-  ]
-},
+  ]}
+,
 {
   "name":"java.lang.Comparable",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"java.lang.Float",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true}
+,
 {
   "name":"java.lang.Iterable",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"java.lang.Number",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"java.lang.Object",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true,
-  "allPublicMethods":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true}
+,
 {
-  "name":"java.lang.Object[]"
-},
+  "name":"java.lang.RuntimePermission"}
+,
 {
-  "name":"java.lang.RuntimePermission"
-},
-{
-  "name":"java.lang.String"
-},
-{
-  "name":"java.lang.String[]"
-},
+  "name":"java.lang.String"}
+,
 {
   "name":"java.lang.System",
-  "methods":[
+  "queriedMethods":[
     {"name":"console","parameterTypes":[] }, 
     {"name":"exit","parameterTypes":["int"] }
-  ]
-},
+  ]}
+,
 {
   "name":"java.lang.Throwable",
-  "methods":[{"name":"getSuppressed","parameterTypes":[] }]
-},
+  "methods":[{"name":"getSuppressed","parameterTypes":[] }]}
+,
 {
-  "name":"java.lang.annotation.Annotation"
-},
+  "name":"java.lang.annotation.Annotation"}
+,
 {
   "name":"java.lang.reflect.AccessibleObject",
   "fields":[{"name":"override"}],
-  "methods":[
+  "queriedMethods":[
     {"name":"setAccessible","parameterTypes":["boolean"] }, 
     {"name":"setAccessible","parameterTypes":["java.lang.reflect.AccessibleObject[]","boolean"] }
-  ]
-},
+  ]}
+,
 {
-  "name":"java.net.NetPermission"
-},
+  "name":"java.net.NetPermission"}
+,
 {
-  "name":"java.net.SocketPermission"
-},
+  "name":"java.net.SocketPermission"}
+,
 {
   "name":"java.net.URLPermission",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String","java.lang.String"] }]}
+,
 {
-  "name":"java.nio.file.Path"
-},
+  "name":"java.nio.file.Path"}
+,
 {
   "name":"java.nio.file.Paths",
-  "methods":[{"name":"get","parameterTypes":["java.lang.String","java.lang.String[]"] }]
-},
+  "queriedMethods":[{"name":"get","parameterTypes":["java.lang.String","java.lang.String[]"] }]}
+,
 {
-  "name":"java.security.AlgorithmParametersSpi"
-},
+  "name":"java.security.AlgorithmParametersSpi"}
+,
 {
-  "name":"java.security.AllPermission"
-},
+  "name":"java.security.AllPermission"}
+,
 {
-  "name":"java.security.KeyStoreSpi"
-},
+  "name":"java.security.KeyStoreSpi"}
+,
 {
-  "name":"java.security.MessageDigestSpi"
-},
+  "name":"java.security.MessageDigestSpi"}
+,
 {
-  "name":"java.security.SecureRandomParameters"
-},
+  "name":"java.security.SecureRandomParameters"}
+,
 {
-  "name":"java.security.SecurityPermission"
-},
+  "name":"java.security.SecurityPermission"}
+,
 {
-  "name":"java.security.interfaces.ECPrivateKey"
-},
+  "name":"java.security.interfaces.ECPrivateKey"}
+,
 {
-  "name":"java.security.interfaces.ECPublicKey"
-},
+  "name":"java.security.interfaces.ECPublicKey"}
+,
 {
-  "name":"java.security.interfaces.RSAPrivateKey"
-},
+  "name":"java.security.interfaces.RSAPrivateKey"}
+,
 {
-  "name":"java.security.interfaces.RSAPublicKey"
-},
+  "name":"java.security.interfaces.RSAPublicKey"}
+,
 {
-  "name":"java.sql.Connection"
-},
+  "name":"java.sql.Connection"}
+,
 {
-  "name":"java.sql.Driver"
-},
+  "name":"java.sql.Date"}
+,
+{
+  "name":"java.sql.Driver"}
+,
 {
   "name":"java.sql.DriverManager",
-  "methods":[
+  "queriedMethods":[
     {"name":"getConnection","parameterTypes":["java.lang.String"] }, 
     {"name":"getDriver","parameterTypes":["java.lang.String"] }
-  ]
-},
+  ]}
+,
 {
   "name":"java.sql.Time",
-  "methods":[{"name":"<init>","parameterTypes":["long"] }]
-},
+  "queriedMethods":[{"name":"<init>","parameterTypes":["long"] }]}
+,
 {
   "name":"java.sql.Timestamp",
-  "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
-},
+  "queriedMethods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]}
+,
 {
   "name":"java.time.Duration",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.Instant",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.LocalDate",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.LocalDateTime",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.LocalTime",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.MonthDay",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.OffsetDateTime",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.OffsetTime",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.Period",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.Year",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.YearMonth",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.time.ZoneId",
-  "methods":[{"name":"of","parameterTypes":["java.lang.String"] }]
-},
+  "queriedMethods":[{"name":"of","parameterTypes":["java.lang.String"] }]}
+,
 {
   "name":"java.time.ZoneOffset",
-  "methods":[{"name":"of","parameterTypes":["java.lang.String"] }]
-},
+  "queriedMethods":[{"name":"of","parameterTypes":["java.lang.String"] }]}
+,
 {
   "name":"java.time.ZonedDateTime",
-  "methods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]
-},
+  "queriedMethods":[{"name":"parse","parameterTypes":["java.lang.CharSequence"] }]}
+,
 {
   "name":"java.util.AbstractCollection",
   "allDeclaredFields":true,
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"java.util.Collection",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
-  "name":"java.util.Date"
-},
+  "name":"java.util.Date"}
+,
 {
   "name":"java.util.HashSet",
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true}
+,
 {
   "name":"java.util.List",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"java.util.Map",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
-  "name":"java.util.PropertyPermission"
-},
+  "name":"java.util.PropertyPermission"}
+,
 {
   "name":"java.util.RandomAccess",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"java.util.concurrent.ConcurrentHashMap",
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"java.util.concurrent.ConcurrentSkipListMap",
-  "allDeclaredMethods":true,
-  "allDeclaredConstructors":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllDeclaredConstructors":true,
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
-  "name":"javassist.ClassPool"
-},
+  "name":"javassist.ClassPool"}
+,
 {
-  "name":"javax.imageio.spi.ImageReaderSpi"
-},
+  "name":"javax.imageio.spi.ImageReaderSpi"}
+,
 {
   "name":"javax.imageio.spi.ImageReaderWriterSpi",
-  "methods":[
+  "queriedMethods":[
     {"name":"getFileSuffixes","parameterTypes":[] }, 
     {"name":"getFormatNames","parameterTypes":[] }, 
     {"name":"getMIMETypes","parameterTypes":[] }
-  ]
-},
+  ]}
+,
 {
-  "name":"javax.imageio.spi.ImageWriterSpi"
-},
+  "name":"javax.imageio.spi.ImageWriterSpi"}
+,
 {
-  "name":"javax.management.ObjectName"
-},
+  "name":"javax.management.ObjectName"}
+,
 {
   "name":"javax.security.auth.x500.X500Principal",
   "fields":[{"name":"thisX500Name"}],
-  "methods":[{"name":"<init>","parameterTypes":["sun.security.x509.X500Name"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["sun.security.x509.X500Name"] }]}
+,
 {
   "name":"ognl.OgnlRuntime$ClassPropertyMethodCache",
-  "methods":[{"name":"get","parameterTypes":["java.lang.Class","java.lang.String"] }]
-},
+  "queriedMethods":[{"name":"get","parameterTypes":["java.lang.Class","java.lang.String"] }]}
+,
 {
   "name":"org.openqa.selenium.NoSuchSessionException",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.String"] }]}
+,
 {
   "name":"org.openqa.selenium.firefox.FirefoxProfile",
-  "methods":[{"name":"toJson","parameterTypes":[] }]
-},
+  "methods":[{"name":"toJson","parameterTypes":[] }]}
+,
 {
   "name":"org.thymeleaf.context.AbstractEngineContext",
-  "allDeclaredMethods":true,
-  "allPublicMethods":true
-},
+  "queryAllDeclaredMethods":true,
+  "queryAllPublicMethods":true}
+,
 {
   "name":"org.thymeleaf.context.IContext",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"org.thymeleaf.context.IEngineContext",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"org.thymeleaf.context.IExpressionContext",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"org.thymeleaf.context.ITemplateContext",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true}
+,
 {
   "name":"org.thymeleaf.expression.Calendars",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true,
+  "methods":[
+    {"name":"createNow","parameterTypes":[] }, 
+    {"name":"format","parameterTypes":["java.util.Calendar","java.lang.String"] }
+  ]}
+,
 {
   "name":"org.thymeleaf.expression.Numbers",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true,
+  "methods":[{"name":"formatDecimal","parameterTypes":["java.lang.Number","java.lang.Integer","java.lang.Integer"] }]}
+,
 {
   "name":"org.thymeleaf.expression.Strings",
-  "allDeclaredMethods":true
-},
+  "queryAllDeclaredMethods":true,
+  "methods":[
+    {"name":"equals","parameterTypes":["java.lang.Object","java.lang.Object"] }, 
+    {"name":"escapeXml","parameterTypes":["java.lang.Object"] }, 
+    {"name":"isEmpty","parameterTypes":["java.lang.Object"] }, 
+    {"name":"replace","parameterTypes":["java.lang.Object","java.lang.String","java.lang.String"] }, 
+    {"name":"substringAfter","parameterTypes":["java.lang.Object","java.lang.String"] }
+  ]}
+,
+{
+  "name":"org.thymeleaf.standard.expression.AdditionExpression",
+  "methods":[{"name":"<init>","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression","org.thymeleaf.standard.expression.IStandardExpression"] }]}
+,
+{
+  "name":"org.thymeleaf.standard.expression.AdditionSubtractionExpression",
+  "methods":[
+    {"name":"isLeftAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }, 
+    {"name":"isRightAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }
+  ]}
+,
 {
   "name":"org.thymeleaf.standard.expression.AndExpression",
-  "methods":[
+  "queriedMethods":[
     {"name":"isLeftAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }, 
     {"name":"isRightAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }
-  ]
-},
+  ]}
+,
 {
   "name":"org.thymeleaf.standard.expression.EqualsNotEqualsExpression",
-  "methods":[
+  "queriedMethods":[
     {"name":"isLeftAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }, 
     {"name":"isRightAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }
-  ]
-},
+  ]}
+,
 {
   "name":"org.thymeleaf.standard.expression.GreaterLesserExpression",
-  "methods":[
+  "queriedMethods":[
     {"name":"isLeftAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }, 
     {"name":"isRightAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }
-  ]
-},
+  ]}
+,
 {
   "name":"org.thymeleaf.standard.expression.MultiplicationDivisionRemainderExpression",
-  "methods":[
+  "queriedMethods":[
     {"name":"isLeftAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }, 
     {"name":"isRightAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }
-  ]
-},
+  ]}
+,
 {
   "name":"org.thymeleaf.standard.expression.OrExpression",
-  "methods":[
+  "queriedMethods":[
     {"name":"isLeftAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }, 
     {"name":"isRightAllowed","parameterTypes":["org.thymeleaf.standard.expression.IStandardExpression"] }
-  ]
-},
+  ]}
+,
 {
   "name":"sun.awt.X11.XToolkit",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.awt.X11GraphicsEnvironment",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.java2d.marlin.DMarlinRenderingEngine",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.misc.Unsafe",
   "fields":[{"name":"theUnsafe"}],
@@ -702,147 +963,144 @@
     {"name":"allocateInstance","parameterTypes":["java.lang.Class"] }, 
     {"name":"objectFieldOffset","parameterTypes":["java.lang.reflect.Field"] }, 
     {"name":"putBoolean","parameterTypes":["java.lang.Object","long","boolean"] }
-  ]
-},
-{
-  "name":"sun.security.pkcs.SignerInfo[]"
-},
+  ]}
+,
 {
   "name":"sun.security.pkcs12.PKCS12KeyStore",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.pkcs12.PKCS12KeyStore$DualFormatPKCS12",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.DSA$SHA224withDSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.DSA$SHA256withDSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.JavaKeyStore$JKS",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.NativePRNG",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.SHA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.SHA2$SHA224",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.SHA2$SHA256",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.SHA5$SHA384",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.SHA5$SHA512",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.X509Factory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.provider.certpath.PKIXCertPathValidator",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.rsa.PSSParameters",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.rsa.RSAKeyFactory$Legacy",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.rsa.RSAPSSSignature",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.rsa.RSASignature$SHA224withRSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.rsa.RSASignature$SHA256withRSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.rsa.RSASignature$SHA512withRSA",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.ssl.SSLContextImpl$TLSContext",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
   "name":"sun.security.ssl.TrustManagerFactoryImpl$PKIXFactory",
-  "methods":[{"name":"<init>","parameterTypes":[] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":[] }]}
+,
 {
-  "name":"sun.security.util.ObjectIdentifier"
-},
+  "name":"sun.security.util.ObjectIdentifier"}
+,
 {
   "name":"sun.security.x509.AuthorityInfoAccessExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
   "name":"sun.security.x509.AuthorityKeyIdentifierExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
   "name":"sun.security.x509.BasicConstraintsExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
   "name":"sun.security.x509.CRLDistributionPointsExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
-  "name":"sun.security.x509.CertificateExtensions"
-},
+  "name":"sun.security.x509.CertificateExtensions"}
+,
 {
   "name":"sun.security.x509.CertificatePoliciesExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
   "name":"sun.security.x509.ExtendedKeyUsageExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
   "name":"sun.security.x509.IssuerAlternativeNameExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
   "name":"sun.security.x509.KeyUsageExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
   "name":"sun.security.x509.NetscapeCertTypeExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
   "name":"sun.security.x509.PrivateKeyUsageExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
   "name":"sun.security.x509.SubjectAlternativeNameExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+,
 {
   "name":"sun.security.x509.SubjectKeyIdentifierExtension",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]
-}
+  "methods":[{"name":"<init>","parameterTypes":["java.lang.Boolean","java.lang.Object"] }]}
+
 ]

@@ -1,28 +1,31 @@
 [
 {
+  "name":"[Lsun.java2d.loops.GraphicsPrimitive;"}
+,
+{
   "name":"de.otto.jlineup.cli.Main",
-  "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]
-},
+  "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]}
+,
 {
   "name":"java.awt.AWTEvent",
   "fields":[
     {"name":"bdata"}, 
     {"name":"consumed"}, 
     {"name":"id"}
-  ]
-},
+  ]}
+,
 {
   "name":"java.awt.AlphaComposite",
   "fields":[
     {"name":"extraAlpha"}, 
     {"name":"rule"}
-  ]
-},
+  ]}
+,
 {
   "name":"java.awt.Color",
   "fields":[{"name":"value"}],
-  "methods":[{"name":"getRGB","parameterTypes":[] }]
-},
+  "methods":[{"name":"getRGB","parameterTypes":[] }]}
+,
 {
   "name":"java.awt.Font",
   "fields":[
@@ -33,8 +36,12 @@
   "methods":[
     {"name":"getFamily_NoClientCode","parameterTypes":[] }, 
     {"name":"getFontPeer","parameterTypes":[] }
-  ]
-},
+  ]}
+,
+{
+  "name":"java.awt.GraphicsEnvironment",
+  "methods":[{"name":"isHeadless","parameterTypes":[] }]}
+,
 {
   "name":"java.awt.Insets",
   "fields":[
@@ -42,12 +49,12 @@
     {"name":"left"}, 
     {"name":"right"}, 
     {"name":"top"}
-  ]
-},
+  ]}
+,
 {
   "name":"java.awt.event.InputEvent",
-  "fields":[{"name":"modifiers"}]
-},
+  "fields":[{"name":"modifiers"}]}
+,
 {
   "name":"java.awt.geom.AffineTransform",
   "fields":[
@@ -57,20 +64,20 @@
     {"name":"m10"}, 
     {"name":"m11"}, 
     {"name":"m12"}
-  ]
-},
+  ]}
+,
 {
   "name":"java.awt.geom.Path2D",
   "fields":[
     {"name":"numTypes"}, 
     {"name":"pointTypes"}, 
     {"name":"windingRule"}
-  ]
-},
+  ]}
+,
 {
   "name":"java.awt.geom.Path2D$Float",
-  "fields":[{"name":"floatCoords"}]
-},
+  "fields":[{"name":"floatCoords"}]}
+,
 {
   "name":"java.awt.image.BufferedImage",
   "fields":[
@@ -81,8 +88,8 @@
   "methods":[
     {"name":"getRGB","parameterTypes":["int","int","int","int","int[]","int","int"] }, 
     {"name":"setRGB","parameterTypes":["int","int","int","int","int[]","int","int"] }
-  ]
-},
+  ]}
+,
 {
   "name":"java.awt.image.ColorModel",
   "fields":[
@@ -96,8 +103,8 @@
     {"name":"supportsAlpha"}, 
     {"name":"transparency"}
   ],
-  "methods":[{"name":"getRGBdefault","parameterTypes":[] }]
-},
+  "methods":[{"name":"getRGBdefault","parameterTypes":[] }]}
+,
 {
   "name":"java.awt.image.IndexColorModel",
   "fields":[
@@ -105,8 +112,8 @@
     {"name":"map_size"}, 
     {"name":"rgb"}, 
     {"name":"transparent_index"}
-  ]
-},
+  ]}
+,
 {
   "name":"java.awt.image.Raster",
   "fields":[
@@ -120,8 +127,8 @@
     {"name":"sampleModelTranslateX"}, 
     {"name":"sampleModelTranslateY"}, 
     {"name":"width"}
-  ]
-},
+  ]}
+,
 {
   "name":"java.awt.image.SampleModel",
   "fields":[
@@ -131,8 +138,8 @@
   "methods":[
     {"name":"getPixels","parameterTypes":["int","int","int","int","int[]","java.awt.image.DataBuffer"] }, 
     {"name":"setPixels","parameterTypes":["int","int","int","int","int[]","java.awt.image.DataBuffer"] }
-  ]
-},
+  ]}
+,
 {
   "name":"java.awt.image.SinglePixelPackedSampleModel",
   "fields":[
@@ -140,30 +147,41 @@
     {"name":"bitOffsets"}, 
     {"name":"bitSizes"}, 
     {"name":"maxBitSize"}
-  ]
-},
+  ]}
+,
+{
+  "name":"java.lang.Boolean",
+  "methods":[{"name":"getBoolean","parameterTypes":["java.lang.String"] }]}
+,
 {
   "name":"java.lang.ClassLoader",
   "methods":[
     {"name":"getPlatformClassLoader","parameterTypes":[] }, 
     {"name":"loadClass","parameterTypes":["java.lang.String"] }
-  ]
-},
+  ]}
+,
+{
+  "name":"java.lang.System",
+  "methods":[
+    {"name":"load","parameterTypes":["java.lang.String"] }, 
+    {"name":"setProperty","parameterTypes":["java.lang.String","java.lang.String"] }
+  ]}
+,
 {
   "name":"java.lang.Thread",
-  "methods":[{"name":"yield","parameterTypes":[] }]
-},
+  "methods":[{"name":"yield","parameterTypes":[] }]}
+,
 {
-  "name":"jdk.internal.loader.ClassLoaders$PlatformClassLoader"
-},
+  "name":"jdk.internal.loader.ClassLoaders$PlatformClassLoader"}
+,
 {
   "name":"org.graalvm.nativebridge.jni.JNIExceptionWrapperEntryPoints",
-  "methods":[{"name":"getClassName","parameterTypes":["java.lang.Class"] }]
-},
+  "methods":[{"name":"getClassName","parameterTypes":["java.lang.Class"] }]}
+,
 {
   "name":"sun.awt.SunHints",
-  "fields":[{"name":"INTVAL_STROKE_PURE"}]
-},
+  "fields":[{"name":"INTVAL_STROKE_PURE"}]}
+,
 {
   "name":"sun.awt.SunToolkit",
   "methods":[
@@ -172,32 +190,32 @@
     {"name":"awtLockNotifyAll","parameterTypes":[] }, 
     {"name":"awtLockWait","parameterTypes":["long"] }, 
     {"name":"awtUnlock","parameterTypes":[] }
-  ]
-},
+  ]}
+,
 {
   "name":"sun.awt.X11.XErrorHandlerUtil",
-  "methods":[{"name":"init","parameterTypes":["long"] }]
-},
+  "methods":[{"name":"init","parameterTypes":["long"] }]}
+,
 {
   "name":"sun.awt.X11.XToolkit",
   "fields":[
     {"name":"modLockIsShiftLock"}, 
     {"name":"numLockMask"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.awt.X11GraphicsConfig",
   "fields":[
     {"name":"aData"}, 
     {"name":"bitsPerPixel"}, 
     {"name":"screen"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.awt.X11GraphicsDevice",
   "fields":[{"name":"screen"}],
-  "methods":[{"name":"addDoubleBufferVisual","parameterTypes":["int"] }]
-},
+  "methods":[{"name":"addDoubleBufferVisual","parameterTypes":["int"] }]}
+,
 {
   "name":"sun.awt.image.ByteComponentRaster",
   "fields":[
@@ -206,8 +224,8 @@
     {"name":"pixelStride"}, 
     {"name":"scanlineStride"}, 
     {"name":"type"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.awt.image.IntegerComponentRaster",
   "fields":[
@@ -216,18 +234,18 @@
     {"name":"pixelStride"}, 
     {"name":"scanlineStride"}, 
     {"name":"type"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.java2d.Disposer",
-  "methods":[{"name":"addRecord","parameterTypes":["java.lang.Object","long","long"] }]
-},
+  "methods":[{"name":"addRecord","parameterTypes":["java.lang.Object","long","long"] }]}
+,
 {
-  "name":"sun.java2d.InvalidPipeException"
-},
+  "name":"sun.java2d.InvalidPipeException"}
+,
 {
-  "name":"sun.java2d.NullSurfaceData"
-},
+  "name":"sun.java2d.NullSurfaceData"}
+,
 {
   "name":"sun.java2d.SunGraphics2D",
   "fields":[
@@ -237,23 +255,23 @@
     {"name":"lcdTextContrast"}, 
     {"name":"pixel"}, 
     {"name":"strokeHint"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.java2d.SurfaceData",
   "fields":[
     {"name":"pData"}, 
     {"name":"valid"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.java2d.loops.Blit",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.BlitBg",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.CompositeType",
   "fields":[
@@ -263,79 +281,76 @@
     {"name":"SrcOver"}, 
     {"name":"SrcOverNoEa"}, 
     {"name":"Xor"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.java2d.loops.DrawGlyphList",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.DrawGlyphListAA",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.DrawGlyphListLCD",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.DrawLine",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.DrawParallelogram",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.DrawPath",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.DrawPolygons",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.DrawRect",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.FillParallelogram",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.FillPath",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.FillRect",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.FillSpans",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.GraphicsPrimitive",
-  "fields":[{"name":"pNativePrim"}]
-},
+  "fields":[{"name":"pNativePrim"}]}
+,
 {
   "name":"sun.java2d.loops.GraphicsPrimitiveMgr",
-  "methods":[{"name":"register","parameterTypes":["sun.java2d.loops.GraphicsPrimitive[]"] }]
-},
-{
-  "name":"sun.java2d.loops.GraphicsPrimitive[]"
-},
+  "methods":[{"name":"register","parameterTypes":["sun.java2d.loops.GraphicsPrimitive[]"] }]}
+,
 {
   "name":"sun.java2d.loops.MaskBlit",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.MaskFill",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.ScaledBlit",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.SurfaceType",
   "fields":[
@@ -369,20 +384,20 @@
     {"name":"Ushort565Rgb"}, 
     {"name":"UshortGray"}, 
     {"name":"UshortIndexed"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.java2d.loops.TransformHelper",
-  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]
-},
+  "methods":[{"name":"<init>","parameterTypes":["long","sun.java2d.loops.SurfaceType","sun.java2d.loops.CompositeType","sun.java2d.loops.SurfaceType"] }]}
+,
 {
   "name":"sun.java2d.loops.XORComposite",
   "fields":[
     {"name":"alphaMask"}, 
     {"name":"xorColor"}, 
     {"name":"xorPixel"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.java2d.pipe.Region",
   "fields":[
@@ -392,21 +407,21 @@
     {"name":"hiy"}, 
     {"name":"lox"}, 
     {"name":"loy"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.java2d.pipe.RegionIterator",
   "fields":[
     {"name":"curIndex"}, 
     {"name":"numXbands"}, 
     {"name":"region"}
-  ]
-},
+  ]}
+,
 {
   "name":"sun.java2d.xr.XRSurfaceData",
   "fields":[
     {"name":"picture"}, 
     {"name":"xid"}
-  ]
-}
+  ]}
+
 ]

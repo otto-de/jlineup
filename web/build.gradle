@@ -13,10 +13,11 @@ dependencies {
     //Update embedded tomcat
     implementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.56")
 
-    testCompile project(path: ":jlineup-core", configuration: 'testCompile')
-    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-    testCompile("io.rest-assured:rest-assured:4.4.0")
-    testCompile("org.awaitility:awaitility:4.1.1")
+    testImplementation project(path: ":jlineup-core", configuration: 'testCompile')
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    testImplementation("io.rest-assured:rest-assured:4.4.0")
+    testImplementation("org.awaitility:awaitility:4.1.1")
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
 }
