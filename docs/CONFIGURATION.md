@@ -287,6 +287,38 @@ What are all those options about? Here are all the details.
             `
 ---
 
+### `alternating-cookies`
+
+This feature is helpful if you wish to test different sets of cookies for a site.
+A list of lists of cookies that are set on the site. A cookie document can simply consist of `name` and `value`.
+Alternatively, you can specify a full cookie with `name`, `value`, `domain`, `path`, `expiry` and `secure`.
+See the `cookies` example for details. The expiration time has to be written as ISO8601 string.
+If you want to see the different cookies in the HTML report, you can specify `show-in-report` for them.
+
+* Scope: Site
+* Type: List of lists of alternating cookie documents
+* Default: `{}`
+* Example: `
+  "alternating-cookies": [[{
+  "name": "cookieA1",
+  "value": "A1",
+  "show-in-report": true
+  },{
+  "name": "cookieA2",
+  "value": "A2",
+  "show-in-report": true
+  }],[{
+  "name": "cookieB1",
+  "value": "B1",
+  "show-in-report": true
+  },{
+  "name": "cookieB2",
+  "value": "B2",
+  "show-in-report": true
+  }]]
+  `
+---
+
 ### `local-storage`
 
  Sets key value pairs to the local storage of the site
@@ -404,10 +436,14 @@ What are all those options about? Here are all the details.
  If `enabled` is set to true, all return codes that are not in the whitelist of allowed codes are regarded as failure.
  If you don't explicitly specify allowed codes in the http-check document, there is a default list of these accepted 
  HTTP return codes: `200,202,204,205,206,301,302,303,304,307,308`
+
+ Additionally, you can setup `error-signals`, which accepts a list of strings. If one of those strings appears in the
+ body of the checked page, the job also returns an error. This is helpful, if your page returns one of the allowed codes,
+ but isn't in the desired state (It was introduced to check for a "sorry"-page that did return a HTTP 200). 
  
  * Scope: Site or Global
  * Type: JSON Document
- * Default: `{ "enabled": false, allowed-codes: [ 200,202,204,205,206,301,302,303,304,307,308 ] }`
+ * Default: `{ "enabled": false, "allowed-codes": [ 200,202,204,205,206,301,302,303,304,307,308 ], "error-signals":[] }`
  * Example: `
               "http-check": {
                 "enabled": true,
@@ -417,7 +453,8 @@ What are all those options about? Here are all the details.
                   204,
                   205,
                   206
-                ]
+                ],
+                "error-signals":["error1","error2"]
               }
             `
             
