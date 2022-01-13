@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 4.4.0 - 2022-01-13
+* New HTML report format
+* New `error-signals` feature in `http-check` which allows to check the targeted page not only by http return code
+  but by strings in response body
+* New `alternating-cookies` feature which allows to iterate over different cookie setups per page easily
+
 ## Release 4.3.4 - 2021-08-26
 * Fix rounding bug in maxDiff configuration (https://github.com/otto-de/jlineup/issues/82)
 

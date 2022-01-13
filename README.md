@@ -58,7 +58,7 @@ JLineup CLI comes as executable Java Archive. Java 8 or higher has to be availab
 
 Open a terminal and download it like this:
 
-    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.3.4/jlineup-cli-4.3.4.jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.4.0/jlineup-cli-4.4.0.jar -O jlineup.jar
 
 Then type
 
@@ -77,10 +77,10 @@ Let's assume, this is part of a continuous integration pipeline:
 
 ## Browser Compatibility
 
-JLineup 4.3.4 was tested successfully with
+JLineup 4.4.0 was tested successfully with
 
-* Chrome 92.x
-* Firefox 91.x
+* Chrome 97.x
+* Firefox 96.x
 * PhantomJS 2.1.1 (auto-downloaded by JLineup if not installed)
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
@@ -99,42 +99,49 @@ JLineup uses some third party tools and libraries
 
 ##### Selenium
 
-* [Selenium](http://www.seleniumhq.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
+* [Selenium](http://www.seleniumhq.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
 ##### Webdrivermanager
 
-* [Webdrivermanager](https://github.com/bonigarcia/webdrivermanager) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
+* [Webdrivermanager](https://github.com/bonigarcia/webdrivermanager) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
 ##### Jackson
 
-* [Jackson](https://github.com/FasterXML/jackson) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0) 
+* [Jackson](https://github.com/FasterXML/jackson) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
 ##### Logback
 
-* [Logback](http://logback.qos.ch/) is licensed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html)
-* The [SLF4J](http://www.slf4j.org) API is licensed under the [MIT License](http://www.slf4j.org/license.html)
+* [Logback](http://logback.qos.ch/) is licensed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html).
+* The [SLF4J](http://www.slf4j.org) API is licensed under the [MIT License](http://www.slf4j.org/license.html).
 
 ##### PhantomJS
 
-* [PhantomJS](http://phantomjs.org/) is licensed under the [BSD-3-Clause](https://github.com/ariya/phantomjs/blob/master/LICENSE.BSD)
+* [PhantomJS](http://phantomjs.org/) is licensed under the [BSD-3-Clause](https://github.com/ariya/phantomjs/blob/master/LICENSE.BSD).
 
 ##### Thymeleaf
 
-* [Thymeleaf](http://www.thymeleaf.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
+* [Thymeleaf](http://www.thymeleaf.org/) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
 
 ##### Edison Microservice
 
-* [Edison Microservice](https://github.com/otto-de/edison-microservice) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
+* [Edison Microservice](https://github.com/otto-de/edison-microservice) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
 ##### Spring Boot
 
-* [Spring Boot](http://spring.io/projects/spring-boot) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0)
+* [Spring Boot](http://spring.io/projects/spring-boot) is licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
 
 ##### GraalVM Community Edition
 
 * The binary cli version is built with [GraalVM Community Edition](https://github.com/oracle/graal/). GraalVM CE brings it's own [Product License](https://github.com/oracle/graal/blob/master/LICENSE).
 
+##### Image Compare Viewer
+
+* [Image Compare Viewer](https://github.com/kylewetton/image-compare-viewer) is licensed under the [MIT License](https://github.com/kylewetton/image-compare-viewer/blob/master/LICENSE).
+
+##### Google Fonts
+
+* [Google Fonts](https://developers.google.com/fonts/) are used in the HTML report. These are the [terms](https://developers.google.com/fonts/terms).
 
 ### Historic Facts
 
