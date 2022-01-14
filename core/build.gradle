@@ -38,7 +38,7 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:" + jacksonVersion
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:" + jacksonVersion
     compile "ch.qos.logback:logback-classic:1.2.10"
-    compile "org.slf4j:slf4j-api:1.7.32"
+    compile "org.slf4j:slf4j-api:1.7.33"
     compile "org.codehaus.janino:janino:3.1.6"
     compile "org.thymeleaf:thymeleaf:3.0.14.RELEASE"
     compile "org.graalvm.sdk:graal-sdk:21.3.0"
