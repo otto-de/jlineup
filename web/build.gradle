@@ -7,7 +7,7 @@ dependencies {
     implementation("de.otto.edison:edison-core:2.6.2")
 
     //Update hibernate validator that comes with edison-core
-    implementation("org.hibernate.validator:hibernate-validator:6.2.0.Final")
+    implementation("org.hibernate.validator:hibernate-validator:6.2.1.Final")
     //Update commons-codec
     implementation("commons-codec:commons-codec:1.15")
     //Update embedded tomcat
