@@ -12,7 +12,7 @@ dependencies {
     implementation("commons-codec:commons-codec:1.15")
     //Update embedded tomcat
     implementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.58")
-    implementation("org.apache.tomcat.embed:tomcat-embed-el:9.0.58")
+    implementation("org.apache.tomcat.embed:tomcat-embed-el:10.0.16")
     implementation("org.apache.tomcat.embed:tomcat-embed-websocket:9.0.58")
 
     testImplementation project(path: ":jlineup-core", configuration: 'testCompile')

@@ -53,7 +53,7 @@ dependencies {
 
     testCompile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     testCompile("org.apache.tomcat.embed:tomcat-embed-core:9.0.58")
-    testCompile("org.apache.tomcat.embed:tomcat-embed-el:9.0.58")
+    testCompile("org.apache.tomcat.embed:tomcat-embed-el:10.0.16")
     testCompile("org.apache.tomcat.embed:tomcat-embed-websocket:9.0.58")
     testCompile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
