@@ -17,7 +17,7 @@ dependencies {
     //Update okhttp because selenium brings older one with 4.9.0
     compile "com.squareup.okhttp3:okhttp:4.9.3"
     //Update kotlin because okhttp 4.9.0 brings 1.4.10
-    compile "org.jetbrains.kotlin:kotlin-stdlib:1.6.10"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:1.6.20-M1"
 
     compile "io.github.bonigarcia:webdrivermanager:4.4.3"
 
@@ -52,6 +52,9 @@ dependencies {
     }
 
     testCompile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    testCompile("org.apache.tomcat.embed:tomcat-embed-core:9.0.58")
+    testCompile("org.apache.tomcat.embed:tomcat-embed-el:9.0.58")
+    testCompile("org.apache.tomcat.embed:tomcat-embed-websocket:9.0.58")
     testCompile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
     testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 }
