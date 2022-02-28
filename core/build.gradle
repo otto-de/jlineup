@@ -31,7 +31,7 @@ dependencies {
     //Update commons compress (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGAPACHECOMMONS-1316638)
     compile "org.apache.commons:commons-compress:1.21"
     //Update gson (coming with webdrivermanager)
-    compile 'com.google.code.gson:gson:2.8.9'
+    compile 'com.google.code.gson:gson:2.9.0'
 
     compile "com.fasterxml.jackson.core:jackson-core:" + jacksonVersion
     compile "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
