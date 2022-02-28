@@ -60,9 +60,7 @@ public class Browser implements AutoCloseable {
         @JsonProperty(value = "Chrome")
         CHROME,
         @JsonProperty(value = "Chrome-Headless")
-        CHROME_HEADLESS,
-        @JsonProperty(value = "PhantomJS")
-        PHANTOMJS;
+        CHROME_HEADLESS;
 
         public boolean isFirefox() {
             return this == FIREFOX || this == FIREFOX_HEADLESS;
@@ -72,16 +70,12 @@ public class Browser implements AutoCloseable {
             return this == CHROME || this == CHROME_HEADLESS;
         }
 
-        public boolean isPhantomJS() {
-            return this == PHANTOMJS;
-        }
-
         public boolean isHeadlessRealBrowser() {
             return this == FIREFOX_HEADLESS || this == CHROME_HEADLESS;
         }
 
         public boolean isHeadless() {
-            return isHeadlessRealBrowser() || isPhantomJS();
+            return isHeadlessRealBrowser();
         }
 
         @JsonCreator
@@ -196,7 +190,7 @@ public class Browser implements AutoCloseable {
                 } catch (Exception e) {
                     //There was an error, prevent pool from taking more tasks and let run fail
                     LOG.error("Exception in Browser thread while working on '" + screenshotContext.url + "' with device config " + screenshotContext.deviceConfig + ".", e);
-                    synchronized(webDrivers) {
+                    synchronized (webDrivers) {
                         threadPool.shutdownNow();
                     }
                     throw new WebDriverException("Exception in Browser thread", e);
@@ -349,12 +343,8 @@ public class Browser implements AutoCloseable {
 
         //Wait for fonts //TODO: Do we really need this any more?
         if (screenshotContext.urlConfig.waitForFontsTime > 0) {
-            if (!jobConfig.browser.isPhantomJS()) {
-                WebDriverWait wait = new WebDriverWait(getWebDriver(), new Double(Math.ceil(screenshotContext.urlConfig.waitForFontsTime)).longValue());
-                wait.until(fontsLoaded);
-            } else {
-                LOG.warn("WARNING: 'wait-for-fonts-time' is ignored because PhantomJS doesn't support this feature.");
-            }
+            WebDriverWait wait = new WebDriverWait(getWebDriver(), new Double(Math.ceil(screenshotContext.urlConfig.waitForFontsTime)).longValue());
+            wait.until(fontsLoaded);
         }
 
         //
@@ -367,11 +357,6 @@ public class Browser implements AutoCloseable {
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
             fileService.writeScreenshot(screenshotContext,
                     currentScreenshot, yPosition);
-            //PhantomJS (until now) always makes full page screenshots, so no scrolling and multi-screenshooting
-            //This is subject to change because W3C standard wants viewport screenshots
-            if (jobConfig.browser.isPhantomJS()) {
-                break;
-            }
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
             scrollTo(yPosition + viewportHeight.intValue());
             LOG.debug("Scroll by {} done", viewportHeight.intValue());
@@ -461,16 +446,10 @@ public class Browser implements AutoCloseable {
         LOG.debug("Opened {}.", urlToSetCookie);
         logErrorChecker.checkForErrors(driver, jobConfig);
 
-        //Set cookies
-        if (jobConfig.browser.isPhantomJS()) {
-            //current phantomjs driver has a bug that prevents selenium's normal way of setting cookies
-            LOG.debug("Setting cookies for PhantomJS on {}", urlToSetCookie);
-            setCookiesPhantomJS(cookies);
-        } else {
-            LOG.debug("Setting cookies on {}", urlToSetCookie);
-            setCookies(cookies);
-            LOG.debug("Finished setting cookies on {}", urlToSetCookie);
-        }
+        LOG.debug("Setting cookies on {}", urlToSetCookie);
+        setCookies(cookies);
+        LOG.debug("Finished setting cookies on {}", urlToSetCookie);
+
     }
 
     private void browserCacheWarmup(ScreenshotContext screenshotContext, String url, WebDriver driver) throws Exception {
@@ -679,38 +658,6 @@ public class Browser implements AutoCloseable {
             org.openqa.selenium.Cookie seleniumCookie = cookieBuilder.build();
             LOG.debug("Setting cookie through webdriver : {}", seleniumCookie);
             getWebDriver().manage().addCookie(seleniumCookie);
-        }
-    }
-
-    void setCookiesPhantomJS(List<Cookie> cookies) {
-        if (cookies == null) return;
-        for (Cookie cookie : cookies) {
-            StringBuilder cookieCallBuilder = new StringBuilder(String.format("document.cookie = '%s=%s;", cookie.name, cookie.value));
-            if (cookie.path != null) {
-                cookieCallBuilder.append("path=");
-                cookieCallBuilder.append(cookie.path);
-                cookieCallBuilder.append(";");
-            }
-            if (cookie.domain != null) {
-                cookieCallBuilder.append("domain=");
-                cookieCallBuilder.append(cookie.domain);
-                cookieCallBuilder.append(";");
-            }
-            if (cookie.secure) {
-                cookieCallBuilder.append("secure;");
-            }
-            if (cookie.expiry != null) {
-                cookieCallBuilder.append("expires=");
-
-                SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.US);
-                df.setTimeZone(TimeZone.getTimeZone("GMT"));
-                String asGmt = df.format(cookie.expiry.getTime()) + " GMT";
-                cookieCallBuilder.append(asGmt);
-                cookieCallBuilder.append(";");
-            }
-            cookieCallBuilder.append("'");
-
-            ((JavascriptExecutor) getWebDriver()).executeScript(cookieCallBuilder.toString());
         }
     }
 

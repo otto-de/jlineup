@@ -1,5 +1,5 @@
 jlineup:
-  installedBrowsers: chrome, chrome-headless, PhantomJS
+  installedBrowsers: chrome, chrome-headless
 
 server:
   servlet:

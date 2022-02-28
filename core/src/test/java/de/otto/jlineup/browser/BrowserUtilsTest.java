@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
 
 import java.io.IOException;
 import java.util.List;
@@ -157,11 +156,6 @@ public class BrowserUtilsTest {
         assertSetDriverType(jobConfig, ChromeDriver.class);
     }
 
-    @Test
-    public void shouldGetPhantomJSDriver() {
-        final JobConfig jobConfig = jobConfigBuilder().withBrowser(PHANTOMJS).build();
-        assertSetDriverType(jobConfig, PhantomJSDriver.class);
-    }
 
     private void assertSetDriverType(JobConfig jobConfig, Class<? extends WebDriver> driverClass) {
         WebDriver driver = null;

@@ -12,24 +12,19 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.ProtocolHandshake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.config.DeviceConfig.deviceConfigBuilder;
 import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
 import static java.lang.invoke.MethodHandles.lookup;
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class BrowserUtils {
 
@@ -132,16 +127,10 @@ public class BrowserUtils {
             driver = new ChromeDriver(options);
 
         } else {
-            java.util.logging.Logger.getLogger(PhantomJSDriverService.class.getName()).setLevel(Level.OFF);
-            java.util.logging.Logger.getLogger(ProtocolHandshake.class.getName()).setLevel(Level.OFF);
-
-            WebDriverManager.phantomjs().setup();
-            String[] args = new String[]{"--webdriver-loglevel=NONE", "--webdriver-logfile=" + System.getProperty("java.io.tmpdir") + File.separator + "jlineup-phantomjsdriver.log"};
-            DesiredCapabilities capabilities = new DesiredCapabilities();
-            capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, args);
-            driver = new PhantomJSDriver(capabilities);
+            LOG.error("You need either Firefox or Chrome to use JLineup work. Install one of them and try again.");
+            return null;
         }
-        driver.manage().timeouts().pageLoadTimeout(jobConfig.pageLoadTimeout, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(Duration.of(jobConfig.pageLoadTimeout, SECONDS));
         return driver;
     }
 

@@ -103,7 +103,7 @@ public class JSONReportWriterV2Test {
                         "        \"javascript\" : \"console.log('This is JavaScript!')\"" + lineSeparator() +
                         "      }" + lineSeparator() +
                         "    }," + lineSeparator() +
-                        "    \"browser\" : \"PhantomJS\"," + lineSeparator() +
+                        "    \"browser\" : \"Chrome-Headless\"," + lineSeparator() +
                         "    \"page-load-timeout\" : 120," + lineSeparator() +
                         "    \"window-height\" : 800," + lineSeparator() +
                         "    \"debug\" : false," + lineSeparator() +

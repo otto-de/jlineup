@@ -36,7 +36,7 @@ public final class JobConfig  {
     public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
     public static final int DEFAULT_REPORT_FORMAT = 2;
 
-    static final Browser.Type DEFAULT_BROWSER = Browser.Type.PHANTOMJS;
+    static final Browser.Type DEFAULT_BROWSER = Browser.Type.CHROME_HEADLESS;
     static final float DEFAULT_MAX_DIFF = 0;
     static final int DEFAULT_WINDOW_WIDTH = 800;
     public static final int DEFAULT_WINDOW_HEIGHT = 800;

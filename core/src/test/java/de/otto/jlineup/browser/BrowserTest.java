@@ -8,10 +8,12 @@ import de.otto.jlineup.file.FileService;
 import org.junit.*;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.Logs;
+import org.openqa.selenium.remote.CapabilitiesUtils;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
@@ -45,6 +47,8 @@ public class BrowserTest {
     private Logs webDriverLogs;
     @Mock
     private BrowserUtils browserUtilsMock;
+    @Mock
+    private Capabilities capabilitiesMock;
 
     @Mock
     private RunStepConfig runStepConfig;
@@ -64,7 +68,8 @@ public class BrowserTest {
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class))).thenReturn(webDriverMock);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class), any(DeviceConfig.class))).thenReturn(webDriverMock);
         when(webDriverMock.executeScript(JS_GET_USER_AGENT)).thenReturn("Mocked Webdriver");
-        when(webDriverMock.getCapabilities()).thenReturn(DesiredCapabilities.chrome());
+        when(webDriverMock.getCapabilities()).thenReturn(capabilitiesMock);
+        when(capabilitiesMock.getBrowserName()).thenReturn("MockBrowser 1 2 3 4.0");
         JobConfig jobConfig = jobConfigBuilder().build();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
         testee.initializeWebDriver();
@@ -103,18 +108,6 @@ public class BrowserTest {
         assertEquals("someOtherPath", capturedCookies.get(1).getPath());
         assertEquals(new Date(10000000000L), capturedCookies.get(1).getExpiry());
         assertFalse(capturedCookies.get(1).isSecure());
-    }
-
-    @Test
-    public void shouldSetCookiesThroughJavascript() {
-        //given
-        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true, false);
-        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(100000067899L), false, false);
-        //when
-        testee.setCookiesPhantomJS(ImmutableList.of(cookieOne, cookieTwo));
-        //then
-        verify(webDriverMock).executeScript("document.cookie = 'someName=someValue;path=somePath;domain=someDomain;secure;expires=01 Jan 1970 00:00:10 GMT;'");
-        verify(webDriverMock).executeScript("document.cookie = 'someOtherName=someOtherValue;path=someOtherPath;domain=someOtherDomain;expires=03 Mar 1973 09:47:47 GMT;'");
     }
 
     @Test

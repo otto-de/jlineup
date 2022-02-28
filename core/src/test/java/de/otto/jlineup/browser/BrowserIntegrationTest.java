@@ -54,15 +54,6 @@ public class BrowserIntegrationTest {
         FileUtils.deleteDirectory(tempDirectory);
     }
 
-    @Test
-    public void shouldNotThrowAnExceptionInPhantomJSBecausePhantomJSWithSeleniumCantHandleResponseCodes() throws ValidationError {
-        //given
-        JobConfig jobConfig = localTestConfig("403", Browser.Type.PHANTOMJS, true);
-        //when
-        runJLineup(jobConfig, Step.before);
-        runJLineup(jobConfig, Step.after);
-        //then
-    }
 
     @Test
     public void shouldNotThrowAnExceptionInChromeIfItIsConfiguredToNotCheckForErrorsOnA403() throws ValidationError {
