@@ -1,3 +1,0 @@
-[EXECUTABLE]
-jlineup-cli-4.4.0-all
-
