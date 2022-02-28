@@ -17,7 +17,7 @@ dependencies {
     //Update okhttp because selenium brings older one with 4.9.0
     compile "com.squareup.okhttp3:okhttp:4.9.3"
     //Update kotlin because okhttp 4.9.0 brings 1.4.10
-    compile "org.jetbrains.kotlin:kotlin-stdlib:1.6.20-M1"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:1.6.20-RC"
 
     compile "io.github.bonigarcia:webdrivermanager:4.4.3"
 
