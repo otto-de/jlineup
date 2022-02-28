@@ -1,5 +1,6 @@
 def seleniumVersion = '4.1.2'
 def jacksonVersion = '2.12.1'
+def nettyVersion = '4.1.74.Final'
 ext['selenium.version'] = seleniumVersion
 ext['jackson.version'] = jacksonVersion
 
@@ -18,6 +19,14 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp:4.9.3"
     //Update kotlin because okhttp 4.9.0 brings 1.4.10
     compile "org.jetbrains.kotlin:kotlin-stdlib:1.6.20-RC"
+    //Update netty (selenium has older version)
+    compile "io.netty:netty-codec:" + nettyVersion
+    compile "io.netty:netty-codec-http:" + nettyVersion
+    compile "io.netty:netty-handler:" + nettyVersion
+    compile "io.netty:netty-codec-socks:" + nettyVersion
+    compile "io.netty:netty-handler-proxy:" + nettyVersion
+    compile "io.netty:netty-transport-native-epoll:" + nettyVersion
+    compile "io.netty:netty-transport-native-kqueue:" + nettyVersion
 
     compile "io.github.bonigarcia:webdrivermanager:5.1.0"
 
@@ -32,6 +41,10 @@ dependencies {
     compile "org.apache.commons:commons-compress:1.21"
     //Update gson (coming with webdrivermanager)
     compile 'com.google.code.gson:gson:2.9.0'
+    //Update commons io (webdrivermanager)
+    compile 'commons-io:commons-io:2.11.0'
+    //Update bouncycastle (webdrivermanager)
+    compile 'org.bouncycastle:bcprov-jdk15on:1.70'
 
     compile "com.fasterxml.jackson.core:jackson-core:" + jacksonVersion
     compile "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
