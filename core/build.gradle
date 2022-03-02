@@ -14,7 +14,7 @@ dependencies {
     }
 
     //Update guava because selenium brings version 25 with CVEs
-    compile "com.google.guava:guava:31.0.1-jre"
+    compile "com.google.guava:guava:31.1-jre"
     //Update okhttp because selenium brings older one with 4.9.0
     compile "com.squareup.okhttp3:okhttp:4.9.3"
     //Update kotlin because okhttp 4.9.0 brings 1.4.10
