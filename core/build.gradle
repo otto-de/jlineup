@@ -1,5 +1,5 @@
 def seleniumVersion = '4.1.2'
-def jacksonVersion = '2.12.6'
+def jacksonVersion = '2.13.1'
 def nettyVersion = '4.1.74.Final'
 ext['selenium.version'] = seleniumVersion
 ext['jackson.version'] = jacksonVersion
