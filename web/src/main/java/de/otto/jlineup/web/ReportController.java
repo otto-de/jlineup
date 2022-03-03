@@ -1,7 +1,6 @@
 package de.otto.jlineup.web;
 
 import de.otto.jlineup.service.JLineupService;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,7 +60,12 @@ public class ReportController {
             durationMillis.addAndGet(Duration.between(status.getResumeTime().orElse(Instant.now()), Instant.now()).toMillis());
         }
 
-        return DurationFormatUtils.formatDuration(durationMillis.get(), "HH:mm:ss");
+        Duration duration = Duration.ofMillis(durationMillis.get());
+        long HH = duration.toHours();
+        long MM = duration.toMinutesPart();
+        long SS = duration.toSecondsPart();
+
+        return String.format("%02d:%02d:%02d", HH, MM, SS);
     }
 
     private static String formatTime(Instant time) {
