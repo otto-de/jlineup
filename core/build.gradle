@@ -29,10 +29,7 @@ dependencies {
     compile "io.netty:netty-transport-native-kqueue:" + nettyVersion
 
     compile "io.github.bonigarcia:webdrivermanager:5.1.0"
-
-    compile "com.codeborne:phantomjsdriver:1.5.0"
-    //Update legacy apache http client that is introduced by phantomjsdriver
-    compile "org.apache.httpcomponents:httpclient:4.5.13"
+    
     //Update commons-codec from 1.11 which has a vulnerability
     compile "commons-codec:commons-codec:1.15"
     //Update jsoup (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGJSOUP-1567345)

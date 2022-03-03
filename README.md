@@ -17,8 +17,7 @@ It can be used as a simple command line tool or as a small web service which is 
 
 JLineup shoots and compares screenshots of a web page at two consecutive points in time.
 It does a pixel by pixel comparison of both runs and generates a HTML and a JSON report.
-Behind the scenes, it uses Selenium and a browser of choice (currently Chrome, Firefox and
-PhantomJS¹ are supported).
+Behind the scenes, it uses Selenium and a browser of choice (currently Chrome, Chromium and Firefox are supported).
 
 JLineup has no other dependencies than web browser (Firefox or Chrome/Chromium) and a JVM.
 *Experimental*: There's also a self contained Linux AMD64 build of the CLI version that doesn't even require a JVM.
@@ -81,7 +80,6 @@ JLineup 4.4.0 was tested successfully with
 
 * Chrome 97.x
 * Firefox 96.x
-* PhantomJS 2.1.1 (auto-downloaded by JLineup if not installed)
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
 
@@ -156,8 +154,4 @@ Credit for original Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
 ### Contact
 
 If you have questions or proposals, please open an issue or write an email to marco DOT geweke AT otto.de
-
-### Footnotes
-
-¹) PhantomJS Development has been suspended. For more details go to https://github.com/ariya/phantomjs/issues/15344
 
