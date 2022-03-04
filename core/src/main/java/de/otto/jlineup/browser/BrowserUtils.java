@@ -64,24 +64,18 @@ public class BrowserUtils {
     synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig, DeviceConfig device) {
         WebDriver driver;
         if (jobConfig.browser.isFirefox()) {
-            WebDriverManager.firefoxdriver().setup();
             FirefoxOptions options = new FirefoxOptions();
-
             FirefoxProfile firefoxProfileWithDisabledAnimatedGifs = getFirefoxProfileWithDisabledAnimatedGifs();
             options.setProfile(firefoxProfileWithDisabledAnimatedGifs);
-
             options.addArguments(runStepConfig.getFirefoxParameters());
             if (jobConfig.browser.isHeadless()) {
                 options.setHeadless(true);
                 options.addArguments("-width", device.width + "", "-height", device.height + "");
             }
-
             LOG.debug("Creating firefox with options: {}", options.toString());
-            driver = new FirefoxDriver(options);
+            driver = WebDriverManager.firefoxdriver().capabilities(options).create();
         } else if (jobConfig.browser.isChrome()) {
-            WebDriverManager.chromedriver().setup();
             ChromeOptions options = new ChromeOptions();
-
             //To work in a headless env, this is needed
             options.addArguments("--no-sandbox");
             options.addArguments("--whitelisted-ips");
@@ -124,10 +118,9 @@ public class BrowserUtils {
             }
 
             LOG.debug("Creating chrome with options: {}", options.toString());
-            driver = new ChromeDriver(options);
-
+            driver = WebDriverManager.chromedriver().capabilities(options).create();
         } else {
-            LOG.error("You need either Firefox or Chrome to use JLineup work. Install one of them and try again.");
+            LOG.error("You need either Firefox or Chrome / Chromium to make JLineup work. Install one of them and try again.");
             return null;
         }
         driver.manage().timeouts().pageLoadTimeout(Duration.of(jobConfig.pageLoadTimeout, SECONDS));
