@@ -1,5 +1,10 @@
 # JLineup Release History
 
+## Relese 4.5.0 - upcoming
+
+* Remove PhantomJS support
+* Dependency Updates
+
 ## Release 4.4.0 - 2022-01-13
 * New HTML report format
 * New `error-signals` feature in `http-check` which allows to check the targeted page not only by http return code

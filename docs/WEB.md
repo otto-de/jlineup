@@ -15,17 +15,7 @@ Now you have a `jlineup-web.jar` in your current directory.
 For best results, you need a "real" web browser installed on your system.
 JLineup supports Google Chrome (Chromium also works) or Firefox at the
 moment. As JLineup is written in Java, you need a Java Runtime
-Environment in version 8 or higher. OpenJDK is fine!
-
-JLineup can use PhantomJS internally, if no other browser is available.
-This is not recommended, as PhantomJS is not maintained anymore. More
-and more modern web features don't work in PhantomJS, so it's only an
-emergency fallback for very simple websites. It also has a security
-vulnerability described in https://nvd.nist.gov/vuln/detail/CVE-2019-17221
-which could be misused to get access to arbitrary files on the running
-web server. To enable PhantomJS nonetheless, it has to be added to
-application.yml manually, see `jlineup.installed-browsers` config option
-for this.
+Environment in version 11 or higher. OpenJDK is fine.
 
 If those prerequisites are fulfilled, you can start the JLineup server:
 

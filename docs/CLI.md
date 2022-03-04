@@ -20,11 +20,6 @@ JLineup supports Google Chrome (Chromium also works) or Firefox at the
 moment. As JLineup is written in Java, you need a Java Runtime
 Environment in version 8 or higher. OpenJDK is fine!
 
-JLineup can use PhantomJS internally, if no other browser is available.
-This is not recommended, as PhantomJS is not maintained any more. More
-and more modern web features don't work in PhantomJS, so it's only an
-emergency fallback for very simple websites.
-
 If those prerequisites are fulfilled, you can make a test run:
 
 `java -jar jlineup.jar --help`

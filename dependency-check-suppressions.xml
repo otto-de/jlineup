@@ -14,12 +14,4 @@
         <packageUrl regex="true">^pkg:maven/org\.jetbrains\.kotlin/kotlin\-stdlib.*@.*$</packageUrl>
         <cve>CVE-2020-29582</cve>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-   file name: phantomjsdriver-1.4.4.jar - Vulnerability is known and mentioned in the docs,
-   PhantomJS ist disabled by default in the WEB version
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.codeborne/phantomjsdriver@.*$</packageUrl>
-        <cve>CVE-2019-17221</cve>
-    </suppress>
 </suppressions>

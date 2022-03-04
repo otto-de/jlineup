@@ -7,9 +7,7 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.slf4j.Logger;
@@ -119,6 +117,8 @@ public class BrowserUtils {
 
             LOG.debug("Creating chrome with options: {}", options.toString());
             driver = WebDriverManager.chromedriver().capabilities(options).create();
+        } else if (jobConfig.browser.isChromium()) {
+            driver = WebDriverManager.chromiumdriver().create();
         } else {
             LOG.error("You need either Firefox or Chrome / Chromium to make JLineup work. Install one of them and try again.");
             return null;

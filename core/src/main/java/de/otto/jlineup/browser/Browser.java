@@ -60,7 +60,11 @@ public class Browser implements AutoCloseable {
         @JsonProperty(value = "Chrome")
         CHROME,
         @JsonProperty(value = "Chrome-Headless")
-        CHROME_HEADLESS;
+        CHROME_HEADLESS,
+        @JsonProperty(value = "Chromium")
+        CHROMIUM,
+        @JsonProperty(value = "Chromium-Headless")
+        CHROMIUM_HEADLESS;
 
         public boolean isFirefox() {
             return this == FIREFOX || this == FIREFOX_HEADLESS;
@@ -70,8 +74,12 @@ public class Browser implements AutoCloseable {
             return this == CHROME || this == CHROME_HEADLESS;
         }
 
+        public boolean isChromium() {
+            return this == CHROMIUM || this == CHROMIUM_HEADLESS;
+        }
+
         public boolean isHeadlessRealBrowser() {
-            return this == FIREFOX_HEADLESS || this == CHROME_HEADLESS;
+            return this == FIREFOX_HEADLESS || this == CHROME_HEADLESS || this == CHROMIUM_HEADLESS;
         }
 
         public boolean isHeadless() {

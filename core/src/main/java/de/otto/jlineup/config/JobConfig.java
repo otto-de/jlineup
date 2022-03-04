@@ -5,9 +5,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -21,6 +24,9 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.*;
+import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_COMMENTS;
+import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 
@@ -107,8 +113,14 @@ public final class JobConfig  {
     }
 
     public static String prettyPrintWithAllFields(JobConfig jobConfig) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper objectMapper = JsonMapper.builder()
+                .configure(JsonReadFeature.ALLOW_TRAILING_COMMA, true)
+                .configure(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS, true)
+                .configure(ACCEPT_CASE_INSENSITIVE_ENUMS, true)
+                .configure(ALLOW_COMMENTS, true)
+                .configure(INDENT_OUTPUT, true)
+                .build();
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE);
         objectMapper.addMixIn(JobConfig.class, JobConfigMixIn.class);
         objectMapper.addMixIn(UrlConfig.class, UrlConfigMixIn.class);
         try {
@@ -285,9 +297,9 @@ public final class JobConfig  {
                 .withUrls(ImmutableMap.of("http://www.example.com",
 
                         urlConfigBuilder()
-                                .withPaths(ImmutableList.of("/", "someOtherPath"))
+                                .withPaths(ImmutableList.of("/"))
                                 .withCookies(ImmutableList.of(
-                                        new Cookie("exampleCookieName", "exampleValue", "http://www.example.com", "/", new Date(1000L), true, false)
+                                        new Cookie("exampleCookieName", "exampleValue", "www.example.com", "/", new Date(1000L), false, false)
                                 ))
                                 .withEnvMapping(ImmutableMap.of("live", "www"))
                                 .withLocalStorage(ImmutableMap.of("exampleLocalStorageKey", "value"))
@@ -297,7 +309,7 @@ public final class JobConfig  {
                                 .withHttpCheck(new HttpCheckConfig(true))
                                 .withStrictColorComparison(false)
                                 .withRemoveSelectors(ImmutableSet.of("#removeNodeWithThisId", ".removeNodesWithThisClass"))
-                                .withWaitForSelectors(ImmutableSet.of("#waitForMe"))
+                                .withWaitForSelectors(ImmutableSet.of("h1"))
                                 .withFailIfSelectorsNotFound(false)
                                 .build())
                 );

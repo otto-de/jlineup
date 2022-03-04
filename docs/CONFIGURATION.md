@@ -151,7 +151,7 @@ This is a full configuration with example values:
       ]
     }
   },
-  "browser": "PhantomJS",
+  "browser": "Chrome",
   "wait-after-page-load": 0.0,
   "page-load-timeout": 120,
   "report-format": 2,
@@ -178,20 +178,14 @@ What are all those options about? Here are all the details.
 ### `browser`
 
  Defines, which browser is used for the JLineup job. The chosen browser has to be installed on the used system.
- One exception is PhantomJS¹. If it's configured and not installed, JLineup downloads and uses it.
- 
- *Advice*: PhantomJS shouldn't be used, because it lacks more and more features of modern web and it's not 
- maintained any more.¹
  
  JLineup downloads a webdriver, but it doesn't install a real browser during runtime! 
  
  * Scope: Global
  * Type: String
- * Possible Values: `PhantomJS`, `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`
- * Default: `"PhantomJS"`
+ * Possible Values: `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`
+ * Default: `"Chrome-Headless"`
  * Example: `"browser": "Chrome-Headless"`
- 
- ¹) PhantomJS Development has been suspended. For more details go to https://github.com/ariya/phantomjs/issues/15344
 
 ---
 
