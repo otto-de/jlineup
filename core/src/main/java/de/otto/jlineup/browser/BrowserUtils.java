@@ -119,6 +119,8 @@ public class BrowserUtils {
             driver = WebDriverManager.chromedriver().capabilities(options).create();
         } else if (jobConfig.browser.isChromium()) {
             driver = WebDriverManager.chromiumdriver().create();
+        } else if (jobConfig.browser.isSafari()) {
+            driver = WebDriverManager.safaridriver().create();
         } else {
             LOG.error("You need either Firefox or Chrome / Chromium to make JLineup work. Install one of them and try again.");
             return null;

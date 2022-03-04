@@ -13,7 +13,6 @@ dependencies {
         exclude module: "selenium-edge-driver"
         exclude module: "selenium-ie-driver"
         exclude module: "selenium-opera-driver"
-        exclude module: "selenium-safari-driver"
         exclude module: "htmlunit"
     }
 
