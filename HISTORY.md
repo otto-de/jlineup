@@ -2,6 +2,7 @@
 
 ## Release 4.5.0 - 2022-03-07
 
+* Bugfix: Example config (--print-example) was not in the right format
 * Remove PhantomJS support
 * Dependency Updates (Selenium 4 etc.)
 
