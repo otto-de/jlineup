@@ -78,8 +78,8 @@ Let's assume, this is part of a continuous integration pipeline:
 
 JLineup 4.5.0 was tested successfully with
 
-* Chrome 97.x
-* Firefox 96.x
+* Chrome 99.x
+* Firefox 97.x
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
 
