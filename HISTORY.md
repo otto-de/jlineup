@@ -1,9 +1,9 @@
 # JLineup Release History
 
-## Relese 4.5.0 - upcoming
+## Release 4.5.0 - 2022-03-07
 
 * Remove PhantomJS support
-* Dependency Updates
+* Dependency Updates (Selenium 4 etc.)
 
 ## Release 4.4.0 - 2022-01-13
 * New HTML report format
