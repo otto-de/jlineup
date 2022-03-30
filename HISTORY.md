@@ -1,7 +1,9 @@
 # JLineup Release History
 
-## Release 4.5.0 - 2022-03-07
+## Release 4.5.1 - 2022-03-30
+* Dependency updates
 
+## Release 4.5.0 - 2022-03-07
 * Bugfix: Example config (--print-example) was not in the right format
 * Remove PhantomJS support
 * Dependency Updates (Selenium 4 etc.)
