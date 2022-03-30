@@ -3,7 +3,7 @@ plugins {
 }
 
 def seleniumVersion = '4.1.3'
-def jacksonVersion = '2.13.2.2'
+def jacksonVersion = '2.13.2'
 def nettyVersion = '4.1.75.Final'
 ext['selenium.version'] = seleniumVersion
 ext['jackson.version'] = jacksonVersion
@@ -44,7 +44,7 @@ dependencies {
 
     api "com.fasterxml.jackson.core:jackson-core:" + jacksonVersion
     api "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
-    api "com.fasterxml.jackson.core:jackson-databind:" + jacksonVersion
+    api "com.fasterxml.jackson.core:jackson-databind:" + jacksonVersion + ".2" //Add micro patch level .2 because of CVE
     api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:" + jacksonVersion
     api "ch.qos.logback:logback-classic:1.2.11"
 

@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
@@ -357,7 +358,7 @@ public class Browser implements AutoCloseable {
 
         //Wait for fonts //TODO: Do we really need this any more?
         if (screenshotContext.urlConfig.waitForFontsTime > 0) {
-            WebDriverWait wait = new WebDriverWait(getWebDriver(), new Double(Math.ceil(screenshotContext.urlConfig.waitForFontsTime)).longValue());
+            WebDriverWait wait = new WebDriverWait(getWebDriver(), Duration.ofSeconds(Math.round(Math.ceil(screenshotContext.urlConfig.waitForFontsTime))));
             wait.until(fontsLoaded);
         }
 
