@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.5.2 - 2022-03-31
+* Updates to Spring Boot 2.6.6 and Spring Framework 5.3.18 to fix Spring4Shell issue
+
 ## Release 4.5.1 - 2022-03-30
 * Dependency updates
 
