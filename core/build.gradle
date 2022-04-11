@@ -28,7 +28,7 @@ dependencies {
     implementation "io.netty:netty-transport-native-epoll:" + nettyVersion
     implementation "io.netty:netty-transport-native-kqueue:" + nettyVersion
 
-    implementation "io.github.bonigarcia:webdrivermanager:5.1.0"
+    implementation "io.github.bonigarcia:webdrivermanager:5.1.1"
 
     //Update commons-codec from 1.11 which has a vulnerability
     implementation "commons-codec:commons-codec:1.15"
