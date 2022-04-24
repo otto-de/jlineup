@@ -1,5 +1,10 @@
 # JLineup Release History
 
+## Release 4.6.0 - 2022-04-24
+* Bugfix: All cookies were part of screenshot context hash calculation since version 4.4.0, which lead
+  to problems when changing cookie content between before and after steps. To fix this, only alternating cookies
+  (introduced in 4.4.0) are part of the context hash from this release on.
+
 ## Release 4.5.2 - 2022-03-31
 * Updates to Spring Boot 2.6.6 and Spring Framework 5.3.18 to fix Spring4Shell issue
 

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static de.otto.jlineup.config.JobConfig.*;
 
@@ -317,7 +318,8 @@ public class UrlConfig {
         }
 
         public Builder withAlternatingCookies(List<List<Cookie>> val) {
-            alternatingCookies = val;
+            //Magic! Alternating cookies are automagically screenshot context giving!
+            alternatingCookies = val != null ? val.stream().map(alternatingCookies -> alternatingCookies != null ? alternatingCookies.stream().map(cookie -> Cookie.copyOfBuilder(cookie).withScreenshotContextGiving(true).build()).collect(Collectors.toList()) : null).collect(Collectors.toList()) : null;
             return this;
         }
 

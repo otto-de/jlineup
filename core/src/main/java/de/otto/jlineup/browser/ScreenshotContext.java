@@ -10,6 +10,7 @@ import de.otto.jlineup.config.UrlConfig;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @JsonDeserialize(builder = ScreenshotContext.Builder.class)
 public final class ScreenshotContext  {
@@ -131,7 +132,7 @@ public final class ScreenshotContext  {
      */
 
     public int contextHash() {
-        return Objects.hash(originalUrl, urlSubPath, deviceConfig, cookies);
+        return Objects.hash(originalUrl, urlSubPath, deviceConfig, cookies != null ? cookies.stream().filter(Cookie::isScreenshotContextGiving).collect(Collectors.toList()) : null);
     }
 
     public boolean equalsIgnoreStep(ScreenshotContext that) {

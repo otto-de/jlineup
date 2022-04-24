@@ -299,7 +299,7 @@ public final class JobConfig  {
                         urlConfigBuilder()
                                 .withPaths(ImmutableList.of("/"))
                                 .withCookies(ImmutableList.of(
-                                        new Cookie("exampleCookieName", "exampleValue", "www.example.com", "/", new Date(1000L), false, false)
+                                        new Cookie("exampleCookieName", "exampleValue", "www.example.com", "/", new Date(1000L), false, false, false)
                                 ))
                                 .withEnvMapping(ImmutableMap.of("live", "www"))
                                 .withLocalStorage(ImmutableMap.of("exampleLocalStorageKey", "value"))

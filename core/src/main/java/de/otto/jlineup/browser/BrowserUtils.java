@@ -172,9 +172,9 @@ public class BrowserUtils {
                     screenshotContextList.addAll(
                             deviceConfigs.stream()
                                     .flatMap(deviceConfig ->
-                                            urlConfig.alternatingCookies.stream().map(alteringCookies -> {
+                                            urlConfig.alternatingCookies.stream().map(alternatingCookies -> {
                                                 ArrayList<Cookie> newCookies = urlConfig.cookies != null ? new ArrayList<>(urlConfig.cookies) : new ArrayList<>();
-                                                newCookies.addAll(alteringCookies);
+                                                newCookies.addAll(alternatingCookies);
                                                 return new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getKey()), path, deviceConfig,
                                                         newCookies, runStepConfig.getStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey());
                                             })).collect(Collectors.toList()));

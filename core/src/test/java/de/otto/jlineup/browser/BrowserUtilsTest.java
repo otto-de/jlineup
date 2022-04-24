@@ -97,6 +97,29 @@ public class BrowserUtilsTest {
     }
 
     @Test
+    public void shouldHaveTheSameContextHashForBeforeAndAfterSteps() throws IOException {
+        //given
+        JobConfig jobConfigBefore = JobConfig.readConfig(".", "src/test/resources/lineup_test_context_before.json");
+        JobConfig jobConfigAfter = JobConfig.readConfig(".", "src/test/resources/lineup_test_context_after.json");
+
+        RunStepConfig runStepConfigBefore = jLineupRunConfigurationBuilder()
+                .withStep(Step.before)
+                .build();
+
+        RunStepConfig runStepConfigAfter = jLineupRunConfigurationBuilder()
+                .withStep(Step.after)
+                .build();
+
+        //when
+        final List<ScreenshotContext> screenshotContextListBefore = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfigBefore, jobConfigBefore);
+        final List<ScreenshotContext> screenshotContextListAfter = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfigAfter, jobConfigAfter);
+
+        //then
+        assertThat(screenshotContextListBefore.stream().map(ScreenshotContext::contextHash).collect(Collectors.toList()),
+                is(screenshotContextListAfter.stream().map(ScreenshotContext::contextHash).collect(Collectors.toList())));
+    }
+
+    @Test
     public void shouldPrepareDomain() {
         //given
         RunStepConfig runStepConfig = jLineupRunConfigurationBuilder()
@@ -132,7 +155,12 @@ public class BrowserUtilsTest {
                 .withPath("/")
                 .withMaxDiff(0.05d)
                 .withCookies(ImmutableList.of(new Cookie("classic", "true")))
-                .withAlternatingCookies(ImmutableList.of(ImmutableList.of(new Cookie("alternating", "case1")), ImmutableList.of(new Cookie("alternating", "case2"))))
+                .withAlternatingCookies(ImmutableList.of(
+                        ImmutableList.of(
+                                new Cookie("alternating", "case1", null, null, null, false, null, true)),
+                        ImmutableList.of(
+                                new Cookie("alternating", "case2", null, null, null, false, null, true))
+                ))
                 .withWindowWidths(ImmutableList.of(1200))
                 .withMaxScrollHeight(100000)
                 .build();
