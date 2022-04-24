@@ -32,6 +32,19 @@ configurations {
     }
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'org.springframework.boot') {
+            details.useVersion ${springBootVersion}
+            details.because 'Enforce spring boot version'
+        }
+        if (details.requested.group == 'org.springframework') {
+            details.useVersion ${springVersion}
+            details.because 'Enforce spring boot version'
+        }
+    }
+}
+
 tasks.distZip.enabled = false
 tasks.distTar.enabled = false
 

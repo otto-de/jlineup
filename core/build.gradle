@@ -79,7 +79,7 @@ test {
         exceptionFormat = 'full'
         showStandardStreams = true
     }
-    maxHeapSize = "512m"
+    maxHeapSize = "1024m"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
