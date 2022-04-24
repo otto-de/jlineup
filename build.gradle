@@ -11,13 +11,13 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.owasp:dependency-check-gradle:7.0.3'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
+        classpath 'org.owasp:dependency-check-gradle:7.0.4.1'
     }
 }
 
 plugins {
     id 'io.codearte.nexus-staging' version '0.30.0'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 //
