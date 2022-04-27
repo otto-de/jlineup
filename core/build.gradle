@@ -70,6 +70,15 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
+            details.useVersion "2.13.2.2"
+            details.because 'Enforce databind version'
+        }
+    }
+}
+
 application {
     mainClass.set("de.otto.jlineup.core.Main")
 }
