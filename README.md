@@ -28,14 +28,30 @@ Let's take this little example [config](docs/CONFIGURATION.md) for a check of tw
   "urls": {
     "https://www.otto.de": {
       "paths": [ 
-	"/wohnen/?thema=thmn123nol_retro_chic",
-	"/k/10072934231?a=224673"
+	    "/"
       ],
-      "window-widths": [ 500,1000,1200,1600 ]
+      "devices" : [ {
+        "width" : 850,
+        "height" : 600,
+        "pixel-ratio" : 1.0,
+        "device-name" : "DESKTOP",
+        "touch" : false
+      }, {
+        "width" : 1000,
+        "height" : 850,
+        "pixel-ratio" : 1.0,
+        "device-name" : "DESKTOP",
+        "touch" : false
+      }, {
+        "width" : 1200,
+        "height" : 1000,
+        "pixel-ratio" : 1.0,
+        "device-name" : "DESKTOP",
+        "touch" : false
+      } ]
     }
   },
-  "wait-after-page-load" : 3,
-  "window-height" : 800,
+  "wait-after-page-load" : 0.5,
   "browser" : "chrome-headless"
 }
 ```
