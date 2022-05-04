@@ -139,7 +139,7 @@ This is a full configuration with example values:
       "http-check": {
         "enabled": false
       },
-      "ignore-antialiasing": false,
+      "ignore-anti-aliasing": false,
       "strict-color-comparison": false,
       "wait-for-selectors": [
         ".wait-for-class"
