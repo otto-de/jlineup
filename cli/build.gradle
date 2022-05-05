@@ -1,6 +1,3 @@
-def seleniumVersion = '3.141.59'
-ext['selenium.version'] = seleniumVersion
-
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.github.johnrengelman.shadow'
 
