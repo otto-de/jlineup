@@ -139,7 +139,7 @@ This is a full configuration with example values:
       "http-check": {
         "enabled": false
       },
-      "ignore-antialiasing": false,
+      "ignore-anti-aliasing": false,
       "strict-color-comparison": false,
       "wait-for-selectors": [
         ".wait-for-class"
@@ -151,7 +151,7 @@ This is a full configuration with example values:
       ]
     }
   },
-  "browser": "PhantomJS",
+  "browser": "Chrome",
   "wait-after-page-load": 0.0,
   "page-load-timeout": 120,
   "report-format": 2,
@@ -178,20 +178,14 @@ What are all those options about? Here are all the details.
 ### `browser`
 
  Defines, which browser is used for the JLineup job. The chosen browser has to be installed on the used system.
- One exception is PhantomJS¹. If it's configured and not installed, JLineup downloads and uses it.
- 
- *Advice*: PhantomJS shouldn't be used, because it lacks more and more features of modern web and it's not 
- maintained any more.¹
  
  JLineup downloads a webdriver, but it doesn't install a real browser during runtime! 
  
  * Scope: Global
  * Type: String
- * Possible Values: `PhantomJS`, `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`
- * Default: `"PhantomJS"`
+ * Possible Values: `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`
+ * Default: `"Chrome-Headless"`
  * Example: `"browser": "Chrome-Headless"`
- 
- ¹) PhantomJS Development has been suspended. For more details go to https://github.com/ariya/phantomjs/issues/15344
 
 ---
 
@@ -285,6 +279,38 @@ What are all those options about? Here are all the details.
                }
             ]
             `
+---
+
+### `alternating-cookies`
+
+This feature is helpful if you wish to test different sets of cookies for a site.
+A list of lists of cookies that are set on the site. A cookie document can simply consist of `name` and `value`.
+Alternatively, you can specify a full cookie with `name`, `value`, `domain`, `path`, `expiry` and `secure`.
+See the `cookies` example for details. The expiration time has to be written as ISO8601 string.
+If you want to see the different cookies in the HTML report, you can specify `show-in-report` for them.
+
+* Scope: Site
+* Type: List of lists of alternating cookie documents
+* Default: `{}`
+* Example: `
+  "alternating-cookies": [[{
+  "name": "cookieA1",
+  "value": "A1",
+  "show-in-report": true
+  },{
+  "name": "cookieA2",
+  "value": "A2",
+  "show-in-report": true
+  }],[{
+  "name": "cookieB1",
+  "value": "B1",
+  "show-in-report": true
+  },{
+  "name": "cookieB2",
+  "value": "B2",
+  "show-in-report": true
+  }]]
+  `
 ---
 
 ### `local-storage`
@@ -404,10 +430,14 @@ What are all those options about? Here are all the details.
  If `enabled` is set to true, all return codes that are not in the whitelist of allowed codes are regarded as failure.
  If you don't explicitly specify allowed codes in the http-check document, there is a default list of these accepted 
  HTTP return codes: `200,202,204,205,206,301,302,303,304,307,308`
+
+ Additionally, you can setup `error-signals`, which accepts a list of strings. If one of those strings appears in the
+ body of the checked page, the job also returns an error. This is helpful, if your page returns one of the allowed codes,
+ but isn't in the desired state (It was introduced to check for a "sorry"-page that did return a HTTP 200). 
  
  * Scope: Site or Global
  * Type: JSON Document
- * Default: `{ "enabled": false, allowed-codes: [ 200,202,204,205,206,301,302,303,304,307,308 ] }`
+ * Default: `{ "enabled": false, "allowed-codes": [ 200,202,204,205,206,301,302,303,304,307,308 ], "error-signals":[] }`
  * Example: `
               "http-check": {
                 "enabled": true,
@@ -417,7 +447,8 @@ What are all those options about? Here are all the details.
                   204,
                   205,
                   206
-                ]
+                ],
+                "error-signals":["error1","error2"]
               }
             `
             
@@ -439,9 +470,8 @@ What are all those options about? Here are all the details.
             "env-mapping": {
                 "live": "www"
             }
-            `
-            
---- 
+            `  
+---
 
 ### `hide-images`
 
@@ -453,7 +483,7 @@ What are all those options about? Here are all the details.
  * Default: `false`
  * Example: `"hide-images": true`
  
---- 
+---
 
 ### `wait-for-selectors`
 

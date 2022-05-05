@@ -5,8 +5,8 @@ import de.otto.jlineup.config.Step;
 import org.junit.Test;
 import picocli.CommandLine;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 public class RunStepConfigTest {
 

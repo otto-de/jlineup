@@ -33,7 +33,7 @@ public class JobConfigTest {
     @Test
     public void shouldReadMinimalConfigAndInsertDefaults() throws IOException {
         JobConfig jobConfig = JobConfig.readConfig("src/test/resources/", "lineup_minimal_test.json");
-        assertThat(jobConfig.browser.isPhantomJS(), is(true));
+        assertThat(jobConfig.browser.isHeadlessRealBrowser(), is(true));
         assertThat(jobConfig.windowHeight, is(800));
         assertThat(jobConfig.urls.get("https://www.otto.de").windowWidths, is(ImmutableList.of(800)));
         assertThat(jobConfig.urls.get("https://www.otto.de").paths, is(ImmutableList.of("")));

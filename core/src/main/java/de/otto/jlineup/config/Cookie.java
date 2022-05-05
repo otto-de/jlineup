@@ -1,6 +1,7 @@
 package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Date;
@@ -20,13 +21,20 @@ public class Cookie {
     public final Date expiry;
     public final boolean secure;
 
-    public Cookie(String name, String value, String domain, String path, Date expiry, boolean secure) {
+    public final Boolean showInReport;
+
+    @JsonIgnore
+    public final boolean screenshotContextGiving;
+
+    public Cookie(String name, String value, String domain, String path, Date expiry, boolean secure, Boolean showInReport, boolean screenshotContextGiving) {
         this.name = name;
         this.value = value;
         this.domain = domain;
         this.path = path;
         this.expiry = expiry;
         this.secure = secure;
+        this.showInReport = showInReport;
+        this.screenshotContextGiving = screenshotContextGiving;
     }
 
     public Cookie(String name, String value) {
@@ -36,6 +44,8 @@ public class Cookie {
         this.path = null;
         this.expiry = null;
         this.secure = false;
+        this.showInReport = null;
+        this.screenshotContextGiving = false;
     }
 
     private Cookie(Builder builder) {
@@ -45,6 +55,8 @@ public class Cookie {
         path = builder.path;
         expiry = builder.expiry;
         secure = builder.secure;
+        showInReport = builder.showInReport;
+        screenshotContextGiving = builder.screenshotContextGiving;
     }
 
     public static Builder cookieBuilder() {
@@ -59,6 +71,8 @@ public class Cookie {
         builder.path = copy.getPath();
         builder.expiry = copy.getExpiry();
         builder.secure = copy.isSecure();
+        builder.showInReport = copy.getShowInReport();
+        builder.screenshotContextGiving = copy.isScreenshotContextGiving();
         return builder;
     }
 
@@ -98,6 +112,14 @@ public class Cookie {
         return secure;
     }
 
+    public Boolean getShowInReport() {
+        return showInReport;
+    }
+
+    public boolean isScreenshotContextGiving() {
+        return screenshotContextGiving;
+    }
+
     /*
      *
      *
@@ -111,33 +133,6 @@ public class Cookie {
      */
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Cookie cookie = (Cookie) o;
-
-        if (secure != cookie.secure) return false;
-        if (!Objects.equals(name, cookie.name)) return false;
-        if (!Objects.equals(value, cookie.value)) return false;
-        if (!Objects.equals(domain, cookie.domain)) return false;
-        if (!Objects.equals(path, cookie.path)) return false;
-        return Objects.equals(expiry, cookie.expiry);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 31 * result + (value != null ? value.hashCode() : 0);
-        result = 31 * result + (domain != null ? domain.hashCode() : 0);
-        result = 31 * result + (path != null ? path.hashCode() : 0);
-        result = 31 * result + (expiry != null ? expiry.hashCode() : 0);
-        result = 31 * result + (secure ? 1 : 0);
-        return result;
-    }
-
-    @Override
     public String toString() {
         return "Cookie{" +
                 "name='" + name + '\'' +
@@ -146,9 +141,23 @@ public class Cookie {
                 ", path='" + path + '\'' +
                 ", expiry=" + expiry +
                 ", secure=" + secure +
+                ", showInReport=" + showInReport +
+                ", screenshotContextGiving=" + screenshotContextGiving +
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Cookie cookie = (Cookie) o;
+        return secure == cookie.secure && screenshotContextGiving == cookie.screenshotContextGiving && Objects.equals(name, cookie.name) && Objects.equals(value, cookie.value) && Objects.equals(domain, cookie.domain) && Objects.equals(path, cookie.path) && Objects.equals(expiry, cookie.expiry) && Objects.equals(showInReport, cookie.showInReport);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, value, domain, path, expiry, secure, showInReport, screenshotContextGiving);
+    }
 
     public static final class Builder {
         private String name;
@@ -157,6 +166,8 @@ public class Cookie {
         private String path;
         private Date expiry;
         private boolean secure;
+        public Boolean showInReport;
+        public boolean screenshotContextGiving;
 
         private Builder() {
         }
@@ -190,6 +201,16 @@ public class Cookie {
 
         public Builder withSecure(boolean val) {
             secure = val;
+            return this;
+        }
+
+        public Builder withShowInReport(Boolean val){
+            showInReport = val;
+            return this;
+        }
+
+        public Builder withScreenshotContextGiving(boolean val){
+            screenshotContextGiving = val;
             return this;
         }
 

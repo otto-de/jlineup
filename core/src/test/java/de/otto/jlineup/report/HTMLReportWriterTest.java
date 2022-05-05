@@ -53,7 +53,8 @@ public class HTMLReportWriterTest {
     @Test
     public void shouldRenderHTMLReport() {
 
-        String n = System.getProperty("line.separator");
+        //String n = System.getProperty("line.separator");
+        String n = "\n";
 
         String expectedHtmlStart = "<!DOCTYPE html>" + n +
                 "<html>" + n +

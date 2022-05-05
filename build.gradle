@@ -1,11 +1,8 @@
 buildscript {
     ext {
-        springBootVersion = '2.4.4'
-        springVersion = '5.3.4.RELEASE'
-        seleniumVersion = '3.141.59'
-        jacksonVersion = '2.12.2'
-        ext['selenium.version'] = ext.seleniumVersion
-        ext['jackson.version'] = ext.jacksonVersion
+        springBootVersion = '2.6.7'
+        springVersion = '5.3.19'
+        tomcatVersion = '9.0.62'
     }
     repositories {
         mavenCentral()
@@ -14,20 +11,20 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.owasp:dependency-check-gradle:6.1.2'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
+        classpath 'org.owasp:dependency-check-gradle:7.1.0.1'
     }
 }
 
 plugins {
     id 'io.codearte.nexus-staging' version '0.30.0'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 //
 //\
 ///\
 ////\
-def jlineup_version = "4.3.3-SNAPSHOT"
+def jlineup_version = "4.6.1-SNAPSHOT"
 /////
 ////
 ///

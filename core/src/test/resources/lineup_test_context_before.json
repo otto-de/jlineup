@@ -1,0 +1,19 @@
+{
+  "urls": {
+    "https://www.otto.de": {
+      "paths": [
+        "/"
+      ],
+      "max-diff": 0,
+      "cookies": [
+        {
+          "name": "someCookieWithAlternatingValueBetweenBeforeAndAfter",
+          "value": "1234567890"
+        }
+      ]
+    }
+  },
+  "browser": "firefox",
+  "wait-after-page-load": 1,
+  "page-load-timeout": 60
+}

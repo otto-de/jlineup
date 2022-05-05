@@ -21,7 +21,7 @@ public class JLineupRunnerFactoryTest {
     @Before
     public void setup() {
         jLineupWebProperties = new JLineupWebProperties();
-        jLineupWebProperties.setInstalledBrowsers(Arrays.asList(CHROME, CHROME_HEADLESS, PHANTOMJS));
+        jLineupWebProperties.setInstalledBrowsers(Arrays.asList(CHROME, CHROME_HEADLESS));
         jLineupWebProperties.setMaxThreadsPerJob(10);
         jLineupRunnerFactory = new JLineupRunnerFactory(jLineupWebProperties);
     }

@@ -6,13 +6,15 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.*;
 import de.otto.jlineup.file.FileService;
 import org.junit.*;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.Logs;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
 import java.net.URI;
@@ -27,10 +29,12 @@ import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BrowserTest {
 
     @Mock
@@ -45,6 +49,8 @@ public class BrowserTest {
     private Logs webDriverLogs;
     @Mock
     private BrowserUtils browserUtilsMock;
+    @Mock
+    private Capabilities capabilitiesMock;
 
     @Mock
     private RunStepConfig runStepConfig;
@@ -55,8 +61,6 @@ public class BrowserTest {
 
     @Before
     public void setup() {
-        initMocks(this);
-
         when(webDriverMock.manage()).thenReturn(webDriverOptionsMock);
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
@@ -64,7 +68,8 @@ public class BrowserTest {
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class))).thenReturn(webDriverMock);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class), any(DeviceConfig.class))).thenReturn(webDriverMock);
         when(webDriverMock.executeScript(JS_GET_USER_AGENT)).thenReturn("Mocked Webdriver");
-        when(webDriverMock.getCapabilities()).thenReturn(DesiredCapabilities.chrome());
+        when(webDriverMock.getCapabilities()).thenReturn(capabilitiesMock);
+        when(capabilitiesMock.getBrowserName()).thenReturn("MockBrowser 1 2 3 4.0");
         JobConfig jobConfig = jobConfigBuilder().build();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
         testee.initializeWebDriver();
@@ -82,8 +87,8 @@ public class BrowserTest {
         //given
         ArgumentCaptor<org.openqa.selenium.Cookie> cookieCaptor = ArgumentCaptor.forClass(org.openqa.selenium.Cookie.class);
 
-        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true);
-        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(10000000000L), false);
+        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true, false, false);
+        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(10000000000L), false, false, false);
         //when
         testee.setCookies(ImmutableList.of(cookieOne, cookieTwo));
         //then
@@ -103,18 +108,6 @@ public class BrowserTest {
         assertEquals("someOtherPath", capturedCookies.get(1).getPath());
         assertEquals(new Date(10000000000L), capturedCookies.get(1).getExpiry());
         assertFalse(capturedCookies.get(1).isSecure());
-    }
-
-    @Test
-    public void shouldSetCookiesThroughJavascript() {
-        //given
-        Cookie cookieOne = new Cookie("someName", "someValue", "someDomain", "somePath", new Date(10000L), true);
-        Cookie cookieTwo = new Cookie("someOtherName", "someOtherValue", "someOtherDomain", "someOtherPath", new Date(100000067899L), false);
-        //when
-        testee.setCookiesPhantomJS(ImmutableList.of(cookieOne, cookieTwo));
-        //then
-        verify(webDriverMock).executeScript("document.cookie = 'someName=someValue;path=somePath;domain=someDomain;secure;expires=01 Jan 1970 00:00:10 GMT;'");
-        verify(webDriverMock).executeScript("document.cookie = 'someOtherName=someOtherValue;path=someOtherPath;domain=someOtherDomain;expires=03 Mar 1973 09:47:47 GMT;'");
     }
 
     @Test
@@ -167,6 +160,7 @@ public class BrowserTest {
         UrlConfig urlConfig = urlConfigBuilder()
                 .withPath("/")
                 .withCookies(ImmutableList.of(new Cookie("testcookiename", "testcookievalue")))
+                .withAlternatingCookies(ImmutableList.of(ImmutableList.of(new Cookie("alternating", "one"))))
                 .withLocalStorage(ImmutableMap.of("localStorageKey", "localStorageValue"))
                 .withSessionStorage(ImmutableMap.of("sessionStorageKey", "sessionStorageValue"))
                 .withWarmupBrowserCacheTime(3)
@@ -185,8 +179,8 @@ public class BrowserTest {
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), Step.before, urlConfig);
-        ScreenshotContext screenshotContext2 = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 100), Step.before, urlConfig);
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), Step.before, urlConfig, ImmutableList.of(new Cookie("testcookiename", "testcookievalue"), new Cookie("alternating", "one")));
+        ScreenshotContext screenshotContext2 = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 100), Step.before, urlConfig, ImmutableList.of(new Cookie("testcookiename", "testcookievalue"), new Cookie("alternating", "one")));
 
         when(webDriverMock.getCurrentUrl()).thenReturn("http://testurl");
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
@@ -211,6 +205,7 @@ public class BrowserTest {
         verify(webDriverMock, times(4)).get("http://testurl/");
         verify(webDriverMock, times(2)).executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL);
         verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("testcookiename", "testcookievalue"));
+        verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("alternating", "one"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "localStorageKey", "localStorageValue"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "sessionStorageKey", "sessionStorageValue"));
         verify(webDriverMock, times(1)).executeScript(JS_GET_USER_AGENT);
@@ -235,8 +230,8 @@ public class BrowserTest {
         //Set to something without milliseconds (selenium strips it!)
         Date cookieExpiry = new Date(100000);
         List<Cookie> expectedCookies = Arrays.asList(
-                new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false),
-                new Cookie("testcookiename2", "testcookievalue2", "anotherCookieurl", "/", cookieExpiry, false),
+                new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false, false, false),
+                new Cookie("testcookiename2", "testcookievalue2", "anotherCookieurl", "/", cookieExpiry, false, false, false),
                 new Cookie("testcookiename3", "testcookievalue3")
         );
 
@@ -262,8 +257,8 @@ public class BrowserTest {
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/http_url_root_ff3c40c_1001_02002_before.png")));
-        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
-        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
+//        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
+//        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext));
@@ -302,9 +297,9 @@ public class BrowserTest {
         //Set to something without milliseconds (selenium strips it!)
         Date cookieExpiry = new Date(100000);
         List<Cookie> expectedCookies = Arrays.asList(
-                new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false),
-                new Cookie("testcookiename2", "testcookievalue2", "cookieurl", "/", cookieExpiry, true),
-                new Cookie("testcookiename3", "testcookievalue3", "cookieurl", "/", cookieExpiry, false)
+                new Cookie("testcookiename", "testcookievalue", "cookieurl", "/", cookieExpiry, false, false, false),
+                new Cookie("testcookiename2", "testcookievalue2", "cookieurl", "/", cookieExpiry, true, false, false),
+                new Cookie("testcookiename3", "testcookievalue3", "cookieurl", "/", cookieExpiry, false, false, false)
         );
 
         UrlConfig urlConfig = urlConfigBuilder().withPath("/").withWindowWidths(singletonList(600)).withCookies(expectedCookies).build();
@@ -319,12 +314,9 @@ public class BrowserTest {
 
         ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), Step.before, urlConfig);
 
-        when(webDriverMock.getCurrentUrl()).thenReturn("http://cookieurl");
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/http_url_root_ff3c40c_1001_02002_before.png")));
-        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
-        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext));
@@ -375,8 +367,8 @@ public class BrowserTest {
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
-        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
-        when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
+        //when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
+        //when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));

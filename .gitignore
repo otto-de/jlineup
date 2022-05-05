@@ -8,9 +8,10 @@ out
 **/*.log
 build
 classes
-/lineup.json
-report
-report/**
+/lineup*.json
+/report
+/report/**
+/cli/report
 .vscode
 .project
 .classpath

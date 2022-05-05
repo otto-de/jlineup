@@ -11,7 +11,7 @@ support. It may also work under MacOS or Windows, but we don't test this.
 You can simply download the CLI version by getting the jlineup-cli.jar
 from Maven Central in a terminal window:
 
-`wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.3.2/jlineup-cli-4.3.2.jar -O jlineup.jar`
+`wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.6.0/jlineup-cli-4.6.0.jar -O jlineup.jar`
 
 Now you have a `jlineup.jar` in your current directory.
 
@@ -19,11 +19,6 @@ For best results, you need a "real" web browser installed on your system.
 JLineup supports Google Chrome (Chromium also works) or Firefox at the
 moment. As JLineup is written in Java, you need a Java Runtime
 Environment in version 8 or higher. OpenJDK is fine!
-
-JLineup can use PhantomJS internally, if no other browser is available.
-This is not recommended, as PhantomJS is not maintained any more. More
-and more modern web features don't work in PhantomJS, so it's only an
-emergency fallback for very simple websites.
 
 If those prerequisites are fulfilled, you can make a test run:
 

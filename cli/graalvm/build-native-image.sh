@@ -7,8 +7,13 @@
 #set +x
 
 if [ -z ${GRAAL_HOME+x} ]; then
-  GRAAL_HOME="../../graalvm/graal-dev/"
-  #GRAAL_HOME="../../graalvm/graalvm-ce-java11-19.3.1/"
+
+  if [[ $JAVA_HOME == *"grl"* ]]; then
+    GRAAL_HOME=$JAVA_HOME
+  else
+    GRAAL_HOME="../../graalvm/graalvm-ce-java11-21.1.0/"
+    #GRAAL_HOME="../../graalvm/graalvm-ce-java11-19.3.1/"
+  fi
 fi
 
 "${GRAAL_HOME}"/bin/gu install native-image
@@ -53,13 +58,13 @@ cd cli
 -H:+AddAllCharsets \
 `#-H:ReflectionConfigurationFiles=graalvm/reflect.json` \
 -H:ConfigurationFileDirectories=graalvm/ \
---initialize-at-build-time=com.fasterxml.jackson,javassist.ClassPool \
+`#--initialize-at-build-time=com.fasterxml.jackson,javassist.ClassPool` \
 --verbose \
 --report-unsupported-elements-at-runtime \
 `#--static` \
 `#-H:+TraceSecurityServices` \
 `#-H:+TraceClassInitialization` \
--jar build/libs/jlineup-cli-4.3.2-all.jar
+-jar build/libs/jlineup-cli-4.6.0-all.jar
 
 echo ""
 echo "DONE BUILDING NATIVE IMAGE"
@@ -71,13 +76,13 @@ echo ""
 echo "STARTING TEST RUN"
 echo ""
 
-mv jlineup-cli-4.3.2-all build/libs/jlineup-cli-4.3.2-all
+mv jlineup-cli-4.6.0-all build/libs/jlineup-cli-4.6.0-all
 rm ~/.m2/repository/webdriver -rf
-./build/libs/jlineup-cli-4.3.2-all -Dwdm.architecture=X64 --config graalvm/lineup_chrome_headless.json --step before
+./build/libs/jlineup-cli-4.6.0-all -Dwdm.architecture=X64 --config graalvm/lineup_chrome_headless.json --step before
 
 set +e
 
-./build/libs/jlineup-cli-4.3.2-all -Dwdm.architecture=X64 --config graalvm/lineup_chrome_headless.json --step after
+./build/libs/jlineup-cli-4.6.0-all -Dwdm.architecture=X64 --config graalvm/lineup_chrome_headless.json --step after
 
 set -e
 

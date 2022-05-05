@@ -1,19 +1,24 @@
-def seleniumVersion = '3.141.59'
-ext['selenium.version'] = seleniumVersion
-
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
-    compile project(":jlineup-core")
-    compile "info.picocli:picocli:4.6.1"
-    annotationProcessor 'info.picocli:picocli-codegen:4.6.1'
-    compile "ch.qos.logback:logback-classic:1.2.3"
-    compileOnly "org.graalvm.nativeimage:svm:21.0.0.2"
+    implementation project(":jlineup-core")
+    implementation "info.picocli:picocli:4.6.3"
+    annotationProcessor 'info.picocli:picocli-codegen:4.6.3'
+    compileOnly "org.graalvm.nativeimage:svm:22.0.0.2"
+
+    testImplementation "org.hamcrest:hamcrest-core:2.2"
+    testImplementation "org.hamcrest:hamcrest-library:2.2"
+    testImplementation "junit:junit:4.13.2"
 
     runtimeOnly project(":jlineup-lambda")
 
     testCompile project(path: ":jlineup-core", configuration: 'testCompile')
+    testImplementation "org.mockito:mockito-core:4.5.1"
+    testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
+        exclude group: 'junit', module: 'junit-dep'
+    }
+
 }
 
 configurations {

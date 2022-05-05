@@ -1,43 +1,84 @@
+plugins {
+    id 'java-library'
+}
+
+def seleniumVersion = '4.1.3'
+def jacksonVersion = '2.13.2'
+def nettyVersion = '4.1.76.Final'
+ext['selenium.version'] = seleniumVersion
+ext['jackson.version'] = jacksonVersion
+
 dependencies {
-    compile("org.seleniumhq.selenium:selenium-java:" + seleniumVersion) {
+    implementation("org.seleniumhq.selenium:selenium-java:" + seleniumVersion) {
         exclude module: "selenium-edge-driver"
         exclude module: "selenium-ie-driver"
         exclude module: "selenium-opera-driver"
-        exclude module: "selenium-safari-driver"
         exclude module: "htmlunit"
     }
 
-    //Update guava because selenium brings version 25 with CVEs
-    compile "com.google.guava:guava:30.1.1-jre"
-    //Update okhttp because selenium brings older one with 4.9.0
-    compile "com.squareup.okhttp3:okhttp:4.9.1"
-    //Update kotlin because okhttp 4.9.0 brings 1.4.10
-    compile "org.jetbrains.kotlin:kotlin-stdlib:1.4.31"
-    compile "io.github.bonigarcia:webdrivermanager:4.3.1"
-    compile "com.codeborne:phantomjsdriver:1.4.4"
-    //Update legacy apache http client that is introduced by phantomjsdriver
-    compile "org.apache.httpcomponents:httpclient:4.5.13"
+    api "com.google.guava:guava:31.1-jre"
+    api 'com.google.code.gson:gson:2.9.0'
+
+    //Update netty (selenium has older version)
+    implementation "io.netty:netty-codec:" + nettyVersion
+    implementation "io.netty:netty-codec-http:" + nettyVersion
+    implementation "io.netty:netty-handler:" + nettyVersion
+    implementation "io.netty:netty-codec-socks:" + nettyVersion
+    implementation "io.netty:netty-handler-proxy:" + nettyVersion
+    implementation "io.netty:netty-transport-native-epoll:" + nettyVersion
+    implementation "io.netty:netty-transport-native-kqueue:" + nettyVersion
+
+    implementation ("io.github.bonigarcia:webdrivermanager:5.1.1") {
+        exclude group: "com.github.docker-java"
+    }
+
     //Update commons-codec from 1.11 which has a vulnerability
-    compile "commons-codec:commons-codec:1.15"
+    implementation "commons-codec:commons-codec:1.15"
+    //Update jsoup (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGJSOUP-1567345)
+    implementation 'org.jsoup:jsoup:1.14.3'
+    //Update commons compress (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGAPACHECOMMONS-1316638)
+    implementation "org.apache.commons:commons-compress:1.21"
 
-    compile "com.fasterxml.jackson.core:jackson-core:" + jacksonVersion
-    compile "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
-    compile "com.fasterxml.jackson.core:jackson-databind:" + jacksonVersion
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:" + jacksonVersion
-    compile "ch.qos.logback:logback-classic:1.2.3"
-    compile "org.slf4j:slf4j-api:1.7.30"
-    compile "org.codehaus.janino:janino:3.1.3"
-    compile "org.thymeleaf:thymeleaf:3.0.12.RELEASE"
-    compile "org.graalvm.sdk:graal-sdk:21.0.0.2"
-    testCompile "org.hamcrest:hamcrest-core:2.2"
-    testCompile "org.hamcrest:hamcrest-library:2.2"
-    testCompile "junit:junit:4.13.2"
-    testCompile "org.mockito:mockito-core:3.8.0"
-    testCompile "com.github.stefanbirkner:system-rules:1.19.0"
+    //Update commons io (webdrivermanager)
+    implementation 'commons-io:commons-io:2.11.0'
+    //Update bouncycastle (webdrivermanager)
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
-    testCompile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    testCompile("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
-    testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    api "com.fasterxml.jackson.core:jackson-core:" + jacksonVersion
+    api "com.fasterxml.jackson.core:jackson-annotations:" + jacksonVersion
+    api "com.fasterxml.jackson.core:jackson-databind:" + jacksonVersion + ".2" //Add micro patch level .2 because of CVE
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:" + jacksonVersion
+    api "ch.qos.logback:logback-classic:1.2.11"
+
+    implementation "org.slf4j:slf4j-api:1.7.36"
+    implementation "org.codehaus.janino:janino:3.1.7"
+    implementation "org.thymeleaf:thymeleaf:3.0.15.RELEASE"
+    implementation "org.graalvm.sdk:graal-sdk:22.1.0"
+
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.hamcrest:hamcrest-core:2.2"
+    testImplementation "org.hamcrest:hamcrest-library:2.2"
+
+    testImplementation "org.mockito:mockito-core:4.5.1"
+    testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
+        exclude group: 'junit', module: 'junit-dep'
+    }
+
+    testImplementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    testImplementation("org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}")
+    testImplementation("org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}")
+    testImplementation("org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}")
+    testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
+            details.useVersion "2.13.2.2"
+            details.because 'Enforce databind version'
+        }
+    }
 }
 
 application {
@@ -49,6 +90,7 @@ test {
         exceptionFormat = 'full'
         showStandardStreams = true
     }
+    maxHeapSize = "1024m"
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

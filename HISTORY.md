@@ -1,5 +1,33 @@
 # JLineup Release History
 
+## Release 4.6.0 - 2022-04-24
+* Bugfix: All cookies were part of screenshot context hash calculation since version 4.4.0, which lead
+  to problems when changing cookie content between before and after steps. To fix this, only alternating cookies
+  (introduced in 4.4.0) are part of the context hash from this release on.
+
+## Release 4.5.2 - 2022-03-31
+* Updates to Spring Boot 2.6.6 and Spring Framework 5.3.18 to fix Spring4Shell issue
+
+## Release 4.5.1 - 2022-03-30
+* Dependency updates
+
+## Release 4.5.0 - 2022-03-07
+* Bugfix: Example config (--print-example) was not in the right format
+* Remove PhantomJS support
+* Dependency Updates (Selenium 4 etc.)
+
+## Release 4.4.0 - 2022-01-13
+* New HTML report format
+* New `error-signals` feature in `http-check` which allows to check the targeted page not only by http return code
+  but by strings in response body
+* New `alternating-cookies` feature which allows to iterate over different cookie setups per page easily
+
+## Release 4.3.4 - 2021-08-26
+* Fix rounding bug in maxDiff configuration (https://github.com/otto-de/jlineup/issues/82)
+
+## Release 4.3.3 - 2021-07-08
+* Dependency updates
+
 ## Release 4.3.2 - 2021-03-19
 * Dependency updates
 

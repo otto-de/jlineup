@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -21,7 +22,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
 
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,15 +54,6 @@ public class BrowserIntegrationTest {
         FileUtils.deleteDirectory(tempDirectory);
     }
 
-    @Test
-    public void shouldNotThrowAnExceptionInPhantomJSBecausePhantomJSWithSeleniumCantHandleResponseCodes() throws ValidationError {
-        //given
-        JobConfig jobConfig = localTestConfig("403", Browser.Type.PHANTOMJS, true);
-        //when
-        runJLineup(jobConfig, Step.before);
-        runJLineup(jobConfig, Step.after);
-        //then
-    }
 
     @Test
     public void shouldNotThrowAnExceptionInChromeIfItIsConfiguredToNotCheckForErrorsOnA403() throws ValidationError {
@@ -179,6 +174,21 @@ public class BrowserIntegrationTest {
         }
     }
 
+    @Test
+    public void shouldDetectErrorSignal() throws ValidationError {
+        UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
+                .withHttpCheck(HttpCheckConfig.httpCheckConfigBuilder().withEnabled(true).withErrorSignals(singletonList("Hallo!")).build())
+                .withPaths(ImmutableList.of("/")).build();
+        JobConfig jobConfig = localTestConfig("somerootpath/somevalidsubpath", Browser.Type.CHROME_HEADLESS, true, urlConfig);
+        try {
+            runJLineup(jobConfig, Step.before);
+            fail();
+        } catch (Exception e) {
+            assertThat(e.getCause().getCause().getCause().getMessage(), containsString("Accessibility check"));
+            assertThat(e.getCause().getCause().getCause().getMessage(), containsString("returned error signal"));
+        }
+    }
+
 
     @Test
     public void shouldNotCheckHttpStatusCodeErrorIfNotConfigured() throws ValidationError {
@@ -190,14 +200,29 @@ public class BrowserIntegrationTest {
         //no exception
     }
 
-    private void runJLineup(JobConfig jobConfig, Step step) throws ValidationError {
+    @Test
+    public void shouldSetAllCookies() throws ValidationError, IOException {
+        UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
+                .withHttpCheck(new HttpCheckConfig(true, ImmutableList.of(HttpStatus.SERVICE_UNAVAILABLE.value(), HttpStatus.UNAUTHORIZED.value())))
+                .withAlternatingCookies(ImmutableList.of(
+                        ImmutableList.of(new Cookie("alternating", "SERVICE_UNAVAILABLE")),
+                        ImmutableList.of(new Cookie("alternating", "UNAUTHORIZED"))
+                ))
+                .withPaths(ImmutableList.of("/")).build();
+        JobConfig jobConfig = localTestConfig("cookies", Browser.Type.CHROME_HEADLESS, false, urlConfig);
+        runJLineup(jobConfig, Step.before);
+        RunStepConfig runStepConfig = runJLineup(jobConfig, Step.after);
+        //no exception
+    }
 
-        new JLineupRunner(jobConfig,
-                RunStepConfig.jLineupRunConfigurationBuilder()
-                        .withWorkingDirectory(tempDirectory.toAbsolutePath().toString())
-                        .withScreenshotsDirectory("screenshots")
-                        .withReportDirectory("report")
-                        .withStep(step).build()).run();
+    private RunStepConfig runJLineup(JobConfig jobConfig, Step step) throws ValidationError {
+        RunStepConfig runStepConfig = RunStepConfig.jLineupRunConfigurationBuilder()
+                .withWorkingDirectory(tempDirectory.toAbsolutePath().toString())
+                .withScreenshotsDirectory("screenshots")
+                .withReportDirectory("report")
+                .withStep(step).build();
+        new JLineupRunner(jobConfig, runStepConfig).run();
+        return runStepConfig;
     }
 
     private JobConfig localTestConfig(String endpoint, Browser.Type browser, boolean checkForErrors) {

@@ -3,7 +3,7 @@ package de.otto.jlineup.image;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class LABTest {
 
@@ -13,8 +13,8 @@ public class LABTest {
         LAB lab1 = LAB.fromRGB(55,44,33, 0);
         LAB lab2 = LAB.fromRGB(66,55,44, 0);
 
-        double v = LAB.ciede2000(lab1, lab2);
+        double v = Math.round(LAB.ciede2000(lab1, lab2) * Math.pow(10, 12)) / Math.pow(10, 12);
 
-        assertThat(v, is(3.533443206558854d));
+        assertThat(v, is(3.533443206559));
     }
 }

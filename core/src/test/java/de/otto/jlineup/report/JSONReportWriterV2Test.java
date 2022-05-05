@@ -74,15 +74,15 @@ public class JSONReportWriterV2Test {
                         "  \"config\" : {" + lineSeparator() +
                         "    \"urls\" : {" + lineSeparator() +
                         "      \"http://www.example.com\" : {" + lineSeparator() +
-                        "        \"paths\" : [ \"/\", \"someOtherPath\" ]," + lineSeparator() +
+                        "        \"paths\" : [ \"/\" ]," + lineSeparator() +
                         "        \"max-diff\" : 0.0," + lineSeparator() +
                         "        \"cookies\" : [ {" + lineSeparator() +
                         "          \"name\" : \"exampleCookieName\"," + lineSeparator() +
                         "          \"value\" : \"exampleValue\"," + lineSeparator() +
-                        "          \"domain\" : \"http://www.example.com\"," + lineSeparator() +
+                        "          \"domain\" : \"www.example.com\"," + lineSeparator() +
                         "          \"path\" : \"/\"," + lineSeparator() +
                         "          \"expiry\" : \"1970-01-01T00:00:01Z\"," + lineSeparator() +
-                        "          \"secure\" : true" + lineSeparator() +
+                        "          \"secure\" : false" + lineSeparator() +
                         "        } ]," + lineSeparator() +
                         "        \"env-mapping\" : {" + lineSeparator() +
                         "          \"live\" : \"www\"" + lineSeparator() +
@@ -103,7 +103,7 @@ public class JSONReportWriterV2Test {
                         "        \"javascript\" : \"console.log('This is JavaScript!')\"" + lineSeparator() +
                         "      }" + lineSeparator() +
                         "    }," + lineSeparator() +
-                        "    \"browser\" : \"PhantomJS\"," + lineSeparator() +
+                        "    \"browser\" : \"Chrome-Headless\"," + lineSeparator() +
                         "    \"page-load-timeout\" : 120," + lineSeparator() +
                         "    \"window-height\" : 800," + lineSeparator() +
                         "    \"debug\" : false," + lineSeparator() +

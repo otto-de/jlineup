@@ -74,7 +74,9 @@ public class JLineupRunner {
                 final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
 
                 final ReportGenerator reportGenerator = new ReportGenerator();
+                final ReportGeneratorV2 reportGeneratorV2 = new ReportGeneratorV2(fileService);
                 final Report report = reportGenerator.generateReport(comparisonResults, jobConfig);
+                final ReportV2 reportV2 = reportGeneratorV2.generateReport(comparisonResults, jobConfig);
 
                 JSONReportWriter jsonReportWriter;
                 if (Utils.shouldUseLegacyReportFormat(jobConfig)) {
@@ -84,24 +86,23 @@ public class JLineupRunner {
                 }
                 jsonReportWriter.writeComparisonReportAsJson(report);
                 htmlReportWriter.writeReport(report);
+                htmlReportWriter.writeReportV2(reportV2);
 
-                final Set<Map.Entry<String, UrlReport>> entries = report.screenshotComparisonsForUrl.entrySet();
-                for (Map.Entry<String, UrlReport> entry : entries) {
-                    LOG.info("Sum of screenshot differences for {}: {} ({} %)", entry.getKey(), entry.getValue().summary.differenceSum, Math.round(entry.getValue().summary.differenceSum * 100d));
-                    LOG.info("Max difference of a single screenshot for {}: {} ({} %)", entry.getKey(), entry.getValue().summary.differenceMax, Math.round(entry.getValue().summary.differenceMax * 100d));
-                    LOG.info("Accepted different pixels for {}: {}", entry.getKey(), entry.getValue().summary.acceptedDifferentPixels);
+                final Set<Map.Entry<String, UrlReport>> urlReports = report.screenshotComparisonsForUrl.entrySet();
+                for (Map.Entry<String, UrlReport> urlReport : urlReports) {
+                    LOG.info("Sum of screenshot differences for {}: {} ({} %)", urlReport.getKey(), urlReport.getValue().summary.differenceSum, Math.round(urlReport.getValue().summary.differenceSum * 100d));
+                    LOG.info("Max difference of a single screenshot for {}: {} ({} %)", urlReport.getKey(), urlReport.getValue().summary.differenceMax, Math.round(urlReport.getValue().summary.differenceMax * 100d));
+                    LOG.info("Accepted different pixels for {}: {}", urlReport.getKey(), urlReport.getValue().summary.acceptedDifferentPixels);
                 }
 
                 LOG.info("Sum of overall screenshot differences: {} ({} %)", report.summary.differenceSum, Math.round(report.summary.differenceSum * 100d));
                 LOG.info("Max difference of a single screenshot: {} ({} %)", report.summary.differenceMax, Math.round(report.summary.differenceMax * 100d));
 
                 if (!Utils.shouldUseLegacyReportFormat(jobConfig)) {
-                    for (Map.Entry<String, UrlReport> entry : entries) {
-                        //Exit with exit code 1 if at least one url report has a bigger difference than configured
-                        if (jobConfig.urls != null && entry.getValue().summary.differenceMax > jobConfig.urls.get(entry.getKey()).maxDiff) {
-                            LOG.info("JLineup finished. There was a difference between before and after. Return code is 1.");
-                            return false;
-                        }
+                    //Exit with exit code 1 if at least one url report has a bigger difference than configured
+                    if (isDetectedDifferenceGreaterThanMaxDifference(urlReports, jobConfig)) {
+                        LOG.info("JLineup finished. There was a difference between before and after. Return code is 1.");
+                        return false;
                     }
                 }
             }
@@ -112,6 +113,15 @@ public class JLineupRunner {
         LOG.info("JLineup run finished for step '{}'", runStepConfig.getStep());
         MDC.remove(REPORT_LOG_NAME_KEY);
         return true;
+    }
+
+    static boolean isDetectedDifferenceGreaterThanMaxDifference(Set<Map.Entry<String, UrlReport>> urlReports, JobConfig jobConfig) {
+        for (Map.Entry<String, UrlReport> urlReport : urlReports) {
+            if (jobConfig.urls != null && urlReport.getValue().summary.differenceMax > jobConfig.urls.get(urlReport.getKey()).maxDiff) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void validateConfig() throws ValidationError {
