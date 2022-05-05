@@ -21,7 +21,7 @@ JLineup has no other dependencies than web browser (Firefox or Chrome/Chromium) 
 
 ## Example
 
-Let's take this little example [config](docs/CONFIGURATION.md) for a check of two paths on otto.de during a deployment:
+Let's take this little example [config](docs/CONFIGURATION.md) for a check of otto.de during a deployment:
 
 ```json
 {
