@@ -71,7 +71,11 @@ public class BrowserUtils {
                 options.addArguments("-width", device.width + "", "-height", device.height + "");
             }
             LOG.debug("Creating firefox with options: {}", options.toString());
-            driver = WebDriverManager.firefoxdriver().capabilities(options).create();
+            WebDriverManager webDriverManager = WebDriverManager.firefoxdriver().capabilities(options);
+            if (runStepConfig.getWebDriverCachePath() != null) {
+                webDriverManager.cachePath(runStepConfig.getWebDriverCachePath());
+            }
+            driver = webDriverManager.create();
         } else if (jobConfig.browser.isChrome()) {
             ChromeOptions options = new ChromeOptions();
             //To work in a headless env, this is needed
@@ -116,7 +120,11 @@ public class BrowserUtils {
             }
 
             LOG.debug("Creating chrome with options: {}", options.toString());
-            driver = WebDriverManager.chromedriver().capabilities(options).create();
+            WebDriverManager webDriverManager = WebDriverManager.chromedriver().capabilities(options);
+            if (runStepConfig.getWebDriverCachePath() != null) {
+                webDriverManager.cachePath(runStepConfig.getWebDriverCachePath());
+            }
+            driver = webDriverManager.create();
         } else if (jobConfig.browser.isChromium()) {
             driver = WebDriverManager.chromiumdriver().create();
         } else if (jobConfig.browser.isSafari()) {

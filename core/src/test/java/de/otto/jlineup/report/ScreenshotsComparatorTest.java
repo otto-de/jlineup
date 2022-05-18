@@ -56,7 +56,7 @@ public class ScreenshotsComparatorTest {
     @Before
     public void setup() {
         initMocks(this);
-        runStepConfig = RunStepConfig.jLineupRunConfigurationBuilder().withWorkingDirectory("src/test/resources").withStep(Step.compare).build();
+        runStepConfig = RunStepConfig.runStepConfigBuilder().withWorkingDirectory("src/test/resources").withStep(Step.compare).build();
         jobConfig = jobConfigBuilder()
                 .withUrls(ImmutableMap.of(
                         "http://url", urlConfig

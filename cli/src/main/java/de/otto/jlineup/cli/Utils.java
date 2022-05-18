@@ -16,7 +16,7 @@ public class Utils {
     }
 
     public static RunStepConfig convertCommandLineParametersToRunConfiguration(JLineup commandLineParameters) {
-        return RunStepConfig.jLineupRunConfigurationBuilder()
+        return RunStepConfig.runStepConfigBuilder()
                 .withWorkingDirectory(commandLineParameters.getWorkingDirectory())
                 .withScreenshotsDirectory(commandLineParameters.getScreenshotDirectory())
                 .withReportDirectory(commandLineParameters.getReportDirectory())

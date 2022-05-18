@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,9 +35,8 @@ class JLineupHandlerTest {
     void invokeTest() {
         AWSXRay.beginSegment("jlineup-handler-test");
 
-
         JobConfig jobConfig = JobConfig.exampleConfigBuilder().withBrowser(Browser.Type.CHROME_HEADLESS).build();
-        List<ScreenshotContext> screenshotContexts = BrowserUtils.buildScreenshotContextListFromConfigAndState(RunStepConfig.jLineupRunConfigurationBuilder().withStep(Step.before).build(), jobConfig);
+        List<ScreenshotContext> screenshotContexts = BrowserUtils.buildScreenshotContextListFromConfigAndState(RunStepConfig.runStepConfigBuilder().withStep(Step.before).build(), jobConfig);
         LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContexts.get(0));
 
         Context context = new TestContext();

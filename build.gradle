@@ -3,6 +3,9 @@ buildscript {
         springBootVersion = '2.6.7'
         springVersion = '5.3.19'
         tomcatVersion = '9.0.62'
+        seleniumVersion = '4.1.4'
+        jacksonVersion = '2.13.3'
+        nettyVersion = '4.1.77.Final'
     }
     repositories {
         mavenCentral()

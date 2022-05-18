@@ -13,7 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 
-import static com.fasterxml.jackson.core.JsonParser.Feature.*;
+import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_COMMENTS;
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 

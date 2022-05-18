@@ -8,7 +8,6 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +53,9 @@ public class JLineupHandler implements RequestHandler<LambdaRequestPayload, Stri
     }
 
     private LambdaRunner createRun(String id, JobConfig jobConfig, ScreenshotContext screenshotContext) {
-        WebDriverManager.globalConfig().setCachePath("/tmp/jlineup/webdrivers");
-        RunStepConfig runStepConfig = RunStepConfig.jLineupRunConfigurationBuilder()
-                .withWorkingDirectory("/tmp")
+        RunStepConfig runStepConfig = RunStepConfig.runStepConfigBuilder()
+                .withWebDriverCachePath("/tmp/jlineup/webdrivers")
+                .withWorkingDirectory("/tmp/jlineup")
                 .withScreenshotsDirectory("jlineup-{id}".replace("{id}", id))
                 .withReportDirectory("jlineup-{id}".replace("{id}", id))
                 .withChromeParameters(ImmutableList.of("--use-spdy=off", "--disable-dev-shm-usage", "--disable-web-security", "--user-data-dir=/tmp/jlineup/chrome-profile-" + id))
