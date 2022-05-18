@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
+import static de.otto.jlineup.RunStepConfig.runStepConfigBuilder;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
@@ -67,7 +67,7 @@ public class BrowserUtilsTest {
         //given
         JobConfig jobConfig = JobConfig.readConfig(".", "src/test/resources/lineup_test.json");
 
-        RunStepConfig runStepConfig = jLineupRunConfigurationBuilder()
+        RunStepConfig runStepConfig = runStepConfigBuilder()
                 .withWorkingDirectory("some/working/dir")
                 .withScreenshotsDirectory("screenshots")
                 .withUrlReplacements(ImmutableMap.of("google", "doodle"))
@@ -102,11 +102,11 @@ public class BrowserUtilsTest {
         JobConfig jobConfigBefore = JobConfig.readConfig(".", "src/test/resources/lineup_test_context_before.json");
         JobConfig jobConfigAfter = JobConfig.readConfig(".", "src/test/resources/lineup_test_context_after.json");
 
-        RunStepConfig runStepConfigBefore = jLineupRunConfigurationBuilder()
+        RunStepConfig runStepConfigBefore = runStepConfigBuilder()
                 .withStep(Step.before)
                 .build();
 
-        RunStepConfig runStepConfigAfter = jLineupRunConfigurationBuilder()
+        RunStepConfig runStepConfigAfter = runStepConfigBuilder()
                 .withStep(Step.after)
                 .build();
 
@@ -122,7 +122,7 @@ public class BrowserUtilsTest {
     @Test
     public void shouldPrepareDomain() {
         //given
-        RunStepConfig runStepConfig = jLineupRunConfigurationBuilder()
+        RunStepConfig runStepConfig = runStepConfigBuilder()
                 .withUrlReplacements(ImmutableMap.of(".otto.", ".bonprix."))
                 .build();
         //when
@@ -189,7 +189,7 @@ public class BrowserUtilsTest {
         WebDriver driver = null;
         BrowserUtils realBrowserUtils = new BrowserUtils();
         try {
-            driver = realBrowserUtils.getWebDriverByConfig(jobConfig, jLineupRunConfigurationBuilder().build());
+            driver = realBrowserUtils.getWebDriverByConfig(jobConfig, runStepConfigBuilder().build());
             assertTrue(driverClass.isInstance(driver));
         } finally {
             if (driver != null) {

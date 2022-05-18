@@ -35,7 +35,7 @@ public class JLineupRunnerFactory {
 
         JobConfig webJobConfig = sanitizeJobConfig(jobConfig);
 
-        return new JLineupRunner(webJobConfig, RunStepConfig.jLineupRunConfigurationBuilder()
+        return new JLineupRunner(webJobConfig, RunStepConfig.runStepConfigBuilder()
                 .withWorkingDirectory(properties.getWorkingDirectory())
                 .withScreenshotsDirectory(properties.getScreenshotsDirectory().replace("{id}", id))
                 .withReportDirectory(properties.getReportDirectory().replace("{id}", id))

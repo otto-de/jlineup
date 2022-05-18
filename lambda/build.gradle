@@ -2,25 +2,17 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
     implementation project(":jlineup-core")
-    implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
-    implementation("de.otto.edison:edison-core:2.6.10")
-
-    //Update hibernate validator that comes with edison-core
-    implementation("org.hibernate.validator:hibernate-validator:6.2.3.Final")
-    //Update commons-codec
-    implementation("commons-codec:commons-codec:1.15")
-    //Update embedded tomcat
-    implementation("org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}")
-    implementation("org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}")
-    implementation("org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}")
-
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-    testImplementation("io.rest-assured:rest-assured:5.0.1")
-    testImplementation("org.awaitility:awaitility:4.2.0")
-
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation platform('com.amazonaws:aws-xray-recorder-sdk-bom:2.7.1')
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.213'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-core'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk'
+    implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor'
+    runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.5.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 configurations {
@@ -29,19 +21,6 @@ configurations {
             it.buildDependencies.getDependencies(null).contains(jar)
         }
         it.outgoing.artifact(bootJar)
-    }
-}
-
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if (details.requested.group == 'org.springframework.boot') {
-            details.useVersion "${springBootVersion}"
-            details.because 'Enforce spring boot version'
-        }
-        else if (details.requested.group == 'org.springframework') {
-            details.useVersion "${springVersion}"
-            details.because 'Enforce spring boot version'
-        }
     }
 }
 
@@ -57,6 +36,7 @@ tasks.bootDistTar {
 }
 
 test {
+    useJUnitPlatform()
     testLogging {
         exceptionFormat = 'full'
         showStandardStreams = true
@@ -68,12 +48,12 @@ jar {
 }
 
 application {
-    mainClass.set("de.otto.jlineup.web.JLineupWebApplication")
+    mainClass.set("de.otto.jlineup.lambda.JLineupHandler")
 }
 
 bootJar {
     enabled = true
-    mainClass = "de.otto.jlineup.web.JLineupWebApplication"
+    mainClass = "de.otto.jlineup.lambda.JLineupHandler"
     launchScript()
 }
 
@@ -87,8 +67,15 @@ task sourcesJar(type: Jar) {
     archiveClassifier = 'sources'
 }
 
-sourceCompatibility = 11
-targetCompatibility = 11
+task copyRuntimeDependencies(type: Copy) {
+    from configurations.runtimeClasspath
+    into 'build/dependency'
+}
+
+build.dependsOn copyRuntimeDependencies
+
+sourceCompatibility = 8
+targetCompatibility = 8
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {
@@ -102,7 +89,7 @@ project.afterEvaluate {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'jlineup-web'
+            artifactId = 'jlineup-lambda'
             from components.java
             artifact sourcesJar
             artifact javadocJar
@@ -115,8 +102,8 @@ publishing {
                 }
             }
             pom {
-                name = 'JLineup Web'
-                description = 'The web variant of JLineup'
+                name = 'JLineup Lambda'
+                description = 'The AWS lambda handler of JLineup'
                 url = 'https://github.com/otto-de/jlineup'
                 licenses {
                     license {

@@ -11,6 +11,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.config.JobConfig.*;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_DIFF;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_DIFF;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
 
 @JsonDeserialize(builder = UrlConfig.Builder.class)
 @JsonIgnoreProperties(ignoreUnknown = true)

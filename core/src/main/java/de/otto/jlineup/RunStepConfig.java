@@ -17,6 +17,7 @@ public class RunStepConfig {
     private final Map<String, String> urlReplacements;
     private final List<String> chromeParameters;
     private final List<String> firefoxParameters;
+    private final String webDriverCachePath;
 
     private RunStepConfig(Builder builder) {
         reportDirectory = builder.reportDirectory;
@@ -26,9 +27,10 @@ public class RunStepConfig {
         urlReplacements = builder.urlReplacements;
         chromeParameters = builder.chromeParameters;
         firefoxParameters = builder.firefoxParameters;
+        webDriverCachePath = builder.webDriverCachePath;
     }
 
-    public static Builder jLineupRunConfigurationBuilder() {
+    public static Builder runStepConfigBuilder() {
         return new Builder();
     }
 
@@ -64,6 +66,9 @@ public class RunStepConfig {
         return firefoxParameters;
     }
 
+    public String getWebDriverCachePath() {
+        return webDriverCachePath;
+    }
 
     public static final class Builder {
         private String reportDirectory;
@@ -73,6 +78,7 @@ public class RunStepConfig {
         private List<String> firefoxParameters = emptyList();
         private Map<String, String> urlReplacements = emptyMap();
         private Step step;
+        private String webDriverCachePath;
 
         private Builder() {
         }
@@ -85,6 +91,7 @@ public class RunStepConfig {
             this.urlReplacements = copy.getUrlReplacements();
             this.chromeParameters = copy.getChromeParameters();
             this.firefoxParameters = copy.getFirefoxParameters();
+            this.webDriverCachePath = copy.getWebDriverCachePath();
         }
 
         public Builder withReportDirectory(String val) {
@@ -117,13 +124,19 @@ public class RunStepConfig {
             return this;
         }
 
-        public RunStepConfig build() {
-            return new RunStepConfig(this);
-        }
-
         public Builder withUrlReplacements(Map<String, String> val) {
             urlReplacements = val;
             return this;
         }
+
+        public Builder withWebDriverCachePath(String val) {
+            webDriverCachePath = val;
+            return this;
+        }
+
+        public RunStepConfig build() {
+            return new RunStepConfig(this);
+        }
+
     }
 }

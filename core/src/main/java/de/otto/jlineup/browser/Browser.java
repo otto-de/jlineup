@@ -53,6 +53,8 @@ public class Browser implements AutoCloseable {
     public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;
     public static final String JLINEUP_SLEEP_JS_OPENER = "jlineup.sleep";
 
+    private final boolean localRun = true;
+
     public enum Type {
         @JsonProperty(value = "Firefox")
         FIREFOX,
@@ -148,11 +150,13 @@ public class Browser implements AutoCloseable {
             LOG.debug("Setting shutdown called to true");
             webDrivers.forEach((threadName, webDriver) -> {
                 LOG.debug("Removing webdriver for thread {} ({})", threadName, webDriver.getClass().getCanonicalName());
+                /*
                 try {
                     webDriver.close();
                 } catch (Exception e) {
                     LOG.error("Exception while closing webdriver: " + e.getMessage(), e);
                 }
+                */
                 try {
                     webDriver.quit();
                 } catch (Exception e) {
@@ -176,7 +180,12 @@ public class Browser implements AutoCloseable {
                     runTestSetupOrCleanup(testSetupContexts);
                     LOG.debug("Test setup done.");
                 }
-                takeScreenshots(screenshotContextList);
+                if (localRun) {
+                    takeScreenshots(screenshotContextList);
+                } else {
+                    CloudBrowser cloudBrowser = CloudBrowserFactory.createCloudBrowser(jobConfig, fileService);
+                    cloudBrowser.takeScreenshots(screenshotContextList);
+                }
             } finally {
                 if (!testCleanupContexts.isEmpty()) {
                     LOG.debug("Running test cleanup.");
@@ -757,6 +766,10 @@ public class Browser implements AutoCloseable {
         LOG.debug("Fonts loaded: {} ", fontsLoaded);
         return fontsLoaded;
     };
+
+    public void runForScreenshotContext(ScreenshotContext screenshotContext) throws Exception {
+        this.takeScreenshotsForContext(screenshotContext);
+    }
 
     void grepChromedrivers() throws IOException {
         ProcessBuilder pb = new ProcessBuilder();

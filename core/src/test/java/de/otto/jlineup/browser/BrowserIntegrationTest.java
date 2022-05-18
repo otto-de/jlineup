@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.Utils;
 import de.otto.jlineup.config.*;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.file.FileUtils;
@@ -22,8 +21,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.containsString;
@@ -46,7 +43,7 @@ public class BrowserIntegrationTest {
     @Before
     public void setup() throws IOException {
         tempDirectory = Files.createTempDirectory("jlineup-browser-integration-test");
-        Utils.setLogLevelToDebug();
+        //Utils.setLogLevelToDebug();
     }
 
     @After
@@ -216,7 +213,7 @@ public class BrowserIntegrationTest {
     }
 
     private RunStepConfig runJLineup(JobConfig jobConfig, Step step) throws ValidationError {
-        RunStepConfig runStepConfig = RunStepConfig.jLineupRunConfigurationBuilder()
+        RunStepConfig runStepConfig = RunStepConfig.runStepConfigBuilder()
                 .withWorkingDirectory(tempDirectory.toAbsolutePath().toString())
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")

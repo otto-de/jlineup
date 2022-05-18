@@ -1,6 +1,5 @@
 package de.otto.jlineup.file;
 
-import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.DeviceConfig;
@@ -18,10 +17,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
-import static de.otto.jlineup.RunStepConfig.jLineupRunConfigurationBuilder;
+import static de.otto.jlineup.RunStepConfig.runStepConfigBuilder;
 import static de.otto.jlineup.file.FileService.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -48,7 +46,7 @@ public class FileServiceTest {
 
         writeScreenshotTestPath = tempDirPath + "/testdirforlineupwritetest";
 
-        runStepConfig = jLineupRunConfigurationBuilder()
+        runStepConfig = runStepConfigBuilder()
                 .withWorkingDirectory(writeScreenshotTestPath)
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
@@ -122,7 +120,7 @@ public class FileServiceTest {
     @Test
     public void shouldBuildRelativePathsForDifferentDirectories() {
         //given
-        runStepConfig = jLineupRunConfigurationBuilder()
+        runStepConfig = runStepConfigBuilder()
                 .withWorkingDirectory("src" + FILE_SEPARATOR + "test" + FILE_SEPARATOR + "resources")
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
@@ -141,7 +139,7 @@ public class FileServiceTest {
     @Test
     public void shouldBuildRelativePathsForSame() {
         //given
-        runStepConfig = jLineupRunConfigurationBuilder()
+        runStepConfig = runStepConfigBuilder()
                 .withWorkingDirectory("src/test/resources")
                 .withScreenshotsDirectory("rreeppoorrtt")
                 .withReportDirectory("rreeppoorrtt")
