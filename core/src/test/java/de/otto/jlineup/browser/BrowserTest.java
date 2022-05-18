@@ -64,7 +64,6 @@ public class BrowserTest {
         when(webDriverMock.manage()).thenReturn(webDriverOptionsMock);
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
-        when(webDriverOptionsMock.logs()).thenReturn(webDriverLogs);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class))).thenReturn(webDriverMock);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class), any(DeviceConfig.class))).thenReturn(webDriverMock);
         when(webDriverMock.executeScript(JS_GET_USER_AGENT)).thenReturn("Mocked Webdriver");

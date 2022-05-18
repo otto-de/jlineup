@@ -53,7 +53,7 @@ public class Browser implements AutoCloseable {
     public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;
     public static final String JLINEUP_SLEEP_JS_OPENER = "jlineup.sleep";
 
-    private boolean localRun = false;
+    private final boolean localRun = true;
 
     public enum Type {
         @JsonProperty(value = "Firefox")
