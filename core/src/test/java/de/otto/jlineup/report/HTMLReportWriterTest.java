@@ -84,6 +84,6 @@ public class HTMLReportWriterTest {
     public void shouldWriteReport() throws FileNotFoundException {
 
         testee.writeReport(report);
-        Mockito.verify(fileServiceMock).writeHtmlReport(anyString());
+        Mockito.verify(fileServiceMock).writeHtmlReportLegacy(anyString());
     }
 }

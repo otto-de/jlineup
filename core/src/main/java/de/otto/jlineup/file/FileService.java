@@ -189,7 +189,7 @@ public class FileService {
         }
     }
 
-    public void writeHtmlReport(String htmlReport) throws FileNotFoundException {
+    public void writeHtmlReportLegacy(String htmlReport) throws FileNotFoundException {
         writeHtmlReport(htmlReport, LEGACY_REPORT_HTML_FILENAME);
     }
 

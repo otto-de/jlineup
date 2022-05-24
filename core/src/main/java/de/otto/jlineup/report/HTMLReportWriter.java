@@ -8,7 +8,6 @@ import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.Step;
 import de.otto.jlineup.file.FileService;
-import de.otto.jlineup.file.FileUtils;
 import de.otto.jlineup.image.ImageService;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -35,7 +34,7 @@ public class HTMLReportWriter {
     }
 
     public void writeReport(Report report) throws FileNotFoundException {
-        fileService.writeHtmlReport(renderReport("report", report.config, report.getFlatResultList()));
+        fileService.writeHtmlReportLegacy(renderReport("report", report.config, report.getFlatResultList()));
     }
 
     public void writeReportV2(ReportV2 report) throws FileNotFoundException {
@@ -43,7 +42,8 @@ public class HTMLReportWriter {
     }
 
     public void writeNotFinishedReport(RunStepConfig runStepConfig, JobConfig jobConfig) throws FileNotFoundException {
-        fileService.writeHtmlReport(renderNotFinishedReport("report_not_finished", runStepConfig, jobConfig));
+        fileService.writeHtmlReport(renderNotFinishedReport("report_not_finished", runStepConfig, jobConfig), FileService.REPORT_HTML_FILENAME);
+        fileService.writeHtmlReportLegacy(renderNotFinishedReport("report_not_finished", runStepConfig, jobConfig));
     }
 
     String renderReport(String template, JobConfig config, List<ScreenshotComparisonResult> screenshotComparisonResults) {
