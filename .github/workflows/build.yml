@@ -37,9 +37,4 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew dependencyCheckAggregate build
-    - name: Archive dependency check report
-      uses: actions/upload-artifact@v2
-      with:
-        name: dependency-check-report
-        path: build/reports/dependency-check-report.html
+      run: ./gradlew build
