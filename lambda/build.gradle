@@ -5,7 +5,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.36'
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
     implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
-    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.225'
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.239'
     implementation 'com.amazonaws:aws-java-sdk-lambda:1.12.225'
     implementation platform('com.amazonaws:aws-xray-recorder-sdk-bom:2.11.1')
     implementation 'com.amazonaws:aws-xray-recorder-sdk-core'
