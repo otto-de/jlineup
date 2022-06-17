@@ -13,7 +13,7 @@ dependencies {
 
     runtimeOnly project(":jlineup-lambda")
 
-    testImplementation "org.mockito:mockito-core:4.5.1"
+    testImplementation "org.mockito:mockito-core:4.6.1"
     testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
         exclude group: 'junit', module: 'junit-dep'
     }
