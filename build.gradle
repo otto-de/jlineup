@@ -3,7 +3,7 @@ buildscript {
         springBootVersion = '2.7.0'
         springVersion = '5.3.20'
         tomcatVersion = '9.0.64'
-        seleniumVersion = '4.1.4'
+        seleniumVersion = '4.2.2'
         jacksonVersion = '2.13.3'
         nettyVersion = '4.1.77.Final'
     }
@@ -14,7 +14,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.owasp:dependency-check-gradle:7.1.0.1'
+        classpath 'org.owasp:dependency-check-gradle:7.1.1'
     }
 }
 
