@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.7.0'
+        springBootVersion = '2.7.1'
         springVersion = '5.3.20'
         tomcatVersion = '9.0.64'
         seleniumVersion = '4.2.2'
