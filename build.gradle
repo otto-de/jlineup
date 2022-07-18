@@ -5,7 +5,7 @@ buildscript {
         tomcatVersion = '9.0.64'
         seleniumVersion = '4.2.2'
         jacksonVersion = '2.13.3'
-        nettyVersion = '4.1.78.Final'
+        nettyVersion = '4.1.79.Final'
     }
     repositories {
         mavenCentral()
