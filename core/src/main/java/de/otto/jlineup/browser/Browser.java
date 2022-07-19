@@ -416,7 +416,7 @@ public class Browser implements AutoCloseable {
         Capabilities capabilities = ((HasCapabilities) driver).getCapabilities();
         String browserName = capabilities.getBrowserName();
         browserName = browserName.substring(0, 1).toUpperCase() + browserName.substring(1);
-        String browserVersion = capabilities.getVersion();
+        String browserVersion = capabilities.getBrowserVersion();
         return browserName + " " + browserVersion;
     }
 
