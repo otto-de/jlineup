@@ -27,7 +27,7 @@ public class LogErrorChecker {
                 logEntries = null;
             }
 
-            if (logEntries != null && !logEntries.getAll().isEmpty() && logEntries.getAll().get(0).getLevel() == Level.SEVERE) {
+            if (logEntries != null && !logEntries.getAll().isEmpty() && logEntries.getAll().get(0).getLevel().equals(Level.SEVERE)) {
                 throw new WebDriverException(logEntries.getAll().get(0).getMessage());
             }
 
