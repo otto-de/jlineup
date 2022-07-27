@@ -171,7 +171,7 @@ public class ImageService {
         int alpha = (pixel >> 24) & 0xFF;
         int red = (pixel >> 16) & 0xFF;
         int green = (pixel >> 8) & 0xFF;
-        int blue = (pixel) & 0xFF;
+        int blue = pixel & 0xFF;
 
         return new int[]{alpha, red, green, blue};
     }
