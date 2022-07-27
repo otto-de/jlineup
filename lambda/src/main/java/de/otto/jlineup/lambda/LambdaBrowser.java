@@ -1,24 +1,25 @@
 package de.otto.jlineup.lambda;
 
-import com.amazonaws.auth.InstanceProfileCredentialsProvider;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.lambda.AWSLambda;
-import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
-import com.amazonaws.services.lambda.model.InvokeRequest;
-import com.amazonaws.services.lambda.model.InvokeResult;
-import com.amazonaws.services.lambda.model.ServiceException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.util.json.Jackson;
-import com.google.common.collect.ImmutableList;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.otto.jlineup.browser.CloudBrowser;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.lambda.LambdaClient;
+import software.amazon.awssdk.services.lambda.model.InvokeRequest;
+import software.amazon.awssdk.services.lambda.model.InvokeResponse;
+import software.amazon.awssdk.services.lambda.model.ServiceException;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.transfer.s3.S3ClientConfiguration;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,8 @@ public class LambdaBrowser implements CloudBrowser {
     private final JobConfig jobConfig;
     private final FileService fileService;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public LambdaBrowser(JobConfig jobConfig, FileService fileService) {
@@ -48,37 +51,42 @@ public class LambdaBrowser implements CloudBrowser {
     public void takeScreenshots(List<ScreenshotContext> screenshotContexts) throws ExecutionException, InterruptedException {
 
         String runId = UUID.randomUUID().toString();
-        Set<Future<InvokeResult>> lambdaCalls = new HashSet<>();
+        Set<Future<InvokeResponse>> lambdaCalls = new HashSet<>();
 
         for (ScreenshotContext screenshotContext : screenshotContexts) {
 
-            InvokeRequest invokeRequest = new InvokeRequest()
-                    .withFunctionName("jlineup-run")
-                    .withPayload(Jackson.toJsonString(new LambdaRequestPayload(runId, jobConfig, screenshotContext)));
-
+            InvokeRequest invokeRequest;
             try {
-                AWSLambda awsLambda = AWSLambdaClientBuilder.standard()
-                        .withCredentials(InstanceProfileCredentialsProvider.getInstance())
-                        .withRegion(Regions.EU_CENTRAL_1).build();
+                invokeRequest = InvokeRequest.builder()
+                        .functionName("jlineup-run")
+                        .payload(SdkBytes.fromUtf8String(objectMapper.writeValueAsString(new LambdaRequestPayload(runId, jobConfig, screenshotContext)))).build();
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
 
-                Future<InvokeResult> invokeResultFuture = executor.submit(() -> awsLambda.invoke(invokeRequest));
-                lambdaCalls.add(invokeResultFuture);
+            try (LambdaClient lambdaClient = LambdaClient.builder().credentialsProvider(DefaultCredentialsProvider.create()).region(Region.EU_CENTRAL_1).build()) {
+
+                Future<InvokeResponse> invokeResponseFuture = executor.submit(() -> lambdaClient.invoke(invokeRequest));
+                lambdaCalls.add(invokeResponseFuture);
 
             } catch (ServiceException e) {
-                System.out.println(e.toString());
+                throw new RuntimeException(e);
             }
         }
 
-        for (Future<InvokeResult> lambdaCall : lambdaCalls) {
-            InvokeResult invokeResult = lambdaCall.get();
-            String answer = new String(invokeResult.getPayload().array(), StandardCharsets.UTF_8);
-            String logResult = invokeResult.getLogResult();
+        for (Future<InvokeResponse> lambdaCall : lambdaCalls) {
+            InvokeResponse invokeResponse = lambdaCall.get();
+            String answer = invokeResponse.payload().asUtf8String();
+            String logResult = invokeResponse.logResult();
             //write out the return value
             System.out.println(answer);
             System.out.println(logResult);
         }
 
-        AmazonS3 s3Client = AmazonS3Client.builder().withCredentials(InstanceProfileCredentialsProvider.getInstance()).build();
+        try (S3TransferManager transferManager = S3TransferManager.builder().s3ClientConfiguration(S3ClientConfiguration.builder().credentialsProvider(DefaultCredentialsProvider.create()).region(Region.EU_CENTRAL_1).build()).build()) {
+            transferManager.downloadFile(r -> r.destination(Path.of("ft3", "bla")));
+        }
+
 
     }
 }
