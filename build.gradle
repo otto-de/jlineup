@@ -6,6 +6,7 @@ buildscript {
         seleniumVersion = '4.3.0'
         jacksonVersion = '2.13.3'
         nettyVersion = '4.1.79.Final'
+        junitJupiterVersion = '5.9.0'
     }
     repositories {
         mavenCentral()
