@@ -2,9 +2,9 @@
 
 JLineup has many configuration options. A JLineup cycle with it's _before_ and _after_ steps is called _job_ throughout
 this documentation. Job configuration settings can be separated between two scopes, _global_ and _site_. Some of the
-options exist in global as in site scope for convenience.
+options can be used in global as well as in site scope for convenience.
 
-Site specific settings always have precedence before global settings.
+Site specific settings always have precedence over global settings with the same name.
 
 ### Format
 
