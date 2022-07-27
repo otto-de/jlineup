@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 4.6.1 - 2022-07-27
+* Bugfix: Write provisional report html under correct filename
+* Dependency updates
+
 ## Release 4.6.0 - 2022-04-24
 * Bugfix: All cookies were part of screenshot context hash calculation since version 4.4.0, which lead
   to problems when changing cookie content between before and after steps. To fix this, only alternating cookies
