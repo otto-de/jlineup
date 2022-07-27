@@ -20,6 +20,7 @@ import software.amazon.awssdk.transfer.s3.S3ClientConfiguration;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -84,7 +85,7 @@ public class LambdaBrowser implements CloudBrowser {
         }
 
         try (S3TransferManager transferManager = S3TransferManager.builder().s3ClientConfiguration(S3ClientConfiguration.builder().credentialsProvider(DefaultCredentialsProvider.create()).region(Region.EU_CENTRAL_1).build()).build()) {
-            transferManager.downloadFile(r -> r.destination(Path.of("ft3", "bla")));
+            transferManager.downloadFile(r -> r.destination(Paths.get("ft3", "bla")));
         }
 
 

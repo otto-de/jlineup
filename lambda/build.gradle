@@ -76,8 +76,8 @@ task copyRuntimeDependencies(type: Copy) {
 
 build.dependsOn copyRuntimeDependencies
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 8
+targetCompatibility = 8
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {
