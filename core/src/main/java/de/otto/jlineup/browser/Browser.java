@@ -29,10 +29,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -128,7 +129,7 @@ public class Browser implements AutoCloseable {
     private final LogErrorChecker logErrorChecker;
 
     /* Every thread has it's own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
-    private ExecutorService threadPool;
+    private final ExecutorService threadPool;
     private final ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
 
     private final AtomicBoolean shutdownCalled = new AtomicBoolean(false);
@@ -322,7 +323,12 @@ public class Browser implements AutoCloseable {
 
         browserCacheWarmup(screenshotContext, url, localDriver);
 
-        LOG.info(String.format("Browsing to %s with window size %dx%d", url, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height));
+        if (!screenshotContext.deviceConfig.isSpecificMobile()) {
+            LOG.info("Browsing to {} with device {} and window size {}x{}", url, screenshotContext.deviceConfig.deviceName, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
+        } else {
+            LOG.info("Browsing to {} with device {}", url, screenshotContext.deviceConfig.deviceName);
+        }
+
         //now get the real page
         //Selenium's get() method blocks until the browser/page fires an onload event (files and images referenced in the html have been loaded,
         //but there might be JS calls that load more stuff dynamically afterwards).
@@ -441,9 +447,7 @@ public class Browser implements AutoCloseable {
                 .filter(cookie -> cookie.domain != null)
                 .collect(groupingBy(cookie -> cookie.domain));
 
-        cookiesByDomainDifferentFromDomainToScreenshot.forEach((domain, cookies) -> {
-            setCookiesForDomain(localDriver, domain, cookies);
-        });
+        cookiesByDomainDifferentFromDomainToScreenshot.forEach((domain, cookies) -> setCookiesForDomain(localDriver, domain, cookies));
 
         //Second: Set my cookies on same domain
         List<Cookie> cookiesForSameDomain = screenshotContext.cookies.stream().filter(cookie -> cookie.domain == null).collect(Collectors.toList());
@@ -729,14 +733,14 @@ public class Browser implements AutoCloseable {
     private WebDriver createDriver() {
         shutdownCalled.get();
         final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, runStepConfig);
-        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
         LOG.debug("Adding webdriver for thread {} ({})", Thread.currentThread().getName(), driver.getClass().getCanonicalName());
         return driver;
     }
 
     private WebDriver createDriverWithEmulatedDevice(DeviceConfig device) {
         final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, runStepConfig, device);
-        driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
         LOG.debug("Adding webdriver for thread {} with emulated device {} ({})", Thread.currentThread().getName(), device, driver.getClass().getCanonicalName());
         return driver;
     }
@@ -758,7 +762,7 @@ public class Browser implements AutoCloseable {
     }
 
     // wait for fonts to load
-    private ExpectedCondition<Boolean> fontsLoaded = driver -> {
+    private final ExpectedCondition<Boolean> fontsLoaded = driver -> {
         final JavascriptExecutor javascriptExecutor = (JavascriptExecutor) getWebDriver();
         final Long fontsLoadedCount = (Long) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL);
         final Boolean fontsLoaded = (Boolean) javascriptExecutor.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL);

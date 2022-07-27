@@ -27,15 +27,17 @@ public class DeviceConfig  {
     //
 
     public final int width;
-
     public final int height;
 
+    //The JsonAlias is here to enforce camelCase to be compatible to Chrome's API - JLineup uses Kebap-Case in all other places
     @JsonAlias("pixelRatio")
     public final float pixelRatio;
 
+    //The JsonAlias is here to enforce camelCase to be compatible to Chrome's API - JLineup uses Kebap-Case in all other places
     @JsonAlias("deviceName")
     public final String deviceName;
 
+    //The JsonAlias is here to enforce camelCase to be compatible to Chrome's API - JLineup uses Kebap-Case in all other places
     @JsonAlias("userAgent")
     public final String userAgent;
 
@@ -137,6 +139,11 @@ public class DeviceConfig  {
     @JsonIgnore
     public boolean isGenericMobile() {
         return MOBILE_DEVICE_NAME.equalsIgnoreCase(deviceName.trim());
+    }
+
+    @JsonIgnore
+    public boolean isSpecificMobile() {
+        return !isDesktop() && !isGenericMobile();
     }
 
     public static final class Builder {
