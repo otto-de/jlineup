@@ -22,7 +22,7 @@ dependencies {
     implementation "io.netty:netty-transport-native-epoll:${nettyVersion}"
     implementation "io.netty:netty-transport-native-kqueue:${nettyVersion}"
 
-    api("io.github.bonigarcia:webdrivermanager:5.2.1") {
+    api("io.github.bonigarcia:webdrivermanager:5.2.3") {
         exclude group: "com.github.docker-java"
     }
 
