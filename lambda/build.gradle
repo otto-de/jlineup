@@ -3,7 +3,7 @@ apply plugin: 'org.springframework.boot'
 dependencies {
     implementation project(":jlineup-core")
     implementation 'org.slf4j:slf4j-api:1.7.36'
-    implementation 'software.amazon.awssdk:lambda:2.17.209'
+    implementation 'software.amazon.awssdk:lambda:2.17.247'
     implementation 'software.amazon.awssdk:s3:2.17.209'
     implementation 'software.amazon.awssdk:s3-transfer-manager:2.17.209-PREVIEW'
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
