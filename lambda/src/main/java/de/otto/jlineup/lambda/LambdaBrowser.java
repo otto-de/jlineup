@@ -8,6 +8,7 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
@@ -16,20 +17,21 @@ import software.amazon.awssdk.services.lambda.model.InvokeRequest;
 import software.amazon.awssdk.services.lambda.model.InvokeResponse;
 import software.amazon.awssdk.services.lambda.model.ServiceException;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.transfer.s3.CompletedDirectoryDownload;
+import software.amazon.awssdk.transfer.s3.CompletedDirectoryUpload;
 import software.amazon.awssdk.transfer.s3.S3ClientConfiguration;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
+import static de.otto.jlineup.lambda.LambdaProperties.getProfile;
 import static java.lang.invoke.MethodHandles.lookup;
 
 public class LambdaBrowser implements CloudBrowser {
@@ -41,7 +43,7 @@ public class LambdaBrowser implements CloudBrowser {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public LambdaBrowser(JobConfig jobConfig, FileService fileService) {
         this.fileService = fileService;
@@ -60,7 +62,7 @@ public class LambdaBrowser implements CloudBrowser {
             try {
                 invokeRequest = InvokeRequest.builder()
                         .functionName("jlineup-run")
-                        .payload(SdkBytes.fromUtf8String(objectMapper.writeValueAsString(new LambdaRequestPayload(runId, jobConfig, screenshotContext)))).build();
+                        .payload(SdkBytes.fromUtf8String(objectMapper.writeValueAsString(new LambdaRequestPayload(runId, jobConfig, screenshotContext, screenshotContext.step)))).build();
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -84,9 +86,16 @@ public class LambdaBrowser implements CloudBrowser {
             System.out.println(logResult);
         }
 
-        try (S3TransferManager transferManager = S3TransferManager.builder().s3ClientConfiguration(S3ClientConfiguration.builder().credentialsProvider(DefaultCredentialsProvider.create()).region(Region.EU_CENTRAL_1).build()).build()) {
-            transferManager.downloadFile(r -> r.destination(Paths.get("ft3", "bla")));
+        AwsCredentialsProvider cp = null;
+        try {
+            cp = AWSConfig.defaultAwsCredentialsProvider(getProfile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        S3TransferManager transferManager = S3TransferManager.builder()
+                .s3ClientConfiguration(S3ClientConfiguration.builder().credentialsProvider(cp).build()).build();
+
+        CompletableFuture<CompletedDirectoryDownload> download = transferManager.downloadDirectory(d -> d.bucket("jlineuptest-marco").prefix("jlineup-" + runId).destinationDirectory(Paths.get("/tmp/jlineup-s3download/" + runId))).completionFuture();
 
 
     }

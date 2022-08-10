@@ -7,6 +7,9 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.xray.AWSXRay;
 import com.amazonaws.xray.AWSXRayRecorderBuilder;
 import com.amazonaws.xray.strategy.sampling.NoSamplingStrategy;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
@@ -17,6 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,6 +32,8 @@ class JLineupHandlerTest {
 
     private static final Logger logger = LoggerFactory.getLogger(TestLogger.class);
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     public JLineupHandlerTest() {
             AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard();
             builder.withSamplingStrategy(new NoSamplingStrategy());
@@ -32,17 +41,30 @@ class JLineupHandlerTest {
     }
 
     @Test
-    void invokeTest() {
+    void invokeTest() throws IOException {
         AWSXRay.beginSegment("jlineup-handler-test");
 
         JobConfig jobConfig = JobConfig.exampleConfigBuilder().withBrowser(Browser.Type.CHROME_HEADLESS).build();
-        List<ScreenshotContext> screenshotContexts = BrowserUtils.buildScreenshotContextListFromConfigAndState(RunStepConfig.runStepConfigBuilder().withStep(Step.before).build(), jobConfig);
-        LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContexts.get(0));
+        List<ScreenshotContext> screenshotContextsBefore = BrowserUtils.buildScreenshotContextListFromConfigAndState(RunStepConfig.runStepConfigBuilder().withStep(Step.before).build(), jobConfig);
+        List<ScreenshotContext> screenshotContextsAfter = BrowserUtils.buildScreenshotContextListFromConfigAndState(RunStepConfig.runStepConfigBuilder().withStep(Step.after).build(), jobConfig);
 
         Context context = new TestContext();
         JLineupHandler handler = new JLineupHandler();
-        String result = handler.handleRequest(lambdaRequestPayload, context);
-        assertTrue(result.contains("Ok"));
+
+        for (ScreenshotContext screenshotContext : screenshotContextsBefore) {
+            LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, screenshotContext.step);
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            handler.handleRequest(new ByteArrayInputStream(objectMapper.writeValueAsBytes(lambdaRequestPayload)), output, context);
+            assertTrue(output.toString().contains("Ok"));
+        }
+
+        for (ScreenshotContext screenshotContext : screenshotContextsAfter) {
+            LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, screenshotContext.step);
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            handler.handleRequest(new ByteArrayInputStream(objectMapper.writeValueAsBytes(lambdaRequestPayload)), output, context);
+            assertTrue(output.toString().contains("Ok"));
+        }
+
         AWSXRay.endSegment();
     }
 

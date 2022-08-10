@@ -416,6 +416,7 @@ public class Browser implements AutoCloseable {
         //String dom = getDom();
         //fileService.writeHtml(dom, screenshotContext.step);
         fileService.writeFileTrackerData();
+        fileService.writeFileTrackerDataForScreenshotContextOnly(screenshotContext);
     }
 
     private String getBrowserAndVersion(WebDriver driver) {

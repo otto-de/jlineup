@@ -180,11 +180,11 @@ public class FileService {
         Path screenshotDirectory = getScreenshotDirectory().toAbsolutePath();
         Path reportDirectory = getReportDirectory().toAbsolutePath();
         Path relative = reportDirectory.relativize(screenshotDirectory);
-        return relative.toString().equals("") ? "" : relative.toString() + FILE_SEPARATOR;
+        return relative.toString().equals("") ? "" : relative + FILE_SEPARATOR;
     }
 
     public void writeJsonReport(String reportJson) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + FILE_SEPARATOR + REPORT_JSON_FILENAME))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory() + FILE_SEPARATOR + REPORT_JSON_FILENAME))) {
             out.print(reportJson);
         }
     }
@@ -194,13 +194,13 @@ public class FileService {
     }
 
     public void writeHtmlReport(String htmlReport, String filename) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + FILE_SEPARATOR + filename))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory() + FILE_SEPARATOR + filename))) {
             out.print(htmlReport);
         }
     }
 
     public void writeHtml(String html, Step step) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory().toString() + FILE_SEPARATOR + step + ".html"))) {
+        try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory() + FILE_SEPARATOR + step + ".html"))) {
             out.print(html);
         }
     }
@@ -216,6 +216,11 @@ public class FileService {
 
     public Map<Step, String> getBrowsers() {
         return fileTracker.browsers;
+    }
+
+    public void writeFileTrackerDataForScreenshotContextOnly(ScreenshotContext context) throws IOException {
+        Path path = Paths.get(getScreenshotDirectory().toString(), FILE_SEPARATOR, String.valueOf(context.contextHash()), "metadata_" + context.step.name() + ".json");
+        Files.write(path, JacksonWrapper.serializeObject(fileTracker.contexts.get(context.contextHash())).getBytes());
     }
 }
 

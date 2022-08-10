@@ -17,3 +17,5 @@ classes
 .classpath
 .settings
 bin
+/lambda/dockerstuff.sh
+/lambda/src/main/resources/settings.properties

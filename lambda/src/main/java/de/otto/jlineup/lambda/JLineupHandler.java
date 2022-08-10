@@ -1,8 +1,8 @@
 package de.otto.jlineup.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
-import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.util.json.Jackson;
+import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
@@ -10,43 +10,65 @@ import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.transfer.s3.CompletedDirectoryUpload;
+import software.amazon.awssdk.transfer.s3.S3ClientConfiguration;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
 
-public class JLineupHandler implements RequestHandler<LambdaRequestPayload, String> {
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.concurrent.CompletableFuture;
+
+public class JLineupHandler implements RequestStreamHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(JLineupHandler.class);
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private S3TransferManager transferManager;
 
     static {
         Utils.setDebugLogLevelsOfSelectedThirdPartyLibsToWarn();
     }
 
+//    @Override
+//    public String handleRequest(LambdaRequestPayload event, Context context) {
+//        try {
+//            LOG.info("Event: " + Jackson.getObjectMapper().writer().writeValueAsString(event));
+//            LambdaRunner runner = createRun(event.runId, event.jobConfig, event.screenshotContext);
+//            runner.run();
+//
+//            AwsCredentialsProvider cp = AWSConfig.defaultAwsCredentialsProvider("ft3-nonlive");
+//
+//            transferManager = S3TransferManager.builder()
+//                    .s3ClientConfiguration(S3ClientConfiguration.builder().credentialsProvider(cp).build()).build();
+//
+//            CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket("jlineuptest-marco").sourceDirectory(Paths.get("/tmp/jlineup/run-" + event.runId))).completionFuture();
+//
+//            System.out.println(uploadStatus.get().toString());
+//            return "Ok!";
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+
     @Override
-    public String handleRequest(LambdaRequestPayload event, Context context) {
+    public void handleRequest(InputStream input, OutputStream output, Context context) {
         try {
-
-            LOG.info("Event: " + Jackson.getObjectMapper().writer().writeValueAsString(event));
-
-            // Download the config from S3
-            /*
-            AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withRegion(Regions.US_EAST_2).build();
-            S3Object s3Object = s3Client.getObject(new GetObjectRequest(
-                    srcBucket, srcKey));
-            InputStream objectData = s3Object.getObjectContent();
-            */
-
-            // Upload all created files to bucket
-            /*
-            LOG.info("Writing to: " + dstBucket + "/" + dstKey);
-            try {
-                s3Client.putObject(dstBucket, dstKey, is, meta);
-            } catch (AmazonServiceException e) {
-                LOG.error(e.getErrorMessage());
-                System.exit(1);
-            }
-            */
-
-            LambdaRunner runner = createRun(event.runId, event.jobConfig, event.screenshotContext);
+            LambdaRequestPayload event = objectMapper.readValue(input, LambdaRequestPayload.class);
+            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext).withStep(event.step).withUrlConfig(event.jobConfig.urls.get(event.screenshotContext.url)).build();
+            LambdaRunner runner = createRun(event.runId, event.jobConfig, screenshotContext);
             runner.run();
-            return "Ok!";
+
+            AwsCredentialsProvider cp = AWSConfig.defaultAwsCredentialsProvider(LambdaProperties.getProfile());
+            transferManager = S3TransferManager.builder()
+                    .s3ClientConfiguration(S3ClientConfiguration.builder().credentialsProvider(cp).build()).build();
+
+            CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket("jlineuptest-marco").sourceDirectory(Paths.get("/tmp/jlineup/run-" + event.runId))).completionFuture();
+            System.out.println(uploadStatus.get().toString());
+            output.write("Ok!".getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -55,12 +77,22 @@ public class JLineupHandler implements RequestHandler<LambdaRequestPayload, Stri
     private LambdaRunner createRun(String id, JobConfig jobConfig, ScreenshotContext screenshotContext) {
         RunStepConfig runStepConfig = RunStepConfig.runStepConfigBuilder()
                 .withWebDriverCachePath("/tmp/jlineup/webdrivers")
-                .withWorkingDirectory("/tmp/jlineup")
+                .withWorkingDirectory("/tmp/jlineup/run-{id}".replace("{id}", id))
                 .withScreenshotsDirectory("jlineup-{id}".replace("{id}", id))
                 .withReportDirectory("jlineup-{id}".replace("{id}", id))
-                .withChromeParameters(ImmutableList.of("--use-spdy=off", "--disable-dev-shm-usage", "--disable-web-security", "--user-data-dir=/tmp/jlineup/chrome-profile-" + id))
+                .withChromeParameters(ImmutableList.of(
+                        "--headless",
+                        "--disable-gpu",
+                        "--no-sandbox",
+                        "--use-spdy=off",
+                        "--disable-dev-shm-usage",
+                        "--disable-web-security",
+                        "--no-zygote",
+                        "--force-color-profile=srgb",
+                        "--user-data-dir=/tmp/jlineup/chrome-profile-" + id))
                 .withStep(screenshotContext.step)
                 .build();
         return new LambdaRunner(jobConfig, runStepConfig, screenshotContext);
     }
+
 }

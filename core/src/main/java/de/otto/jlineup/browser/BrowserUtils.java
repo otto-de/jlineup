@@ -131,8 +131,14 @@ public class BrowserUtils {
             driver = WebDriverManager.safaridriver().create();
         } else {
             LOG.error("You need either Firefox or Chrome / Chromium to make JLineup work. Install one of them and try again.");
-            return null;
+            throw new RuntimeException("You need either Firefox or Chrome / Chromium to make JLineup work. Install one of them and try again.");
         }
+
+        if (driver == null || driver.manage() == null) {
+            LOG.error("Browser could not be started or it crashed. :( Something went wrong.");
+            throw new RuntimeException("Browser could not be started or it crashed. :(");
+        }
+
         driver.manage().timeouts().pageLoadTimeout(Duration.of(jobConfig.pageLoadTimeout, SECONDS));
         return driver;
     }
