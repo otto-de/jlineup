@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.6.2 - 2022-08-11
+* Bugfix: Report was broken in some cases when multiple URLs were configured
+
 ## Release 4.6.1 - 2022-07-27
 * Bugfix: Write provisional report html under correct filename
 * Dependency updates

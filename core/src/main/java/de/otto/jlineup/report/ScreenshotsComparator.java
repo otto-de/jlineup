@@ -53,7 +53,7 @@ public class ScreenshotsComparator {
         for (Map.Entry<String, UrlConfig> urlConfigEntry : jobConfig.urls.entrySet()) {
             List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
             for (ScreenshotContext screenshotContext : contextList) {
-                if (!urlConfigEntry.getKey().equals(screenshotContext.url)) {
+                if (!BrowserUtils.prepareDomain(runStepConfig, urlConfigEntry.getKey()).equals(screenshotContext.url)) {
                     continue;
                 }
                 String fullUrlWithPath = BrowserUtils.buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);

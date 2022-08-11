@@ -149,8 +149,8 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithSomeDevices_WithChrome() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
+        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path filesJson = Paths.get(tempDirectory.toString(), "report", "files.json");
         assertThat("Filetracker file exists", Files.exists(filesJson));
@@ -161,7 +161,7 @@ public class JLineupCLIAcceptanceTest {
             DeviceConfig deviceConfig = v.screenshotContext.deviceConfig;
             String filename = v.screenshots.get(0).get(Step.before);
             if (deviceConfig.deviceName.equals("iPhone X")) {
-                checkScreenshotSize(filename, 1125, 2436);
+                checkScreenshotSize(filename, 1125, 2436); //iPhone X screen size
             } else if (deviceConfig.deviceName.equals("MOBILE")) {
                 checkScreenshotSize(filename, 1500, 3000);
             } else if (deviceConfig.deviceName.equals("DESKTOP")) {
@@ -177,8 +177,8 @@ public class JLineupCLIAcceptanceTest {
             String filepath = tempDirectory.toString() + "/report/screenshots/" + filename;
             System.out.println("Trying to read: " + filepath);
             BufferedImage image = ImageIO.read(new File(filepath));
-            assertThat(image.getWidth(), is(width)); //iPhone X Screen height
-            assertThat(image.getHeight(), is(height)); //iPhone X Screen width
+            assertThat(image.getWidth(), is(width));
+            assertThat(image.getHeight(), is(height));
         } catch (IOException e) {
             e.printStackTrace();
         }
