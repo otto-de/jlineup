@@ -59,7 +59,8 @@ public class ScreenshotsComparatorTest {
         runStepConfig = RunStepConfig.runStepConfigBuilder().withWorkingDirectory("src/test/resources").withStep(Step.compare).build();
         jobConfig = jobConfigBuilder()
                 .withUrls(ImmutableMap.of(
-                        "http://url", urlConfig
+                        "http://url", urlConfig,
+                        "http://url2", urlConfig
                 ))
                 .withWindowHeight(WINDOW_HEIGHT)
                 .build();
@@ -71,7 +72,9 @@ public class ScreenshotsComparatorTest {
     public void shouldBuildComparisonResults() throws Exception {
         //given
         ScreenshotContext screenshotContext = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig).get(0);
+        ScreenshotContext screenshotContext2 = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig).get(1);
         DeviceConfig givenDeviceConfig = DeviceConfig.deviceConfig(100, WINDOW_HEIGHT);
+
         final ImmutableMap<String, ImmutableList<ScreenshotComparisonResult>> expectedResults = ImmutableMap.of("http://url", ImmutableList.of(
                 new ScreenshotComparisonResult(
                         screenshotContext.contextHash(),
@@ -89,23 +92,60 @@ public class ScreenshotsComparatorTest {
                         givenDeviceConfig,
                         3003,
                         "screenshots/http_url_root_ff3c40c_1001_03003_after.png")
+        ),"http://url2", ImmutableList.of(
+                new ScreenshotComparisonResult(
+                        screenshotContext2.contextHash(),
+                        "http://url2/",
+                        givenDeviceConfig,
+                        2002,
+                        0.1337,
+                        "screenshots/http_url2_root_ff3c40c_1001_02002_before.png",
+                        "screenshots/http_url2_root_ff3c40c_1001_02002_after.png",
+                        "screenshots/http_url2_root_ff3c40c_1001_02002_compare.png",
+                        10),
+                ScreenshotComparisonResult.noBeforeImageComparisonResult(
+                        screenshotContext2.contextHash(),
+                        "http://url2/",
+                        givenDeviceConfig,
+                        3003,
+                        "screenshots/http_url2_root_ff3c40c_1001_03003_after.png")
         ));
 
         when(fileService.getFileTracker()).thenReturn(fileTracker);
         when(fileService.getRelativePathFromReportDirToScreenshotsDir()).thenReturn("screenshots/");
+
         when(fileTracker.getScreenshotsForContext(screenshotContext.contextHash())).thenReturn(
                 ImmutableMap.of(2002, ImmutableMap.of(Step.before, "http_url_root_ff3c40c_1001_02002_before.png",
                         Step.after, "http_url_root_ff3c40c_1001_02002_after.png"),
                         3003, ImmutableMap.of(Step.after, "http_url_root_ff3c40c_1001_03003_after.png")));
+        when(fileTracker.getScreenshotsForContext(screenshotContext2.contextHash())).thenReturn(
+                ImmutableMap.of(2002, ImmutableMap.of(Step.before, "http_url2_root_ff3c40c_1001_02002_before.png",
+                        Step.after, "http_url2_root_ff3c40c_1001_02002_after.png"),
+                        3003, ImmutableMap.of(Step.after, "http_url2_root_ff3c40c_1001_03003_after.png")));
+
         BufferedImage beforeBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
         when(fileService.readScreenshot("http_url_root_ff3c40c_1001_02002_before.png")).thenReturn(
                 beforeBuffer);
+
+        BufferedImage beforeBuffer2 = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
+        when(fileService.readScreenshot("http_url2_root_ff3c40c_1001_02002_before.png")).thenReturn(
+                beforeBuffer2);
+
         BufferedImage afterBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_after.png"));
         when(fileService.readScreenshot("http_url_root_ff3c40c_1001_02002_after.png")).thenReturn(
                 afterBuffer);
+
+        BufferedImage afterBuffer2 = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_after.png"));
+        when(fileService.readScreenshot("http_url2_root_ff3c40c_1001_02002_after.png")).thenReturn(
+                afterBuffer2);
+
         BufferedImage differenceBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
         when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, false, false, DEFAULT_MAX_COLOR_DISTANCE)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10));
         when(fileService.writeScreenshot(screenshotContext, differenceBuffer, 2002)).thenReturn("http_url_root_ff3c40c_1001_02002_compare.png");
+
+        BufferedImage differenceBuffer2 = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
+        when(imageService.compareImages(beforeBuffer2, afterBuffer2, WINDOW_HEIGHT, false, false, DEFAULT_MAX_COLOR_DISTANCE)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer2, 0.1337d, 10));
+        when(fileService.writeScreenshot(screenshotContext2, differenceBuffer2, 2002)).thenReturn("http_url2_root_ff3c40c_1001_02002_compare.png");
 
         //when
         Map<String, List<ScreenshotComparisonResult>> comparisonResults = testee.compare();

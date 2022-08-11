@@ -46,24 +46,25 @@ public class ScreenshotsComparator {
             return null;
         }
         Map<String, List<ScreenshotComparisonResult>> results = new HashMap<>();
-        List<ScreenshotContext> screenshotContexts = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig);
-        final HashMap<Integer, ScreenshotContext> contextHashMap = new HashMap<>();
-        screenshotContexts.forEach(v -> contextHashMap.put(v.contextHash(), v));
+        List<ScreenshotContext> contextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig);
+        //final HashMap<Integer, ScreenshotContext> contextHashMap = new HashMap<>();
+        //contextList.forEach(screenshotContext -> contextHashMap.put(screenshotContext.contextHash(), screenshotContext));
 
         for (Map.Entry<String, UrlConfig> urlConfigEntry : jobConfig.urls.entrySet()) {
             List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
-            for (ScreenshotContext screenshotContext : screenshotContexts) {
+            for (ScreenshotContext screenshotContext : contextList) {
+                if (!urlConfigEntry.getKey().equals(screenshotContext.url)) {
+                    continue;
+                }
                 String fullUrlWithPath = BrowserUtils.buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
                 Map<Integer, Map<Step, String>> screenshots = fileService.getFileTracker().getScreenshotsForContext(screenshotContext.contextHash());
                 List<Integer> yPositions = new ArrayList<>(screenshots.keySet());
 
-                for (int i = 0; i < yPositions.size(); i++) {
-                    Integer yPosition = yPositions.get(i);
+                for (Integer yPosition : yPositions) {
                     String beforeFileName = screenshots.get(yPosition).get(Step.before);
                     String afterFileName = screenshots.get(yPosition).get(Step.after);
 
                     LOG.debug("Comparing file '{}' with '{}'", beforeFileName, afterFileName);
-                    int windowWidth = screenshotContext.deviceConfig.width;
 
                     boolean error = false;
                     BufferedImage imageBefore = null;
