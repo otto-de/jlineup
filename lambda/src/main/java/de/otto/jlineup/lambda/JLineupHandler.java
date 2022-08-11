@@ -33,27 +33,6 @@ public class JLineupHandler implements RequestStreamHandler {
         Utils.setDebugLogLevelsOfSelectedThirdPartyLibsToWarn();
     }
 
-//    @Override
-//    public String handleRequest(LambdaRequestPayload event, Context context) {
-//        try {
-//            LOG.info("Event: " + Jackson.getObjectMapper().writer().writeValueAsString(event));
-//            LambdaRunner runner = createRun(event.runId, event.jobConfig, event.screenshotContext);
-//            runner.run();
-//
-//            AwsCredentialsProvider cp = AWSConfig.defaultAwsCredentialsProvider("ft3-nonlive");
-//
-//            transferManager = S3TransferManager.builder()
-//                    .s3ClientConfiguration(S3ClientConfiguration.builder().credentialsProvider(cp).build()).build();
-//
-//            CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket("jlineuptest-marco").sourceDirectory(Paths.get("/tmp/jlineup/run-" + event.runId))).completionFuture();
-//
-//            System.out.println(uploadStatus.get().toString());
-//            return "Ok!";
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
         try {
