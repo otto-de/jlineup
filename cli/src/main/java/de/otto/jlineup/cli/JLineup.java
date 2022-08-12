@@ -12,13 +12,19 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import static de.otto.jlineup.cli.Main.NO_EXIT;
 import static de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfiguration;
 import static de.otto.jlineup.cli.Utils.readConfig;
+import static de.otto.jlineup.file.FileService.REPORT_HTML_FILENAME;
 import static java.lang.invoke.MethodHandles.lookup;
 
 @Command(name = "jlineup", sortOptions = false)
@@ -70,6 +76,9 @@ public class JLineup implements Callable<Integer> {
 
     @Option(names = {"--replace-in-url", "-R"}, description = "The given keys are replaced with the corresponding values in all urls that are tested.", order = 14)
     private Map<String, String> urlReplacements = new HashMap<>();
+
+    @Option(names = {"--open-report", "-o"}, description = "Opens html report after the run.", order = 15)
+    private boolean openReport = false;
 
     public JLineup() {
 
@@ -147,17 +156,20 @@ public class JLineup implements Callable<Integer> {
         return printExample;
     }
 
+    public boolean isOpenReport() {
+        return openReport;
+    }
 
     @Override
     public String toString() {
-        return "CommandLineParameters{" +
+        return "JLineup{" +
                 "help=" + help +
+                ", url='" + url + '\'' +
                 ", step=" + step +
                 ", configFile='" + configFile + '\'' +
                 ", workingDirectory='" + workingDirectory + '\'' +
                 ", screenshotDirectory='" + screenshotDirectory + '\'' +
                 ", reportDirectory='" + reportDirectory + '\'' +
-                ", url='" + url + '\'' +
                 ", printConfig=" + printConfig +
                 ", printExample=" + printExample +
                 ", debug=" + debug +
@@ -166,6 +178,7 @@ public class JLineup implements Callable<Integer> {
                 ", chromeParameters=" + chromeParameters +
                 ", firefoxParameters=" + firefoxParameters +
                 ", urlReplacements=" + urlReplacements +
+                ", openReport=" + openReport +
                 '}';
     }
 
@@ -173,27 +186,13 @@ public class JLineup implements Callable<Integer> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        JLineup that = (JLineup) o;
-        return help == that.help &&
-                printConfig == that.printConfig &&
-                printExample == that.printExample &&
-                debug == that.debug &&
-                logToFile == that.logToFile &&
-                version == that.version &&
-                step == that.step &&
-                Objects.equals(configFile, that.configFile) &&
-                Objects.equals(workingDirectory, that.workingDirectory) &&
-                Objects.equals(screenshotDirectory, that.screenshotDirectory) &&
-                Objects.equals(reportDirectory, that.reportDirectory) &&
-                Objects.equals(url, that.url) &&
-                Objects.equals(chromeParameters, that.chromeParameters) &&
-                Objects.equals(firefoxParameters, that.firefoxParameters) &&
-                Objects.equals(urlReplacements, that.urlReplacements);
+        JLineup jLineup = (JLineup) o;
+        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(help, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, url, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements);
+        return Objects.hash(help, url, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport);
     }
 
     @Override
@@ -254,6 +253,9 @@ public class JLineup implements Callable<Integer> {
 
         try {
             boolean runSucceeded = jLineupRunner.run();
+            if (openReport) {
+                Desktop.getDesktop().browse(new URI("file://" + Paths.get(String.format("%s/%s/%s", runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory(), REPORT_HTML_FILENAME)).toAbsolutePath()));
+            }
             if (!runSucceeded) {
                 return 1;
             }
@@ -291,4 +293,5 @@ public class JLineup implements Callable<Integer> {
         }
         return jobConfig;
     }
+
 }
