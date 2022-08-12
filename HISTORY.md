@@ -1,6 +1,7 @@
 # JLineup Release History
 
 ## Release 4.6.3 - 2022-08-12
+* Feature: --open-report or -o when using jlineup cli opens the HTML report after the run
 * Bugfix: CLI jar size was accidentally increased by inclusion of lambda project
 
 ## Release 4.6.2 - 2022-08-11
