@@ -229,4 +229,10 @@ Additional command line parameters for spawned firefox processes.
 
 ---
 
+### `--open-report, -o`
+
+This option opens the report after JLineup's run.
+
+---
+
 [Back to Main page](../README.md)
