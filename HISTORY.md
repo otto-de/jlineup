@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.6.3 - 2022-08-12
+* Bugfix: CLI jar size was accidentally increased by inclusion of lambda project
+
 ## Release 4.6.2 - 2022-08-11
 * Bugfix: Report was broken in some cases when multiple URLs were configured
 
