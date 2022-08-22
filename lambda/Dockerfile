@@ -41,13 +41,15 @@ RUN yum install -y google-chrome-stable
 RUN yum install -y wget.x86_64
 RUN yum install -y procps
 
-#RUN wget --no-check-certificate -nv 'https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US' -O /usr/lib/firefox.tar.bz2
-#RUN tar -xf /usr/lib/firefox.tar.bz2 --directory /usr/lib
-#RUN ln -s /usr/lib/firefox/firefox /bin/firefox
-#RUN rm /usr/lib/firefox.tar.bz2
+RUN mkdir /tmp/lib
+RUN wget --no-check-certificate -nv 'https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US' -O /tmp/lib/firefox.tar.bz2
+RUN tar -xf /tmp/lib/firefox.tar.bz2 --directory /tmp/lib
+RUN ln -s /tmp/lib/firefox/firefox /usr/bin/firefox
+RUN chmod +x /usr/bin/firefox
+RUN rm /tmp/lib/firefox.tar.bz2
 #RUN ln -s /tmp /.cache
 #RUN ln -s /tmp /.mozilla
-#RUN /usr/lib/firefox/firefox -headless -new-tab https://www.example.com
+#RUN /tmp/lib/firefox/firefox -headless -new-tab https://www.example.com
 USER nobody
 
 ENV HOME=/tmp/uusseerr
