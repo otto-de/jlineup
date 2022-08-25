@@ -2,9 +2,10 @@ package de.otto.jlineup.file;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 
 import java.io.IOException;
 import java.util.Map;
@@ -15,7 +16,7 @@ public class FileTracker {
 
     public final JobConfig jobConfig;
     public final ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts;
-    public final ConcurrentHashMap<Step, String> browsers;
+    public final ConcurrentHashMap<BrowserStep, String> browsers;
 
     //Used by Jackson
     private FileTracker() {
@@ -24,7 +25,7 @@ public class FileTracker {
         browsers = null;
     }
 
-    public FileTracker(JobConfig jobConfig, ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts, ConcurrentHashMap<Step, String> browsers) {
+    public FileTracker(JobConfig jobConfig, ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts, ConcurrentHashMap<BrowserStep, String> browsers) {
         this.jobConfig = jobConfig;
         this.contexts = contexts;
         this.browsers = browsers;
@@ -69,7 +70,7 @@ public class FileTracker {
         return contexts;
     }
 
-    public ConcurrentHashMap<Step, String> getBrowsers() {
+    public ConcurrentHashMap<BrowserStep, String> getBrowsers() {
         return browsers;
     }
 
@@ -93,7 +94,7 @@ public class FileTracker {
         return contexts.get(hash);
     }
 
-    public Map<Integer, Map<Step, String>> getScreenshotsForContext(int hash) throws IOException {
+    public Map<Integer, Map<BrowserStep, String>> getScreenshotsForContext(int hash) throws IOException {
         ScreenshotContextFileTracker screenshotContextFileTracker = contexts.get(hash);
         if (screenshotContextFileTracker == null) {
             throw new IOException("The files in the working directory don't fit the given config.\n" +
@@ -125,7 +126,7 @@ public class FileTracker {
     public static final class Builder {
         private JobConfig jobConfig;
         private ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts;
-        private ConcurrentHashMap<Step, String> browsers;
+        private ConcurrentHashMap<BrowserStep, String> browsers;
 
         private Builder() {
         }
@@ -140,7 +141,7 @@ public class FileTracker {
             return this;
         }
 
-        public Builder withBrowsers(ConcurrentHashMap<Step, String> val) {
+        public Builder withBrowsers(ConcurrentHashMap<BrowserStep, String> val) {
             browsers = val;
             return this;
         }

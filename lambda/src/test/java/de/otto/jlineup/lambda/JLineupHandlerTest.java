@@ -13,7 +13,7 @@ import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -44,21 +44,21 @@ class JLineupHandlerTest {
         AWSXRay.beginSegment("jlineup-handler-test");
 
         JobConfig jobConfig = JobConfig.exampleConfigBuilder().withBrowser(Browser.Type.CHROME_HEADLESS).build();
-        List<ScreenshotContext> screenshotContextsBefore = BrowserUtils.buildScreenshotContextListFromConfigAndState(RunStepConfig.runStepConfigBuilder().withStep(Step.before).build(), jobConfig);
-        List<ScreenshotContext> screenshotContextsAfter = BrowserUtils.buildScreenshotContextListFromConfigAndState(RunStepConfig.runStepConfigBuilder().withStep(Step.after).build(), jobConfig);
+        List<ScreenshotContext> screenshotContextsBefore = BrowserUtils.buildScreenshotContextListFromConfigAndState(RunStepConfig.runStepConfigBuilder().withStep(RunStep.before).build(), jobConfig);
+        List<ScreenshotContext> screenshotContextsAfter = BrowserUtils.buildScreenshotContextListFromConfigAndState(RunStepConfig.runStepConfigBuilder().withStep(RunStep.after_only).build(), jobConfig);
 
         Context context = new TestContext();
         JLineupHandler handler = new JLineupHandler();
 
         for (ScreenshotContext screenshotContext : screenshotContextsBefore) {
-            LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, screenshotContext.step);
+            LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, RunStep.before);
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             handler.handleRequest(new ByteArrayInputStream(objectMapper.writeValueAsBytes(lambdaRequestPayload)), output, context);
             assertTrue(output.toString().contains("Ok"));
         }
 
         for (ScreenshotContext screenshotContext : screenshotContextsAfter) {
-            LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, screenshotContext.step);
+            LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, RunStep.after_only);
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             handler.handleRequest(new ByteArrayInputStream(objectMapper.writeValueAsBytes(lambdaRequestPayload)), output, context);
             assertTrue(output.toString().contains("Ok"));

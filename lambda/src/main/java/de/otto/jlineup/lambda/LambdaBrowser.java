@@ -2,6 +2,7 @@ package de.otto.jlineup.lambda;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.CloudBrowser;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
@@ -16,14 +17,11 @@ import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.InvokeRequest;
 import software.amazon.awssdk.services.lambda.model.InvokeResponse;
 import software.amazon.awssdk.services.lambda.model.ServiceException;
-import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.transfer.s3.CompletedDirectoryDownload;
-import software.amazon.awssdk.transfer.s3.CompletedDirectoryUpload;
 import software.amazon.awssdk.transfer.s3.S3ClientConfiguration;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
@@ -39,13 +37,16 @@ public class LambdaBrowser implements CloudBrowser {
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     private final JobConfig jobConfig;
+
+    private final RunStepConfig runStepConfig;
     private final FileService fileService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    public LambdaBrowser(JobConfig jobConfig, FileService fileService) {
+    public LambdaBrowser(RunStepConfig runStepConfig, JobConfig jobConfig, FileService fileService) {
+        this.runStepConfig = runStepConfig;
         this.fileService = fileService;
         this.jobConfig = jobConfig;
     }
@@ -62,7 +63,7 @@ public class LambdaBrowser implements CloudBrowser {
             try {
                 invokeRequest = InvokeRequest.builder()
                         .functionName("jlineup-run")
-                        .payload(SdkBytes.fromUtf8String(objectMapper.writeValueAsString(new LambdaRequestPayload(runId, jobConfig, screenshotContext, screenshotContext.step)))).build();
+                        .payload(SdkBytes.fromUtf8String(objectMapper.writeValueAsString(new LambdaRequestPayload(runId, jobConfig, screenshotContext, runStepConfig.getStep())))).build();
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }

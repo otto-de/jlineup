@@ -2,11 +2,12 @@ package de.otto.jlineup.report;
 
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import org.thymeleaf.TemplateEngine;
@@ -116,7 +117,7 @@ public class HTMLReportWriter {
         private final List<ScreenshotComparisonResult> results;
         private final ScreenshotContext screenshotContext;
         private final int contextHash;
-        private final Map<Step, String> browsers;
+        private final Map<BrowserStep, String> browsers;
 
         ScreenshotComparisonResultContext(final int contextHash) {
             this.results = new LinkedList<>();
@@ -146,7 +147,7 @@ public class HTMLReportWriter {
 
         @UsedInTemplate
         public String getBrowser(String step) {
-            return browsers.get(Step.valueOf(step));
+            return browsers.get(BrowserStep.valueOf(step));
         }
 
         @UsedInTemplate

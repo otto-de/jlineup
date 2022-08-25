@@ -1,8 +1,9 @@
 package de.otto.jlineup.file;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.ScreenshotContext;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +13,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class ScreenshotContextFileTracker {
 
     public final ScreenshotContext screenshotContext;
-    public final ConcurrentSkipListMap<Integer, Map<Step, String>> screenshots;
+    public final ConcurrentSkipListMap<Integer, Map<BrowserStep, String>> screenshots;
 
     ScreenshotContextFileTracker(ScreenshotContext screenshotContext) {
         this.screenshotContext = screenshotContext;
@@ -51,7 +52,7 @@ public class ScreenshotContextFileTracker {
         return screenshotContext;
     }
 
-    public ConcurrentSkipListMap<Integer, Map<Step, String>> getScreenshots() {
+    public ConcurrentSkipListMap<Integer, Map<BrowserStep, String>> getScreenshots() {
         return screenshots;
     }
 
@@ -68,9 +69,9 @@ public class ScreenshotContextFileTracker {
      */
 
     void addScreenshot(ScreenshotContext screenshotContext, String path, int yPosition) {
-        Map<Step, String> stepsToPathsMap = screenshots.get(yPosition);
+        Map<BrowserStep, String> stepsToPathsMap = screenshots.get(yPosition);
         if (stepsToPathsMap == null) {
-            Map<Step, String> mapToPut = new HashMap<>();
+            Map<BrowserStep, String> mapToPut = new HashMap<>();
             stepsToPathsMap = screenshots.putIfAbsent(yPosition, mapToPut);
             if (stepsToPathsMap == null) {
                 stepsToPathsMap = mapToPut;
@@ -82,7 +83,7 @@ public class ScreenshotContextFileTracker {
 
     public static final class Builder {
         private ScreenshotContext screenshotContext;
-        private ConcurrentSkipListMap<Integer, Map<Step, String>> screenshots;
+        private ConcurrentSkipListMap<Integer, Map<BrowserStep, String>> screenshots;
 
         private Builder() {
         }
@@ -92,7 +93,7 @@ public class ScreenshotContextFileTracker {
             return this;
         }
 
-        public Builder withScreenshots(ConcurrentSkipListMap<Integer, Map<Step, String>> val) {
+        public Builder withScreenshots(ConcurrentSkipListMap<Integer, Map<BrowserStep, String>> val) {
             screenshots = val;
             return this;
         }

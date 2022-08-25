@@ -1,14 +1,14 @@
 package de.otto.jlineup.cli;
 
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import org.junit.Test;
 import picocli.CommandLine;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-public class RunStepConfigTest {
+public class RunRunStepConfigTest {
 
     @Test
     public void shouldConvertCommandlineParameters() {
@@ -28,6 +28,6 @@ public class RunStepConfigTest {
         assertThat(runStepConfig.getReportDirectory(), is("someReportDirectory"));
         assertThat(runStepConfig.getScreenshotsDirectory(), is("someScreenshotDirectory"));
         assertThat(runStepConfig.getWorkingDirectory(), is("someWorkingDirectory"));
-        assertThat(runStepConfig.getStep(), is(Step.after));
+        assertThat(runStepConfig.getStep(), is(RunStep.after));
     }
 }

@@ -5,7 +5,7 @@ import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.cli.Main;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.report.Report;
 import org.hamcrest.CoreMatchers;
@@ -159,7 +159,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(fileTracker.contexts.size(), is(3));
         fileTracker.contexts.forEach((k, v) -> {
             DeviceConfig deviceConfig = v.screenshotContext.deviceConfig;
-            String filename = v.screenshots.get(0).get(Step.before);
+            String filename = v.screenshots.get(0).get(RunStep.before);
             if (deviceConfig.deviceName.equals("iPhone X")) {
                 checkScreenshotSize(filename, 1125, 2436); //iPhone X screen size
             } else if (deviceConfig.deviceName.equals("MOBILE")) {

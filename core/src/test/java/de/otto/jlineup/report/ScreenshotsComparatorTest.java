@@ -19,11 +19,13 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import static de.otto.jlineup.browser.BrowserStep.after;
+import static de.otto.jlineup.browser.BrowserStep.before;
 import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_COLOR_DISTANCE;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -56,7 +58,7 @@ public class ScreenshotsComparatorTest {
     @Before
     public void setup() {
         initMocks(this);
-        runStepConfig = RunStepConfig.runStepConfigBuilder().withWorkingDirectory("src/test/resources").withStep(Step.compare).build();
+        runStepConfig = RunStepConfig.runStepConfigBuilder().withWorkingDirectory("src/test/resources").withStep(RunStep.compare).build();
         jobConfig = jobConfigBuilder()
                 .withUrls(ImmutableMap.of(
                         "http://url", urlConfig,
@@ -115,13 +117,13 @@ public class ScreenshotsComparatorTest {
         when(fileService.getRelativePathFromReportDirToScreenshotsDir()).thenReturn("screenshots/");
 
         when(fileTracker.getScreenshotsForContext(screenshotContext.contextHash())).thenReturn(
-                ImmutableMap.of(2002, ImmutableMap.of(Step.before, "http_url_root_ff3c40c_1001_02002_before.png",
-                        Step.after, "http_url_root_ff3c40c_1001_02002_after.png"),
-                        3003, ImmutableMap.of(Step.after, "http_url_root_ff3c40c_1001_03003_after.png")));
+                ImmutableMap.of(2002, ImmutableMap.of(before, "http_url_root_ff3c40c_1001_02002_before.png",
+                        after, "http_url_root_ff3c40c_1001_02002_after.png"),
+                        3003, ImmutableMap.of(after, "http_url_root_ff3c40c_1001_03003_after.png")));
         when(fileTracker.getScreenshotsForContext(screenshotContext2.contextHash())).thenReturn(
-                ImmutableMap.of(2002, ImmutableMap.of(Step.before, "http_url2_root_ff3c40c_1001_02002_before.png",
-                        Step.after, "http_url2_root_ff3c40c_1001_02002_after.png"),
-                        3003, ImmutableMap.of(Step.after, "http_url2_root_ff3c40c_1001_03003_after.png")));
+                ImmutableMap.of(2002, ImmutableMap.of(before, "http_url2_root_ff3c40c_1001_02002_before.png",
+                        after, "http_url2_root_ff3c40c_1001_02002_after.png"),
+                        3003, ImmutableMap.of(after, "http_url2_root_ff3c40c_1001_03003_after.png")));
 
         BufferedImage beforeBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
         when(fileService.readScreenshot("http_url_root_ff3c40c_1001_02002_before.png")).thenReturn(

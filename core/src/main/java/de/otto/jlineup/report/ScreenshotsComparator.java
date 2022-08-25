@@ -1,10 +1,11 @@
 package de.otto.jlineup.report;
 
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
@@ -31,7 +32,7 @@ public class ScreenshotsComparator {
                                  JobConfig jobConfig,
                                  FileService fileService,
                                  ImageService imageService) {
-        this.runStepConfig = RunStepConfig.copyOfBuilder(runStepConfig).withStep(Step.compare).build();
+        this.runStepConfig = RunStepConfig.copyOfBuilder(runStepConfig).withStep(RunStep.compare).build();
         this.jobConfig = jobConfig;
         this.fileService = fileService;
         this.imageService = imageService;
@@ -57,12 +58,12 @@ public class ScreenshotsComparator {
                     continue;
                 }
                 String fullUrlWithPath = BrowserUtils.buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
-                Map<Integer, Map<Step, String>> screenshots = fileService.getFileTracker().getScreenshotsForContext(screenshotContext.contextHash());
+                Map<Integer, Map<BrowserStep, String>> screenshots = fileService.getFileTracker().getScreenshotsForContext(screenshotContext.contextHash());
                 List<Integer> yPositions = new ArrayList<>(screenshots.keySet());
 
                 for (Integer yPosition : yPositions) {
-                    String beforeFileName = screenshots.get(yPosition).get(Step.before);
-                    String afterFileName = screenshots.get(yPosition).get(Step.after);
+                    String beforeFileName = screenshots.get(yPosition).get(BrowserStep.before);
+                    String afterFileName = screenshots.get(yPosition).get(BrowserStep.after);
 
                     LOG.debug("Comparing file '{}' with '{}'", beforeFileName, afterFileName);
 

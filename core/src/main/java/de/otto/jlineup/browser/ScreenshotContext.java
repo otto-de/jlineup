@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.DeviceConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
 
 import java.util.Collections;
@@ -19,7 +19,7 @@ public final class ScreenshotContext  {
     public final DeviceConfig deviceConfig;
     public final List<Cookie> cookies;
     @JsonIgnore
-    public final Step step;
+    public final BrowserStep step;
     @JsonIgnore
     public final UrlConfig urlConfig;
     @JsonIgnore
@@ -29,7 +29,7 @@ public final class ScreenshotContext  {
     @JsonIgnore
     final String originalUrl;
 
-    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, List<Cookie> cookies, Step step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String originalUrl) {
+    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, List<Cookie> cookies, BrowserStep step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String originalUrl) {
         this.url = url;
         this.urlSubPath = urlSubPath;
         this.deviceConfig = deviceConfig;
@@ -59,17 +59,17 @@ public final class ScreenshotContext  {
     }
 
     //Used in Tests only
-    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, List<Cookie> cookies, String originalUrl) {
+    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, BrowserStep step, UrlConfig urlConfig, List<Cookie> cookies, String originalUrl) {
         return new ScreenshotContext(url, path, deviceConfig, cookies, step, urlConfig, null, false, originalUrl);
     }
 
     //Used in Tests only
-    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig, List<Cookie> cookies) {
+    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, BrowserStep step, UrlConfig urlConfig, List<Cookie> cookies) {
         return new ScreenshotContext(url, path, deviceConfig, cookies, step, urlConfig, null, false, url);
     }
 
     //Used in Tests only
-    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, Step step, UrlConfig urlConfig) {
+    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, BrowserStep step, UrlConfig urlConfig) {
         return new ScreenshotContext(url, path, deviceConfig, urlConfig.cookies, step, urlConfig, null, false, url);
     }
 
@@ -179,7 +179,7 @@ public final class ScreenshotContext  {
         private String urlSubPath;
         private DeviceConfig deviceConfig;
         private List<Cookie> cookies = Collections.emptyList();
-        private Step step;
+        private BrowserStep step;
         private UrlConfig urlConfig;
         private String fullPathOfReportDir;
         private boolean dontShareBrowser;
@@ -208,7 +208,7 @@ public final class ScreenshotContext  {
             return this;
         }
 
-        public Builder withStep(Step val) {
+        public Builder withStep(BrowserStep val) {
             step = val;
             return this;
         }

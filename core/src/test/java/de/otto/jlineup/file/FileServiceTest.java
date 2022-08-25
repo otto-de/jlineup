@@ -4,7 +4,7 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -20,6 +20,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static de.otto.jlineup.RunStepConfig.runStepConfigBuilder;
+import static de.otto.jlineup.browser.BrowserStep.before;
 import static de.otto.jlineup.file.FileService.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +51,7 @@ public class FileServiceTest {
                 .withWorkingDirectory(writeScreenshotTestPath)
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
-                .withStep(Step.before)
+                .withStep(RunStep.before)
                 .build();
 
         jobConfig = JobConfig.exampleConfig();
@@ -75,7 +76,7 @@ public class FileServiceTest {
         BufferedImage bufferedImage = new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB);
         bufferedImage.setRGB(0, 0, 200);
 
-        String fileName = testee.writeScreenshot(ScreenshotContext.of("someUrl", "somePath", DeviceConfig.deviceConfig(1000, 1001), Step.before, UrlConfig.urlConfigBuilder().build()), bufferedImage, 12345);
+        String fileName = testee.writeScreenshot(ScreenshotContext.of("someUrl", "somePath", DeviceConfig.deviceConfig(1000, 1001), before, UrlConfig.urlConfigBuilder().build()), bufferedImage, 12345);
 
         assertThat(Files.exists(Paths.get(testee.getScreenshotDirectory().toString(), fileName)), is(true));
     }
@@ -124,7 +125,7 @@ public class FileServiceTest {
                 .withWorkingDirectory("src" + FILE_SEPARATOR + "test" + FILE_SEPARATOR + "resources")
                 .withScreenshotsDirectory("screenshots")
                 .withReportDirectory("report")
-                .withStep(Step.before)
+                .withStep(RunStep.before)
                 .build();
         FileService fileService = new FileService(runStepConfig, jobConfig);
 
@@ -143,7 +144,7 @@ public class FileServiceTest {
                 .withWorkingDirectory("src/test/resources")
                 .withScreenshotsDirectory("rreeppoorrtt")
                 .withReportDirectory("rreeppoorrtt")
-                .withStep(Step.before)
+                .withStep(RunStep.before)
                 .build();
         FileService fileService = new FileService(runStepConfig, jobConfig);
 

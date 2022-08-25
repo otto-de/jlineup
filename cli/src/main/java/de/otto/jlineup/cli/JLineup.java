@@ -2,9 +2,10 @@ package de.otto.jlineup.cli;
 
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.exceptions.ValidationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
@@ -39,7 +39,7 @@ public class JLineup implements Callable<Integer> {
     private String url = null;
 
     @Option(names = {"-s", "--step"}, description = "JLineup step - 'before' just takes screenshots, 'after' takes screenshots and compares them with the 'before'-screenshots in the screenshots directory. 'compare' just compares existing screenshots, it's also included in 'after'.", order = 2)
-    private Step step = Step.before;
+    private RunStep step = RunStep.before;
 
     @Option(names = {"--config", "-c"}, description = "JobConfig file", order = 3)
     private String configFile = "lineup.json";
@@ -101,22 +101,22 @@ public class JLineup implements Callable<Integer> {
     }
 
     public boolean isAfter() {
-        return step == Step.after;
+        return step == RunStep.after;
     }
 
     public boolean isBefore() {
-        return step != Step.after && step != Step.compare;
+        return step != RunStep.after && step != RunStep.compare && step != RunStep.after_only;
     }
 
     public boolean isJustCompare() {
-        return step == Step.compare;
+        return step == RunStep.compare;
     }
 
     public boolean isHelp() {
         return help;
     }
 
-    public Step getStep() {
+    public RunStep getStep() {
         return step;
     }
 

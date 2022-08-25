@@ -2,10 +2,9 @@ package de.otto.jlineup;
 
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
-import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.JobConfigValidator;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
@@ -45,7 +44,7 @@ public class JLineupRunner {
         final HTMLReportWriter htmlReportWriter = new HTMLReportWriter(fileService);
 
         //Make sure the working dir exists
-        if (runStepConfig.getStep() == Step.before) {
+        if (runStepConfig.getStep() == RunStep.before || runStepConfig.getStep() == RunStep.after_only) {
             try {
                 fileService.createWorkingDirectoryIfNotExists();
                 fileService.createOrClearReportDirectory();
@@ -59,7 +58,7 @@ public class JLineupRunner {
         MDC.put(REPORT_LOG_NAME_KEY, getFullPathOfReportDir(runStepConfig) + "/" + LOGFILE_NAME);
         LOG.info("JLineup run started for step '{}'", runStepConfig.getStep());
 
-        if (runStepConfig.getStep() == Step.before || runStepConfig.getStep() == Step.after) {
+        if (runStepConfig.getStep() == RunStep.before || runStepConfig.getStep() == RunStep.after|| runStepConfig.getStep() == RunStep.after_only) {
             BrowserUtils browserUtils = new BrowserUtils();
             try (Browser browser = new Browser(runStepConfig, jobConfig, fileService, browserUtils)) {
                 browser.runSetupAndTakeScreenshots();
@@ -69,7 +68,7 @@ public class JLineupRunner {
         }
 
         try {
-            if (runStepConfig.getStep() == Step.after || runStepConfig.getStep() == Step.compare) {
+            if (runStepConfig.getStep() == RunStep.after || runStepConfig.getStep() == RunStep.compare) {
                 ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
                 final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
 

@@ -8,9 +8,10 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.RunStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.*;
 import software.amazon.awssdk.transfer.s3.CompletedDirectoryUpload;
 import software.amazon.awssdk.transfer.s3.S3ClientConfiguration;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
@@ -37,11 +38,23 @@ public class JLineupHandler implements RequestStreamHandler {
     public void handleRequest(InputStream input, OutputStream output, Context context) {
         try {
             LambdaRequestPayload event = objectMapper.readValue(input, LambdaRequestPayload.class);
-            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext).withStep(event.step).withUrlConfig(event.jobConfig.urls.get(event.screenshotContext.url)).build();
-            LambdaRunner runner = createRun(event.runId, event.jobConfig, screenshotContext);
+            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext).withStep(event.step.toBrowserStep()).withUrlConfig(event.jobConfig.urls.get(event.screenshotContext.url)).build();
+            LambdaRunner runner = createRun(event.runId, event.step, event.jobConfig, screenshotContext);
             runner.run();
 
-            AwsCredentialsProvider cp = AWSConfig.defaultAwsCredentialsProvider(LambdaProperties.getProfile());
+            AwsCredentialsProviderChain cp = AwsCredentialsProviderChain
+                    .builder()
+                    .credentialsProviders(
+                            // instance profile is also needed for people not using ecs but directly using ec2 instances!!
+                            ContainerCredentialsProvider.builder().build(),
+                            InstanceProfileCredentialsProvider.builder().build(),
+                            EnvironmentVariableCredentialsProvider.create(),
+                            ProfileCredentialsProvider
+                                    .builder()
+                                    .profileName(LambdaProperties.getProfile())
+                                    .build())
+                    .build();
+
             transferManager = S3TransferManager.builder()
                     .s3ClientConfiguration(S3ClientConfiguration.builder().credentialsProvider(cp).build()).build();
 
@@ -53,7 +66,7 @@ public class JLineupHandler implements RequestStreamHandler {
         }
     }
 
-    private LambdaRunner createRun(String id, JobConfig jobConfig, ScreenshotContext screenshotContext) {
+    private LambdaRunner createRun(String id, RunStep step, JobConfig jobConfig, ScreenshotContext screenshotContext) {
         RunStepConfig runStepConfig = RunStepConfig.runStepConfigBuilder()
                 .withWebDriverCachePath("/tmp/jlineup/webdrivers")
                 .withWorkingDirectory("/tmp/jlineup/run-{id}".replace("{id}", id))
@@ -69,7 +82,7 @@ public class JLineupHandler implements RequestStreamHandler {
                         "--no-zygote",
                         "--force-color-profile=srgb",
                         "--user-data-dir=/tmp/jlineup/chrome-profile-" + id))
-                .withStep(screenshotContext.step)
+                .withStep(step)
                 .build();
         return new LambdaRunner(jobConfig, runStepConfig, screenshotContext);
     }

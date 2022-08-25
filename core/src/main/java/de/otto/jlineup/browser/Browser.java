@@ -7,6 +7,7 @@ import de.otto.jlineup.Utils;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import org.graalvm.nativeimage.ImageInfo;

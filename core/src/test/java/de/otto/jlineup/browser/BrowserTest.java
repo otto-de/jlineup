@@ -24,6 +24,7 @@ import java.util.*;
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS;
 import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
+import static de.otto.jlineup.browser.BrowserStep.before;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
@@ -178,8 +179,8 @@ public class BrowserTest {
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), Step.before, urlConfig, ImmutableList.of(new Cookie("testcookiename", "testcookievalue"), new Cookie("alternating", "one")));
-        ScreenshotContext screenshotContext2 = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 100), Step.before, urlConfig, ImmutableList.of(new Cookie("testcookiename", "testcookievalue"), new Cookie("alternating", "one")));
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), before, urlConfig, ImmutableList.of(new Cookie("testcookiename", "testcookievalue"), new Cookie("alternating", "one")));
+        ScreenshotContext screenshotContext2 = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 100), before, urlConfig, ImmutableList.of(new Cookie("testcookiename", "testcookievalue"), new Cookie("alternating", "one")));
 
         when(webDriverMock.getCurrentUrl()).thenReturn("http://testurl");
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
@@ -250,7 +251,7 @@ public class BrowserTest {
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), Step.before, urlConfig);
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), before, urlConfig);
 
         when(webDriverMock.getCurrentUrl()).thenReturn("http://testurl");
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
@@ -311,7 +312,7 @@ public class BrowserTest {
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), Step.before, urlConfig);
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), before, urlConfig);
 
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
@@ -360,8 +361,8 @@ public class BrowserTest {
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", deviceConfig(600, 100), Step.before, urlConfig);
-        ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", deviceConfig(800, 100), Step.before, urlConfig);
+        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", deviceConfig(600, 100), before, urlConfig);
+        ScreenshotContext screenshotContext2 = ScreenshotContext.of("testurl", "/", deviceConfig(800, 100), before, urlConfig);
 
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
@@ -395,7 +396,7 @@ public class BrowserTest {
         testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", deviceConfig(600, 100), Step.before, urlConfig);
+        ScreenshotContext screenshotContext = ScreenshotContext.of("testurl", "/", deviceConfig(600, 100), before, urlConfig);
 
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);

@@ -1,6 +1,7 @@
 package de.otto.jlineup;
 
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.browser.BrowserStep;
+import de.otto.jlineup.config.RunStep;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,7 @@ public class RunStepConfig {
     private final String reportDirectory;
     private final String workingDirectory;
     private final String screenshotsDirectory;
-    private final Step step;
+    private final RunStep step;
     private final Map<String, String> urlReplacements;
     private final List<String> chromeParameters;
     private final List<String> firefoxParameters;
@@ -50,8 +51,12 @@ public class RunStepConfig {
         return screenshotsDirectory;
     }
 
-    public Step getStep() {
+    public RunStep getStep() {
         return step;
+    }
+
+    public BrowserStep getBrowserStep() {
+        return step.toBrowserStep();
     }
 
     public Map<String, String> getUrlReplacements() {
@@ -77,7 +82,7 @@ public class RunStepConfig {
         private List<String> chromeParameters = emptyList();
         private List<String> firefoxParameters = emptyList();
         private Map<String, String> urlReplacements = emptyMap();
-        private Step step;
+        private RunStep step;
         private String webDriverCachePath;
 
         private Builder() {
@@ -109,7 +114,7 @@ public class RunStepConfig {
             return this;
         }
 
-        public Builder withStep(Step val) {
+        public Builder withStep(RunStep val) {
             step = val;
             return this;
         }

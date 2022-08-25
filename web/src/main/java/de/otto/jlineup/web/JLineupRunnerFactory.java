@@ -2,8 +2,9 @@ package de.otto.jlineup.web;
 
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +25,14 @@ public class JLineupRunnerFactory {
     }
 
     public JLineupRunner createBeforeRun(String id, JobConfig jobConfig) throws Exception {
-        return createRun(id, jobConfig, Step.before);
+        return createRun(id, jobConfig, RunStep.before);
     }
 
     public JLineupRunner createAfterRun(String id, JobConfig jobConfig) throws Exception {
-        return createRun(id, jobConfig, Step.after);
+        return createRun(id, jobConfig, RunStep.after);
     }
 
-    private JLineupRunner createRun(String id, JobConfig jobConfig, Step step) throws Exception {
+    private JLineupRunner createRun(String id, JobConfig jobConfig, RunStep step) throws Exception {
 
         JobConfig webJobConfig = sanitizeJobConfig(jobConfig);
 

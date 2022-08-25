@@ -5,9 +5,10 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,8 @@ public class FileService {
 
     private final RunStepConfig runStepConfig;
 
+    private final FileTracker fileTracker;
+
     public FileTracker getFileTracker() {
         return fileTracker;
     }
@@ -45,11 +48,9 @@ public class FileService {
         return fileTracker.getScreenshotContextFileTracker(hash).screenshotContext;
     }
 
-    private final FileTracker fileTracker;
-
     public FileService(RunStepConfig runStepConfig, JobConfig jobConfig) {
         this.runStepConfig = runStepConfig;
-        if (runStepConfig.getStep() == Step.before) {
+        if (runStepConfig.getStep() == RunStep.before || runStepConfig.getStep() == RunStep.after_only) {
             this.fileTracker = FileTracker.create(jobConfig);
         } else {
             Path path = Paths.get(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory(), FILETRACKER_FILENAME);
@@ -199,7 +200,7 @@ public class FileService {
         }
     }
 
-    public void writeHtml(String html, Step step) throws FileNotFoundException {
+    public void writeHtml(String html, RunStep step) throws FileNotFoundException {
         try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory() + FILE_SEPARATOR + step + ".html"))) {
             out.print(html);
         }
@@ -214,7 +215,7 @@ public class FileService {
         fileTracker.setBrowserAndVersion(screenshotContext, browserAndVersion);
     }
 
-    public Map<Step, String> getBrowsers() {
+    public Map<BrowserStep, String> getBrowsers() {
         return fileTracker.browsers;
     }
 

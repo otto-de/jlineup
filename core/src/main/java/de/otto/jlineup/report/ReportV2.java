@@ -1,7 +1,8 @@
 package de.otto.jlineup.report;
 
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.Step;
+import de.otto.jlineup.config.RunStep;
 
 import java.util.List;
 import java.util.Map;
@@ -12,9 +13,9 @@ public class ReportV2 {
     public final Summary summary;
     public final JobConfig config;
     public final List<UrlReportV2> urlReports;
-    public final Map<Step, String> browsers;
+    public final Map<BrowserStep, String> browsers;
 
-    public ReportV2(Summary summary, JobConfig jobConfig, List<UrlReportV2> urlReports, Map<Step, String> browsers) {
+    public ReportV2(Summary summary, JobConfig jobConfig, List<UrlReportV2> urlReports, Map<BrowserStep, String> browsers) {
         this.summary = summary;
         this.config = jobConfig;
         this.urlReports = urlReports;
@@ -23,7 +24,7 @@ public class ReportV2 {
 
     @UsedInTemplate
     public String getBrowser(String step) {
-        return browsers.get(Step.valueOf(step));
+        return browsers.get(BrowserStep.valueOf(step));
     }
 
     @Override

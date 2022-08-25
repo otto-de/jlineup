@@ -57,8 +57,8 @@ public class BrowserIntegrationTest {
         //given
         JobConfig jobConfig = localTestConfig("403", Browser.Type.CHROME_HEADLESS, false);
         //when
-        runJLineup(jobConfig, Step.before);
-        runJLineup(jobConfig, Step.after);
+        runJLineup(jobConfig, RunStep.before);
+        runJLineup(jobConfig, RunStep.after);
         //then
     }
 
@@ -69,7 +69,7 @@ public class BrowserIntegrationTest {
         Exception thrown = null;
         //when
         try {
-            runJLineup(jobConfig, Step.before);
+            runJLineup(jobConfig, RunStep.before);
         } catch (Exception e) {
             thrown = e;
         }
@@ -83,8 +83,8 @@ public class BrowserIntegrationTest {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, false);
         //when
-        runJLineup(jobConfig, Step.before);
-        runJLineup(jobConfig, Step.after);
+        runJLineup(jobConfig, RunStep.before);
+        runJLineup(jobConfig, RunStep.after);
         //then
     }
 
@@ -95,7 +95,7 @@ public class BrowserIntegrationTest {
         Exception thrown = null;
         //when
         try {
-            runJLineup(jobConfig, Step.before);
+            runJLineup(jobConfig, RunStep.before);
         } catch (Exception e) {
             thrown = e;
         }
@@ -109,8 +109,8 @@ public class BrowserIntegrationTest {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.FIREFOX_HEADLESS, false);
         //when
-        runJLineup(jobConfig, Step.before);
-        runJLineup(jobConfig, Step.after);
+        runJLineup(jobConfig, RunStep.before);
+        runJLineup(jobConfig, RunStep.after);
         //then
     }
 
@@ -119,8 +119,8 @@ public class BrowserIntegrationTest {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.FIREFOX_HEADLESS, true);
         //when
-        runJLineup(jobConfig, Step.before);
-        runJLineup(jobConfig, Step.after);
+        runJLineup(jobConfig, RunStep.before);
+        runJLineup(jobConfig, RunStep.after);
         //then
         //no Exception
     }
@@ -129,7 +129,7 @@ public class BrowserIntegrationTest {
     public void shouldNotAppendSlashToDomain() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder().withCookie(new Cookie("CookieName", "CookieValue")).build();
         JobConfig jobConfig = localTestConfig("params?param1=1&param2=2", Browser.Type.CHROME_HEADLESS, true, urlConfig);
-        runJLineup(jobConfig, Step.before);
+        runJLineup(jobConfig, RunStep.before);
     }
 
     @Test
@@ -138,7 +138,7 @@ public class BrowserIntegrationTest {
                 .withCookie(new Cookie("CookieName", "CookieValue"))
                 .withPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("somerootpath/somevalidsubpath", Browser.Type.CHROME_HEADLESS, true, urlConfig);
-        runJLineup(jobConfig, Step.before);
+        runJLineup(jobConfig, RunStep.before);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class BrowserIntegrationTest {
                 .withPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, false, urlConfig);
         try {
-            runJLineup(jobConfig, Step.before);
+            runJLineup(jobConfig, RunStep.before);
             fail();
         } catch (Exception e) {
             assertThat(e.getCause().getCause().getCause().getMessage(), containsString("Accessibility check"));
@@ -163,7 +163,7 @@ public class BrowserIntegrationTest {
                 .withPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("200", Browser.Type.CHROME_HEADLESS, false, urlConfig);
         try {
-            runJLineup(jobConfig, Step.before);
+            runJLineup(jobConfig, RunStep.before);
             fail();
         } catch (Exception e) {
             assertThat(e.getCause().getCause().getCause().getMessage(), containsString("Accessibility check"));
@@ -178,7 +178,7 @@ public class BrowserIntegrationTest {
                 .withPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("somerootpath/somevalidsubpath", Browser.Type.CHROME_HEADLESS, true, urlConfig);
         try {
-            runJLineup(jobConfig, Step.before);
+            runJLineup(jobConfig, RunStep.before);
             fail();
         } catch (Exception e) {
             assertThat(e.getCause().getCause().getCause().getMessage(), containsString("Accessibility check"));
@@ -193,7 +193,7 @@ public class BrowserIntegrationTest {
                 .withHttpCheck(new HttpCheckConfig(false))
                 .withPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, false, urlConfig);
-        runJLineup(jobConfig, Step.before);
+        runJLineup(jobConfig, RunStep.before);
         //no exception
     }
 
@@ -207,12 +207,12 @@ public class BrowserIntegrationTest {
                 ))
                 .withPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("cookies", Browser.Type.CHROME_HEADLESS, false, urlConfig);
-        runJLineup(jobConfig, Step.before);
-        RunStepConfig runStepConfig = runJLineup(jobConfig, Step.after);
+        runJLineup(jobConfig, RunStep.before);
+        RunStepConfig runStepConfig = runJLineup(jobConfig, RunStep.after);
         //no exception
     }
 
-    private RunStepConfig runJLineup(JobConfig jobConfig, Step step) throws ValidationError {
+    private RunStepConfig runJLineup(JobConfig jobConfig, RunStep step) throws ValidationError {
         RunStepConfig runStepConfig = RunStepConfig.runStepConfigBuilder()
                 .withWorkingDirectory(tempDirectory.toAbsolutePath().toString())
                 .withScreenshotsDirectory("screenshots")
