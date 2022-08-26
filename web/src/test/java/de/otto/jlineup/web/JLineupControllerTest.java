@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 
 import static de.otto.jlineup.config.JobConfig.exampleConfig;
 import static de.otto.jlineup.web.JLineupRunStatus.runStatusBuilder;
@@ -73,11 +74,12 @@ public class JLineupControllerTest {
     @Test
     public void shouldReturn404WhenRunNotFound() throws Exception {
         // given
-        when(jLineupService.getRun("someId")).thenReturn(Optional.empty());
+        String someRunId = UUID.randomUUID().toString();
+        when(jLineupService.getRun(someRunId)).thenReturn(Optional.empty());
 
         // when
         ResultActions result = mvc
-                .perform(get("/testContextPath/runs/someId")
+                .perform(get("/testContextPath/runs/" + someRunId)
                         .contextPath("/testContextPath")
                         .accept(MediaType.APPLICATION_JSON));
 
@@ -88,15 +90,16 @@ public class JLineupControllerTest {
     @Test
     public void shouldReturnRun() throws Exception {
         // given
-        when(jLineupService.getRun("someId")).thenReturn(Optional.of(runStatusBuilder()
-                .withId("someId")
+        String someRunId = UUID.randomUUID().toString();
+        when(jLineupService.getRun(someRunId)).thenReturn(Optional.of(runStatusBuilder()
+                .withId(someRunId)
                 .withState(State.BEFORE_RUNNING)
                 .withJobConfig(exampleConfig())
                 .build()));
 
         // when
         ResultActions result = mvc
-                .perform(get("/testContextPath/runs/someId")
+                .perform(get("/testContextPath/runs/" + someRunId)
                         .contextPath("/testContextPath")
                         .accept(MediaType.APPLICATION_JSON));
 
@@ -105,11 +108,24 @@ public class JLineupControllerTest {
     }
 
     @Test
+    public void shouldReturn404IfRunIdIsNoValidUUID() throws Exception {
+        // when
+        ResultActions result = mvc
+                .perform(get("/testContextPath/runs/someId")
+                        .contextPath("/testContextPath")
+                        .accept(MediaType.APPLICATION_JSON));
+
+        // then
+        result.andExpect(status().isNotFound());
+    }
+
+    @Test
     public void shouldIncludeLinksWithContextPath() throws Exception {
         // given
         Instant startTime = Instant.ofEpochMilli(1000);
-        when(jLineupService.getRun("someId")).thenReturn(Optional.of(runStatusBuilder()
-                .withId("someId")
+        String someRunId = UUID.randomUUID().toString();
+        when(jLineupService.getRun(someRunId)).thenReturn(Optional.of(runStatusBuilder()
+                .withId(someRunId)
                 .withState(State.FINISHED_WITHOUT_DIFFERENCES)
                 .withJobConfig(exampleConfig())
                 .withReports(JLineupRunStatus.Reports.reportsBuilder()
@@ -122,14 +138,14 @@ public class JLineupControllerTest {
 
         // when
         ResultActions result = mvc
-                .perform(get("/testContextPath/runs/someId")
+                .perform(get("/testContextPath/runs/" + someRunId)
                         .contextPath("/testContextPath")
                         .accept(MediaType.APPLICATION_JSON));
 
         // then
         result.andExpect(status().isOk());
         result.andExpect(content().json(
-                "{\"id\":\"someId\",\"state\":\"FINISHED_WITHOUT_DIFFERENCES\",\"startTime\":\"1970-01-01T00:00:01Z\",\"endTime\":null,\"reports\":{\"htmlUrl\":\"http://localhost/testContextPath/htmlReport/report.html\",\"jsonUrl\":\"http://localhost/testContextPath/jsonReport/report.json\",\"logUrl\":\"http://localhost/testContextPath/log/log.log\"}}"
+                "{\"id\":\"" + someRunId + "\",\"state\":\"FINISHED_WITHOUT_DIFFERENCES\",\"startTime\":\"1970-01-01T00:00:01Z\",\"endTime\":null,\"reports\":{\"htmlUrl\":\"http://localhost/testContextPath/htmlReport/report.html\",\"jsonUrl\":\"http://localhost/testContextPath/jsonReport/report.json\",\"logUrl\":\"http://localhost/testContextPath/log/log.log\"}}"
         ));
     }
 
@@ -262,27 +278,45 @@ public class JLineupControllerTest {
     public void shouldStartAfterRun() throws Exception {
 
         // given
-        JLineupRunStatus run = runStatusBuilder().withId("someRunId").withJobConfig(exampleConfig()).withState(State.AFTER_RUNNING).build();
-        when(jLineupService.startAfterRun("someRunId")).thenReturn(run);
+        String someRunId = UUID.randomUUID().toString();
+        JLineupRunStatus run = runStatusBuilder().withId(someRunId).withJobConfig(exampleConfig()).withState(State.AFTER_RUNNING).build();
+        when(jLineupService.startAfterRun(someRunId)).thenReturn(run);
 
         // when
         ResultActions result = mvc
-                .perform(post("/testContextPath/runs/someRunId")
+                .perform(post("/testContextPath/runs/" + someRunId)
                         .contextPath("/testContextPath")
                         .contentType(MediaType.APPLICATION_JSON));
 
         // then
         result
                 .andExpect(status().isAccepted())
-                .andExpect(header().string("Location", "/testContextPath/runs/someRunId"));
+                .andExpect(header().string("Location", "/testContextPath/runs/" + someRunId));
     }
 
     @Test
     public void shouldReturn404ForAfterStepWhenRunIsUnknown() throws Exception {
 
         // given
-        String runId = "unknownId";
-        when(jLineupService.startAfterRun(runId)).thenThrow(new RunNotFoundException(runId));
+        String unknownRunId = UUID.randomUUID().toString();
+        when(jLineupService.startAfterRun(unknownRunId)).thenThrow(new RunNotFoundException(unknownRunId));
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs/" + unknownRunId)
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(unknownRunId)));
+    }
+
+    @Test
+    public void shouldReturn404ForAfterStepWhenRunIdIsInvalid() throws Exception {
+
+        // given
+        String runId = "noValidUUID";
 
         // when
         ResultActions result = mvc
@@ -299,18 +333,18 @@ public class JLineupControllerTest {
     public void shouldReturn412ForAfterStepWhenRunIsNotReadyForAfterStep() throws Exception {
 
         // given
-        String runId = "unknownId";
-        when(jLineupService.startAfterRun(runId)).thenThrow(new InvalidRunStateException(runId, State.BEFORE_RUNNING, State.BEFORE_DONE));
+        String runInInvalidStateId = UUID.randomUUID().toString();
+        when(jLineupService.startAfterRun(runInInvalidStateId)).thenThrow(new InvalidRunStateException(runInInvalidStateId, State.BEFORE_RUNNING, State.BEFORE_DONE));
 
         // when
         ResultActions result = mvc
-                .perform(post("/runs/" + runId)
+                .perform(post("/runs/" + runInInvalidStateId)
                         .contentType(MediaType.APPLICATION_JSON));
 
         // then
         result
                 .andExpect(status().isPreconditionFailed())
-                .andExpect(content().string(containsString(runId)))
+                .andExpect(content().string(containsString(runInInvalidStateId)))
                 .andExpect(content().string(containsString(State.BEFORE_RUNNING.name())))
                 .andExpect(content().string(containsString(State.BEFORE_DONE.name())));
     }

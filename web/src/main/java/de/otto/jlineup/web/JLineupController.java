@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
@@ -96,20 +97,30 @@ public class JLineupController {
     }
 
     @PostMapping("/runs/{runId}")
-    public ResponseEntity<Void> runAfter(@PathVariable String runId, HttpServletRequest request) throws Exception {
-        jLineupService.startAfterRun(runId);
-
+    public ResponseEntity<Void> runAfter(@PathVariable final String runId, HttpServletRequest request) throws Exception {
+        String sanitizedRunId = validateAndSanitizeRunId(runId);
+        jLineupService.startAfterRun(sanitizedRunId);
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(request.getContextPath() + "/runs/" + runId));
+        headers.setLocation(URI.create(request.getContextPath() + "/runs/" + sanitizedRunId));
         return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/runs/{runId}")
-    public ResponseEntity<JLineupRunStatus> getRun(@PathVariable String runId) {
-        Optional<JLineupRunStatus> run = jLineupService.getRun(runId);
+    public ResponseEntity<JLineupRunStatus> getRun(@PathVariable final String runId) throws RunNotFoundException {
+        String sanitizedRunId = validateAndSanitizeRunId(runId);
+        Optional<JLineupRunStatus> run = jLineupService.getRun(sanitizedRunId);
         return run
                 .map(jLineupRunStatus -> new ResponseEntity<>(jLineupRunStatus, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    private String validateAndSanitizeRunId(String runId) throws RunNotFoundException {
+        try {
+            UUID uuid = UUID.fromString(runId);
+            return uuid.toString();
+        } catch (IllegalArgumentException e) {
+            throw new RunNotFoundException(runId);
+        }
     }
 
     @ExceptionHandler(RunNotFoundException.class)
