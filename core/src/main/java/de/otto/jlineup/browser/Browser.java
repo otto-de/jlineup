@@ -7,7 +7,6 @@ import de.otto.jlineup.Utils;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import org.graalvm.nativeimage.ImageInfo;
@@ -342,7 +341,7 @@ public class Browser implements AutoCloseable {
         logErrorChecker.checkForErrors(localDriver, jobConfig);
 
         Long pageHeight = getPageHeight();
-        final Long viewportHeight = getViewportHeight();
+        final int viewportHeight = Math.toIntExact(getViewportHeight());
 
         if (screenshotContext.urlConfig.waitAfterPageLoad > 0) {
             try {
@@ -389,8 +388,8 @@ public class Browser implements AutoCloseable {
             fileService.writeScreenshot(screenshotContext,
                     currentScreenshot, yPosition);
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
-            scrollTo(yPosition + viewportHeight.intValue());
-            LOG.debug("Scroll by {} done", viewportHeight.intValue());
+            scrollTo(yPosition + viewportHeight);
+            LOG.debug("Scroll by {} done", viewportHeight);
 
             if (screenshotContext.urlConfig.waitAfterScroll > 0) {
                 LOG.debug("Waiting for {} seconds (wait after scroll).", screenshotContext.urlConfig.waitAfterScroll);
