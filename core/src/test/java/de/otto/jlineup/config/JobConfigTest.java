@@ -56,7 +56,7 @@ public class JobConfigTest {
 
     private void assertThatConfigContentsAreCorrect(JobConfig jobConfig) {
         assertThat(jobConfig.browser.isFirefox(), is(true));
-        assertThat(jobConfig.browser.isHeadless(), is(false));
+        assertThat(jobConfig.browser.isHeadless(), is(true));
         assertThat(jobConfig.globalWaitAfterPageLoad, is(1f));
         assertThat(jobConfig.urls.get("https://www.otto.de").windowWidths, is(ImmutableList.of(600, 800, 1200)));
         assertThat(jobConfig.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));

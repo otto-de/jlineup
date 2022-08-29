@@ -10,7 +10,7 @@
       ]
     }
   },
-  "browser": "firefox",
+  "browser": "firefox-headless",
   "wait-after-page-load": 1,
   "threads": 4,
   "report-format" : 2

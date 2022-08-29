@@ -22,8 +22,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 import static de.otto.jlineup.browser.Browser.*;
-import static de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS;
-import static de.otto.jlineup.browser.Browser.Type.FIREFOX;
+import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.browser.BrowserStep.before;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;

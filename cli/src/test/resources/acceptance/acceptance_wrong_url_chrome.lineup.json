@@ -10,7 +10,7 @@
       ]
     }
   },
-  "browser": "chrome",
+  "browser": "chrome-headless",
   "wait-after-page-load": 1,
   "threads": 4,
   "check-for-errors-in-log": true,

@@ -11,6 +11,6 @@
       "max-scroll-height":50000
     }
   },
-  "browser": "chrome",
+  "browser": "chrome-headless",
   "wait-after-page-load": 1
 }
