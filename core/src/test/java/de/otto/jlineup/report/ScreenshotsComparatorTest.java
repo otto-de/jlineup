@@ -5,13 +5,18 @@ import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
-import de.otto.jlineup.config.*;
+import de.otto.jlineup.config.DeviceConfig;
+import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.RunStep;
+import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.image.ImageService;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -27,8 +32,8 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ScreenshotsComparatorTest {
 
     private static final int WINDOW_HEIGHT = 1000;
@@ -57,7 +62,6 @@ public class ScreenshotsComparatorTest {
 
     @Before
     public void setup() {
-        initMocks(this);
         runStepConfig = RunStepConfig.runStepConfigBuilder().withWorkingDirectory("src/test/resources").withStep(RunStep.compare).build();
         jobConfig = jobConfigBuilder()
                 .withUrls(ImmutableMap.of(
