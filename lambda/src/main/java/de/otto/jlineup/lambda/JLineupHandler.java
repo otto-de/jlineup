@@ -19,6 +19,7 @@ import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 
@@ -47,7 +48,7 @@ public class JLineupHandler implements RequestStreamHandler {
                     .credentialsProviders(
                             // instance profile is also needed for people not using ecs but directly using ec2 instances!!
                             ContainerCredentialsProvider.builder().build(),
-                            InstanceProfileCredentialsProvider.builder().build(),
+                            //InstanceProfileCredentialsProvider.builder().build(),
                             EnvironmentVariableCredentialsProvider.create(),
                             ProfileCredentialsProvider
                                     .builder()

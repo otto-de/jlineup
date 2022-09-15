@@ -2,7 +2,7 @@ apply plugin: 'org.springframework.boot'
 
 buildscript {
     ext {
-        awsSdkVersion = '2.17.261'
+        awsSdkVersion = '2.17.271'
     }
 }
 
@@ -82,8 +82,8 @@ task copyRuntimeDependencies(type: Copy) {
 
 build.dependsOn copyRuntimeDependencies
 
-sourceCompatibility = 8
-targetCompatibility = 8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {

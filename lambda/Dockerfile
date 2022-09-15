@@ -8,33 +8,33 @@ RUN sh -c 'echo -e "[google-chrome]\nname=google-chrome - 64-bit\nbaseurl=http:/
 RUN yum update -y
 
 RUN yum install -y \
-    GConf2.x86_64 \
-    alsa-lib.x86_64 \
-    at-spi2-atk.x86_64 \
-    atk.x86_64 \
-    bzip2.x86_64 \
-    cups-libs.x86_64 \
-    dbus-glib.x86_64 \
-    glibc-devel.x86_64 \
+    GConf2 \
+    alsa-lib \
+    at-spi2-atk \
+    atk \
+    bzip2 \
+    cups-libs \
+    dbus-glib \
+    glibc-devel \
     google-chrome-stable \
-    gtk3.x86_64 \
+    gtk3 \
     ipa-gothic-fonts \
-    libXScrnSaver.x86_64 \
-    libXcomposite.x86_64 \
-    libXcursor.x86_64 \
-    libXdamage.x86_64 \
-    libXext.x86_64 \
-    libXi.x86_64 \
-    libXrandr.x86_64 \
-    libXt.x86_64 \
-    libXtst.x86_64 \
+    libXScrnSaver \
+    libXcomposite \
+    libXcursor \
+    libXdamage \
+    libXext \
+    libXi \
+    libXrandr \
+    libXt \
+    libXtst \
     libxkbcommon \
-    mesa-libgbm.x86_64 \
-    pango.x86_64 \
+    mesa-libgbm \
+    pango \
     procps \
-    tar.x86_64 \
-    util-linux.x86_64 \
-    wget.x86_64 \
+    tar \
+    util-linux \
+    wget \
     xorg-x11-fonts-100dpi \
     xorg-x11-fonts-75dpi \
     xorg-x11-fonts-Type1 \
