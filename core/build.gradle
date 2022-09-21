@@ -44,7 +44,7 @@ dependencies {
     api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
     api "ch.qos.logback:logback-classic:1.2.11"
 
-    implementation "org.slf4j:slf4j-api:1.7.36"
+    implementation "org.slf4j:slf4j-api:2.0.2"
     implementation "org.codehaus.janino:janino:3.1.8"
     implementation "org.thymeleaf:thymeleaf:3.0.15.RELEASE"
     implementation "org.graalvm.sdk:graal-sdk:22.2.0"
