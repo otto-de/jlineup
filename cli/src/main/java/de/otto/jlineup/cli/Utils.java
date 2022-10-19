@@ -24,6 +24,7 @@ public class Utils {
                 .withUrlReplacements(firstNonNull(commandLineParameters.getUrlReplacements(), emptyMap()))
                 .withChromeParameters(firstNonNull(commandLineParameters.getChromeParameters(), emptyList()))
                 .withFirefoxParameters(firstNonNull(commandLineParameters.getFirefoxParameters(), emptyList()))
+                .withKeepExistingFiles(commandLineParameters.isKeepExisting())
                 .build();
     }
 

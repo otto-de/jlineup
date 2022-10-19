@@ -19,6 +19,7 @@ public class RunStepConfig {
     private final List<String> chromeParameters;
     private final List<String> firefoxParameters;
     private final String webDriverCachePath;
+    private final boolean keepExisting;
 
     private RunStepConfig(Builder builder) {
         reportDirectory = builder.reportDirectory;
@@ -29,6 +30,7 @@ public class RunStepConfig {
         chromeParameters = builder.chromeParameters;
         firefoxParameters = builder.firefoxParameters;
         webDriverCachePath = builder.webDriverCachePath;
+        keepExisting = builder.keepExisting;
     }
 
     public static Builder runStepConfigBuilder() {
@@ -75,6 +77,10 @@ public class RunStepConfig {
         return webDriverCachePath;
     }
 
+    public boolean isKeepExisting() {
+        return keepExisting;
+    }
+
     public static final class Builder {
         private String reportDirectory;
         private String workingDirectory;
@@ -84,6 +90,7 @@ public class RunStepConfig {
         private Map<String, String> urlReplacements = emptyMap();
         private RunStep step;
         private String webDriverCachePath;
+        private boolean keepExisting;
 
         private Builder() {
         }
@@ -143,5 +150,9 @@ public class RunStepConfig {
             return new RunStepConfig(this);
         }
 
+        public Builder withKeepExistingFiles(boolean val) {
+            keepExisting = val;
+            return this;
+        }
     }
 }

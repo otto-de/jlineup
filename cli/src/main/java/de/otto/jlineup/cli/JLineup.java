@@ -80,6 +80,9 @@ public class JLineup implements Callable<Integer> {
     @Option(names = {"--open-report", "-o"}, description = "Opens html report after the run.", order = 15)
     private boolean openReport = false;
 
+    @Option(names = {"--keep-existing", "-k"}, description = "Keep existing before screenshots after having added new urls or paths to the config.", order = 16)
+    private boolean keepExisting = false;
+
     public JLineup() {
 
     };
@@ -179,6 +182,7 @@ public class JLineup implements Callable<Integer> {
                 ", firefoxParameters=" + firefoxParameters +
                 ", urlReplacements=" + urlReplacements +
                 ", openReport=" + openReport +
+                ", keepExisting=" + keepExisting +
                 '}';
     }
 
@@ -187,12 +191,12 @@ public class JLineup implements Callable<Integer> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JLineup jLineup = (JLineup) o;
-        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements);
+        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(help, url, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport);
+        return Objects.hash(help, url, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting);
     }
 
     @Override
@@ -216,6 +220,11 @@ public class JLineup implements Callable<Integer> {
         if (printExample) {
             System.out.println(JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig()));
             return 0;
+        }
+
+        if (step != RunStep.before && isKeepExisting()) {
+            LOG.error("The --keep-existing option is only usable in combination with the 'before' step.");
+            return 1;
         }
 
         JobConfig jobConfig = null;
@@ -294,4 +303,7 @@ public class JLineup implements Callable<Integer> {
         return jobConfig;
     }
 
+    public boolean isKeepExisting() {
+        return keepExisting;
+    }
 }

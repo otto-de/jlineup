@@ -47,8 +47,8 @@ public class JLineupRunner {
         if (runStepConfig.getStep() == RunStep.before || runStepConfig.getStep() == RunStep.after_only) {
             try {
                 fileService.createWorkingDirectoryIfNotExists();
-                fileService.createOrClearReportDirectory();
-                fileService.createOrClearScreenshotsDirectory();
+                fileService.createOrClearReportDirectory(runStepConfig.isKeepExisting());
+                fileService.createOrClearScreenshotsDirectory(runStepConfig.isKeepExisting());
                 htmlReportWriter.writeNotFinishedReport(runStepConfig, jobConfig);
             } catch (IOException e) {
                 throw new RuntimeException(e);

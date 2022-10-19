@@ -50,11 +50,16 @@ public class FileService {
 
     public FileService(RunStepConfig runStepConfig, JobConfig jobConfig) {
         this.runStepConfig = runStepConfig;
-        if (runStepConfig.getStep() == RunStep.before || runStepConfig.getStep() == RunStep.after_only) {
+        if (!runStepConfig.isKeepExisting() && (runStepConfig.getStep() == RunStep.before || runStepConfig.getStep() == RunStep.after_only)) {
             this.fileTracker = FileTracker.create(jobConfig);
         } else {
             Path path = Paths.get(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory(), FILETRACKER_FILENAME);
-            this.fileTracker = JacksonWrapper.readFileTrackerFile(path.toFile());
+            FileTracker fileTrackerFromFile = JacksonWrapper.readFileTrackerFile(path.toFile());
+            if (runStepConfig.isKeepExisting()) {
+                this.fileTracker = new FileTracker(jobConfig, fileTrackerFromFile.contexts, fileTrackerFromFile.browsers);
+            } else {
+                this.fileTracker = fileTrackerFromFile;
+            }
         }
     }
 
@@ -66,8 +71,8 @@ public class FileService {
     }
 
 
-    public void createOrClearReportDirectory() throws IOException {
-        createOrClearDirectoryBelowWorkingDir(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory());
+    public void createOrClearReportDirectory(boolean keepExisting) throws IOException {
+        createOrClearDirectoryBelowWorkingDir(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory(), keepExisting);
     }
 
     @VisibleForTesting
@@ -87,15 +92,17 @@ public class FileService {
         }
     }
 
-    public void createOrClearScreenshotsDirectory() throws IOException {
-        createOrClearDirectoryBelowWorkingDir(runStepConfig.getWorkingDirectory(), runStepConfig.getScreenshotsDirectory());
+    public void createOrClearScreenshotsDirectory(boolean keepExisting) throws IOException {
+        createOrClearDirectoryBelowWorkingDir(runStepConfig.getWorkingDirectory(), runStepConfig.getScreenshotsDirectory(), keepExisting);
     }
 
-    private void createOrClearDirectoryBelowWorkingDir(String workingDirectory, String subDirectory) throws IOException {
+    private void createOrClearDirectoryBelowWorkingDir(String workingDirectory, String subDirectory, boolean keepExisting) throws IOException {
         try {
             final String subDirectoryPath = workingDirectory + FILE_SEPARATOR + subDirectory;
             createDirIfNotExists(subDirectoryPath);
-            clearDirectory(subDirectoryPath);
+            if (!keepExisting) {
+                clearDirectory(subDirectoryPath);
+            }
         } catch (IOException e) {
             throw new IOException("Could not create or open " + subDirectory + " directory.", e);
         }

@@ -39,8 +39,8 @@ public class LambdaRunner {
         final FileService fileService = new FileService(runStepConfig, jobConfig);
         try {
             fileService.createWorkingDirectoryIfNotExists();
-            fileService.createOrClearReportDirectory();
-            fileService.createOrClearScreenshotsDirectory();
+            fileService.createOrClearReportDirectory(runStepConfig.isKeepExisting());
+            fileService.createOrClearScreenshotsDirectory(runStepConfig.isKeepExisting());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

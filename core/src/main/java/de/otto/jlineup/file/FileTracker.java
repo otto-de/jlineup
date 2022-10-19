@@ -116,6 +116,10 @@ public class FileTracker {
         screenshotContextFileTracker.addScreenshot(screenshotContext, path, yPosition);
     }
 
+    public boolean isContextAlreadyThere(final ScreenshotContext screenshotContext) {
+        return contexts.get(screenshotContext.contextHash()) != null;
+    }
+
     public void setBrowserAndVersion(ScreenshotContext screenshotContext, String browserAndVersion) {
         if (browsers != null) {
             browsers.put(screenshotContext.step, browserAndVersion);
