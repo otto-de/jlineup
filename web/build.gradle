@@ -4,7 +4,7 @@ dependencies {
     implementation project(":jlineup-core")
     implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
-    implementation("de.otto.edison:edison-core:2.7.4")
+    implementation("de.otto.edison:edison-core:2.7.5")
 
     //Update hibernate validator that comes with edison-core
     implementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
