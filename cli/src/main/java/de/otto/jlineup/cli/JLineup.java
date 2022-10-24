@@ -2,7 +2,6 @@ package de.otto.jlineup.cli;
 
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
@@ -17,9 +16,12 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicStampedReference;
 
 import static de.otto.jlineup.cli.Main.NO_EXIT;
 import static de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfiguration;
@@ -80,12 +82,14 @@ public class JLineup implements Callable<Integer> {
     @Option(names = {"--open-report", "-o"}, description = "Opens html report after the run.", order = 15)
     private boolean openReport = false;
 
-    @Option(names = {"--keep-existing", "-k"}, description = "Keep existing before screenshots after having added new urls or paths to the config.", order = 16)
+    @Option(names = {"--keep-existing", "-k"}, description = "Keep existing 'before' screenshots after having added new urls or paths to the config.", order = 16)
     private boolean keepExisting = false;
 
-    public JLineup() {
+    @Option(names = {"--refresh-url"}, description = "Refresh 'before' screenshots for the given url only. Implicitly sets '--keep-existing' also.", order = 17)
+    private String refreshUrl = null;
 
-    };
+    public JLineup() {
+    }
 
     public String getWorkingDirectory() {
         return workingDirectory;
@@ -163,6 +167,27 @@ public class JLineup implements Callable<Integer> {
         return openReport;
     }
 
+    public boolean isKeepExisting() {
+        return keepExisting;
+    }
+
+    public String getRefreshUrl() {
+        return refreshUrl;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JLineup jLineup = (JLineup) o;
+        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(help, url, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl);
+    }
+
     @Override
     public String toString() {
         return "JLineup{" +
@@ -183,20 +208,8 @@ public class JLineup implements Callable<Integer> {
                 ", urlReplacements=" + urlReplacements +
                 ", openReport=" + openReport +
                 ", keepExisting=" + keepExisting +
+                ", refreshUrl='" + refreshUrl + '\'' +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JLineup jLineup = (JLineup) o;
-        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(help, url, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting);
     }
 
     @Override
@@ -222,15 +235,19 @@ public class JLineup implements Callable<Integer> {
             return 0;
         }
 
+        //If refresh url is set, keepExisting is mandatory!
+        if (getRefreshUrl() != null) {
+            keepExisting = true;
+        }
+
         if (step != RunStep.before && isKeepExisting()) {
-            LOG.error("The --keep-existing option is only usable in combination with the 'before' step.");
-            return 1;
+            LOG.warn("The --keep-existing option is only usable in combination with the 'before' step. It is ignored for step '{}'.", step);
         }
 
         JobConfig jobConfig = null;
         try {
             jobConfig = buildConfig(this);
-        } catch(IOException e) {
+        } catch (IOException e) {
             LOG.error("Error building config.", e);
             return 1;
         }
@@ -269,7 +286,7 @@ public class JLineup implements Callable<Integer> {
                 return 1;
             }
         } catch (Exception e) {
-            LOG.error(e.getMessage(),e);
+            LOG.error(e.getMessage(), e);
             de.otto.jlineup.Utils.writeInfosForCommonErrors(e.getMessage());
             return 1;
         }
@@ -303,7 +320,4 @@ public class JLineup implements Callable<Integer> {
         return jobConfig;
     }
 
-    public boolean isKeepExisting() {
-        return keepExisting;
-    }
 }

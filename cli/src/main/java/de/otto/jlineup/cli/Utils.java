@@ -25,6 +25,7 @@ public class Utils {
                 .withChromeParameters(firstNonNull(commandLineParameters.getChromeParameters(), emptyList()))
                 .withFirefoxParameters(firstNonNull(commandLineParameters.getFirefoxParameters(), emptyList()))
                 .withKeepExistingFiles(commandLineParameters.isKeepExisting())
+                .withRefreshUrl(commandLineParameters.getRefreshUrl())
                 .build();
     }
 

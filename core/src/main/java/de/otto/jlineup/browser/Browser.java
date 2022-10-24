@@ -207,13 +207,16 @@ public class Browser implements AutoCloseable {
 
     void takeScreenshots(final List<ScreenshotContext> screenshotContextList) throws Exception {
         Map<ScreenshotContext, Future<?>> screenshotResults = new HashMap<>();
+
         for (final ScreenshotContext screenshotContext : screenshotContextList) {
-
             if (runStepConfig.getStep() == RunStep.before && fileService.getFileTracker().isContextAlreadyThere(screenshotContext)) {
-                LOG.info("Skipping {} because screenshots are already there.", screenshotContext);
-                continue;
+                if (screenshotContext.url.equals(runStepConfig.getRefreshUrl())) {
+                    LOG.info("Re-shooting {} because of refresh argument.", screenshotContext.getShortDescription());
+                } else {
+                    LOG.info("Skipping {} because screenshots are already there.", screenshotContext.getShortDescription());
+                    continue;
+                }
             }
-
             final Future<?> takeScreenshotsResult = threadPool.submit(() -> {
                 //This activates the sifting appender in logback.xml to have a log in the report dir.
                 MDC.put(REPORT_LOG_NAME_KEY, screenshotContext.fullPathOfReportDir + "/" + LOGFILE_NAME);

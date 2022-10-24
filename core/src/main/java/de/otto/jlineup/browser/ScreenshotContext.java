@@ -174,6 +174,15 @@ public final class ScreenshotContext  {
                 '}';
     }
 
+    @JsonIgnore
+    public String getShortDescription() {
+        if (!deviceConfig.isSpecificMobile()) {
+            return url + " with device " + deviceConfig.deviceName + " (" + deviceConfig.width + "x" + deviceConfig.height + ")";
+        } else {
+            return url + " with device " + deviceConfig.deviceName;
+        }
+    }
+
     public static final class Builder {
         private String url;
         private String urlSubPath;

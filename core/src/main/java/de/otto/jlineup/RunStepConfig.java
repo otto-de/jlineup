@@ -20,6 +20,7 @@ public class RunStepConfig {
     private final List<String> firefoxParameters;
     private final String webDriverCachePath;
     private final boolean keepExisting;
+    private final String refreshUrl;
 
     private RunStepConfig(Builder builder) {
         reportDirectory = builder.reportDirectory;
@@ -31,6 +32,7 @@ public class RunStepConfig {
         firefoxParameters = builder.firefoxParameters;
         webDriverCachePath = builder.webDriverCachePath;
         keepExisting = builder.keepExisting;
+        refreshUrl = builder.refreshUrl;
     }
 
     public static Builder runStepConfigBuilder() {
@@ -81,6 +83,10 @@ public class RunStepConfig {
         return keepExisting;
     }
 
+    public String getRefreshUrl() {
+        return refreshUrl;
+    }
+
     public static final class Builder {
         private String reportDirectory;
         private String workingDirectory;
@@ -91,6 +97,7 @@ public class RunStepConfig {
         private RunStep step;
         private String webDriverCachePath;
         private boolean keepExisting;
+        private String refreshUrl;
 
         private Builder() {
         }
@@ -104,6 +111,8 @@ public class RunStepConfig {
             this.chromeParameters = copy.getChromeParameters();
             this.firefoxParameters = copy.getFirefoxParameters();
             this.webDriverCachePath = copy.getWebDriverCachePath();
+            this.keepExisting = copy.isKeepExisting();
+            this.refreshUrl = copy.getRefreshUrl();
         }
 
         public Builder withReportDirectory(String val) {
@@ -146,13 +155,18 @@ public class RunStepConfig {
             return this;
         }
 
-        public RunStepConfig build() {
-            return new RunStepConfig(this);
-        }
-
         public Builder withKeepExistingFiles(boolean val) {
             keepExisting = val;
             return this;
+        }
+
+        public Builder withRefreshUrl(String val) {
+            refreshUrl = val;
+            return this;
+        }
+
+        public RunStepConfig build() {
+            return new RunStepConfig(this);
         }
     }
 }

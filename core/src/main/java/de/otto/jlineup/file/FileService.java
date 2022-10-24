@@ -51,10 +51,22 @@ public class FileService {
     public FileService(RunStepConfig runStepConfig, JobConfig jobConfig) {
         this.runStepConfig = runStepConfig;
         if (!runStepConfig.isKeepExisting() && (runStepConfig.getStep() == RunStep.before || runStepConfig.getStep() == RunStep.after_only)) {
+            //Only create fresh file tracker file when step is before or after_only and --keep-existing is not used.
             this.fileTracker = FileTracker.create(jobConfig);
         } else {
+            //Step is after or --keep-existing is set, which leads to reading old file tracker file from former before step, but setting new jobConfig!
             Path path = Paths.get(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory(), FILETRACKER_FILENAME);
-            FileTracker fileTrackerFromFile = JacksonWrapper.readFileTrackerFile(path.toFile());
+            FileTracker fileTrackerFromFile;
+            try {
+                fileTrackerFromFile = JacksonWrapper.readFileTrackerFile(path.toFile());
+            } catch (Exception e) {
+                if (e.getCause() instanceof FileNotFoundException && runStepConfig.isKeepExisting()) {
+                    LOG.info("Nothing to keep although --keep-existing was specified. No former run found.");
+                    fileTrackerFromFile = FileTracker.create(jobConfig);
+                } else {
+                    throw e;
+                }
+            }
             if (runStepConfig.isKeepExisting()) {
                 this.fileTracker = new FileTracker(jobConfig, fileTrackerFromFile.contexts, fileTrackerFromFile.browsers);
             } else {
