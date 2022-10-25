@@ -91,10 +91,12 @@ public class FileTracker {
     }
 
     public ScreenshotContextFileTracker getScreenshotContextFileTracker(int hash) {
+        assert contexts != null;
         return contexts.get(hash);
     }
 
     public Map<Integer, Map<BrowserStep, String>> getScreenshotsForContext(int hash) throws IOException {
+        assert contexts != null;
         ScreenshotContextFileTracker screenshotContextFileTracker = contexts.get(hash);
         if (screenshotContextFileTracker == null) {
             throw new IOException("The files in the working directory don't fit the given config.\n" +
@@ -105,6 +107,7 @@ public class FileTracker {
     }
 
     public void addScreenshot(final ScreenshotContext screenshotContext, final String path, final int yPosition) {
+        assert contexts != null;
         ScreenshotContextFileTracker screenshotContextFileTracker = contexts.get(screenshotContext.contextHash());
         if (screenshotContextFileTracker == null) {
             ScreenshotContextFileTracker fileTrackerToPut = new ScreenshotContextFileTracker(screenshotContext);
@@ -117,6 +120,7 @@ public class FileTracker {
     }
 
     public boolean isContextAlreadyThere(final ScreenshotContext screenshotContext) {
+        assert contexts != null;
         return contexts.get(screenshotContext.contextHash()) != null;
     }
 
@@ -124,6 +128,11 @@ public class FileTracker {
         if (browsers != null) {
             browsers.put(screenshotContext.step, browserAndVersion);
         }
+    }
+
+    public void removeContext(ScreenshotContext screenshotContext) {
+        assert contexts != null;
+        contexts.remove(screenshotContext.contextHash());
     }
 
 

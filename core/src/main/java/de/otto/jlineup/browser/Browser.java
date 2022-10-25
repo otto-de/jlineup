@@ -212,6 +212,7 @@ public class Browser implements AutoCloseable {
             if (runStepConfig.getStep() == RunStep.before && fileService.getFileTracker().isContextAlreadyThere(screenshotContext)) {
                 if (screenshotContext.url.equals(runStepConfig.getRefreshUrl())) {
                     LOG.info("Re-shooting {} because of refresh argument.", screenshotContext.getShortDescription());
+                    fileService.getFileTracker().removeContext(screenshotContext);
                 } else {
                     LOG.info("Skipping {} because screenshots are already there.", screenshotContext.getShortDescription());
                     continue;
