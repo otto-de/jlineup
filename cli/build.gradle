@@ -4,7 +4,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 dependencies {
     implementation project(":jlineup-core")
     implementation "info.picocli:picocli:4.7.0"
-    annotationProcessor 'info.picocli:picocli-codegen:4.6.3'
+    annotationProcessor 'info.picocli:picocli-codegen:4.7.0'
     compileOnly "org.graalvm.nativeimage:svm:22.3.0"
 
     testImplementation "org.hamcrest:hamcrest-core:2.2"
