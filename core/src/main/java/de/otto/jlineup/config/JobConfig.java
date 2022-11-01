@@ -30,6 +30,7 @@ import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_COMMENTS;
 import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
 import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
+import static de.otto.jlineup.config.DeviceConfig.deviceConfigBuilder;
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -45,11 +46,12 @@ public final class JobConfig  {
 
     static final Browser.Type DEFAULT_BROWSER = Browser.Type.CHROME_HEADLESS;
     static final float DEFAULT_MAX_DIFF = 0;
-    static final int DEFAULT_WINDOW_WIDTH = 800;
+    public static final int DEFAULT_WINDOW_WIDTH = 800;
     public static final int DEFAULT_WINDOW_HEIGHT = 800;
     static final float DEFAULT_PIXEL_RATIO = 1.0f;
     static final float DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD = 0f;
     public static final String DEFAULT_PATH = "";
+    public static final ImmutableList<String> DEFAULT_PATHS = ImmutableList.of(DEFAULT_PATH);
     static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
     static final float DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
     static final float DEFAULT_WAIT_AFTER_SCROLL = 0;
@@ -61,6 +63,8 @@ public final class JobConfig  {
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
     static final int DEFAULT_GLOBAL_TIMEOUT = 600;
     public static final float DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT = 10.0f;
+
+    public static final HttpCheckConfig DEFAULT_HTTP_CHECK_CONFIG = new HttpCheckConfig();
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
@@ -337,13 +341,56 @@ public final class JobConfig  {
         return JacksonWrapper.deserializeConfig(br);
     }
 
+    public JobConfig insertDefaults() {
+
+        //If no urls are configured, insertDefaults can't really work, validation will fail in a later step
+        if (this.urls == null) {
+            return this;
+        }
+
+        Builder jobConfigBuilder = copyOfBuilder(this).withUrls(ImmutableMap.of());
+        this.urls.forEach((url, urlConfig) -> {
+
+            UrlConfig.Builder urlConfigBuilder = UrlConfig.copyOfBuilder(urlConfig);
+
+            //If both are not set, use default window width
+            List<Integer> windowWidths = urlConfig.windowWidths;
+            if (windowWidths == null && urlConfig.devices == null) {
+                windowWidths = ImmutableList.of(DEFAULT_WINDOW_WIDTH);
+            }
+
+            int windowHeight = this.windowHeight != null ? this.windowHeight : DEFAULT_WINDOW_HEIGHT;
+
+            final List<DeviceConfig> deviceConfigs;
+            if (urlConfig.devices == null) {
+                deviceConfigs = new ArrayList<>();
+                windowWidths.forEach(width -> deviceConfigs.add(deviceConfigBuilder().withWidth(width).withHeight(windowHeight).build()));
+            } else {
+                deviceConfigs = urlConfig.devices;
+            }
+            urlConfigBuilder.withDevices(deviceConfigs);
+            //Remove window widths because devices were generated above
+            urlConfigBuilder.withWindowWidths(null);
+
+            final List<String> paths = urlConfig.paths != null ? urlConfig.paths : DEFAULT_PATHS;
+            urlConfigBuilder.withPaths(paths);
+
+            jobConfigBuilder.addUrlConfig(url, urlConfigBuilder.build());
+        });
+
+        //Every url gets device config
+        jobConfigBuilder.withWindowHeight(null);
+
+        return jobConfigBuilder.build();
+    }
+
     public static final class Builder {
         private String name = null;
         private Map<String, UrlConfig> urls = null;
         private Browser.Type browser = DEFAULT_BROWSER;
         private float globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         private int pageLoadTimeout = DEFAULT_PAGELOAD_TIMEOUT;
-        private int windowHeight = DEFAULT_WINDOW_HEIGHT;
+        private Integer windowHeight = null;
         private int reportFormat = DEFAULT_REPORT_FORMAT;
         private int screenshotRetries = DEFAULT_SCREENSHOT_RETRIES;
         private int threads = DEFAULT_THREADS;
@@ -351,7 +398,7 @@ public final class JobConfig  {
         private boolean debug = false;
         private boolean logToFile = false;
         private boolean checkForErrorsInLog = false;
-        private HttpCheckConfig httpCheck = new HttpCheckConfig();
+        private HttpCheckConfig httpCheck = DEFAULT_HTTP_CHECK_CONFIG;
 
         private Builder() {
         }
@@ -383,7 +430,7 @@ public final class JobConfig  {
             return this;
         }
 
-        public Builder withWindowHeight(int val) {
+        public Builder withWindowHeight(Integer val) {
             windowHeight = val;
             return this;
         }

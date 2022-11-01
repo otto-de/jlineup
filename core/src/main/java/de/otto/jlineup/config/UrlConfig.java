@@ -11,12 +11,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.config.JobConfig.*;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_DIFF;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_DIFF;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
 
 @JsonDeserialize(builder = UrlConfig.Builder.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -262,7 +256,7 @@ public class UrlConfig {
 
     //@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
     public static final class Builder {
-        private List<String> paths = ImmutableList.of(DEFAULT_PATH);
+        private List<String> paths = null;
         private List<String> setupPaths = Collections.emptyList();
         private List<String> cleanupPaths = Collections.emptyList();
         private double maxDiff = DEFAULT_MAX_DIFF;
@@ -280,15 +274,15 @@ public class UrlConfig {
         private float warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
         private float waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
         private String javaScript;
-        private HttpCheckConfig httpCheck = new HttpCheckConfig();
+        private HttpCheckConfig httpCheck = DEFAULT_HTTP_CHECK_CONFIG;
         private boolean hideImages;
         private boolean ignoreAntiAliasing;
         private boolean strictColorComparison;
         private float maxColorDistance = DEFAULT_MAX_COLOR_DISTANCE;
         private Set<String> removeSelectors;
-        public Set<String> waitForSelectors;
-        public float waitForSelectorsTimeout = DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT;
-        public boolean failIfSelectorsNotFound;
+        private Set<String> waitForSelectors;
+        private float waitForSelectorsTimeout = DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT;
+        private boolean failIfSelectorsNotFound;
 
         private Builder() {
         }
@@ -450,10 +444,6 @@ public class UrlConfig {
         }
 
         public UrlConfig build() {
-            //If both are not set, use default window width
-            if (windowWidths == null && devices == null) {
-                windowWidths = ImmutableList.of(DEFAULT_WINDOW_WIDTH);
-            }
             return new UrlConfig(this);
         }
     }

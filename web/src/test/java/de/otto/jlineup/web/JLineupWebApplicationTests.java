@@ -169,6 +169,7 @@ public class JLineupWebApplicationTests {
         return jobConfigBuilder()
                 .withUrls(ImmutableMap.of("http://www.example.com",
                         UrlConfig.urlConfigBuilder().withWindowWidths(ImmutableList.of(600)).withMaxScrollHeight(100000).build()))
-                .build();
+                .build()
+                .insertDefaults();
     }
 }

@@ -69,7 +69,8 @@ public class ScreenshotsComparatorTest {
                         "http://url2", urlConfig
                 ))
                 .withWindowHeight(WINDOW_HEIGHT)
-                .build();
+                .build()
+                .insertDefaults();
 
         testee = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
     }

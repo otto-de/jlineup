@@ -105,7 +105,6 @@ public class JSONReportWriterV2Test {
                         "    }," + lineSeparator() +
                         "    \"browser\" : \"Chrome-Headless\"," + lineSeparator() +
                         "    \"page-load-timeout\" : 120," + lineSeparator() +
-                        "    \"window-height\" : 800," + lineSeparator() +
                         "    \"debug\" : false," + lineSeparator() +
                         "    \"check-for-errors-in-log\" : true," + lineSeparator() +
                         "    \"wait-after-page-load\" : 0.0," + lineSeparator() +

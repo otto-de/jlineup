@@ -1,5 +1,6 @@
 package de.otto.jlineup.browser;
 
+import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.DeviceConfig;
@@ -20,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.config.DeviceConfig.deviceConfigBuilder;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
+import static de.otto.jlineup.config.JobConfig.*;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.time.temporal.ChronoUnit.SECONDS;
 
@@ -156,35 +157,26 @@ public class BrowserUtils {
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
             final UrlConfig urlConfig = urlConfigEntry.getValue();
 
-            final List<DeviceConfig> deviceConfigs;
-            if (urlConfig.devices == null) {
-                deviceConfigs = new ArrayList<>();
-                urlConfig.windowWidths.forEach(width -> deviceConfigs.add(deviceConfigBuilder().withWidth(width).withHeight(jobConfig.windowHeight).build()));
-            } else {
-                deviceConfigs = urlConfig.devices;
-            }
-
             AtomicBoolean dontShareBrowser = new AtomicBoolean(false);
-            deviceConfigs.forEach(config -> {
+            urlConfig.devices.forEach(config -> {
                 if (config.isMobile()) {
                     dontShareBrowser.set(true);
                 }
             });
 
-            final List<String> paths = urlConfig.paths;
-            for (final String path : paths) {
+            for (final String path : urlConfig.paths) {
                 //In most cases, there are no alternatingCookies
                 //TODO: Look for a more beautiful distinction
                 if (urlConfig.alternatingCookies.isEmpty()) {
                     screenshotContextList.addAll(
-                            deviceConfigs.stream()
+                            urlConfig.devices.stream()
                                     .map(deviceConfig ->
                                             new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getKey()), path, deviceConfig,
                                                     urlConfig.cookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey()))
                                     .collect(Collectors.toList()));
                 } else {
                     screenshotContextList.addAll(
-                            deviceConfigs.stream()
+                            urlConfig.devices.stream()
                                     .flatMap(deviceConfig ->
                                             urlConfig.alternatingCookies.stream().map(alternatingCookies -> {
                                                 ArrayList<Cookie> newCookies = urlConfig.cookies != null ? new ArrayList<>(urlConfig.cookies) : new ArrayList<>();

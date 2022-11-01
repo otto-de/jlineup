@@ -3,6 +3,7 @@ package de.otto.jlineup.cli;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.BrowserUtils;
+import de.otto.jlineup.config.ConfigMerger;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.exceptions.ValidationError;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicStampedReference;
 
 import static de.otto.jlineup.cli.Main.NO_EXIT;
 import static de.otto.jlineup.cli.Utils.convertCommandLineParametersToRunConfiguration;
@@ -37,56 +37,60 @@ public class JLineup implements Callable<Integer> {
     @Option(names = {"-?", "--help"}, usageHelp = true, description = "Shows this help", order = 0)
     private boolean help = false;
 
-    @Option(names = {"--url", "-u"}, description = "If you run JLineup without config file, this is the one url that is tested with the default config.", order = 1)
+    @Option(names = {"-u", "--url"}, description = "If you run JLineup without config file, this is the one url that is tested with the default config.", order = 10)
     private String url = null;
 
-    @Option(names = {"-s", "--step"}, description = "JLineup step - 'before' just takes screenshots, 'after' takes screenshots and compares them with the 'before'-screenshots in the screenshots directory. 'compare' just compares existing screenshots, it's also included in 'after'.", order = 2)
+    @Option(names = {"-s", "--step"}, description = "JLineup step - 'before' just takes screenshots, 'after' takes screenshots and compares them with the 'before'-screenshots in the screenshots directory. 'compare' just compares existing screenshots, it's also included in 'after'.", order = 20)
     private RunStep step = RunStep.before;
 
-    @Option(names = {"--config", "-c"}, description = "JobConfig file", order = 3)
+    @Option(names = {"-c", "--config"}, description = "The job config file which contains the url(s) and the settings for the JLineup run. See https://github.com/otto-de/jlineup/blob/master/docs/CONFIGURATION.md for all configuration options.", order = 30)
     private String configFile = "lineup.json";
 
-    @Option(names = {"--working-dir", "-d"}, description = "Path to the working directory", order = 4)
+    @Option(names = {"-m", "--merge-config"}, description = "Additional config that will be merged with the given config file. Identical local values have precedence. URL keys are interpreted as regex matchers.", order = 40)
+    private String mergeConfigFile = null;
+
+    @Option(names = {"-d", "--working-dir"}, description = "Path to the working directory", order = 50)
     private String workingDirectory = ".";
 
-    @Option(names = {"--screenshot-dir", "-sd"}, description = "Screenshots directory name - relative to working directory", order = 5)
+    @Option(names = {"-sd", "--screenshot-dir"}, description = "Screenshots directory name - relative to working directory", order = 60)
     private String screenshotDirectory = "report/screenshots";
 
-    @Option(names = {"--report-dir", "-rd"}, description = "HTML report directory name - relative to working directory", order = 6)
+    @Option(names = {"-rd", "--report-dir"}, description = "HTML report directory name - relative to working directory", order = 70)
     private String reportDirectory = "report";
 
-    @Option(names = {"--print-config"}, description = "Prints the current (if found) or a default config file to standard out.", order = 7)
+    @Option(names = {"--print-config"}, description = "Prints the current (if found) or a default config file to standard out.", order = 80)
     private boolean printConfig = false;
 
-    @Option(names = {"--print-example"}, description = "Prints an example default config file to standard out. Useful as quick start.", order = 8)
+    @Option(names = {"--print-example"}, description = "Prints an example default config file to standard out. Useful as quick start.", order = 90)
     private boolean printExample = false;
 
-    @Option(names = {"--debug"}, description = "Sets the log level to DEBUG, produces verbose information about the current task.", order = 9)
+    @Option(names = {"--debug"}, description = "Sets the log level to DEBUG, produces verbose information about the current task.", order = 100)
     private boolean debug = false;
 
-    @Option(names = {"--log"}, description = "Sets the log level to DEBUG and logs to a file in the current working directory.", order = 10)
+    @Option(names = {"--log"}, description = "Sets the log level to DEBUG and logs to a file in the current working directory.", order = 110)
     private boolean logToFile = false;
 
-    @Option(names = {"--version", "-v"}, description = "Prints version information.", order = 11)
+    @Option(names = {"-v", "--version"}, description = "Prints version information.", order = 120)
     private boolean version = false;
 
-    @Option(names = {"--chrome-parameter"}, description = "Additional command line parameters for spawned chrome processes. Example: --chrome-parameter \"--use-shm=false\"", order = 12)
+    @Option(names = {"--chrome-parameter"}, description = "Additional command line parameters for spawned chrome processes. Example: --chrome-parameter \"--use-shm=false\"", order = 130)
     private List<String> chromeParameters;
 
-    @Option(names = {"--firefox-parameter"}, description = "Additional command line parameters for spawned firefox processes.", order = 13)
+    @Option(names = {"--firefox-parameter"}, description = "Additional command line parameters for spawned firefox processes.", order = 140)
     private List<String> firefoxParameters;
 
-    @Option(names = {"--replace-in-url", "-R"}, description = "The given keys are replaced with the corresponding values in all urls that are tested.", order = 14)
+    @Option(names = {"-R", "--replace-in-url"}, description = "The given keys are replaced with the corresponding values in all urls that are tested.", order = 150)
     private Map<String, String> urlReplacements = new HashMap<>();
 
-    @Option(names = {"--open-report", "-o"}, description = "Opens html report after the run.", order = 15)
+    @Option(names = {"-o", "--open-report"}, description = "Opens html report after the run.", order = 160)
     private boolean openReport = false;
 
-    @Option(names = {"--keep-existing", "-k"}, description = "Keep existing 'before' screenshots after having added new urls or paths to the config.", order = 16)
+    @Option(names = {"-k", "--keep-existing"}, description = "Keep existing 'before' screenshots after having added new urls or paths to the config.", order = 170)
     private boolean keepExisting = false;
 
-    @Option(names = {"--refresh-url"}, description = "Refresh 'before' screenshots for the given url only. Implicitly sets '--keep-existing' also.", order = 17)
+    @Option(names = {"--refresh-url"}, description = "Refresh 'before' screenshots for the given url only. Implicitly sets '--keep-existing' also.", order = 180)
     private String refreshUrl = null;
+
 
     public JLineup() {
     }
@@ -105,6 +109,10 @@ public class JLineup implements Callable<Integer> {
 
     String getConfigFile() {
         return configFile;
+    }
+
+    public String getMergeConfigFile() {
+        return mergeConfigFile;
     }
 
     public boolean isAfter() {
@@ -252,6 +260,13 @@ public class JLineup implements Callable<Integer> {
             return 1;
         }
 
+        if (getMergeConfigFile() != null) {
+            JobConfig mergeConfig = JobConfig.readConfig(workingDirectory, getMergeConfigFile());
+            jobConfig = ConfigMerger.mergeJobConfigWithMergeConfig(jobConfig, mergeConfig);
+        }
+
+        jobConfig = jobConfig.insertDefaults();
+
         if (printConfig) {
             System.out.println(JobConfig.prettyPrint(jobConfig));
             return 0;
@@ -264,6 +279,7 @@ public class JLineup implements Callable<Integer> {
         if (jobConfig.logToFile || logToFile) {
             de.otto.jlineup.Utils.logToFile(workingDirectory);
         }
+
 
         LOG.info("Running JLineup [{}] with step '{}'.\n\n", de.otto.jlineup.Utils.getVersion(), step);
 
@@ -319,5 +335,4 @@ public class JLineup implements Callable<Integer> {
         }
         return jobConfig;
     }
-
 }

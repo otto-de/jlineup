@@ -15,6 +15,10 @@ public class Utils {
         return JobConfig.readConfig(parameters.getWorkingDirectory(), parameters.getConfigFile());
     }
 
+    public static JobConfig readMergeConfig(final JLineup parameters) throws IOException {
+        return JobConfig.readConfig(parameters.getWorkingDirectory(), parameters.getMergeConfigFile());
+    }
+
     public static RunStepConfig convertCommandLineParametersToRunConfiguration(JLineup commandLineParameters) {
         return RunStepConfig.runStepConfigBuilder()
                 .withWorkingDirectory(commandLineParameters.getWorkingDirectory())

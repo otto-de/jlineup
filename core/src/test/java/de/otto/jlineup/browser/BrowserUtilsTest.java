@@ -3,10 +3,7 @@ package de.otto.jlineup.browser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.config.Cookie;
-import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.RunStep;
-import de.otto.jlineup.config.UrlConfig;
+import de.otto.jlineup.config.*;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -23,6 +20,7 @@ import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.browser.BrowserStep.before;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_WINDOW_HEIGHT;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -66,7 +64,7 @@ public class BrowserUtilsTest {
     @Test
     public void shouldGenerateScreenshotsParameters() throws IOException {
         //given
-        JobConfig jobConfig = JobConfig.readConfig(".", "src/test/resources/lineup_test.json");
+        JobConfig jobConfig = JobConfig.readConfig(".", "src/test/resources/lineup_test.json").insertDefaults();
 
         RunStepConfig runStepConfig = runStepConfigBuilder()
                 .withWorkingDirectory("some/working/dir")
@@ -77,7 +75,7 @@ public class BrowserUtilsTest {
 
         UrlConfig expectedUrlConfigForOttoDe = getExpectedUrlConfigForOttoDe();
         UrlConfig expectedUrlConfigForGoogleDe = getExpectedUrlConfigForGoogleDe();
-        int expectedHeight = jobConfig.windowHeight;
+        int expectedHeight = DEFAULT_WINDOW_HEIGHT;
 
         final List<ScreenshotContext> expectedScreenshotContextList = ImmutableList.of(
                 ScreenshotContext.of("https://www.otto.de", "/", deviceConfig(600, expectedHeight), before, expectedUrlConfigForOttoDe, expectedUrlConfigForOttoDe.cookies),
@@ -100,8 +98,8 @@ public class BrowserUtilsTest {
     @Test
     public void shouldHaveTheSameContextHashForBeforeAndAfterSteps() throws IOException {
         //given
-        JobConfig jobConfigBefore = JobConfig.readConfig(".", "src/test/resources/lineup_test_context_before.json");
-        JobConfig jobConfigAfter = JobConfig.readConfig(".", "src/test/resources/lineup_test_context_after.json");
+        JobConfig jobConfigBefore = JobConfig.readConfig(".", "src/test/resources/lineup_test_context_before.json").insertDefaults();
+        JobConfig jobConfigAfter = JobConfig.readConfig(".", "src/test/resources/lineup_test_context_after.json").insertDefaults();
 
         RunStepConfig runStepConfigBefore = runStepConfigBuilder()
                 .withStep(RunStep.before)
@@ -141,7 +139,7 @@ public class BrowserUtilsTest {
                 .withEnvMapping(ImmutableMap.of("live", "www"))
                 .withLocalStorage(ImmutableMap.of("teststorage", "{'testkey':{'value':true,'timestamp':9467812242358}}"))
                 .withSessionStorage(ImmutableMap.of("testsession", "{'testkey':{'value':true,'timestamp':9467812242358}}"))
-                .withWindowWidths(ImmutableList.of(600, 800, 1200))
+                .withDevices(ImmutableList.of(deviceConfig(600, 800), deviceConfig(800, 800), deviceConfig(1200, 800)))
                 .withMaxScrollHeight(50000)
                 .withWaitAfterPageLoad(2)
                 .withWaitAfterScroll(1)
@@ -162,7 +160,7 @@ public class BrowserUtilsTest {
                         ImmutableList.of(
                                 new Cookie("alternating", "case2", null, null, null, false, null, true))
                 ))
-                .withWindowWidths(ImmutableList.of(1200))
+                .withDevices(ImmutableList.of(deviceConfig(1200, 800)))
                 .withMaxScrollHeight(100000)
                 .build();
     }
