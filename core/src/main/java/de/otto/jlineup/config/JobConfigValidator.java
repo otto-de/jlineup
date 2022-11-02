@@ -27,8 +27,8 @@ public class JobConfigValidator {
 
         for (Map.Entry<String, UrlConfig> urlConfigEntry : jobConfig.urls.entrySet()) {
 
-            String url = urlConfigEntry.getKey();
             UrlConfig urlConfig = urlConfigEntry.getValue();
+            String url = urlConfig.url;
 
             //Check browser window widths
             for (Integer width : ( urlConfig.windowWidths != null ? urlConfig.windowWidths : urlConfig.devices.stream().map(d -> d.width).collect(Collectors.toList()))) {
@@ -54,28 +54,28 @@ public class JobConfigValidator {
             }
         }
 
-        jobConfig.urls.forEach((url, urlConfig) -> validateUrlConfig(jobConfig, url));
+        jobConfig.urls.forEach((urlKey, urlConfig) -> validateUrlConfig(jobConfig, urlKey));
     }
 
-    private static void validateUrlConfig(JobConfig jobConfig, String url) {
+    private static void validateUrlConfig(JobConfig jobConfig, String urlKey) {
 
-        UrlConfig urlConfig = jobConfig.urls.get(url);
+        UrlConfig urlConfig = jobConfig.urls.get(urlKey);
 
         if ( (urlConfig.devices != null && !urlConfig.devices.isEmpty() ) && urlConfig.windowWidths != null) {
-            throw new ValidationError("URL: " + url + "\nDon't mix 'window-widths' (aliases are 'widths' or 'resolutions') and 'devices'.");
+            throw new ValidationError("URL: " + urlKey + "\nDon't mix 'window-widths' (aliases are 'widths' or 'resolutions') and 'devices'.");
         }
 
         if (urlConfig.devices != null) {
-            urlConfig.devices.forEach(deviceConfig -> validateDeviceConfig(jobConfig, url, deviceConfig));
+            urlConfig.devices.forEach(deviceConfig -> validateDeviceConfig(jobConfig, urlKey, deviceConfig));
         }
 
     }
 
-    private static void validateDeviceConfig(JobConfig jobConfig, String url, DeviceConfig deviceConfig) {
+    private static void validateDeviceConfig(JobConfig jobConfig, String urlKey, DeviceConfig deviceConfig) {
         if (deviceConfig.isMobile()) {
             if (!deviceConfig.isGenericMobile()) { //A device name is specified
                 if (deviceConfig.userAgent != null) {
-                    throw new ValidationError("URL: " + url + "\n" + "Device: " + deviceConfig.deviceName + "\nReason: If you choose a defined device name, the user agent is chosen automatically and can't be overridden.");
+                    throw new ValidationError("URLConfig: " + urlKey + "\n" + "Device: " + deviceConfig.deviceName + "\nReason: If you choose a defined device name, the user agent is chosen automatically and can't be overridden.");
                 }
             }
             if (!jobConfig.browser.isChrome()) {

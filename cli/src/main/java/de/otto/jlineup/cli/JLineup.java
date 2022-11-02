@@ -34,7 +34,7 @@ public class JLineup implements Callable<Integer> {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
-    @Option(names = {"-?", "--help"}, usageHelp = true, description = "Shows this help", order = 0)
+    @Option(names = {"-?", "--help"}, usageHelp = true, description = "Shows this help. See https://github.com/otto-de/jlineup/blob/master/README.md for full docs.", order = 0)
     private boolean help = false;
 
     @Option(names = {"-u", "--url"}, description = "If you run JLineup without config file, this is the one url that is tested with the default config.", order = 10)
@@ -46,7 +46,7 @@ public class JLineup implements Callable<Integer> {
     @Option(names = {"-c", "--config"}, description = "The job config file which contains the url(s) and the settings for the JLineup run. See https://github.com/otto-de/jlineup/blob/master/docs/CONFIGURATION.md for all configuration options.", order = 30)
     private String configFile = "lineup.json";
 
-    @Option(names = {"-m", "--merge-config"}, description = "Additional config that will be merged with the given config file. Identical local values have precedence. URL keys are interpreted as regex matchers.", order = 40)
+    @Option(names = {"-m", "--merge-config"}, description = "(Preview Feature) Additional config that will be merged with the given config file. Identical local values have precedence. URL keys are interpreted as regex matchers.", order = 40)
     private String mergeConfigFile = null;
 
     @Option(names = {"-d", "--working-dir"}, description = "Path to the working directory", order = 50)
@@ -85,10 +85,10 @@ public class JLineup implements Callable<Integer> {
     @Option(names = {"-o", "--open-report"}, description = "Opens html report after the run.", order = 160)
     private boolean openReport = false;
 
-    @Option(names = {"-k", "--keep-existing"}, description = "Keep existing 'before' screenshots after having added new urls or paths to the config.", order = 170)
+    @Option(names = {"-k", "--keep-existing"}, description = "(Preview feature) Keep existing 'before' screenshots after having added new urls or paths to the config.", order = 170)
     private boolean keepExisting = false;
 
-    @Option(names = {"--refresh-url"}, description = "Refresh 'before' screenshots for the given url only. Implicitly sets '--keep-existing' also.", order = 180)
+    @Option(names = {"--refresh-url"}, description = "(Preview feature) Refresh 'before' screenshots for the given url only. Implicitly sets '--keep-existing' also.", order = 180)
     private String refreshUrl = null;
 
 
@@ -188,12 +188,12 @@ public class JLineup implements Callable<Integer> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JLineup jLineup = (JLineup) o;
-        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl);
+        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(mergeConfigFile, jLineup.mergeConfigFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(help, url, step, configFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl);
+        return Objects.hash(help, url, step, configFile, mergeConfigFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl);
     }
 
     @Override
@@ -203,6 +203,7 @@ public class JLineup implements Callable<Integer> {
                 ", url='" + url + '\'' +
                 ", step=" + step +
                 ", configFile='" + configFile + '\'' +
+                ", mergeConfigFile='" + mergeConfigFile + '\'' +
                 ", workingDirectory='" + workingDirectory + '\'' +
                 ", screenshotDirectory='" + screenshotDirectory + '\'' +
                 ", reportDirectory='" + reportDirectory + '\'' +

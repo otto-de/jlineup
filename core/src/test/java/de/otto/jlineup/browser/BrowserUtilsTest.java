@@ -133,6 +133,7 @@ public class BrowserUtilsTest {
     public static UrlConfig getExpectedUrlConfigForOttoDe() {
 
         return UrlConfig.urlConfigBuilder()
+                .withUrl("https://www.otto.de")
                 .withPaths(ImmutableList.of("/", "multimedia"))
                 .withMaxDiff(0.05d)
                 .withCookies(ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")))
@@ -151,6 +152,7 @@ public class BrowserUtilsTest {
     public static UrlConfig getExpectedUrlConfigForGoogleDe() {
 
         return UrlConfig.urlConfigBuilder()
+                .withUrl("http://www.google.de")
                 .withPath("/")
                 .withMaxDiff(0.05d)
                 .withCookies(ImmutableList.of(new Cookie("classic", "true")))

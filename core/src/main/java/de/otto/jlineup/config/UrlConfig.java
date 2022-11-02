@@ -17,6 +17,8 @@ import static de.otto.jlineup.config.JobConfig.*;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class UrlConfig {
 
+    public final String url;
+
     public final List<String> paths;
     public final List<String> setupPaths;
     public final List<String> cleanupPaths;
@@ -57,6 +59,7 @@ public class UrlConfig {
     public final float maxColorDistance;
 
     private UrlConfig(Builder builder) {
+        url = builder.url;
         paths = builder.paths;
         setupPaths = builder.setupPaths;
         cleanupPaths = builder.cleanupPaths;
@@ -98,6 +101,10 @@ public class UrlConfig {
      *
      *
      */
+
+    public String getUrl() {
+        return url;
+    }
 
     public List<String> getPaths() {
         return paths;
@@ -225,6 +232,7 @@ public class UrlConfig {
 
     public static Builder copyOfBuilder(UrlConfig copy) {
         Builder builder = new Builder();
+        builder.url = copy.url;
         builder.paths = copy.paths;
         builder.maxDiff = copy.maxDiff;
         builder.cookies = copy.cookies;
@@ -256,6 +264,8 @@ public class UrlConfig {
 
     //@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
     public static final class Builder {
+
+        private String url = null;
         private List<String> paths = null;
         private List<String> setupPaths = Collections.emptyList();
         private List<String> cleanupPaths = Collections.emptyList();
@@ -285,6 +295,11 @@ public class UrlConfig {
         private boolean failIfSelectorsNotFound;
 
         private Builder() {
+        }
+
+        public Builder withUrl(String val) {
+            url = val;
+            return this;
         }
 
         public Builder withPaths(List<String> val) {
@@ -451,7 +466,8 @@ public class UrlConfig {
     @Override
     public String toString() {
         return "UrlConfig{" +
-                "paths=" + paths +
+                "url='" + url + '\'' +
+                ", paths=" + paths +
                 ", setupPaths=" + setupPaths +
                 ", cleanupPaths=" + cleanupPaths +
                 ", maxDiff=" + maxDiff +
@@ -486,11 +502,11 @@ public class UrlConfig {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UrlConfig urlConfig = (UrlConfig) o;
-        return Double.compare(urlConfig.maxDiff, maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(urlConfig.waitAfterPageLoad, waitAfterPageLoad) == 0 && Float.compare(urlConfig.waitAfterScroll, waitAfterScroll) == 0 && Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 && Float.compare(urlConfig.warmupBrowserCacheTime, warmupBrowserCacheTime) == 0 && Float.compare(urlConfig.waitForFontsTime, waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(urlConfig.waitForSelectorsTimeout, waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && strictColorComparison == urlConfig.strictColorComparison && Float.compare(urlConfig.maxColorDistance, maxColorDistance) == 0 && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors);
+        return Double.compare(urlConfig.maxDiff, maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(urlConfig.waitAfterPageLoad, waitAfterPageLoad) == 0 && Float.compare(urlConfig.waitAfterScroll, waitAfterScroll) == 0 && Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 && Float.compare(urlConfig.warmupBrowserCacheTime, warmupBrowserCacheTime) == 0 && Float.compare(urlConfig.waitForFontsTime, waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(urlConfig.waitForSelectorsTimeout, waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && strictColorComparison == urlConfig.strictColorComparison && Float.compare(urlConfig.maxColorDistance, maxColorDistance) == 0 && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, strictColorComparison, maxColorDistance);
+        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, strictColorComparison, maxColorDistance);
     }
 }

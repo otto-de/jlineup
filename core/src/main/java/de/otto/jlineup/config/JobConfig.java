@@ -353,6 +353,10 @@ public final class JobConfig  {
 
             UrlConfig.Builder urlConfigBuilder = UrlConfig.copyOfBuilder(urlConfig);
 
+            if (urlConfig.url == null) {
+                urlConfigBuilder.withUrl(url);
+            }
+
             //If both are not set, use default window width
             List<Integer> windowWidths = urlConfig.windowWidths;
             if (windowWidths == null && urlConfig.devices == null) {
