@@ -149,6 +149,7 @@ public class FileService {
         String fileNamePrefix = url + DIVIDER + urlSubPath + DIVIDER;
         fileNamePrefix = fileNamePrefix.replace("://", DIVIDER);
         fileNamePrefix = fileNamePrefix.replaceAll("[^A-Za-z0-9\\-_]", DIVIDER);
+        fileNamePrefix = fileNamePrefix.replaceAll("\\.", "").replaceAll("/", "");
 
         if (fileNamePrefix.length() > MAX_URL_TO_FILENAME_LENGTH) {
             fileNamePrefix = fileNamePrefix.substring(0, MAX_URL_TO_FILENAME_LENGTH) + DIVIDER;
