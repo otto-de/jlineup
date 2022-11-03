@@ -1,6 +1,8 @@
 package de.otto.jlineup.report;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.otto.jlineup.config.DeviceConfig;
 
 import java.util.Objects;
@@ -10,7 +12,8 @@ import static de.otto.jlineup.file.FileService.FILE_SEPARATOR;
 public class ScreenshotComparisonResult {
 
     public final int contextHash;
-    public final String url;
+    @JsonProperty("url")
+    public final String fullUrlWithPath;
     public final DeviceConfig deviceConfig;
     public final int verticalScrollPosition;
     public final double difference;
@@ -19,9 +22,9 @@ public class ScreenshotComparisonResult {
     public final String differenceImageFileName;
     public final int acceptedDifferentPixels;
 
-    public ScreenshotComparisonResult(int contextHash, String url, DeviceConfig deviceConfig, int verticalScrollPosition, double difference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName, int acceptedDifferentPixels) {
+    public ScreenshotComparisonResult(int contextHash, String fullUrlWithPath, DeviceConfig deviceConfig, int verticalScrollPosition, double difference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName, int acceptedDifferentPixels) {
         this.contextHash = contextHash;
-        this.url = url;
+        this.fullUrlWithPath = fullUrlWithPath;
         this.deviceConfig = deviceConfig;
         this.verticalScrollPosition = verticalScrollPosition;
         this.difference = difference;
@@ -71,7 +74,7 @@ public class ScreenshotComparisonResult {
                 verticalScrollPosition == that.verticalScrollPosition &&
                 Double.compare(that.difference, difference) == 0 &&
                 acceptedDifferentPixels == that.acceptedDifferentPixels &&
-                Objects.equals(url, that.url) &&
+                Objects.equals(fullUrlWithPath, that.fullUrlWithPath) &&
                 Objects.equals(deviceConfig, that.deviceConfig) &&
                 Objects.equals(screenshotBeforeFileName, that.screenshotBeforeFileName) &&
                 Objects.equals(screenshotAfterFileName, that.screenshotAfterFileName) &&
@@ -80,14 +83,14 @@ public class ScreenshotComparisonResult {
 
     @Override
     public int hashCode() {
-        return Objects.hash(contextHash, url, deviceConfig, verticalScrollPosition, difference, screenshotBeforeFileName, screenshotAfterFileName, differenceImageFileName, acceptedDifferentPixels);
+        return Objects.hash(contextHash, fullUrlWithPath, deviceConfig, verticalScrollPosition, difference, screenshotBeforeFileName, screenshotAfterFileName, differenceImageFileName, acceptedDifferentPixels);
     }
 
     @Override
     public String toString() {
         return "ScreenshotComparisonResult{" +
                 "contextHash=" + contextHash +
-                ", url='" + url + '\'' +
+                ", url='" + fullUrlWithPath + '\'' +
                 ", deviceConfig=" + deviceConfig +
                 ", verticalScrollPosition=" + verticalScrollPosition +
                 ", difference=" + difference +

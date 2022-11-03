@@ -1,5 +1,6 @@
 package de.otto.jlineup.report;
 
+import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 
@@ -32,7 +33,7 @@ public class ReportGeneratorV2 {
 
             contextReports.sort(Comparator.comparing(ContextReport::getUrl).thenComparing(ContextReport::getWidth).thenComparing(ContextReport::getShownCookiesString));
 
-            UrlReportV2 urlReport = new UrlReportV2(resultForUrl.getKey(), urlSummary, contextReports);
+            UrlReportV2 urlReport = new UrlReportV2(resultForUrl.getKey(), config.urls.get(resultForUrl.getKey()).url, urlSummary, contextReports);
             urlReports.add(urlReport);
         }
 

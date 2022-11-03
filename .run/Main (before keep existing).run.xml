@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Main (compare)" type="Application" factoryName="Application">
+  <configuration default="false" name="Main (before keep existing)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="de.otto.jlineup.cli.Main" />
     <module name="jlineup.jlineup-cli.main" />
-    <option name="PROGRAM_PARAMETERS" value="--step compare -o" />
+    <option name="PROGRAM_PARAMETERS" value="--chrome-parameter=&quot;--hide-scrollbars&quot; --keep-existing" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="de.otto.jlineup.cli.*" />

@@ -609,7 +609,7 @@
     <p style="font-size: 0.6em"><a href="report_legacy.html">Click here for the legacy experience.</a></p>
 
     <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}">
-        <h3 th:text="${urlReport.url}"></h3>
+        <h3 th:text="${urlReport.urlKey}"></h3>
         <div class="urlReport" th:each="contextReport,iterationStatus : ${urlReport.contextReports}">
             <input type="checkbox" th:attr="id=${contextReport.contextHash}"/>
             <label th:attr="for=${contextReport.contextHash}">

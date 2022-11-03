@@ -54,7 +54,7 @@ public class ScreenshotsComparator {
         for (Map.Entry<String, UrlConfig> urlConfigEntry : jobConfig.urls.entrySet()) {
             List<ScreenshotComparisonResult> screenshotComparisonResults = new ArrayList<>();
             for (ScreenshotContext screenshotContext : contextList) {
-                if (!BrowserUtils.prepareDomain(runStepConfig, urlConfigEntry.getKey()).equals(screenshotContext.url)) {
+                if (!urlConfigEntry.getKey().equals(screenshotContext.urlKey)) {
                     continue;
                 }
                 String fullUrlWithPath = BrowserUtils.buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
@@ -117,7 +117,7 @@ public class ScreenshotsComparator {
                 }
             }
             screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>
-                    comparing(r -> r.url)
+                    comparing(r -> r.fullUrlWithPath)
                     .thenComparing(r -> r.deviceConfig.width)
                     .thenComparing(r -> r.deviceConfig.height)
                     .thenComparing(r -> r.deviceConfig.pixelRatio)

@@ -172,7 +172,7 @@ public class BrowserUtils {
                             urlConfig.devices.stream()
                                     .map(deviceConfig ->
                                             new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getValue().url), path, deviceConfig,
-                                                    urlConfig.cookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getValue().url))
+                                                    urlConfig.cookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfig.url))
                                     .collect(Collectors.toList()));
                 } else {
                     screenshotContextList.addAll(
@@ -182,7 +182,7 @@ public class BrowserUtils {
                                                 ArrayList<Cookie> newCookies = urlConfig.cookies != null ? new ArrayList<>(urlConfig.cookies) : new ArrayList<>();
                                                 newCookies.addAll(alternatingCookies);
                                                 return new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getValue().url), path, deviceConfig,
-                                                        newCookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getValue().url);
+                                                        newCookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfig.url);
                                             })).collect(Collectors.toList()));
                 }
             }
@@ -206,7 +206,7 @@ public class BrowserUtils {
             for (final String path : paths) {
                 //TODO: alternatingCookies
                 screenshotContextList.add(new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getValue().url), path, deviceConfigBuilder().build(),
-                        Collections.emptyList(), runStepConfig.getBrowserStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig), false, urlConfigEntry.getValue().url));
+                        Collections.emptyList(), runStepConfig.getBrowserStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig), false, urlConfigEntry.getKey()));
             }
         }
         return screenshotContextList;

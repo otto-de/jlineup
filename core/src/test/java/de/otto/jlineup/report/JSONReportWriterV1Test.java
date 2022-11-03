@@ -37,7 +37,6 @@ public class JSONReportWriterV1Test {
 
         String expectedString = "[ {" + lineSeparator() +
                 "  \"contextHash\" : 1887," + lineSeparator() +
-                "  \"url\" : \"url\"," + lineSeparator() +
                 "  \"deviceConfig\" : {" + lineSeparator() +
                 "    \"width\" : 1337," + lineSeparator() +
                 "    \"height\" : 1887," + lineSeparator() +
@@ -50,7 +49,8 @@ public class JSONReportWriterV1Test {
                 "  \"screenshotBeforeFileName\" : \"before\"," + lineSeparator() +
                 "  \"screenshotAfterFileName\" : \"after\"," + lineSeparator() +
                 "  \"differenceImageFileName\" : \"differenceImageFileName\"," + lineSeparator() +
-                "  \"acceptedDifferentPixels\" : 0" + lineSeparator() +
+                "  \"acceptedDifferentPixels\" : 0," + lineSeparator() +
+                "  \"url\" : \"url\"" + lineSeparator() +
                 "} ]";
 
         testee.writeComparisonReportAsJson(report);

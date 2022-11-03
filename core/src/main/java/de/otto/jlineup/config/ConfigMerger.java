@@ -17,56 +17,55 @@ public class ConfigMerger {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
-    public static JobConfig mergeJobConfigWithMergeConfig(JobConfig originalGlobalConfig, JobConfig mergeGlobalConfig) {
+    public static JobConfig mergeJobConfigWithMergeConfig(JobConfig mainGlobalConfig, JobConfig mergeGlobalConfig) {
 
         JobConfig.Builder mergedJobConfigBuilder = JobConfig.jobConfigBuilder();
 
         //Start with global stuff
-        mergeGlobalScopeConfigItems(originalGlobalConfig, mergeGlobalConfig, mergedJobConfigBuilder);
+        mergeGlobalScopeConfigItems(mainGlobalConfig, mergeGlobalConfig, mergedJobConfigBuilder);
 
         //Now the urls
-
-        Map<String, UrlConfig> urls = originalGlobalConfig.urls;
-        for (Map.Entry<String, UrlConfig> originalUrlConfigEntry : urls.entrySet()) {
-            UrlConfig originalUrlConfig = originalUrlConfigEntry.getValue();
+        Map<String, UrlConfig> urls = mainGlobalConfig.urls;
+        for (Map.Entry<String, UrlConfig> mainUrlConfigEntry : urls.entrySet()) {
+            UrlConfig mainUrlConfig = mainUrlConfigEntry.getValue();
             Map<String, UrlConfig> mergeUrls = mergeGlobalConfig.urls;
             for (Map.Entry<String, UrlConfig> mergeUrlConfigEntry : mergeUrls.entrySet()) {
-                if (originalUrlConfigEntry.getKey().matches(mergeUrlConfigEntry.getKey())){
-                    LOG.info("Merging merge config for '{}' into '{}'", mergeUrlConfigEntry.getKey(), originalUrlConfigEntry.getKey());
+                if (mainUrlConfigEntry.getKey().matches(mergeUrlConfigEntry.getKey())){
+                    LOG.info("Merging merge config for '{}' into '{}'", mergeUrlConfigEntry.getKey(), mainUrlConfigEntry.getKey());
                     UrlConfig mergeUrlConfig = mergeUrlConfigEntry.getValue();
                     UrlConfig.Builder urlConfigBuilder = UrlConfig.urlConfigBuilder();
-                    urlConfigBuilder.withAlternatingCookies(merge(originalUrlConfig.alternatingCookies, mergeUrlConfig.alternatingCookies));
-                    urlConfigBuilder.withCleanupPaths(merge(originalUrlConfig.cleanupPaths, mergeUrlConfig.cleanupPaths));
-                    urlConfigBuilder.withCookies(merge(originalUrlConfig.cookies, mergeUrlConfig.cookies));
-                    urlConfigBuilder.withDevices(merge(originalUrlConfig.devices, mergeUrlConfig.devices));
-                    urlConfigBuilder.withEnvMapping(merge(originalUrlConfig.envMapping, mergeUrlConfig.envMapping));
-                    urlConfigBuilder.withFailIfSelectorsNotFound(originalUrlConfig.failIfSelectorsNotFound || mergeUrlConfig.failIfSelectorsNotFound);
-                    urlConfigBuilder.withHideImages(originalUrlConfig.hideImages || mergeUrlConfig.hideImages);
-                    urlConfigBuilder.withHttpCheck(originalUrlConfig.httpCheck != DEFAULT_HTTP_CHECK_CONFIG ? originalUrlConfig.httpCheck : mergeUrlConfig.httpCheck);
-                    urlConfigBuilder.withIgnoreAntiAliasing(originalUrlConfig.ignoreAntiAliasing || mergeUrlConfig.ignoreAntiAliasing);
-                    urlConfigBuilder.withJavaScript(originalUrlConfig.javaScript == null && mergeUrlConfig.javaScript == null ? null : "" + originalUrlConfig.javaScript + "\n" + mergeUrlConfig.javaScript);
-                    urlConfigBuilder.withLocalStorage(merge(originalUrlConfig.localStorage, mergeUrlConfig.localStorage));
-                    urlConfigBuilder.withMaxColorDistance(originalUrlConfig.maxColorDistance != DEFAULT_MAX_COLOR_DISTANCE ? originalUrlConfig.maxColorDistance : mergeUrlConfig.maxColorDistance);
-                    urlConfigBuilder.withMaxDiff(originalUrlConfig.maxDiff != DEFAULT_MAX_DIFF ? originalUrlConfig.maxDiff : mergeUrlConfig.maxDiff);
-                    urlConfigBuilder.withMaxScrollHeight(originalUrlConfig.maxScrollHeight != DEFAULT_MAX_SCROLL_HEIGHT ? originalUrlConfig.maxScrollHeight : mergeUrlConfig.maxScrollHeight);
-                    urlConfigBuilder.withPaths(merge(originalUrlConfig.paths, mergeUrlConfig.paths));
-                    urlConfigBuilder.withRemoveSelectors(merge(originalUrlConfig.removeSelectors, mergeUrlConfig.removeSelectors));
-                    urlConfigBuilder.withSessionStorage(merge(originalUrlConfig.sessionStorage, mergeUrlConfig.sessionStorage));
-                    urlConfigBuilder.withSetupPaths(merge(originalUrlConfig.setupPaths, mergeUrlConfig.setupPaths));
-                    urlConfigBuilder.withStrictColorComparison(originalUrlConfig.strictColorComparison || mergeUrlConfig.strictColorComparison);
-                    urlConfigBuilder.withWaitAfterPageLoad(originalUrlConfig.waitAfterPageLoad != DEFAULT_WAIT_AFTER_PAGE_LOAD ? originalUrlConfig.waitAfterPageLoad : mergeUrlConfig.waitAfterPageLoad);
-                    urlConfigBuilder.withWaitAfterScroll(originalUrlConfig.waitAfterScroll != DEFAULT_WAIT_AFTER_SCROLL ? originalUrlConfig.waitAfterScroll : mergeUrlConfig.waitAfterScroll);
-                    urlConfigBuilder.withWaitForFontsTime(originalUrlConfig.waitForFontsTime != DEFAULT_WAIT_FOR_FONTS_TIME ? originalUrlConfig.waitForFontsTime : mergeUrlConfig.waitForFontsTime);
-                    urlConfigBuilder.withWaitForNoAnimationAfterScroll(originalUrlConfig.waitForNoAnimationAfterScroll != DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL ? originalUrlConfig.waitForNoAnimationAfterScroll : mergeUrlConfig.waitForNoAnimationAfterScroll);
-                    urlConfigBuilder.withWaitForSelectors(merge(originalUrlConfig.waitForSelectors, mergeUrlConfig.waitForSelectors));
-                    urlConfigBuilder.withWaitForSelectorsTimeout(originalUrlConfig.waitForSelectorsTimeout != DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT ? originalUrlConfig.waitForSelectorsTimeout : mergeUrlConfig.waitForSelectorsTimeout);
-                    urlConfigBuilder.withWarmupBrowserCacheTime(originalUrlConfig.warmupBrowserCacheTime != DEFAULT_WARMUP_BROWSER_CACHE_TIME ? originalUrlConfig.warmupBrowserCacheTime : mergeUrlConfig.warmupBrowserCacheTime);
-                    urlConfigBuilder.withWindowWidths(merge(originalUrlConfig.windowWidths, mergeUrlConfig.windowWidths));
+                    urlConfigBuilder.withAlternatingCookies(merge(mainUrlConfig.alternatingCookies, mergeUrlConfig.alternatingCookies));
+                    urlConfigBuilder.withCleanupPaths(merge(mainUrlConfig.cleanupPaths, mergeUrlConfig.cleanupPaths));
+                    urlConfigBuilder.withCookies(merge(mainUrlConfig.cookies, mergeUrlConfig.cookies));
+                    urlConfigBuilder.withDevices(merge(mainUrlConfig.devices, mergeUrlConfig.devices));
+                    urlConfigBuilder.withEnvMapping(merge(mainUrlConfig.envMapping, mergeUrlConfig.envMapping));
+                    urlConfigBuilder.withFailIfSelectorsNotFound(mainUrlConfig.failIfSelectorsNotFound || mergeUrlConfig.failIfSelectorsNotFound);
+                    urlConfigBuilder.withHideImages(mainUrlConfig.hideImages || mergeUrlConfig.hideImages);
+                    urlConfigBuilder.withHttpCheck(mainUrlConfig.httpCheck != DEFAULT_HTTP_CHECK_CONFIG ? mainUrlConfig.httpCheck : mergeUrlConfig.httpCheck);
+                    urlConfigBuilder.withIgnoreAntiAliasing(mainUrlConfig.ignoreAntiAliasing || mergeUrlConfig.ignoreAntiAliasing);
+                    urlConfigBuilder.withJavaScript(mainUrlConfig.javaScript == null && mergeUrlConfig.javaScript == null ? null : "" + mainUrlConfig.javaScript + "\n" + mergeUrlConfig.javaScript);
+                    urlConfigBuilder.withLocalStorage(merge(mainUrlConfig.localStorage, mergeUrlConfig.localStorage));
+                    urlConfigBuilder.withMaxColorDistance(mainUrlConfig.maxColorDistance != DEFAULT_MAX_COLOR_DISTANCE ? mainUrlConfig.maxColorDistance : mergeUrlConfig.maxColorDistance);
+                    urlConfigBuilder.withMaxDiff(mainUrlConfig.maxDiff != DEFAULT_MAX_DIFF ? mainUrlConfig.maxDiff : mergeUrlConfig.maxDiff);
+                    urlConfigBuilder.withMaxScrollHeight(mainUrlConfig.maxScrollHeight != DEFAULT_MAX_SCROLL_HEIGHT ? mainUrlConfig.maxScrollHeight : mergeUrlConfig.maxScrollHeight);
+                    urlConfigBuilder.withPaths(merge(mainUrlConfig.paths, mergeUrlConfig.paths));
+                    urlConfigBuilder.withRemoveSelectors(merge(mainUrlConfig.removeSelectors, mergeUrlConfig.removeSelectors));
+                    urlConfigBuilder.withSessionStorage(merge(mainUrlConfig.sessionStorage, mergeUrlConfig.sessionStorage));
+                    urlConfigBuilder.withSetupPaths(merge(mainUrlConfig.setupPaths, mergeUrlConfig.setupPaths));
+                    urlConfigBuilder.withStrictColorComparison(mainUrlConfig.strictColorComparison || mergeUrlConfig.strictColorComparison);
+                    urlConfigBuilder.withWaitAfterPageLoad(mainUrlConfig.waitAfterPageLoad != DEFAULT_WAIT_AFTER_PAGE_LOAD ? mainUrlConfig.waitAfterPageLoad : mergeUrlConfig.waitAfterPageLoad);
+                    urlConfigBuilder.withWaitAfterScroll(mainUrlConfig.waitAfterScroll != DEFAULT_WAIT_AFTER_SCROLL ? mainUrlConfig.waitAfterScroll : mergeUrlConfig.waitAfterScroll);
+                    urlConfigBuilder.withWaitForFontsTime(mainUrlConfig.waitForFontsTime != DEFAULT_WAIT_FOR_FONTS_TIME ? mainUrlConfig.waitForFontsTime : mergeUrlConfig.waitForFontsTime);
+                    urlConfigBuilder.withWaitForNoAnimationAfterScroll(mainUrlConfig.waitForNoAnimationAfterScroll != DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL ? mainUrlConfig.waitForNoAnimationAfterScroll : mergeUrlConfig.waitForNoAnimationAfterScroll);
+                    urlConfigBuilder.withWaitForSelectors(merge(mainUrlConfig.waitForSelectors, mergeUrlConfig.waitForSelectors));
+                    urlConfigBuilder.withWaitForSelectorsTimeout(mainUrlConfig.waitForSelectorsTimeout != DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT ? mainUrlConfig.waitForSelectorsTimeout : mergeUrlConfig.waitForSelectorsTimeout);
+                    urlConfigBuilder.withWarmupBrowserCacheTime(mainUrlConfig.warmupBrowserCacheTime != DEFAULT_WARMUP_BROWSER_CACHE_TIME ? mainUrlConfig.warmupBrowserCacheTime : mergeUrlConfig.warmupBrowserCacheTime);
+                    urlConfigBuilder.withWindowWidths(merge(mainUrlConfig.windowWidths, mergeUrlConfig.windowWidths));
 
-                    originalUrlConfig = urlConfigBuilder.build();
+                    mainUrlConfig = urlConfigBuilder.build();
                 }
             }
-            mergedJobConfigBuilder.addUrlConfig(originalUrlConfigEntry.getKey(), originalUrlConfig);
+            mergedJobConfigBuilder.addUrlConfig(mainUrlConfigEntry.getKey(), mainUrlConfig);
         }
         return mergedJobConfigBuilder.build();
     }
