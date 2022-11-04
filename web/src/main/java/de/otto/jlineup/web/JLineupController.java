@@ -46,7 +46,7 @@ public class JLineupController {
 
     @PostMapping(value = "/runs")
     public ResponseEntity<RunBeforeResponse> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) throws Exception {
-        String id = jLineupService.startBeforeRun(jobConfig).getId();
+        String id = jLineupService.startBeforeRun(jobConfig.insertDefaults()).getId();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(request.getContextPath() + "/runs/" + id));
@@ -92,8 +92,8 @@ public class JLineupController {
             }
         }
 
-        currentExampleRun.set(jLineupService.startBeforeRun(jobConfigBuilder.build()).getId());
-        return "Example run startet with 'before' step with Browser '" + jobConfigBuilder.build().browser + "'.";
+        currentExampleRun.set(jLineupService.startBeforeRun(jobConfigBuilder.build().insertDefaults()).getId());
+        return "Example run startet with 'before' step with Browser '" + jobConfigBuilder.build().insertDefaults().browser + "'.";
     }
 
     @PostMapping("/runs/{runId}")

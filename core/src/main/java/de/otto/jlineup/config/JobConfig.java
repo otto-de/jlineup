@@ -292,7 +292,7 @@ public final class JobConfig  {
     }
 
     public static JobConfig exampleConfig() {
-        return exampleConfigBuilder().build();
+        return exampleConfigBuilder().build().insertDefaults();
     }
 
     public static JobConfig.Builder exampleConfigBuilder() {
