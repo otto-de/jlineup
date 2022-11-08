@@ -22,8 +22,9 @@ dependencies {
     implementation "io.netty:netty-transport-native-epoll:${nettyVersion}"
     implementation "io.netty:netty-transport-native-kqueue:${nettyVersion}"
 
-    api("io.github.bonigarcia:webdrivermanager:5.3.0") {
+    api("io.github.bonigarcia:webdrivermanager:5.3.1") {
         exclude group: "com.github.docker-java"
+        exclude group: "org.slf4j"
     }
 
     //Update commons-codec from 1.11 which has a vulnerability
