@@ -73,7 +73,7 @@ public class JSONReportWriterV2Test {
                         "  }," + lineSeparator() +
                         "  \"config\" : {" + lineSeparator() +
                         "    \"urls\" : {" + lineSeparator() +
-                        "      \"http://www.example.com\" : {" + lineSeparator() +
+                        "      \"https://www.example.com\" : {" + lineSeparator() +
                         "        \"paths\" : [ \"/\" ]," + lineSeparator() +
                         "        \"max-diff\" : 0.0," + lineSeparator() +
                         "        \"cookies\" : [ {" + lineSeparator() +

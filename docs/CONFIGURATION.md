@@ -61,7 +61,7 @@ This basic example shows the concept of global and url settings:
       }],
       "max-scroll-height":50000
     },
-    "http://www.example.com": {
+    "https://www.example.com": {
       "paths": [
         "/",
         "somepath"
@@ -91,7 +91,7 @@ This is a full configuration with example values:
 ```json
 {
   "urls": {
-    "http://www.example.com": {
+    "https://www.example.com": {
       "setup-paths": ["/internal/do/some/setup"],
       "cleanup-paths": ["/internal/do/some/cleanup"],
       "paths": [
@@ -103,7 +103,7 @@ This is a full configuration with example values:
         {
           "name": "exampleCookieName",
           "value": "exampleValue",
-          "domain": "http://www.example.com",
+          "domain": "https://www.example.com",
           "path": "/",
           "expiry": "1970-01-01T01:00:01+0100",
           "secure": true
@@ -268,7 +268,7 @@ What are all those options about? Here are all the details.
                {
                  "name": "exampleCookieName",
                  "value": "exampleValue",
-                 "domain": "http://www.example.com",
+                 "domain": "https://www.example.com",
                  "path": "/",
                  "expiry": "1970-01-01T01:00:01+0100",
                  "secure": true

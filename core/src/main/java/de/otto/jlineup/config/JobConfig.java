@@ -299,7 +299,7 @@ public final class JobConfig  {
         return jobConfigBuilder()
                 .withName("Example")
                 .withCheckForErrorsInLog(true)
-                .withUrls(ImmutableMap.of("http://www.example.com",
+                .withUrls(ImmutableMap.of("https://www.example.com",
 
                         urlConfigBuilder()
                                 .withPaths(ImmutableList.of("/"))

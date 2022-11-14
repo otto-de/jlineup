@@ -43,7 +43,7 @@ public class ConfigMerger {
                     urlConfigBuilder.withHideImages(mainUrlConfig.hideImages || mergeUrlConfig.hideImages);
                     urlConfigBuilder.withHttpCheck(mainUrlConfig.httpCheck != DEFAULT_HTTP_CHECK_CONFIG ? mainUrlConfig.httpCheck : mergeUrlConfig.httpCheck);
                     urlConfigBuilder.withIgnoreAntiAliasing(mainUrlConfig.ignoreAntiAliasing || mergeUrlConfig.ignoreAntiAliasing);
-                    urlConfigBuilder.withJavaScript(mainUrlConfig.javaScript == null && mergeUrlConfig.javaScript == null ? null : "" + mainUrlConfig.javaScript + "\n" + mergeUrlConfig.javaScript);
+                    urlConfigBuilder.withJavaScript(mainUrlConfig.javaScript == null && mergeUrlConfig.javaScript == null ? null : "" + mainUrlConfig.javaScript + ";" + mergeUrlConfig.javaScript);
                     urlConfigBuilder.withLocalStorage(merge(mainUrlConfig.localStorage, mergeUrlConfig.localStorage));
                     urlConfigBuilder.withMaxColorDistance(mainUrlConfig.maxColorDistance != DEFAULT_MAX_COLOR_DISTANCE ? mainUrlConfig.maxColorDistance : mergeUrlConfig.maxColorDistance);
                     urlConfigBuilder.withMaxDiff(mainUrlConfig.maxDiff != DEFAULT_MAX_DIFF ? mainUrlConfig.maxDiff : mergeUrlConfig.maxDiff);
@@ -85,7 +85,7 @@ public class ConfigMerger {
         ImmutableMap.Builder<T, U> mapBuilder = ImmutableMap.<T, U>builder();
         if (two != null) mapBuilder.putAll(two);
         if (one != null) mapBuilder.putAll(one);
-        return mapBuilder.build();
+        return mapBuilder.buildKeepingLast();
     }
 
     private static void mergeGlobalScopeConfigItems(JobConfig originalConfig, JobConfig mergeConfig, Builder mergedJobConfigBuilder) {

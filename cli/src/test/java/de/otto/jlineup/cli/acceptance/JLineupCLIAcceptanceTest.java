@@ -350,7 +350,7 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldPrintConfig() {
-        exit.checkAssertionAfterwards(() -> assertThat(systemOutCaptor.toString(), containsString("http://www.example.com")));
+        exit.checkAssertionAfterwards(() -> assertThat(systemOutCaptor.toString(), containsString("https://www.example.com")));
         exit.expectSystemExitWithStatus(0);
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--print-config"});
     }

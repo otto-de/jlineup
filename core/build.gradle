@@ -50,10 +50,11 @@ dependencies {
     implementation "org.thymeleaf:thymeleaf:3.0.15.RELEASE"
     implementation "org.graalvm.sdk:graal-sdk:22.3.0"
 
-    testImplementation "junit:junit:4.13.2"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+    testCompileOnly 'junit:junit:4.13'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
     testImplementation "org.hamcrest:hamcrest-core:2.2"
     testImplementation "org.hamcrest:hamcrest-library:2.2"
-
     testImplementation "org.mockito:mockito-core:4.8.1"
     testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
         exclude group: 'junit', module: 'junit-dep'

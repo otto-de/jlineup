@@ -167,7 +167,7 @@ public class JLineupWebApplicationTests {
 
     private JobConfig createTestConfig() {
         return jobConfigBuilder()
-                .withUrls(ImmutableMap.of("http://www.example.com",
+                .withUrls(ImmutableMap.of("https://www.example.com",
                         UrlConfig.urlConfigBuilder().withWindowWidths(ImmutableList.of(600)).withMaxScrollHeight(100000).build()))
                 .build()
                 .insertDefaults();

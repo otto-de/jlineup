@@ -81,6 +81,10 @@ subprojects {
     jar {
         manifest.attributes provider: 'gradle'
     }
+
+    test {
+        useJUnitPlatform()
+    }
 }
 
 // This function converts 1.8 -> 8
