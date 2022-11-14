@@ -343,6 +343,16 @@ public class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    public void shouldRunJLineupWithMergedConfig() throws Exception {
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--merge-config", "src/test/resources/acceptance/acceptance-merge.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--merge-config", "src/test/resources/acceptance/acceptance-merge.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
+
+        assertThat(systemOutCaptor.toString(), containsString("test.html"));
+        assertThat(systemOutCaptor.toString(), containsString("logo.html"));
+        assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences: 0.0 (0 %)"));
+    }
+
+    @Test
     public void shouldRunJLineupWithTestPageThatHasAVeryLongPath() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_long_url.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_long_url.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
