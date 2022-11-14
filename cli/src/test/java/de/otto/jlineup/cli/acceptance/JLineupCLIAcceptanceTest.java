@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -110,7 +111,7 @@ public class JLineupCLIAcceptanceTest {
     @Test
     public void shouldExitWithExitStatus1IfThereIsAMalformedUrlInChrome() throws Exception {
         exit.expectSystemExitWithStatus(1);
-        exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), CoreMatchers.anyOf(containsString("ERR_NAME_RESOLUTION_FAILED"), containsString("ERR_NAME_NOT_RESOLVED"))));
+        exit.checkAssertionAfterwards(() -> assertThat(combinedOutput(), anyOf(containsString("ERR_NAME_RESOLUTION_FAILED"), containsString("ERR_NAME_NOT_RESOLVED"))));
 
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_wrong_url_chrome.lineup.json"});
     }
@@ -349,6 +350,9 @@ public class JLineupCLIAcceptanceTest {
 
         assertThat(systemOutCaptor.toString(), containsString("test.html"));
         assertThat(systemOutCaptor.toString(), containsString("logo.html"));
+        assertThat(systemOutCaptor.toString(), containsString("1234"));
+        assertThat(systemOutCaptor.toString(), containsString("5678"));
+        assertThat(systemOutCaptor.toString(), not(containsString("800")));
         assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences: 0.0 (0 %)"));
     }
 

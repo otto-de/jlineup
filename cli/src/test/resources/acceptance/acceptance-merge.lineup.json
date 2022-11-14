@@ -3,6 +3,13 @@
     ".*": {
       "paths": [
         "logo.html"
+      ],
+      "devices": [
+        {
+          "device-name": "DESKTOP",
+          "width": 1234,
+          "height": 5678
+        }
       ]
     }
   }
