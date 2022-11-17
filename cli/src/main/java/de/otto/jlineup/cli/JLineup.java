@@ -34,7 +34,7 @@ public class JLineup implements Callable<Integer> {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
-    @Option(names = {"-?", "--help"}, usageHelp = true, description = "Shows this help. See https://github.com/otto-de/jlineup/blob/master/README.md for full docs.", order = 0)
+    @Option(names = {"-?", "--help"}, usageHelp = true, description = "Shows this help. See https://github.com/otto-de/jlineup/blob/main/README.md for full docs.", order = 0)
     private boolean help = false;
 
     @Option(names = {"-u", "--url"}, description = "If you run JLineup without config file, this is the one url that is tested with the default config.", order = 10)
@@ -43,7 +43,7 @@ public class JLineup implements Callable<Integer> {
     @Option(names = {"-s", "--step"}, description = "JLineup step - 'before' just takes screenshots, 'after' takes screenshots and compares them with the 'before'-screenshots in the screenshots directory. 'compare' just compares existing screenshots, it's also included in 'after'.", order = 20)
     private RunStep step = RunStep.before;
 
-    @Option(names = {"-c", "--config"}, description = "The job config file which contains the url(s) and the settings for the JLineup run. See https://github.com/otto-de/jlineup/blob/master/docs/CONFIGURATION.md for all configuration options.", order = 30)
+    @Option(names = {"-c", "--config"}, description = "The job config file which contains the url(s) and the settings for the JLineup run. See https://github.com/otto-de/jlineup/blob/main/docs/CONFIGURATION.md for all configuration options.", order = 30)
     private String configFile = "lineup.json";
 
     @Option(names = {"-m", "--merge-config"}, description = "(Preview Feature) Additional config that will be merged with the given config file. Identical local values have precedence. URL keys are interpreted as regex matchers.", order = 40)

@@ -10,9 +10,9 @@ on:
         description: Git Ref (Optional)
         required: false
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   schedule:
     - cron: '0 9 * * *'
 

@@ -149,7 +149,7 @@ Additional to the JLineup configuration properties below, you can use all
 [Spring Boot Application Properties](https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html)
 to specify application behavior, as JLineup is a Spring Boot 2 app.
 
-Also, there are [Edison Microservice Application Properties](https://github.com/otto-de/edison-microservice/blob/master/edison-core/README.md)
+Also, there are [Edison Microservice Application Properties](https://github.com/otto-de/edison-microservice/blob/main/edison-core/README.md)
 that can be used to configure the core and populate the status page of JLineup.
 
 ---
@@ -255,4 +255,4 @@ for a list of Firefox command line options.
 
 ---
 
-[Back to Main page](https://github.com/otto-de/jlineup/blob/master/README.md)
+[Back to Main page](https://github.com/otto-de/jlineup/blob/main/README.md)
