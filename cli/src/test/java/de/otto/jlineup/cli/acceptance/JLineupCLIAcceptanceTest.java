@@ -2,13 +2,14 @@ package de.otto.jlineup.cli.acceptance;
 
 import com.google.gson.Gson;
 import de.otto.jlineup.JacksonWrapper;
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.cli.Main;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.file.FileTracker;
+import de.otto.jlineup.file.ScreenshotContextFileTracker;
 import de.otto.jlineup.report.Report;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,13 +26,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -354,6 +354,22 @@ public class JLineupCLIAcceptanceTest {
         assertThat(systemOutCaptor.toString(), containsString("5678"));
         assertThat(systemOutCaptor.toString(), not(containsString("800")));
         assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences: 0.0 (0 %)"));
+    }
+
+    @Test
+    public void shouldNotMakeScreenshotsTwiceBecauseKeepExistingIsUsed() throws Exception {
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+
+        FileTracker fileTracker = JacksonWrapper.readFileTrackerFile(new File(tempDirectory.toString() + "/report/files.json"));
+        Set<Map.Entry<Integer, ScreenshotContextFileTracker>> entries = fileTracker.getContexts().entrySet();
+        String screenshotFileName = entries.stream().findFirst().get().getValue().screenshots.values().stream().findFirst().get().get(BrowserStep.before);
+
+        FileTime lastModifiedTimeBeforeSecondRun = Files.getLastModifiedTime(Paths.get(tempDirectory.toString(), "report", "screenshots", screenshotFileName));
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before", "--keep-existing"});
+
+        FileTime lastModifiedTimeAfterSecondRun = Files.getLastModifiedTime(Paths.get(tempDirectory.toString(), "report", "screenshots", screenshotFileName));
+
+        assertThat(lastModifiedTimeAfterSecondRun, is(lastModifiedTimeBeforeSecondRun));
     }
 
     @Test

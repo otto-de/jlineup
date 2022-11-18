@@ -1,6 +1,5 @@
 package de.otto.jlineup.browser;
 
-import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.DeviceConfig;
@@ -21,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.config.DeviceConfig.deviceConfigBuilder;
-import static de.otto.jlineup.config.JobConfig.*;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.time.temporal.ChronoUnit.SECONDS;
 

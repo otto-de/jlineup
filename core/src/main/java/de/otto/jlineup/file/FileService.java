@@ -121,7 +121,7 @@ public class FileService {
     }
 
     @VisibleForTesting
-    String generateScreenshotFileName(String url, String urlSubPath, int width, int yPosition, String type) {
+    static String generateScreenshotFileName(String url, String urlSubPath, int width, int yPosition, String type) {
 
         String fileName = generateScreenshotFileNamePrefix(url, urlSubPath)
                 + String.format("%04d", width)
@@ -135,7 +135,7 @@ public class FileService {
         return fileName;
     }
 
-    private String generateScreenshotFileNamePrefix(String url, String urlSubPath) {
+    public static String generateScreenshotFileNamePrefix(String url, String urlSubPath) {
 
         @SuppressWarnings("deprecation") String hash = Hashing.sha1().hashString(url + urlSubPath, Charsets.UTF_8).toString().substring(0, 7);
 

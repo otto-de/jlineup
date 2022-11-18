@@ -101,20 +101,20 @@ public class FileServiceTest {
 
     @Test
     public void shouldGenerateFilename() throws Exception {
-        String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "multi-media#anchor?one=two&three=fo_ur", 1000, 2000, "after");
+        String outputString = generateScreenshotFileName("https://www.otto.de/", "multi-media#anchor?one=two&three=fo_ur", 1000, 2000, "after");
         assertThat(outputString, is("https_www_otto_de_multi-media_anchor_one_two_three_fo_ur_99698cd_1000_02000_after.png"));
     }
 
     @Test
     public void shouldGenerateFilenameWithAMaxLenghtOf255Bytes() throws Exception {
-        String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "multi-media#anchor?abcdefghijklmnopqrstuvwxyz=12345678901234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890", 1000, 2000, "after");
+        String outputString = generateScreenshotFileName("https://www.otto.de/", "multi-media#anchor?abcdefghijklmnopqrstuvwxyz=12345678901234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890", 1000, 2000, "after");
         assertThat(outputString.length(), Matchers.lessThan(255));
         assertThat(outputString, is("https_www_otto_de_multi-media_anchor_abcdefghijklmnopqrstuvwxyz_12345678901234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567_559e477_1000_02000_after.png"));
     }
 
     @Test
     public void shouldConvertRoot() throws Exception {
-        String outputString = testee.generateScreenshotFileName("https://www.otto.de/", "/", 1000, 2000, "before");
+        String outputString = generateScreenshotFileName("https://www.otto.de/", "/", 1000, 2000, "before");
         assertThat(outputString, is("https_www_otto_de_root_baa15be_1000_02000_before.png"));
     }
 
