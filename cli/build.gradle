@@ -10,7 +10,7 @@ dependencies {
     testImplementation "org.hamcrest:hamcrest-core:2.2"
     testImplementation "org.hamcrest:hamcrest-library:2.2"
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
-    testCompileOnly 'junit:junit:4.13'
+    testCompileOnly 'junit:junit:4.13.2'
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
 
     //runtimeOnly project(":jlineup-lambda") <- This increases cli jar size by ~ 30 MB

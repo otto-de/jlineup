@@ -16,7 +16,7 @@ dependencies {
     implementation("org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}")
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
-    testCompileOnly 'junit:junit:4.13'
+    testCompileOnly 'junit:junit:4.13.2'
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testImplementation('io.rest-assured:rest-assured:5.2.0')
