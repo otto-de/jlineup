@@ -15,7 +15,7 @@ dependencies {
     implementation("org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}")
     implementation("org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}")
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
     testCompileOnly 'junit:junit:4.13'
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
