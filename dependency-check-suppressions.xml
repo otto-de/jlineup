@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-<suppress>
-   <notes><![CDATA[
-   file name: spring-*-5.3.20.jar
+    <suppress>
+        <notes><![CDATA[
+   file name: spring-web-5.3.24.jar
    ]]></notes>
-   <packageUrl regex="true">^pkg:maven\/org\.springframework\/spring\-.*@.*$</packageUrl>
-   <cpe regex="true">^cpe:.*\/a:.*:spring_framework:.*$</cpe>
-</suppress>
+        <packageUrl regex="true">^pkg:maven/org\.springframework/spring\-web@.*$</packageUrl>
+        <vulnerabilityName>CVE-2016-1000027</vulnerabilityName>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: snakeyaml-1.30.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
+        <cpe>cpe:/a:snakeyaml_project:snakeyaml</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: aws-crt-0.19.11.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/software\.amazon\.awssdk\.crt/aws\-crt@.*$</packageUrl>
+        <cve>CVE-2022-31159</cve>
+    </suppress>
 </suppressions>
