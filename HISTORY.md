@@ -1,5 +1,14 @@
 # JLineup Release History
 
+## Release 4.7.0 - 2022-11-23
+* Feature: --keep-existing option to keep existing 'before'-screenshots when doing another 'before' run
+* Feature: --refresh-url option to refresh the 'before'-screenshots of one specific URL config entry only while keeping 
+  the others
+* Feature: --merge-config option that merges the run config with another merge config file which may include repetitive
+  options. The URL keys in the merge config file are matched by regex.
+* Feature: The URL can not only be specified as the key of an URL config, but also by using the new 'url' field instead.
+  This opens the possibility to have multiple URL configs for the same URL. URL config keys still have to be unique.
+
 ## Release 4.6.3 - 2022-08-12
 * Feature: --open-report or -o when using jlineup cli opens the HTML report after the run
 * Bugfix: CLI jar size was accidentally increased by inclusion of lambda project
@@ -71,7 +80,7 @@
 
 ## Release 4.0.0-rc3
 * Use latest Webdrivermanager
-* Fix Exception with latest Firefox
+* Fix Exception with the latest Firefox
 * Minor improvements to HTML Report
 
 ## Release 4.0.0-rc2
@@ -83,7 +92,7 @@
 * DeviceConfig option
 
 ## Release 3.0.3
-* Update of Webdrivermanager to support latest browsers
+* Update of Webdrivermanager to support the latest browsers
 * Replace GSON with Jackson, which is used anyway for the web module with Spring
 * JLineup can be build with Java 11
 * Update multiple dependencies
@@ -101,7 +110,7 @@
 
 ## Release 3.0.0-rc7
 * Revert because it didn't work: Ability to wait for images to be fully loaded before making screenshots
-* hide all images using javascript once the url configuration `hideImages` is enabled
+* hide all images using javascript once the URL configuration `hideImages` is enabled
 
 ## Release 3.0.0-rc6
 * Ability to wait for images to be fully loaded before making screenshots. 
@@ -147,7 +156,7 @@ Especially important when using progressive jpegs in page.
 * Enhancement: Animated gifs are not played in firefox.
 
 ## Release 2.2.1
-* Bugfix: Exit correctly when url is not reachable
+* Bugfix: Exit correctly when URL is not reachable
 * Experimental support for headless firefox (needs firefox nightly >55)
 
 ## Release 2.2.0
@@ -190,9 +199,9 @@ Especially important when using progressive jpegs in page.
   (https://github.com/bonigarcia/webdrivermanager/commit/29c531266c78399f3999b246da479163d734bee8)
 
 ## Release 1.4.0
-* Cache warmup is always done with the greatest horizontal resolution of an url jobConfig
+* Cache warmup is always done with the greatest horizontal resolution of an URL jobConfig
 * It's possible to specify session storage, similar to local storage
-* Increasing waiting time bug fixed (long sleep phases when using multiple threads and many paths/urls)
+* Increasing waiting time bug fixed (long sleep phases when using multiple threads and many paths/URLs)
 
 ## Release 1.3.3
 * It's possible to specify debug mode in jobConfig now ("debug":true), additionally to command line param
@@ -241,10 +250,10 @@ Especially important when using progressive jpegs in page.
 * Sanitize filenames properly
 
 ## Release 1.0.11
-* Report image links work if url contains ? and/or =
+* Report image links work if URL contains ? and/or =
 
 ## Release 1.0.10
-* Report image links work if url contains hash (#) characters
+* Report image links work if URL contains hash (#) characters
 
 ## Release 1.0.9
 * Report is interactive now
