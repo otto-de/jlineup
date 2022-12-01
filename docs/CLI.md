@@ -232,7 +232,33 @@ Additional command line parameters for spawned firefox processes.
 
 ### `--open-report, -o`
 
-This option opens the report after JLineup's run.
+This option opens the html report after JLineup's run, using the system's default browser.
+
+---
+
+### `--override-browser, -b` (Experimental feature)
+
+This option overrides the browser that is specified in the effective job config file.
+Possible Values: `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`
+
+---
+
+### `--merge-config, -m` (Experimental feature)
+
+With this option, you can specify a base config that will be merged with the job config file.
+Identical local values have precedence. URL keys in the merge config are interpreted as regex matchers.
+
+---
+
+### `--keep-existing, -k` (Experimental feature)
+
+Keep existing 'before' screenshots after having added new urls or paths to the config and doing another 'before' run.
+
+---
+
+### `--refresh-url` (Experimental feature)
+
+Refresh 'before' screenshots for the given url only. Implicitly sets `--keep-existing` also.
 
 ---
 
