@@ -61,6 +61,9 @@ public class Utils {
             thread.setUncaughtExceptionHandler((t, e) -> LOG.error("Exception", e));
             return thread;
         };
+
+        LOG.info("Using a thread pool with {} thread(s) to make screenshots.", threads);
+
         return Executors.newFixedThreadPool(threads, factory);
     }
 

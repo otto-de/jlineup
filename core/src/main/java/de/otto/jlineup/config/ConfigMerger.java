@@ -34,6 +34,7 @@ public class ConfigMerger {
                     LOG.info("Merging merge config for '{}' into '{}'", mergeUrlConfigEntry.getKey(), mainUrlConfigEntry.getKey());
                     UrlConfig mergeUrlConfig = mergeUrlConfigEntry.getValue();
                     UrlConfig.Builder urlConfigBuilder = UrlConfig.urlConfigBuilder();
+                    urlConfigBuilder.withUrl(mainUrlConfig.url);
                     urlConfigBuilder.withAlternatingCookies(merge(mainUrlConfig.alternatingCookies, mergeUrlConfig.alternatingCookies));
                     urlConfigBuilder.withCleanupPaths(merge(mainUrlConfig.cleanupPaths, mergeUrlConfig.cleanupPaths));
                     urlConfigBuilder.withCookies(merge(mainUrlConfig.cookies, mergeUrlConfig.cookies));

@@ -75,6 +75,8 @@ public class BrowserUtils {
             if (runStepConfig.getWebDriverCachePath() != null) {
                 webDriverManager.cachePath(runStepConfig.getWebDriverCachePath());
             }
+
+
             driver = webDriverManager.create();
         } else if (jobConfig.browser.isChrome()) {
             ChromeOptions options = new ChromeOptions();

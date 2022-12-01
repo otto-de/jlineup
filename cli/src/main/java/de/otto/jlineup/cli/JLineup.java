@@ -2,6 +2,7 @@ package de.otto.jlineup.cli;
 
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.ConfigMerger;
 import de.otto.jlineup.config.JobConfig;
@@ -90,6 +91,9 @@ public class JLineup implements Callable<Integer> {
 
     @Option(names = {"--refresh-url"}, description = "(Preview feature) Refresh 'before' screenshots for the given url only. Implicitly sets '--keep-existing' also.", order = 180)
     private String refreshUrl = null;
+
+    @Option(names = {"-b", "--override-browser"}, description = "(Preview feature) Override browser setting in run config.", order = 190)
+    private String browserOverride = null;
 
 
     public JLineup() {
@@ -183,17 +187,8 @@ public class JLineup implements Callable<Integer> {
         return refreshUrl;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JLineup jLineup = (JLineup) o;
-        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(mergeConfigFile, jLineup.mergeConfigFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(help, url, step, configFile, mergeConfigFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl);
+    public String getBrowserOverride() {
+        return browserOverride;
     }
 
     @Override
@@ -218,7 +213,21 @@ public class JLineup implements Callable<Integer> {
                 ", openReport=" + openReport +
                 ", keepExisting=" + keepExisting +
                 ", refreshUrl='" + refreshUrl + '\'' +
+                ", browserOverride='" + browserOverride + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JLineup jLineup = (JLineup) o;
+        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(mergeConfigFile, jLineup.mergeConfigFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl) && Objects.equals(browserOverride, jLineup.browserOverride);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(help, url, step, configFile, mergeConfigFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl, browserOverride);
     }
 
     @Override
@@ -267,6 +276,10 @@ public class JLineup implements Callable<Integer> {
         }
 
         jobConfig = jobConfig.insertDefaults();
+
+        if (browserOverride != null) {
+            jobConfig = JobConfig.copyOfBuilder(jobConfig).withBrowser(Browser.Type.forValue(browserOverride)).build();
+        }
 
         if (printConfig) {
             System.out.println(JobConfig.prettyPrint(jobConfig));

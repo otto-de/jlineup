@@ -22,7 +22,7 @@ public class JobConfigValidatorTest {
                 .addUrlConfig("someUrl", urlConfigBuilder()
                         .withWindowWidths(null)
                         .addDeviceConfig(deviceConfigBuilder()
-                                .withDeviceName("MOBILE")
+                                .withDeviceName("iPhone X")
                                 .build())
                         .build())
                 .withBrowser(Browser.Type.FIREFOX)

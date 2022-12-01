@@ -31,7 +31,7 @@ public class JobConfigValidator {
             String url = urlConfig.url;
 
             //Check browser window widths
-            for (Integer width : ( urlConfig.windowWidths != null ? urlConfig.windowWidths : urlConfig.devices.stream().map(d -> d.width).collect(Collectors.toList()))) {
+            for (Integer width : (urlConfig.windowWidths != null ? urlConfig.windowWidths : urlConfig.devices.stream().map(d -> d.width).collect(Collectors.toList()))) {
                 if (width < 10 || width > 10000) {
                     throw new ValidationError(String.format("One of the configured window widths for %s is invalid: %d. Valid values are between 10 and 10000", url, width));
                 }
@@ -61,7 +61,7 @@ public class JobConfigValidator {
 
         UrlConfig urlConfig = jobConfig.urls.get(urlKey);
 
-        if ( (urlConfig.devices != null && !urlConfig.devices.isEmpty() ) && urlConfig.windowWidths != null) {
+        if ((urlConfig.devices != null && !urlConfig.devices.isEmpty()) && urlConfig.windowWidths != null) {
             throw new ValidationError("URL: " + urlKey + "\nDon't mix 'window-widths' (aliases are 'widths' or 'resolutions') and 'devices'.");
         }
 
@@ -78,10 +78,8 @@ public class JobConfigValidator {
                     throw new ValidationError("URLConfig: " + urlKey + "\n" + "Device: " + deviceConfig.deviceName + "\nReason: If you choose a defined device name, the user agent is chosen automatically and can't be overridden.");
                 }
             }
-            if (!jobConfig.browser.isChrome()) {
-                if (deviceConfig.isMobile()) {
-                    throw new ValidationError("Mobile emulation is only supported by Chrome/Chromium. You specified " + jobConfig.browser.name() + " as browser.");
-                }
+            if (deviceConfig.isMobile() && !jobConfig.browser.isChrome() && !deviceConfig.isGenericMobile()) {
+                throw new ValidationError("Mobile emulation is only supported by Chrome/Chromium. You specified " + jobConfig.browser.name() + " as browser.");
             }
         }
     }
