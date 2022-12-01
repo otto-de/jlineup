@@ -11,6 +11,10 @@ on:
         required: false
   push:
     branches: [ main ]
+    paths-ignore:
+      - '**/README.md'
+      - '**/HISTORY.md'
+      - 'docs/**'
   pull_request:
     branches: [ main ]
   schedule:

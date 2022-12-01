@@ -6,7 +6,7 @@
   the others
 * Feature: --merge-config option that merges the run config with another merge config file which may include repetitive
   options. The URL keys in the merge config file are matched by regex.
-* Feature: The URL can not only be specified as the key of an URL config, but also by using the new 'url' field instead.
+* Feature: The URL can not only be specified as the key of an URL config, but also by using the new `url` field instead.
   This opens the possibility to have multiple URL configs for the same URL. URL config keys still have to be unique.
 
 ## Release 4.6.3 - 2022-08-12
