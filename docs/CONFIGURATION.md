@@ -745,7 +745,7 @@ Since: 4.2.0
  __This option should be used with care. Better don't use it at all. It *may* help in a flaky environment, but it's better
  to fix the flakiness then to use this option.__
  
- JLineup makes screenshots for every permutation of `url` + `path` + `window-width` + `alternating-cookies. Internally, this combination is 
+ JLineup makes screenshots for every permutation of `url` + `path` + `window-width` + `alternating-cookies`. Internally, this combination is 
  called a **screenshot context**. If you specify retries and there is any error during screenshotting one of those
  contexts, this context is retried until a maximum of specified retries is reached. 
    
