@@ -178,20 +178,28 @@ start.
 
 The given keys are replaced with the corresponding values in all urls
 that are tested.
-Syntax: --replace-in-urlkey=value
+Syntax: `--replace-in-urlkey=value`
+
+---
+
+### `--working-dir, -d`
+
+Path to the working directory
+Default: `.`
+
 
 ---
 
 ### `--report-dir, -rd`
 
-HTML report directory name - relative to working directory
+HTML report directory name - __relative__ to the working directory  (which can be changed by using the `--working-directory` option)
 * Default: `report`
 
 ---
 
 ### `--screenshot-dir, -sd`
 
-Screenshots directory name - relative to working directory
+Screenshots directory name - __relative__ to the working directory (which can be changed by using the `--working-directory` option)
 * Default: `report/screenshots`
 
 ---
@@ -206,13 +214,6 @@ tested with the default config.
 ### `--version, -v`
 
 Prints version information.
-
----
-
-### `--working-dir, -d`
-
-Path to the working directory
-Default: `.`
 
 ---
 
