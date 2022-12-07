@@ -21,4 +21,11 @@
         <packageUrl regex="true">^pkg:maven/software\.amazon\.awssdk\.crt/aws\-crt@.*$</packageUrl>
         <cve>CVE-2022-31159</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   Our apache commons packages don't include the old version with CVE-2021-37533
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/.*commons.*$</packageUrl>
+        <cve>CVE-2021-37533</cve>
+    </suppress>
 </suppressions>
