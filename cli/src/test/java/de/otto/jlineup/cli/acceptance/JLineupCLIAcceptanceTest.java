@@ -150,8 +150,11 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithSomeDevices_WithChrome() throws Exception {
-        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
+
+        System.err.println("Using " + tempDirectory.toString());
+
+        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--chrome-parameter", "--hide-scrollbars", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--chrome-parameter", "--hide-scrollbars", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_devices.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path filesJson = Paths.get(tempDirectory.toString(), "report", "files.json");
         assertThat("Filetracker file exists", Files.exists(filesJson));
@@ -160,7 +163,7 @@ public class JLineupCLIAcceptanceTest {
         assertThat(fileTracker.contexts.size(), is(3));
         fileTracker.contexts.forEach((k, v) -> {
             DeviceConfig deviceConfig = v.screenshotContext.deviceConfig;
-            String filename = v.screenshots.get(0).get(RunStep.before);
+            String filename = v.screenshots.get(0).get(BrowserStep.before);
             if (deviceConfig.deviceName.equals("iPhone X")) {
                 checkScreenshotSize(filename, 1125, 2436); //iPhone X screen size
             } else if (deviceConfig.deviceName.equals("MOBILE")) {
