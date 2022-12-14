@@ -129,7 +129,7 @@ public class Browser implements AutoCloseable {
     private final RunStepConfig runStepConfig;
     private final LogErrorChecker logErrorChecker;
 
-    /* Every thread has it's own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
+    /* Every thread has its own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
     private final ExecutorService threadPool;
     private final ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
 
