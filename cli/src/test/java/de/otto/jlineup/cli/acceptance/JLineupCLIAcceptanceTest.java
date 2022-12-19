@@ -6,7 +6,6 @@ import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.cli.Main;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.file.ScreenshotContextFileTracker;
 import de.otto.jlineup.report.Report;
