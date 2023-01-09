@@ -9,10 +9,12 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   file name: snakeyaml-1.33.jar
+   Snakeyaml is used by spring to parse application properties - see https://bitbucket.org/snakeyaml/snakeyaml/wiki/CVE-2022-1471 for details
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/org\.yaml/snakeyaml@.*$</packageUrl>
-        <vulnerabilityName>CVE-2022-1471</vulnerabilityName>
+        <cve>CVE-2022-1471</cve>
+        <cve>CVE-2021-4235</cve>
+        <cve>CVE-2022-3064</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
@@ -27,5 +29,12 @@
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/.*commons.*$</packageUrl>
         <cve>CVE-2021-37533</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+   False positive - no utils_project used in our java dependencies
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
+        <cve>CVE-2021-4277</cve>
     </suppress>
 </suppressions>
