@@ -51,7 +51,7 @@ dependencies {
     implementation "org.thymeleaf:thymeleaf:3.0.15.RELEASE"
     implementation "org.graalvm.sdk:graal-sdk:22.3.0"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
     testCompileOnly 'junit:junit:4.13.2'
     testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
     testImplementation "org.hamcrest:hamcrest-core:2.2"
