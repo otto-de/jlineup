@@ -19,7 +19,7 @@ dependencies {
     implementation 'com.amazonaws:aws-xray-recorder-sdk-core'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor'
-    implementation 'com.amazonaws:aws-java-sdk-core:1.12.372'
+    implementation 'com.amazonaws:aws-java-sdk-core:1.12.382'
     implementation 'com.amazonaws:aws-java-sdk-xray:1.12.358'
     runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.5.1'
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
