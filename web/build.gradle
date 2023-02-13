@@ -18,7 +18,7 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
     testCompileOnly 'junit:junit:4.13.2'
-    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
     testImplementation('io.rest-assured:rest-assured:5.3.0')
     testImplementation("org.awaitility:awaitility:4.2.0")
