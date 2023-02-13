@@ -117,11 +117,11 @@ public class BrowserUtils {
             }
 
             if (jobConfig.browser.isHeadless()) {
-                options.setHeadless(true);
+                options.addArguments("--headless=new");
                 options.addArguments("--window-size=" + device.width + "," + device.height);
             }
 
-            LOG.debug("Creating chrome with options: {}", options.toString());
+            LOG.debug("Creating chrome with options: {}", options);
             WebDriverManager webDriverManager = WebDriverManager.chromedriver().capabilities(options);
             if (runStepConfig.getWebDriverCachePath() != null) {
                 webDriverManager.cachePath(runStepConfig.getWebDriverCachePath());

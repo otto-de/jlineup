@@ -74,7 +74,7 @@ public class JLineupHandler implements RequestStreamHandler {
                 .withScreenshotsDirectory("jlineup-{id}".replace("{id}", id))
                 .withReportDirectory("jlineup-{id}".replace("{id}", id))
                 .withChromeParameters(ImmutableList.of(
-                        "--headless",
+                        "--headless=new",
                         "--disable-gpu",
                         "--no-sandbox",
                         "--use-spdy=off",
