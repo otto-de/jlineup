@@ -345,14 +345,14 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldNotResizeWindowWhenDoingHeadless() throws Exception {
+    public void shouldNotResizeWindowWhenDoingHeadlessFirefox() throws Exception {
         //given
         final Long viewportHeight = 500L;
         final Long pageHeight = 2000L;
 
         UrlConfig urlConfig = urlConfigBuilder().withPath("/").withWindowWidths(ImmutableList.of(600, 800)).build();
         JobConfig jobConfig = jobConfigBuilder()
-                .withBrowser(CHROME_HEADLESS)
+                .withBrowser(FIREFOX_HEADLESS)
                 .withUrls(ImmutableMap.of("testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
@@ -387,7 +387,7 @@ public class BrowserTest {
                 .withJavaScript("console.log(1);jlineup.sleep(5);console.log(2);console.log(3);jlineup.sleep(2);console.log(4);jlineup.sleep(1);")
                 .build();
         JobConfig jobConfig = jobConfigBuilder()
-                .withBrowser(CHROME_HEADLESS)
+                .withBrowser(FIREFOX_HEADLESS)
                 .withUrls(ImmutableMap.of("testurl", urlConfig))
                 .withWindowHeight(2500)
                 .build();

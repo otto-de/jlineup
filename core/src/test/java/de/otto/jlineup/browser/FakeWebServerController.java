@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Controller
-@SpringBootApplication(scanBasePackages = {"de.otto.jlineup"})
+@SpringBootApplication
 public class FakeWebServerController {
 
     @GetMapping("/200")
@@ -57,6 +57,14 @@ public class FakeWebServerController {
     public ResponseEntity<String> testAlteringCookies(@CookieValue("alternating") String alternatingCookieValue) {
         System.out.println("ACV: " + alternatingCookieValue);
         return new ResponseEntity<>("Alternating cookie value is " + alternatingCookieValue, HttpStatus.valueOf(alternatingCookieValue));
+    }
+
+    /**
+     * Returns an empty favicon to avoid 404 errors
+     */
+    @GetMapping("favicon.ico")
+    public ResponseEntity<String> favicon() {
+        return new ResponseEntity<>("", HttpStatus.OK);
     }
 
 }

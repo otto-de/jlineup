@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 4.8.0 - 2023-02-14 (Valentine's Day Edition <3)
+* Bugfix: Headless mode in Chrome 110 has changed and didn't work anymore with former JLineup implementations.
+  **Important: You need Chrome 110 or later for this release of JLineup to work accordingly**
+
 ## Release 4.7.0 - 2022-11-23
 * Feature: --keep-existing option to keep existing 'before'-screenshots when doing another 'before' run
 * Feature: --refresh-url option to refresh the 'before'-screenshots of one specific URL config entry only while keeping 

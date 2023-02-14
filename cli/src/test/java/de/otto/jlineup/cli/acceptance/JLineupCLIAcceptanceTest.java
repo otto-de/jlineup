@@ -168,7 +168,7 @@ public class JLineupCLIAcceptanceTest {
             } else if (deviceConfig.deviceName.equals("MOBILE")) {
                 checkScreenshotSize(filename, 1500, 3000);
             } else if (deviceConfig.deviceName.equals("DESKTOP")) {
-                checkScreenshotSize(filename, 2000, 2000);
+                checkScreenshotSize(filename, 1000, 1000);
             } else {
                 fail("Context should not be here");
             }
@@ -351,9 +351,9 @@ public class JLineupCLIAcceptanceTest {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--merge-config", "src/test/resources/acceptance/acceptance-merge.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         assertThat(systemOutCaptor.toString(), containsString("test.html"));
-        assertThat(systemOutCaptor.toString(), containsString("logo.html"));
-        assertThat(systemOutCaptor.toString(), containsString("1234"));
-        assertThat(systemOutCaptor.toString(), containsString("5678"));
+        assertThat(systemOutCaptor.toString(), containsString("otto_logo_2015.png"));
+        assertThat(systemOutCaptor.toString(), containsString("678"));
+        assertThat(systemOutCaptor.toString(), containsString("456"));
         assertThat(systemOutCaptor.toString(), not(containsString("800")));
         assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences: 0.0 (0 %)"));
     }

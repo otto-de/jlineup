@@ -2,13 +2,13 @@
   "urls": {
     ".*": {
       "paths": [
-        "logo.html"
+        "otto_logo_2015.png"
       ],
       "devices": [
         {
           "device-name": "DESKTOP",
-          "width": 1234,
-          "height": 5678
+          "width": 678,
+          "height": 456
         }
       ]
     }
