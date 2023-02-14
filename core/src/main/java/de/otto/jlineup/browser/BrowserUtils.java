@@ -99,6 +99,7 @@ public class BrowserUtils {
                 options.addArguments("--deterministic-mode");
                 options.addArguments("--disable-checker-imaging");
                 options.addArguments("--run-all-compositor-stages-before-draw");
+                options.addArguments("--enable-surface-synchronization");
             }
 
             if (device.isMobile()) {
