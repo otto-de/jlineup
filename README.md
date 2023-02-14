@@ -7,6 +7,12 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/otto-de/jlineup?label=GitHub&nbsp;Release)](https://github.com/otto-de/jlineup/releases)
 ![](https://snyk-widget.herokuapp.com/badge/mvn/de.otto/jlineup-cli/badge.svg)
 
+## News
+
+**2023-02-14**: **Chrome 110** replaced the "old" `--headless` parameter, that was used by JLineup. If you face problems with CHROME_HEADLESS runs,
+please update to [JLineup 4.8.1](https://github.com/otto-de/jlineup/releases/tag/v4.8.1), which uses the new `--headless=new` parameter.
+Chrome headless mode's device size specifications now include the Browser controls and the window frame, except you switch to mobile emulation.
+
 ## About
 
 JLineup is a tool which is useful for automated visual regression tests of web pages, especially in continuous delivery pipelines.
