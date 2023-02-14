@@ -5,7 +5,7 @@ buildscript {
         tomcatVersion = '9.0.71'
         seleniumVersion = '4.8.0'
         jacksonVersion = '2.14.2'
-        nettyVersion = '4.1.88.Final'
+        nettyVersion = '4.1.89.Final'
         junitJupiterVersion = '5.9.2'
     }
     repositories {
