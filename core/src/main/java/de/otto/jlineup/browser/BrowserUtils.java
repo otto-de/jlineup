@@ -96,6 +96,9 @@ public class BrowserUtils {
                 options.addArguments("--num-raster-threads=1");
                 options.addArguments("--disable-histogram-customizer");
                 options.addArguments("--disable-composited-antialiasing");
+                options.addArguments("--deterministic-mode");
+                options.addArguments("--disable-checker-imaging");
+                options.addArguments("--run-all-compositor-stages-before-draw");
             }
 
             if (device.isMobile()) {
