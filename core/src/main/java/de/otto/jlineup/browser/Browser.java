@@ -312,11 +312,11 @@ public class Browser implements AutoCloseable {
             resizeBrowser(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
 
-        // New chrome headless mode introduced with Chrome 110 includes all chrome controls that take space away from the
-        // viewport. To stay backwards compatible with old screenshot sizes, we resize the window to match the viewport
-        // size to the desired device size.
-        // If you use chrome with a specific device name, it sizes the viewport to match that device automatically.
-        if ((jobConfig.browser.isChrome() || jobConfig.browser.isChromium()) && jobConfig.browser.isHeadless() && !screenshotContext.deviceConfig.isSpecificMobile()) {
+//         New chrome headless mode introduced with Chrome 110 includes all chrome controls that take space away from the
+//         viewport. To stay backwards compatible with old screenshot sizes, we resize the window to match the viewport
+//         size to the desired device size.
+//         If you use chrome with a specific device name, it sizes the viewport to match that device automatically.
+        if ((jobConfig.browser.isChrome() || jobConfig.browser.isChromium()) && jobConfig.browser.isHeadless() && !screenshotContext.deviceConfig.isMobile()) {
             resizeViewport(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
 
@@ -456,12 +456,12 @@ public class Browser implements AutoCloseable {
         JavascriptExecutor js= (JavascriptExecutor)driver;
         String windowSize = js.executeScript("return (window.outerWidth - window.innerWidth + "+width+") + ',' + (window.outerHeight - window.innerHeight + "+height+"); ").toString();
 
-        //Get the values
-        int viewportWidth = Integer.parseInt(windowSize.split(",")[0]);
-        int viewportHeight = Integer.parseInt(windowSize.split(",")[1]);
+        int calculatedWindowWidth = Integer.parseInt(windowSize.split(",")[0]);
+        int calculatedWindowHeight = Integer.parseInt(windowSize.split(",")[1]);
 
-        //Set the window
-        driver.manage().window().setSize(new Dimension(viewportWidth, viewportHeight));
+        if (calculatedWindowWidth > 0 && calculatedWindowHeight > 0) {
+            driver.manage().window().setSize(new Dimension(calculatedWindowWidth, calculatedWindowHeight));
+        }
     }
 
     private boolean areThereCookies(ScreenshotContext screenshotContext) {

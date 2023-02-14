@@ -10,9 +10,18 @@
         },
         {
           "deviceName": "MOBILE",
+          "userAgent": "mobile1",
           "width": 600,
           "height": 1200,
           "pixelRatio": 2.5,
+          "touch": true
+        },
+        {
+          "deviceName": "MOBILE",
+          "userAgent": "mobile2",
+          "width": 320,
+          "height": 480,
+          "pixelRatio": 1,
           "touch": true
         },
         {

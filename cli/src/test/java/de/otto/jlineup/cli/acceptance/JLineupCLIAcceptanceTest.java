@@ -159,14 +159,16 @@ public class JLineupCLIAcceptanceTest {
         assertThat("Filetracker file exists", Files.exists(filesJson));
 
         FileTracker fileTracker = JacksonWrapper.readFileTrackerFile(filesJson.toFile());
-        assertThat(fileTracker.contexts.size(), is(3));
+        assertThat(fileTracker.contexts.size(), is(4));
         fileTracker.contexts.forEach((k, v) -> {
             DeviceConfig deviceConfig = v.screenshotContext.deviceConfig;
             String filename = v.screenshots.get(0).get(BrowserStep.before);
             if (deviceConfig.deviceName.equals("iPhone X")) {
                 checkScreenshotSize(filename, 1125, 2436); //iPhone X screen size
-            } else if (deviceConfig.deviceName.equals("MOBILE")) {
+            } else if ("mobile1".equals(deviceConfig.userAgent)) {
                 checkScreenshotSize(filename, 1500, 3000);
+            } else if ("mobile2".equals(deviceConfig.userAgent)) {
+                checkScreenshotSize(filename, 320, 480);
             } else if (deviceConfig.deviceName.equals("DESKTOP")) {
                 checkScreenshotSize(filename, 1000, 1000);
             } else {
