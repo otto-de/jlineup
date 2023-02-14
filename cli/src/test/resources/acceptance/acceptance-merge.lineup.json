@@ -2,7 +2,7 @@
   "urls": {
     ".*": {
       "paths": [
-        "otto_logo_2015.png"
+        "test_remove1.html"
       ],
       "devices": [
         {

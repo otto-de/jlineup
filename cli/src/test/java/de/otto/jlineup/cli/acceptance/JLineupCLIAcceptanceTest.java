@@ -351,7 +351,7 @@ public class JLineupCLIAcceptanceTest {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--merge-config", "src/test/resources/acceptance/acceptance-merge.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         assertThat(systemOutCaptor.toString(), containsString("test.html"));
-        assertThat(systemOutCaptor.toString(), containsString("otto_logo_2015.png"));
+        assertThat(systemOutCaptor.toString(), containsString("test_remove1.html"));
         assertThat(systemOutCaptor.toString(), containsString("678"));
         assertThat(systemOutCaptor.toString(), containsString("456"));
         assertThat(systemOutCaptor.toString(), not(containsString("800")));
