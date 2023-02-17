@@ -33,6 +33,7 @@
     }
   },
   "report-format" : 2,
+  "wait-after-page-load" : 1,
   "threads" : 3,
   "browser" : "chrome-headless"
 }
