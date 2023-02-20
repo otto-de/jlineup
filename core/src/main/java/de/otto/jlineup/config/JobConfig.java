@@ -61,7 +61,7 @@ public final class JobConfig  {
     static final int DEFAULT_THREADS = 0; // '0' means not set which is transformed to '1' when creating the threadpool
     static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
-    static final int DEFAULT_GLOBAL_TIMEOUT = 600;
+    static final int DEFAULT_GLOBAL_TIMEOUT = 1800;
     public static final float DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT = 10.0f;
 
     public static final HttpCheckConfig DEFAULT_HTTP_CHECK_CONFIG = new HttpCheckConfig();
