@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.browser.Browser;
+import de.otto.jlineup.config.Cookie;
+import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.utils.RegexMatcher;
@@ -26,6 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.collect.ImmutableList.of;
 import static de.otto.jlineup.config.JobConfig.copyOfBuilder;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static io.restassured.RestAssured.given;
@@ -99,6 +102,26 @@ public class JLineupWebApplicationTests {
     }
 
     @Test
+    public void shouldMakeFullJLineupRunWithMultipleThreads() {
+        JobConfig jobConfig = jobConfigBuilder().addUrlConfig("https://www.example.com",
+                        UrlConfig.urlConfigBuilder()
+                                .withDevices(of(
+                                        DeviceConfig.deviceConfig(500, 500),
+                                        DeviceConfig.deviceConfig(700, 700)))
+                                .build())
+                .withThreads(2)
+                .build();
+
+        String location = startBeforeRun(jobConfig);
+        awaitRunState(State.BEFORE_DONE, location);
+
+        String locationAfter = startAfterRun(location);
+        JLineupRunStatus finalState = awaitRunState(State.FINISHED_WITHOUT_DIFFERENCES, locationAfter);
+
+        assertReportExists(finalState);
+    }
+
+    @Test
     public void shouldFailIfBrowserIsNotConfigured() {
         JobConfig jobConfig = copyOfBuilder(createTestConfig()).withBrowser(Browser.Type.FIREFOX).build();
         expectStatusCodeForConfig(jobConfig, UNPROCESSABLE_ENTITY.value());
@@ -168,7 +191,7 @@ public class JLineupWebApplicationTests {
     private JobConfig createTestConfig() {
         return jobConfigBuilder()
                 .withUrls(ImmutableMap.of("https://www.example.com",
-                        UrlConfig.urlConfigBuilder().withWindowWidths(ImmutableList.of(600)).withMaxScrollHeight(100000).build()))
+                        UrlConfig.urlConfigBuilder().withWindowWidths(of(600)).withMaxScrollHeight(100000).build()))
                 .build()
                 .insertDefaults();
     }

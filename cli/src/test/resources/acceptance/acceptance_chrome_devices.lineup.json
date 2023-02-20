@@ -34,6 +34,6 @@
   },
   "report-format" : 2,
   "wait-after-page-load" : 1,
-  "threads" : 3,
+  "threads" : 4,
   "browser" : "chrome-headless"
 }

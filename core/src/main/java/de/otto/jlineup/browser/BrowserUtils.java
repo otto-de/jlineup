@@ -83,7 +83,12 @@ public class BrowserUtils {
             //To work in a headless env, this is needed
             options.addArguments("--no-sandbox");
             options.addArguments("--whitelisted-ips");
-            options.addArguments(runStepConfig.getChromeParameters());
+            //If there are multiple chrome drivers started with the same user profile dir, chrome will crash,
+            //so the JLineupRunnerFactory adds a {random-folder} string to the profile-dir name which is replaced
+            //with a UUID here to don't have two drivers running in the same user profile directory.
+            options.addArguments(runStepConfig.getChromeParameters().stream()
+                    .map(param -> param.replace("{random-folder}", UUID.randomUUID().toString()))
+                    .collect(Collectors.toList()));
 
             //These options my help to convince Chrome to render deterministically
             //This is important for the pixel-perfect comparison of before and after steps
