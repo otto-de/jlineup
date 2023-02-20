@@ -108,7 +108,7 @@ public class JSONReportWriterV2Test {
                         "    \"debug\" : false," + lineSeparator() +
                         "    \"check-for-errors-in-log\" : true," + lineSeparator() +
                         "    \"wait-after-page-load\" : 0.0," + lineSeparator() +
-                        "    \"timeout\" : 600" + lineSeparator() +
+                        "    \"timeout\" : 1800" + lineSeparator() +
                         "  }," + lineSeparator() +
                         "  \"flat-result-list\" : [ {" + lineSeparator() +
                         "    \"context-hash\" : 1887," + lineSeparator() +
