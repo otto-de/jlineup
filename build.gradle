@@ -28,7 +28,7 @@ plugins {
 //\
 ///\
 ////\
-def jlineup_version = "4.8.2-SNAPSHOT"
+def jlineup_version = "4.8.2"
 /////
 ////
 ///

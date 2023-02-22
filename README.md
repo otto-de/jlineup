@@ -10,7 +10,7 @@
 ## News
 
 **2023-02-14**: **Chrome 110** replaced the "old" `--headless` parameter, that was used by JLineup. If you face problems with CHROME_HEADLESS runs,
-please update to [JLineup 4.8.1](https://github.com/otto-de/jlineup/releases/tag/v4.8.1), which uses the new `--headless=new` parameter.
+please update to [JLineup 4.8.2](https://github.com/otto-de/jlineup/releases/tag/v4.8.2), which uses the new `--headless=new` parameter.
 Chrome headless mode's device size specifications now include the Browser controls and the window frame, except you switch to mobile emulation.
 
 ## About
@@ -76,7 +76,7 @@ JLineup CLI comes as executable Java Archive. Java 8 or higher has to be availab
 
 Open a terminal and download it like this:
 
-    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.8.1/jlineup-cli-4.8.1.jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.8.2/jlineup-cli-4.8.2.jar -O jlineup.jar
 
 Then type
 
@@ -95,7 +95,7 @@ Let's assume, this is part of a continuous integration pipeline:
 
 ## Browser Compatibility
 
-JLineup 4.8.1 was tested successfully with
+JLineup 4.8.2 was tested successfully with
 
 * Chrome 110.x
 * Firefox 109.x
