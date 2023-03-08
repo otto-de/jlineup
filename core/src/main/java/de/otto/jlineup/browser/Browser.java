@@ -312,10 +312,10 @@ public class Browser implements AutoCloseable {
             resizeBrowser(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
 
-//         New chrome headless mode introduced with Chrome 110 includes all chrome controls that take space away from the
-//         viewport. To stay backwards compatible with old screenshot sizes, we resize the window to match the viewport
-//         size to the desired device size.
-//         If you use chrome with a specific device name, it sizes the viewport to match that device automatically.
+        // New chrome headless mode introduced with Chrome 110 includes all chrome controls that take space away from the
+        // viewport. To stay backwards compatible with old screenshot sizes, we resize the window to match the viewport
+        // size to the desired device size.
+        // If you use chrome with a specific device name, it sizes the viewport to match that device automatically.
         if ((jobConfig.browser.isChrome() || jobConfig.browser.isChromium()) && jobConfig.browser.isHeadless() && !screenshotContext.deviceConfig.isMobile()) {
             resizeViewport(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
@@ -359,9 +359,6 @@ public class Browser implements AutoCloseable {
 
         logErrorChecker.checkForErrors(localDriver, jobConfig);
 
-        Long pageHeight = getPageHeight();
-        final int viewportHeight = Math.toIntExact(getViewportHeight());
-
         if (screenshotContext.urlConfig.waitAfterPageLoad > 0) {
             try {
                 LOG.debug(String.format("Waiting for %f seconds (wait-after-page-load)", screenshotContext.urlConfig.waitAfterPageLoad));
@@ -375,11 +372,6 @@ public class Browser implements AutoCloseable {
             LOG.debug(String.format("Waiting for %f seconds (global wait-after-page-load)", jobConfig.globalWaitAfterPageLoad));
             Thread.sleep(Math.round(jobConfig.globalWaitAfterPageLoad * 1000));
         }
-
-        LOG.debug("Page height before scrolling: {}", pageHeight);
-        LOG.debug("Viewport height of browser window: {}", viewportHeight);
-
-        scrollToTop();
 
         //Execute custom javascript if existing
         executeJavaScript(screenshotContext.urlConfig.javaScript);
@@ -395,6 +387,15 @@ public class Browser implements AutoCloseable {
             WebDriverWait wait = new WebDriverWait(getWebDriver(), Duration.ofSeconds(Math.round(Math.ceil(screenshotContext.urlConfig.waitForFontsTime))));
             wait.until(fontsLoaded);
         }
+
+        Long pageHeight = getPageHeight();
+        int viewportHeight = Math.toIntExact(getViewportHeight());
+
+        LOG.debug("Page height before scrolling: {}", pageHeight);
+        scrollToTop();
+
+        viewportHeight = validateViewportHeight(viewportHeight);
+        LOG.debug("Viewport height of browser window: {}", viewportHeight);
 
         //
         // Start with screenshots
@@ -436,6 +437,16 @@ public class Browser implements AutoCloseable {
         //fileService.writeHtml(dom, screenshotContext.step);
         fileService.writeFileTrackerData();
         fileService.writeFileTrackerDataForScreenshotContextOnly(screenshotContext);
+    }
+
+    private int validateViewportHeight(int viewportHeight) throws IOException {
+        BufferedImage bufferedImage = takeScreenshot();
+        int realHeight = bufferedImage.getHeight();
+
+        if (viewportHeight != realHeight) {
+            LOG.warn("Calculated viewport height '{}' differs from screenshot height '{}'! Using screenshot height to proceed.", viewportHeight, realHeight);
+        }
+        return realHeight;
     }
 
     private String getBrowserAndVersion(WebDriver driver) {
