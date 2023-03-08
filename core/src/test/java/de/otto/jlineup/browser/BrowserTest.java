@@ -64,7 +64,7 @@ public class BrowserTest {
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class))).thenReturn(webDriverMock);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class), any(DeviceConfig.class))).thenReturn(webDriverMock);
-        when(webDriverMock.executeScript(JS_GET_USER_AGENT)).thenReturn("Mocked Webdriver");
+        when(webDriverMock.executeScript(JS_GET_USER_AGENT_CALL)).thenReturn("Mocked Webdriver");
         when(webDriverMock.getCapabilities()).thenReturn(capabilitiesMock);
         when(capabilitiesMock.getBrowserName()).thenReturn("MockBrowser 1 2 3 4.0");
         JobConfig jobConfig = jobConfigBuilder().build();
@@ -151,7 +151,7 @@ public class BrowserTest {
     @Test
     public void shouldDoAllTheScreenshotWebdriverCalls() throws Exception {
         //given
-        final Long viewportHeight = 1000L; //Will be overridden by validateViewportHeight(), which uses the screenshot height (500) as 'truth', and should trigger a WARN message
+        final Long viewportHeight = 1000L; //Will be overridden by validateViewportHeight(), which uses the (screenshot height / device pixel ratio) (500) as 'truth', and should trigger a WARN message
         final Long pageHeight = 2000L;
 
         UrlConfig urlConfig = urlConfigBuilder()
@@ -182,7 +182,8 @@ public class BrowserTest {
         when(webDriverMock.getCurrentUrl()).thenReturn("http://testurl");
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
-        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_750x500.png")));
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_1125x750.png")));
+        when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1.5d);
         when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
         when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
 
@@ -194,7 +195,7 @@ public class BrowserTest {
         verify(webDriverWindowMock, times(1)).setSize(new Dimension(800, 100));
         verify(webDriverMock, times(2)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(2)).executeScript("testJS();");
-        verify(webDriverMock, times(2)).executeScript(String.format(JS_HIDE_IMAGES, 500));
+        verify(webDriverMock, times(2)).executeScript(String.format(JS_HIDE_IMAGES_CALL, 500));
         verify(webDriverMock, times(10)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         //Two times the cookie -> goes to url
         verify(webDriverMock, times(2)).get("http://testurl");
@@ -205,7 +206,7 @@ public class BrowserTest {
         verify(webDriverOptionsMock, times(2)).addCookie(new org.openqa.selenium.Cookie("alternating", "one"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_LOCAL_STORAGE_CALL, "localStorageKey", "localStorageValue"));
         verify(webDriverMock, times(2)).executeScript(String.format(JS_SET_SESSION_STORAGE_CALL, "sessionStorageKey", "sessionStorageValue"));
-        verify(webDriverMock, times(1)).executeScript(JS_GET_USER_AGENT);
+        verify(webDriverMock, times(1)).executeScript(JS_GET_USER_AGENT_CALL);
         verify(webDriverMock, times(3)).executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL);
         verify(webDriverMock, times(3)).executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL);
         //TODO: re-enable if dom save feature comes back
@@ -254,6 +255,7 @@ public class BrowserTest {
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_750x500.png")));
+        when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1d);
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext));
@@ -312,6 +314,7 @@ public class BrowserTest {
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_750x500.png")));
+        when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1d);
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext));
@@ -362,8 +365,7 @@ public class BrowserTest {
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_750x500.png")));
-        //when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_SIZE_CALL)).thenReturn(3L);
-        //when(webDriverMock.executeScript(JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL)).thenReturn(false).thenReturn(true);
+        when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1d);
 
         //when
         testee.takeScreenshots(ImmutableList.of(screenshotContext, screenshotContext2));
@@ -395,6 +397,7 @@ public class BrowserTest {
 
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(pageHeight);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(viewportHeight);
+        when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1d);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_750x500.png")));
 
         //when
