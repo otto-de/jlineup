@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 4.8.3-SNAPSHOT
+* Bugfix: Add '--remote-allow-origins=*' to Chrome options to fix issues with Chrome 111 and the webdriver connection
+* Bugfix: Use screenshot height as truth for viewport height and print out a warning if it differs from the viewport
+  height that is calculated via javascript. This should help us to overcome strange scrolling issues with Chrome 110+.
+
+
 ## Release 4.8.2 - 2023-02-22
 * Bugfix: Chrome 110 crashed when specifying a `--user-data-dir` and using multiple threads. This was fixed by adding
   random child folders if you specify a user data directory in the web version. If you run the CLI version and you want
