@@ -37,4 +37,11 @@
         <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
         <cve>CVE-2021-4277</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   We don't use Guava's temp file creation
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
+        <cve>CVE-2020-8908</cve>
+    </suppress>
 </suppressions>
