@@ -586,7 +586,7 @@ public class Browser implements AutoCloseable {
     private Double getDevicePixelRatio() {
         LOG.debug("Getting device pixel ratio.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
-        return (Double) (jse.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL));
+        return ((Number)jse.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).doubleValue();
     }
 
     private String getDom() {
