@@ -354,9 +354,8 @@ public class JLineupCLIAcceptanceTest {
 
         assertThat(systemOutCaptor.toString(), containsString("test.html"));
         assertThat(systemOutCaptor.toString(), containsString("test_remove1.html"));
-        assertThat(systemOutCaptor.toString(), containsString("678"));
-        assertThat(systemOutCaptor.toString(), containsString("456"));
-        assertThat(systemOutCaptor.toString(), not(containsString("800")));
+        assertThat(systemOutCaptor.toString(), containsString("678x456"));
+        assertThat(systemOutCaptor.toString(), not(containsString("800x800")));
         assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences: 0.0 (0 %)"));
     }
 

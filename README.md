@@ -9,8 +9,12 @@
 
 ## News
 
+**2023-03-09**: **Chrome 111** requires a new parameter to fix the connection with the current Selenium version built
+into JLineup. This was added in [JLineup 4.8.3](https://github.com/otto-de/jlineup/releases/tag/v4.8.3). Background
+information may be found in this [thread](https://groups.google.com/g/chromedriver-users/c/xL5-13_qGaA/m/oTA9W3cQAgAJ).
+
 **2023-02-14**: **Chrome 110** replaced the "old" `--headless` parameter, that was used by JLineup. If you face problems with CHROME_HEADLESS runs,
-please update to [JLineup 4.8.2](https://github.com/otto-de/jlineup/releases/tag/v4.8.2), which uses the new `--headless=new` parameter.
+please update to [JLineup 4.8.3](https://github.com/otto-de/jlineup/releases/tag/v4.8.3), which uses the new `--headless=new` parameter.
 Chrome headless mode's device size specifications now include the Browser controls and the window frame, except you switch to mobile emulation.
 
 ## About
@@ -23,7 +27,7 @@ It does a pixel by pixel comparison of both runs and generates a HTML and a JSON
 Behind the scenes, it uses Selenium and a browser of choice (currently Chrome, Chromium and Firefox are supported).
 
 JLineup has no other dependencies than web browser (Firefox or Chrome/Chromium) and a JVM.
-*Experimental*: There's also a self contained Linux AMD64 build of the CLI version that doesn't even require a JVM.
+*Experimental*: There's also a self-contained Linux AMD64 build of the CLI version that doesn't even require a JVM.
 
 ## Example
 
@@ -76,7 +80,7 @@ JLineup CLI comes as executable Java Archive. Java 8 or higher has to be availab
 
 Open a terminal and download it like this:
 
-    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.8.2/jlineup-cli-4.8.2.jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.8.3/jlineup-cli-4.8.3.jar -O jlineup.jar
 
 Then type
 
@@ -95,10 +99,10 @@ Let's assume, this is part of a continuous integration pipeline:
 
 ## Browser Compatibility
 
-JLineup 4.8.2 was tested successfully with
+JLineup 4.8.3 was tested successfully with
 
-* Chrome 110.x
-* Firefox 109.x
+* Chrome 111.x
+* Firefox 110.x
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
 
