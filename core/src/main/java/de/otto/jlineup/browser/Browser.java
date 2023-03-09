@@ -106,7 +106,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    static final String JS_HIDE_IMAGES = "document.querySelectorAll(\"img\").forEach(img => img.style.visibility=\"hidden\");";
+    static final String JS_HIDE_IMAGES_CALL = "document.querySelectorAll(\"img\").forEach(img => img.style.visibility=\"hidden\");";
     static final String JS_DOCUMENT_HEIGHT_CALL = "return Math.max( document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight );";
 
     static final String JS_CLIENT_VIEWPORT_HEIGHT_CALL = "return window.innerHeight";
@@ -116,12 +116,14 @@ public class Browser implements AutoCloseable {
     static final String JS_SCROLL_TO_TOP_CALL = "window.scrollTo(0, 0);";
     static final String JS_RETURN_DOCUMENT_FONTS_SIZE_CALL = "return document.fonts.size;";
     static final String JS_RETURN_DOCUMENT_FONTS_STATUS_LOADED_CALL = "return document.fonts.status === 'loaded';";
-    static final String JS_GET_USER_AGENT = "return navigator.userAgent;";
+    static final String JS_GET_USER_AGENT_CALL = "return navigator.userAgent;";
 
-    static final String JS_GET_DOM = "return document.getElementsByTagName('body')[0].innerHTML;";
+    static final String JS_GET_DOM_CALL = "return document.getElementsByTagName('body')[0].innerHTML;";
 
     static final String JS_REMOVE_FROM_DOM_CALL = "document.querySelectorAll('%s').forEach(el => el.remove());";
     static final String JS_CHECK_FOR_ELEMENT_CALL = "return document.querySelector('%s') !== null;";
+
+    static final String JS_GET_DEVICE_PIXEL_RATIO_CALL = "return window.devicePixelRatio;";
 
     private final JobConfig jobConfig;
     private final FileService fileService;
@@ -312,10 +314,10 @@ public class Browser implements AutoCloseable {
             resizeBrowser(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
 
-//         New chrome headless mode introduced with Chrome 110 includes all chrome controls that take space away from the
-//         viewport. To stay backwards compatible with old screenshot sizes, we resize the window to match the viewport
-//         size to the desired device size.
-//         If you use chrome with a specific device name, it sizes the viewport to match that device automatically.
+        // New chrome headless mode introduced with Chrome 110 includes all chrome controls that take space away from the
+        // viewport. To stay backwards compatible with old screenshot sizes, we resize the window to match the viewport
+        // size to the desired device size.
+        // If you use chrome with a specific device name, it sizes the viewport to match that device automatically.
         if ((jobConfig.browser.isChrome() || jobConfig.browser.isChromium()) && jobConfig.browser.isHeadless() && !screenshotContext.deviceConfig.isMobile()) {
             resizeViewport(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
@@ -359,9 +361,6 @@ public class Browser implements AutoCloseable {
 
         logErrorChecker.checkForErrors(localDriver, jobConfig);
 
-        Long pageHeight = getPageHeight();
-        final int viewportHeight = Math.toIntExact(getViewportHeight());
-
         if (screenshotContext.urlConfig.waitAfterPageLoad > 0) {
             try {
                 LOG.debug(String.format("Waiting for %f seconds (wait-after-page-load)", screenshotContext.urlConfig.waitAfterPageLoad));
@@ -376,16 +375,11 @@ public class Browser implements AutoCloseable {
             Thread.sleep(Math.round(jobConfig.globalWaitAfterPageLoad * 1000));
         }
 
-        LOG.debug("Page height before scrolling: {}", pageHeight);
-        LOG.debug("Viewport height of browser window: {}", viewportHeight);
-
-        scrollToTop();
-
         //Execute custom javascript if existing
         executeJavaScript(screenshotContext.urlConfig.javaScript);
 
         if (screenshotContext.urlConfig.hideImages) {
-            executeJavaScript(JS_HIDE_IMAGES);
+            executeJavaScript(JS_HIDE_IMAGES_CALL);
         }
 
         removeNodes(screenshotContext);
@@ -395,6 +389,15 @@ public class Browser implements AutoCloseable {
             WebDriverWait wait = new WebDriverWait(getWebDriver(), Duration.ofSeconds(Math.round(Math.ceil(screenshotContext.urlConfig.waitForFontsTime))));
             wait.until(fontsLoaded);
         }
+
+        Long pageHeight = getPageHeight();
+        int viewportHeight = Math.toIntExact(getViewportHeight());
+
+        LOG.debug("Page height before scrolling: {}", pageHeight);
+        scrollToTop();
+
+        viewportHeight = validateViewportHeight(viewportHeight);
+        LOG.debug("Viewport height of browser window: {}", viewportHeight);
 
         //
         // Start with screenshots
@@ -436,6 +439,16 @@ public class Browser implements AutoCloseable {
         //fileService.writeHtml(dom, screenshotContext.step);
         fileService.writeFileTrackerData();
         fileService.writeFileTrackerDataForScreenshotContextOnly(screenshotContext);
+    }
+
+    private int validateViewportHeight(int viewportHeight) throws IOException {
+        BufferedImage bufferedImage = takeScreenshot();
+        int realHeight = Math.toIntExact(Math.round(1D * bufferedImage.getHeight() / getDevicePixelRatio()));
+
+        if (viewportHeight != realHeight) {
+            LOG.warn("Calculated viewport height '{}' differs from screenshot height '{}'! Using screenshot height to proceed.", viewportHeight, realHeight);
+        }
+        return realHeight;
     }
 
     private String getBrowserAndVersion(WebDriver driver) {
@@ -570,10 +583,16 @@ public class Browser implements AutoCloseable {
         return (Long) (jse.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL));
     }
 
+    private Double getDevicePixelRatio() {
+        LOG.debug("Getting device pixel ratio.");
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
+        return ((Number)jse.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).doubleValue();
+    }
+
     private String getDom() {
         LOG.debug("Getting DOM.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
-        return (String) (jse.executeScript(JS_GET_DOM));
+        return (String) (jse.executeScript(JS_GET_DOM_CALL));
     }
 
     private void executeJavaScript(String javaScript) throws InterruptedException {
@@ -616,7 +635,7 @@ public class Browser implements AutoCloseable {
     private String getUserAgent() {
         LOG.debug("Getting browser user agent.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
-        return (String) jse.executeScript(JS_GET_USER_AGENT);
+        return (String) jse.executeScript(JS_GET_USER_AGENT_CALL);
     }
 
     void scrollTo(int yPosition) throws InterruptedException {
