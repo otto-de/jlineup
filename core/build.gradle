@@ -33,7 +33,7 @@ dependencies {
     //Update jsoup (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGJSOUP-1567345)
     implementation 'org.jsoup:jsoup:1.15.4'
     //Update commons compress (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGAPACHECOMMONS-1316638)
-    implementation "org.apache.commons:commons-compress:1.22"
+    implementation "org.apache.commons:commons-compress:1.23.0"
 
     //Update commons io (webdrivermanager)
     implementation 'commons-io:commons-io:2.11.0'
