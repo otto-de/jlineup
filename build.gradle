@@ -3,7 +3,7 @@ buildscript {
         springBootVersion = '2.7.10'
         springVersion = '5.3.27'
         tomcatVersion = '9.0.73'
-        seleniumVersion = '4.8.3'
+        seleniumVersion = '4.9.0'
         jacksonVersion = '2.14.2'
         nettyVersion = '4.1.91.Final'
         junitJupiterVersion = '5.9.2'
