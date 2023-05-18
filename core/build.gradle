@@ -31,7 +31,7 @@ dependencies {
     //Update commons-codec from 1.11 which has a vulnerability
     implementation "commons-codec:commons-codec:1.15"
     //Update jsoup (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGJSOUP-1567345)
-    implementation 'org.jsoup:jsoup:1.15.4'
+    implementation 'org.jsoup:jsoup:1.16.1'
     //Update commons compress (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGAPACHECOMMONS-1316638)
     implementation "org.apache.commons:commons-compress:1.23.0"
 
