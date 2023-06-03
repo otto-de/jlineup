@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.8.4 - 2023-06-03
+* Dependency updates
+
 ## Release 4.8.3 - 2023-03-09
 * Bugfix: Add '--remote-allow-origins=*' to Chrome options to fix issues with Chrome 111 and the webdriver connection. 
   * JLineup might update to Java 11 or 17 soon to switch to Java HttpClient
