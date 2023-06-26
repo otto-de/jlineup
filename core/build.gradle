@@ -36,7 +36,7 @@ dependencies {
     implementation "org.apache.commons:commons-compress:1.23.0"
 
     //Update commons io (webdrivermanager)
-    implementation 'commons-io:commons-io:2.12.0'
+    implementation 'commons-io:commons-io:2.13.0'
     //Update bouncycastle (webdrivermanager)
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
