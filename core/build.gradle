@@ -23,22 +23,13 @@ dependencies {
     implementation "io.netty:netty-transport-native-epoll:${nettyVersion}"
     implementation "io.netty:netty-transport-native-kqueue:${nettyVersion}"
 
-    api("io.github.bonigarcia:webdrivermanager:5.3.3") {
+    api("io.github.bonigarcia:webdrivermanager:5.4.0") {
         exclude group: "com.github.docker-java"
         exclude group: "org.slf4j"
     }
 
     //Update commons-codec from 1.11 which has a vulnerability
     implementation "commons-codec:commons-codec:1.16.0"
-    //Update jsoup (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGJSOUP-1567345)
-    implementation 'org.jsoup:jsoup:1.16.1'
-    //Update commons compress (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGAPACHECOMMONS-1316638)
-    implementation "org.apache.commons:commons-compress:1.23.0"
-
-    //Update commons io (webdrivermanager)
-    implementation 'commons-io:commons-io:2.13.0'
-    //Update bouncycastle (webdrivermanager)
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
     api "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
     api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
@@ -47,7 +38,7 @@ dependencies {
     api "ch.qos.logback:logback-classic:1.2.12"
 
     implementation "org.slf4j:slf4j-api:1.7.36"
-    implementation "org.codehaus.janino:janino:3.1.9"
+    //implementation "org.codehaus.janino:janino:3.1.9"
     implementation "org.thymeleaf:thymeleaf:3.0.15.RELEASE"
     implementation "org.graalvm.sdk:graal-sdk:22.3.2"
 

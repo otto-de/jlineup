@@ -44,4 +44,11 @@
         <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
         <cve>CVE-2020-8908</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   Make sure to not feed untrusted data into your jlineup config. See https://github.com/FasterXML/jackson-databind/issues/3972
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
+        <cve>CVE-2023-35116</cve>
+    </suppress>
 </suppressions>
