@@ -51,4 +51,11 @@
         <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
         <cve>CVE-2023-35116</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   We don't feed janino with user data
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
+        <cve>CVE-2023-33546</cve>
+    </suppress>
 </suppressions>
