@@ -23,32 +23,21 @@ dependencies {
     implementation "io.netty:netty-transport-native-epoll:${nettyVersion}"
     implementation "io.netty:netty-transport-native-kqueue:${nettyVersion}"
 
-    api("io.github.bonigarcia:webdrivermanager:5.4.0") {
-        exclude group: "com.github.docker-java"
-        exclude group: "org.slf4j"
-    }
-
     //Update commons-codec from 1.11 which has a vulnerability
-    implementation "commons-codec:commons-codec:1.16.0"
-    //Update jsoup (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGJSOUP-1567345)
-    implementation 'org.jsoup:jsoup:1.16.1'
-    //Update commons compress (coming with webdrivermanager) (https://snyk.io/vuln/SNYK-JAVA-ORGAPACHECOMMONS-1316638)
-    implementation "org.apache.commons:commons-compress:1.23.0"
-    //Update commons io (webdrivermanager)
-    implementation 'commons-io:commons-io:2.13.0'
-    //Update bouncycastle (webdrivermanager)
-    //implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+    //implementation "commons-codec:commons-codec:1.16.0"
+
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
 
     api "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
     api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
     api "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
-    api "ch.qos.logback:logback-classic:1.2.12"
+    api "ch.qos.logback:logback-classic:1.4.8"
 
-    implementation "org.slf4j:slf4j-api:1.7.36"
+    implementation "org.slf4j:slf4j-api:2.0.7"
     implementation "org.codehaus.janino:janino:3.1.10"
-    implementation "org.thymeleaf:thymeleaf:3.0.15.RELEASE"
-    implementation "org.graalvm.sdk:graal-sdk:22.3.2"
+    implementation 'org.thymeleaf:thymeleaf:3.1.1.RELEASE'
+    implementation "org.graalvm.sdk:graal-sdk:23.0.1"
 
     testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
     testCompileOnly 'junit:junit:4.13.2'
@@ -184,8 +173,8 @@ javadoc {
     }
 }
 
-targetCompatibility = JavaVersion.VERSION_1_8
-sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_17
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {

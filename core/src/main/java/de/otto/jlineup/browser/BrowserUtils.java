@@ -5,11 +5,13 @@ import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.safari.SafariDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,7 @@ public class BrowserUtils {
         if (path == null) {
             path = DEFAULT_PATH;
         }
+        //TODO: Why?
         if (!url.endsWith("/") && !path.equals("") && !path.startsWith("/")) {
             url = url + "/";
         }
@@ -71,13 +74,7 @@ public class BrowserUtils {
                 options.addArguments("-width", device.width + "", "-height", device.height + "");
             }
             LOG.debug("Creating firefox with options: {}", options.toString());
-            WebDriverManager webDriverManager = WebDriverManager.firefoxdriver().capabilities(options);
-            if (runStepConfig.getWebDriverCachePath() != null) {
-                webDriverManager.cachePath(runStepConfig.getWebDriverCachePath());
-            }
-
-
-            driver = webDriverManager.create();
+            driver = new FirefoxDriver(options);
         } else if (jobConfig.browser.isChrome()) {
             ChromeOptions options = new ChromeOptions();
             //To work in a headless env, this is needed
@@ -132,21 +129,17 @@ public class BrowserUtils {
             }
 
             LOG.debug("Creating chrome with options: {}", options);
-            WebDriverManager webDriverManager = WebDriverManager.chromedriver().capabilities(options);
-            if (runStepConfig.getWebDriverCachePath() != null) {
-                webDriverManager.cachePath(runStepConfig.getWebDriverCachePath());
-            }
-            driver = webDriverManager.create();
+            driver = new ChromeDriver(options);
         } else if (jobConfig.browser.isChromium()) {
-            driver = WebDriverManager.chromiumdriver().create();
+            driver = new ChromeDriver();
         } else if (jobConfig.browser.isSafari()) {
-            driver = WebDriverManager.safaridriver().create();
+            driver = new SafariDriver();
         } else {
             LOG.error("You need either Firefox or Chrome / Chromium to make JLineup work. Install one of them and try again.");
             throw new RuntimeException("You need either Firefox or Chrome / Chromium to make JLineup work. Install one of them and try again.");
         }
 
-        if (driver == null || driver.manage() == null) {
+        if (driver.manage() == null) {
             LOG.error("Browser could not be started or it crashed. :( Something went wrong.");
             throw new RuntimeException("Browser could not be started or it crashed. :(");
         }

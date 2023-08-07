@@ -5,7 +5,7 @@ dependencies {
     implementation project(":jlineup-core")
     implementation "info.picocli:picocli:4.7.4"
     annotationProcessor 'info.picocli:picocli-codegen:4.7.4'
-    compileOnly "org.graalvm.nativeimage:svm:22.3.2"
+    compileOnly "org.graalvm.nativeimage:svm:23.0.1"
 
     testImplementation "org.hamcrest:hamcrest-core:2.2"
     testImplementation "org.hamcrest:hamcrest-library:2.2"
@@ -46,8 +46,8 @@ tasks.shadowJar {
     mainClassName = "de.otto.jlineup.cli.Main"
 }
 
-targetCompatibility = '1.8'
-sourceCompatibility = '1.8'
+targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_17
 
 compileJava {
     options.compilerArgs.addAll(["-Aproject=${project.group}/${project.name}"])
