@@ -32,7 +32,7 @@ dependencies {
     api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
     api "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
-    api "ch.qos.logback:logback-classic:1.4.8"
+    api "ch.qos.logback:logback-classic:1.4.9"
 
     implementation "org.slf4j:slf4j-api:2.0.7"
     implementation "org.codehaus.janino:janino:3.1.10"
