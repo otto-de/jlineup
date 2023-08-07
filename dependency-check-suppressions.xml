@@ -58,4 +58,19 @@
         <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
         <cve>CVE-2023-33546</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   GraalVM is not in use
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
+        <cve>CVE-2023-22006</cve>
+    </suppress>
+    <suppress>
+        <!--TODO:remove!-->
+        <notes><![CDATA[
+   CVE-2023-38286 is fixed in Thymeleaf 3.1.2, 3.1.1 is still accidentially resolved for one test
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
+        <cve>CVE-2023-38286</cve>
+    </suppress>
 </suppressions>
