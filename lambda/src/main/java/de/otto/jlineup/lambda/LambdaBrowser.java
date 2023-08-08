@@ -12,14 +12,17 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.crt.s3.S3Client;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.InvokeRequest;
 import software.amazon.awssdk.services.lambda.model.InvokeResponse;
 import software.amazon.awssdk.services.lambda.model.ServiceException;
-import software.amazon.awssdk.transfer.s3.CompletedDirectoryDownload;
-import software.amazon.awssdk.transfer.s3.S3ClientConfiguration;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
+import software.amazon.awssdk.transfer.s3.config.DownloadFilter;
+import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryDownload;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -93,10 +96,8 @@ public class LambdaBrowser implements CloudBrowser {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        S3TransferManager transferManager = S3TransferManager.builder()
-                .s3ClientConfiguration(S3ClientConfiguration.builder().credentialsProvider(cp).build()).build();
-
-        CompletableFuture<CompletedDirectoryDownload> download = transferManager.downloadDirectory(d -> d.bucket("jlineuptest-marco").prefix("jlineup-" + runId).destinationDirectory(Paths.get("/tmp/jlineup-s3download/" + runId))).completionFuture();
+        S3TransferManager transferManager = S3TransferManager.builder().s3Client(S3AsyncClient.crtBuilder().credentialsProvider(cp).build()).build();
+        CompletableFuture<CompletedDirectoryDownload> download = transferManager.downloadDirectory(d -> d.bucket("jlineuptest-marco").listObjectsV2RequestTransformer(l -> l.prefix("jlineup-" + runId)).destination(Paths.get("/tmp/jlineup-s3download/" + runId))).completionFuture();
 
 
     }
