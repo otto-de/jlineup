@@ -23,9 +23,6 @@ dependencies {
     implementation "io.netty:netty-transport-native-epoll:${nettyVersion}"
     implementation "io.netty:netty-transport-native-kqueue:${nettyVersion}"
 
-    //Update commons-codec from 1.11 which has a vulnerability
-    //implementation "commons-codec:commons-codec:1.16.0"
-
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
 
     api "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
@@ -34,7 +31,7 @@ dependencies {
     api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
     api "ch.qos.logback:logback-classic:1.4.9"
 
-    implementation "org.slf4j:slf4j-api:2.0.7"
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "org.codehaus.janino:janino:3.1.10"
     implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
     implementation "org.graalvm.sdk:graal-sdk:23.0.1"
