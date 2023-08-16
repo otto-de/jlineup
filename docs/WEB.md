@@ -1,7 +1,7 @@
 # Web server instructions
 
 JLineup can be run as a small web service which offers a simple REST
-interface to take JLineup jobs. JLineup WEB requires at least Java 11.
+interface to take JLineup jobs. JLineup WEB requires at least Java 17.
 
 ## Installation
 

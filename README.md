@@ -78,7 +78,7 @@ There's also a JSON report, which is great if you want to check things by script
 
 ## Quick Howto
 
-JLineup CLI comes as executable Java Archive. Java 8 or higher has to be available to run it.
+JLineup CLI comes as executable Java Archive. Java 17 or higher has to be available to run it.
 
 Open a terminal and download it like this:
 
