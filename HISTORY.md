@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 4.9.0
+* Bugfix: Recent changes to Chrome's webdriver management broke the automatic webdriver download
+  This was realized through a change from the webdrivermanager library to Selenium's built-in driver manager
+* **Breaking change**: Many dependency updates (Spring Boot 3, including the move from javax.servlet to jakarta.servlet packages) that
+  bump the Java minimum requirements to Java 17.
+
 ## Release 4.8.4 - 2023-06-03
 * Dependency updates
 

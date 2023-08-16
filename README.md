@@ -9,6 +9,8 @@
 
 ## News
 
+**2023-08-16**: **JLineup 4.9.0**, which fixes latest Chromedriver issues, requires **Java 17** or later due to dependency updates that have this requirement.
+
 **2023-03-09**: **Chrome 111** requires a new parameter to fix the connection with the current Selenium version built
 into JLineup. This was added in [JLineup 4.8.3](https://github.com/otto-de/jlineup/releases/tag/v4.8.3). Background
 information may be found in this [thread](https://groups.google.com/g/chromedriver-users/c/xL5-13_qGaA/m/oTA9W3cQAgAJ).
@@ -80,7 +82,7 @@ JLineup CLI comes as executable Java Archive. Java 8 or higher has to be availab
 
 Open a terminal and download it like this:
 
-    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.8.3/jlineup-cli-4.8.3.jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.9.0/jlineup-cli-4.9.0.jar -O jlineup.jar
 
 Then type
 
@@ -99,10 +101,10 @@ Let's assume, this is part of a continuous integration pipeline:
 
 ## Browser Compatibility
 
-JLineup 4.8.3 was tested successfully with
+JLineup 4.9.0 was tested successfully with
 
-* Chrome 111.x
-* Firefox 110.x
+* Chrome 116.x
+* Firefox 116.x
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
 
