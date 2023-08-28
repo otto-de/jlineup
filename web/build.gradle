@@ -3,7 +3,7 @@ apply plugin: 'org.springframework.boot'
 dependencies {
     implementation project(":jlineup-core")
     implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    implementation 'org.yaml:snakeyaml:2.1'
+    implementation 'org.yaml:snakeyaml:2.2'
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
     implementation("de.otto.edison:edison-core:3.1.1")
 
