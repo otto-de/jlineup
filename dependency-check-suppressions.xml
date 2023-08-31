@@ -73,4 +73,11 @@
         <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
         <cve>CVE-2023-38286</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   FP netty issue
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty-handler@.*$</packageUrl>
+        <cve>CVE-2023-4586</cve>
+    </suppress>
 </suppressions>
