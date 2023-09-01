@@ -27,7 +27,7 @@ public class Utils {
                 .withReportDirectory(commandLineParameters.getReportDirectory())
                 .withStep(commandLineParameters.getStep())
                 .withUrlReplacements(firstNonNull(commandLineParameters.getUrlReplacements(), emptyMap()))
-                .withChromeParameters(firstNonNull(commandLineParameters.getChromeParameters().stream().map(param -> param.startsWith("--user-data-dir") ? param + "/" + RANDOM_FOLDER_PLACEHOLDER : param).toList(), emptyList()))
+                .withChromeParameters(firstNonNull(commandLineParameters.getChromeParameters() != null ? commandLineParameters.getChromeParameters().stream().map(param -> param.startsWith("--user-data-dir") ? param + "/" + RANDOM_FOLDER_PLACEHOLDER : param).toList() : null, emptyList()))
                 .withFirefoxParameters(firstNonNull(commandLineParameters.getFirefoxParameters(), emptyList()))
                 .withKeepExistingFiles(commandLineParameters.isKeepExisting())
                 .withRefreshUrl(commandLineParameters.getRefreshUrl())
