@@ -107,18 +107,7 @@ public class BrowserUtils {
             }
 
             if (device.isMobile()) {
-                Map<String, Object> mobileEmulation = new HashMap<>();
-                if (!device.deviceName.equalsIgnoreCase("MOBILE")) {
-                    mobileEmulation.put("deviceName", device.deviceName);
-                } else {
-                    Map<String, Object> deviceMetrics = new HashMap<>();
-                    deviceMetrics.put("width", device.width);
-                    deviceMetrics.put("height", device.height);
-                    deviceMetrics.put("pixelRatio", device.pixelRatio);
-                    deviceMetrics.put("touch", true);
-                    mobileEmulation.put("deviceMetrics", deviceMetrics);
-                    if (device.userAgent != null) mobileEmulation.put("userAgent", device.userAgent);
-                }
+                Map<String, Object> mobileEmulation = getMobileEmulationPropertiesForChrome(device);
                 options.setExperimentalOption("mobileEmulation", mobileEmulation);
             } else if (device.userAgent != null) {
                 options.addArguments("--user-agent='" + device.userAgent + "'");
@@ -147,6 +136,22 @@ public class BrowserUtils {
 
         driver.manage().timeouts().pageLoadTimeout(Duration.of(jobConfig.pageLoadTimeout, SECONDS));
         return driver;
+    }
+
+    private static Map<String, Object> getMobileEmulationPropertiesForChrome(DeviceConfig device) {
+        Map<String, Object> mobileEmulation = new HashMap<>();
+        if (!device.deviceName.equalsIgnoreCase("MOBILE")) {
+            mobileEmulation.put("deviceName", device.deviceName);
+        } else {
+            Map<String, Object> deviceMetrics = new HashMap<>();
+            deviceMetrics.put("width", device.width);
+            deviceMetrics.put("height", device.height);
+            deviceMetrics.put("pixelRatio", device.pixelRatio);
+            deviceMetrics.put("touch", true);
+            mobileEmulation.put("deviceMetrics", deviceMetrics);
+            if (device.userAgent != null) mobileEmulation.put("userAgent", device.userAgent);
+        }
+        return mobileEmulation;
     }
 
     private FirefoxProfile getFirefoxProfileWithDisabledAnimatedGifs() {
@@ -178,7 +183,7 @@ public class BrowserUtils {
                                     .map(deviceConfig ->
                                             new ScreenshotContext(prepareDomain(runStepConfig, urlConfig.url), path, deviceConfig,
                                                     urlConfig.cookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey()))
-                                    .collect(Collectors.toList()));
+                                    .toList());
                 } else {
                     screenshotContextList.addAll(
                             urlConfig.devices.stream()
@@ -188,7 +193,7 @@ public class BrowserUtils {
                                                 newCookies.addAll(alternatingCookies);
                                                 return new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getValue().url), path, deviceConfig,
                                                         newCookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey());
-                                            })).collect(Collectors.toList()));
+                                            })).toList());
                 }
             }
         }
