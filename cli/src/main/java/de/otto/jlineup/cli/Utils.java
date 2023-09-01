@@ -6,6 +6,7 @@ import de.otto.jlineup.config.JobConfig;
 import java.io.IOException;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
+import static de.otto.jlineup.browser.BrowserUtils.RANDOM_FOLDER_PLACEHOLDER;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 
@@ -26,7 +27,7 @@ public class Utils {
                 .withReportDirectory(commandLineParameters.getReportDirectory())
                 .withStep(commandLineParameters.getStep())
                 .withUrlReplacements(firstNonNull(commandLineParameters.getUrlReplacements(), emptyMap()))
-                .withChromeParameters(firstNonNull(commandLineParameters.getChromeParameters(), emptyList()))
+                .withChromeParameters(firstNonNull(commandLineParameters.getChromeParameters().stream().map(param -> param.startsWith("--user-data-dir") ? param + "/" + RANDOM_FOLDER_PLACEHOLDER : param).toList(), emptyList()))
                 .withFirefoxParameters(firstNonNull(commandLineParameters.getFirefoxParameters(), emptyList()))
                 .withKeepExistingFiles(commandLineParameters.isKeepExisting())
                 .withRefreshUrl(commandLineParameters.getRefreshUrl())

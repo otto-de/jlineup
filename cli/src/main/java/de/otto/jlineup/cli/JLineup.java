@@ -306,7 +306,6 @@ public class JLineup implements Callable<Integer> {
             de.otto.jlineup.Utils.logToFile(workingDirectory);
         }
 
-
         LOG.info("Running JLineup [{}] with step '{}'.\n\n", de.otto.jlineup.Utils.getVersion(), step);
 
         RunStepConfig runStepConfig = convertCommandLineParametersToRunConfiguration(this);

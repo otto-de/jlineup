@@ -37,7 +37,7 @@ public class JLineupRunner {
         validateConfig();
     }
 
-    public boolean run() {
+    public boolean  run() {
 
         final FileService fileService = new FileService(runStepConfig, jobConfig);
         final ImageService imageService = new ImageService();
