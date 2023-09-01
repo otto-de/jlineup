@@ -73,7 +73,6 @@ public class JLineupService {
                     return State.BEFORE_DONE;
                 }, executorService)
                 .exceptionally(ex -> {
-                    //LOG.error("Error in before runStep.", ex);
                     return State.ERROR;
                 })
                 .thenApply(st -> {
@@ -88,7 +87,7 @@ public class JLineupService {
     public synchronized JLineupRunStatus startAfterRun(String runId) throws Exception {
 
         Optional<JLineupRunStatus> run = getRun(runId);
-        if (!run.isPresent()) {
+        if (run.isEmpty()) {
             throw new RunNotFoundException(runId);
         }
 

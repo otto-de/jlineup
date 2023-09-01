@@ -2,7 +2,7 @@
   <configuration default="false" name="Main (after)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="de.otto.jlineup.cli.Main" />
     <module name="jlineup.jlineup-cli.main" />
-    <option name="PROGRAM_PARAMETERS" value="--step after --chrome-parameter=&quot;--hide-scrollbars&quot; -o" />
+    <option name="PROGRAM_PARAMETERS" value="--step after --chrome-parameter=&quot;--hide-scrollbars&quot; --chrome-parameter=&quot;--user-data-dir=/tmp/chrome-profile&quot; -o --cleanup-profile" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="de.otto.jlineup.cli.*" />

@@ -95,6 +95,9 @@ public class JLineup implements Callable<Integer> {
     @Option(names = {"-b", "--override-browser"}, description = "(Preview feature) Override browser setting in run config.", order = 190)
     private String browserOverride = null;
 
+    @Option(names = {"--cleanup-profile"}, description = "Cleanup browser profile directory after the run has finished and a profile dir was specified with the browser parameters.", order = 200)
+    private boolean cleanupProfile = false;
+
 
     public JLineup() {
     }
@@ -191,6 +194,27 @@ public class JLineup implements Callable<Integer> {
         return browserOverride;
     }
 
+    public boolean isCleanupProfile() {
+        return cleanupProfile;
+    }
+
+    public void setCleanupProfile(boolean cleanupProfile) {
+        this.cleanupProfile = cleanupProfile;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JLineup jLineup = (JLineup) o;
+        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && cleanupProfile == jLineup.cleanupProfile && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(mergeConfigFile, jLineup.mergeConfigFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl) && Objects.equals(browserOverride, jLineup.browserOverride);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(help, url, step, configFile, mergeConfigFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl, browserOverride, cleanupProfile);
+    }
+
     @Override
     public String toString() {
         return "JLineup{" +
@@ -214,20 +238,8 @@ public class JLineup implements Callable<Integer> {
                 ", keepExisting=" + keepExisting +
                 ", refreshUrl='" + refreshUrl + '\'' +
                 ", browserOverride='" + browserOverride + '\'' +
+                ", cleanupProfile=" + cleanupProfile +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JLineup jLineup = (JLineup) o;
-        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(mergeConfigFile, jLineup.mergeConfigFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl) && Objects.equals(browserOverride, jLineup.browserOverride);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(help, url, step, configFile, mergeConfigFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl, browserOverride);
     }
 
     @Override

@@ -9,6 +9,7 @@ import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.file.FileUtils;
 import de.otto.jlineup.image.ImageService;
 import org.graalvm.nativeimage.ImageInfo;
 import org.openqa.selenium.Dimension;
@@ -154,13 +155,6 @@ public class Browser implements AutoCloseable {
             LOG.debug("Setting shutdown called to true");
             webDrivers.forEach((threadName, webDriver) -> {
                 LOG.debug("Removing webdriver for thread {} ({})", threadName, webDriver.getClass().getCanonicalName());
-                /*
-                try {
-                    webDriver.close();
-                } catch (Exception e) {
-                    LOG.error("Exception while closing webdriver: " + e.getMessage(), e);
-                }
-                */
                 try {
                     webDriver.quit();
                 } catch (Exception e) {
@@ -177,7 +171,7 @@ public class Browser implements AutoCloseable {
         List<ScreenshotContext> testSetupContexts = BrowserUtils.buildTestSetupContexts(runStepConfig, jobConfig);
         List<ScreenshotContext> testCleanupContexts = BrowserUtils.buildTestCleanupContexts(runStepConfig, jobConfig);
         List<ScreenshotContext> screenshotContextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig);
-        if (screenshotContextList.size() > 0) {
+        if (!screenshotContextList.isEmpty()) {
             try {
                 if (!testSetupContexts.isEmpty()) {
                     LOG.debug("Running test setup.");
@@ -191,6 +185,10 @@ public class Browser implements AutoCloseable {
                     cloudBrowser.takeScreenshots(screenshotContextList);
                 }
             } finally {
+                if (runStepConfig.isCleanupProfile()) {
+                    LOG.info("Cleaning up profile directory.");
+                    cleanupProfileDirectory();
+                }
                 if (!testCleanupContexts.isEmpty()) {
                     LOG.debug("Running test cleanup.");
                     runTestSetupOrCleanup(testCleanupContexts);
@@ -200,9 +198,36 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    private void runTestSetupOrCleanup(List<ScreenshotContext> testSetupContexts) throws Exception {
+    private void cleanupProfileDirectory() {
+
+        runStepConfig.getChromeParameters().forEach(param -> {
+            if (param.startsWith("--user-data-dir")) {
+                try {
+                    String path = param.split("=")[1];
+                    LOG.debug("Deleting user data dir {}", path);
+                    FileUtils.deleteDirectory(path);
+                } catch (Exception e) {
+                    LOG.error("Exception while deleting user data dir: " + e.getMessage(), e);
+                }
+            }
+        });
+
+        runStepConfig.getFirefoxParameters().forEach(param -> {
+            if (param.startsWith("-profile") || param.startsWith("-P")) {
+                try {
+                    String path = param.split(" ")[1];
+                    LOG.debug("Deleting firefox profile dir {}", path);
+                    FileUtils.deleteDirectory(path);
+                } catch (Exception e) {
+                    LOG.error("Exception while deleting firefox profile dir: " + e.getMessage(), e);
+                }
+            }
+        });
+    }
+
+    private void runTestSetupOrCleanup(List<ScreenshotContext> testSetupOrCleanupContexts) throws Exception {
         JLineupHttpClient jLineupHttpClient = new JLineupHttpClient();
-        for (ScreenshotContext testSetupContext : testSetupContexts) {
+        for (ScreenshotContext testSetupContext : testSetupOrCleanupContexts) {
             jLineupHttpClient.callUrl(testSetupContext);
         }
     }

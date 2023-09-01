@@ -30,6 +30,7 @@ public class Utils {
                 .withFirefoxParameters(firstNonNull(commandLineParameters.getFirefoxParameters(), emptyList()))
                 .withKeepExistingFiles(commandLineParameters.isKeepExisting())
                 .withRefreshUrl(commandLineParameters.getRefreshUrl())
+                .withCleanupProfile(commandLineParameters.isCleanupProfile())
                 .build();
     }
 

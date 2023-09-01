@@ -6,6 +6,7 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.*;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.file.FileUtils;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -15,10 +16,13 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.logging.Logs;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.*;
 
+import static com.google.common.collect.ImmutableMap.of;
 import static de.otto.jlineup.browser.Browser.*;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.browser.BrowserStep.before;
@@ -110,7 +114,7 @@ public class BrowserTest {
     @Test
     public void shouldFillLocalStorage() {
         //given
-        Map<String, String> localStorage = ImmutableMap.of("key", "value");
+        Map<String, String> localStorage = of("key", "value");
         //when
         testee.setLocalStorage(localStorage);
         //then
@@ -121,7 +125,7 @@ public class BrowserTest {
     @Test
     public void shouldFillLocalStorageWithDocument() {
         //given
-        Map<String, String> localStorage = ImmutableMap.of("key", "{'customerServiceWidgetNotificationHidden':{'value':true,'timestamp':9467812242358}}");
+        Map<String, String> localStorage = of("key", "{'customerServiceWidgetNotificationHidden':{'value':true,'timestamp':9467812242358}}");
         //when
         testee.setLocalStorage(localStorage);
         //then
@@ -132,7 +136,7 @@ public class BrowserTest {
     @Test
     public void shouldFillSessionStorage() {
         //given
-        Map<String, String> sessionStorage = ImmutableMap.of("key", "value");
+        Map<String, String> sessionStorage = of("key", "value");
         //when
         testee.setSessionStorage(sessionStorage);
         //then
@@ -149,6 +153,87 @@ public class BrowserTest {
     }
 
     @Test
+    public void shouldDeleteTheBrowserProfileDirectoryForChrome() throws Exception {
+        //given
+        JobConfig jobConfig = jobConfigBuilder()
+                .withUrls(of("otto", urlConfigBuilder()
+                        .withUrl("https://www.otto.de")
+                        .withDevices(List.of(DeviceConfig.deviceConfigBuilder().build()))
+                        .withPath("/")
+                        .build()))
+                .withBrowser(CHROME).build().insertDefaults();
+        when(runStepConfig.isCleanupProfile()).thenReturn(true);
+        when(runStepConfig.getChromeParameters()).thenReturn(List.of("--user-data-dir=/tmp/jlineup-test/jlineup/chrome/12345"));
+        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(1000L);
+        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(1000L);
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_1125x750.png")));
+        when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1.5d);
+        Files.createDirectories(new File("/tmp/jlineup-test/jlineup/chrome/12345").toPath());
+        testee.close();
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
+
+        //when
+        testee.runSetupAndTakeScreenshots();
+
+        //then
+        assertThat(Files.exists(new File("/tmp/jlineup-test/jlineup/chrome/12345").toPath()), is(false));
+    }
+
+    @Test
+    public void shouldDeleteTheBrowserProfileDirectoryForFirefoxWithProfileParam() throws Exception {
+        //given
+        JobConfig jobConfig = jobConfigBuilder()
+                .withUrls(of("otto", urlConfigBuilder()
+                        .withUrl("https://www.otto.de")
+                        .withDevices(List.of(DeviceConfig.deviceConfigBuilder().build()))
+                        .withPath("/")
+                        .build()))
+                .withBrowser(CHROME).build().insertDefaults();
+        when(runStepConfig.isCleanupProfile()).thenReturn(true);
+        when(runStepConfig.getChromeParameters()).thenReturn(List.of("-profile /tmp/jlineup-test/jlineup/firefox/12345"));
+        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(1000L);
+        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(1000L);
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_1125x750.png")));
+        when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1.5d);
+        Files.createDirectories(new File("/tmp/jlineup-test/jlineup/chrome/12345").toPath());
+        testee.close();
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
+
+        //when
+        testee.runSetupAndTakeScreenshots();
+
+        //then
+        assertThat(Files.exists(new File("/tmp/jlineup-test/jlineup/firefox/12345").toPath()), is(false));
+    }
+
+    @Test
+    public void shouldDeleteTheBrowserProfileDirectoryForFirefoxWithPParam() throws Exception {
+        //given
+        JobConfig jobConfig = jobConfigBuilder()
+                .withUrls(of("otto", urlConfigBuilder()
+                        .withUrl("https://www.otto.de")
+                        .withDevices(List.of(DeviceConfig.deviceConfigBuilder().build()))
+                        .withPath("/")
+                        .build()))
+                .withBrowser(CHROME).build().insertDefaults();
+        when(runStepConfig.isCleanupProfile()).thenReturn(true);
+        when(runStepConfig.getChromeParameters()).thenReturn(List.of("-P /tmp/jlineup-test/jlineup/firefox/12345"));
+        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(1000L);
+        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(1000L);
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_1125x750.png")));
+        when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1.5d);
+        Files.createDirectories(new File("/tmp/jlineup-test/jlineup/chrome/12345").toPath());
+        testee.close();
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
+
+        //when
+        testee.runSetupAndTakeScreenshots();
+
+        //then
+        assertThat(Files.exists(new File("/tmp/jlineup-test/jlineup/firefox/12345").toPath()), is(false));
+    }
+
+    @Test
     public void shouldDoAllTheScreenshotWebdriverCalls() throws Exception {
         //given
         final Long viewportHeight = 1000L; //Will be overridden by validateViewportHeight(), which uses the (screenshot height / device pixel ratio) (500) as 'truth', and should trigger a WARN message
@@ -158,8 +243,8 @@ public class BrowserTest {
                 .withPath("/")
                 .withCookies(ImmutableList.of(new Cookie("testcookiename", "testcookievalue")))
                 .withAlternatingCookies(ImmutableList.of(ImmutableList.of(new Cookie("alternating", "one"))))
-                .withLocalStorage(ImmutableMap.of("localStorageKey", "localStorageValue"))
-                .withSessionStorage(ImmutableMap.of("sessionStorageKey", "sessionStorageValue"))
+                .withLocalStorage(of("localStorageKey", "localStorageValue"))
+                .withSessionStorage(of("sessionStorageKey", "sessionStorageValue"))
                 .withWarmupBrowserCacheTime(3)
                 .withWaitForFontsTime(5)
                 .withJavaScript("testJS();")
@@ -169,7 +254,7 @@ public class BrowserTest {
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
-                .withUrls(ImmutableMap.of("http://testurl", urlConfig))
+                .withUrls(of("http://testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
 
@@ -236,14 +321,14 @@ public class BrowserTest {
         UrlConfig urlConfig = urlConfigBuilder()
                 .withPath("/")
                 .withCookies(expectedCookies)
-                .withLocalStorage(ImmutableMap.of("localStorageKey", "localStorageValue"))
-                .withSessionStorage(ImmutableMap.of("sessionStorageKey", "sessionStorageValue"))
+                .withLocalStorage(of("localStorageKey", "localStorageValue"))
+                .withSessionStorage(of("sessionStorageKey", "sessionStorageValue"))
                 .withWindowWidths(singletonList(600))
                 .build();
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
-                .withUrls(ImmutableMap.of("http://testurl", urlConfig))
+                .withUrls(of("http://testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
         testee.close();
@@ -303,7 +388,7 @@ public class BrowserTest {
 
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX)
-                .withUrls(ImmutableMap.of("http://testurl", urlConfig))
+                .withUrls(of("http://testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
         testee.close();
@@ -352,7 +437,7 @@ public class BrowserTest {
         UrlConfig urlConfig = urlConfigBuilder().withPath("/").withWindowWidths(ImmutableList.of(600, 800)).build();
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX_HEADLESS)
-                .withUrls(ImmutableMap.of("testurl", urlConfig))
+                .withUrls(of("testurl", urlConfig))
                 .withWindowHeight(100)
                 .build();
 
@@ -386,7 +471,7 @@ public class BrowserTest {
                 .build();
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX_HEADLESS)
-                .withUrls(ImmutableMap.of("testurl", urlConfig))
+                .withUrls(of("testurl", urlConfig))
                 .withWindowHeight(2500)
                 .build();
 

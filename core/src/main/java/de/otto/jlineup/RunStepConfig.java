@@ -22,6 +22,8 @@ public class RunStepConfig {
     private final boolean keepExisting;
     private final String refreshUrl;
 
+    private final boolean cleanupProfile;
+
     private RunStepConfig(Builder builder) {
         reportDirectory = builder.reportDirectory;
         workingDirectory = builder.workingDirectory;
@@ -33,6 +35,7 @@ public class RunStepConfig {
         webDriverCachePath = builder.webDriverCachePath;
         keepExisting = builder.keepExisting;
         refreshUrl = builder.refreshUrl;
+        cleanupProfile = builder.cleanupProfile;
     }
 
     public static Builder runStepConfigBuilder() {
@@ -87,6 +90,10 @@ public class RunStepConfig {
         return refreshUrl;
     }
 
+    public boolean isCleanupProfile() {
+        return cleanupProfile;
+    }
+
     public static final class Builder {
         private String reportDirectory;
         private String workingDirectory;
@@ -98,6 +105,8 @@ public class RunStepConfig {
         private String webDriverCachePath;
         private boolean keepExisting;
         private String refreshUrl;
+
+        private boolean cleanupProfile;
 
         private Builder() {
         }
@@ -113,6 +122,7 @@ public class RunStepConfig {
             this.webDriverCachePath = copy.getWebDriverCachePath();
             this.keepExisting = copy.isKeepExisting();
             this.refreshUrl = copy.getRefreshUrl();
+            this.cleanupProfile = copy.isCleanupProfile();
         }
 
         public Builder withReportDirectory(String val) {
@@ -162,6 +172,11 @@ public class RunStepConfig {
 
         public Builder withRefreshUrl(String val) {
             refreshUrl = val;
+            return this;
+        }
+
+        public Builder withCleanupProfile(boolean val) {
+            cleanupProfile = val;
             return this;
         }
 

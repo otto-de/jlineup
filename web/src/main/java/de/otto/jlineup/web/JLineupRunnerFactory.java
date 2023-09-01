@@ -2,7 +2,6 @@ package de.otto.jlineup.web;
 
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.service.BrowserNotInstalledException;
@@ -10,7 +9,6 @@ import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.config.JobConfig.DEFAULT_REPORT_FORMAT;
@@ -43,9 +41,13 @@ public class JLineupRunnerFactory {
                 .withReportDirectory(properties.getReportDirectory().replace("{id}", id))
                 .withChromeParameters(properties.getChromeLaunchParameters().stream()
                         .map(param -> param.replace("{id}", id))
-                        .map(param -> param.contains("--user-data-dir") ? param = param + "/{random-folder}" : param)
+                        .map(param -> param.startsWith("--user-data-dir") ? param + "/{random-folder}" : param)
                         .collect(Collectors.toList()))
-                .withFirefoxParameters(properties.getFirefoxLaunchParameters().stream().map(param -> param.replace("{id}", id)).collect(Collectors.toList()))
+                .withFirefoxParameters(properties.getFirefoxLaunchParameters().stream()
+                        .map(param -> param.replace("{id}", id))
+                        .map(param -> param.startsWith("-profile ") || param.startsWith("-P ") ? param + "/{random-folder}" : param)
+                        .collect(Collectors.toList()))
+                .withCleanupProfile(properties.isCleanupProfile())
                 .withStep(step)
                 .build());
     }

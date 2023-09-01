@@ -156,7 +156,7 @@ public class BrowserUtils {
 
     public static List<ScreenshotContext> buildScreenshotContextListFromConfigAndState(RunStepConfig runStepConfig, JobConfig jobConfig) {
         List<ScreenshotContext> screenshotContextList = new ArrayList<>();
-        Map<String, UrlConfig> urls = jobConfig.urls;
+        Map<String, UrlConfig> urls = jobConfig.urls == null ? Collections.emptyMap() : jobConfig.urls;
 
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
             final UrlConfig urlConfig = urlConfigEntry.getValue();
@@ -204,7 +204,7 @@ public class BrowserUtils {
 
     private static List<ScreenshotContext> buildTestContexts(RunStepConfig runStepConfig, JobConfig jobConfig, boolean setupPhase) {
         final List<ScreenshotContext> screenshotContextList = new ArrayList<>();
-        final Map<String, UrlConfig> urls = jobConfig.urls;
+        final Map<String, UrlConfig> urls = jobConfig.urls == null ? Collections.emptyMap() : jobConfig.urls;
         for (final Map.Entry<String, UrlConfig> urlConfigEntry : urls.entrySet()) {
             final List<String> paths = setupPhase ? urlConfigEntry.getValue().setupPaths : urlConfigEntry.getValue().cleanupPaths;
             for (final String path : paths) {

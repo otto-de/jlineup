@@ -4,6 +4,7 @@ jlineup:
   reportDirectory: report-{id}
   maxParallelJobs: 1
   chromeLaunchParameters: --use-spdy=off, --disable-dev-shm-usage
+  cleanupProfile: true
 
 edison:
   application:
