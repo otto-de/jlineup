@@ -30,6 +30,7 @@ public class BrowserUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
     private static final boolean CHROME_DETERMINISTIC_OPTIONS = true;
+    public static final String RANDOM_FOLDER_PLACEHOLDER = "{random-folder}";
 
     public static String buildUrl(String url, String path, final Map<String, String> envMapping) {
         if (envMapping != null && !envMapping.isEmpty()) {
@@ -85,7 +86,7 @@ public class BrowserUtils {
             //so the JLineupRunnerFactory adds a {random-folder} string to the profile-dir name which is replaced
             //with a UUID here to don't have two drivers running in the same user profile directory.
             options.addArguments(runStepConfig.getChromeParameters().stream()
-                    .map(param -> param.replace("{random-folder}", UUID.randomUUID().toString()))
+                    .map(param -> param.replace(RANDOM_FOLDER_PLACEHOLDER, UUID.randomUUID().toString()))
                     .collect(Collectors.toList()));
 
             //These options my help to convince Chrome to render deterministically

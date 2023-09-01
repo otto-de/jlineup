@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+import static de.otto.jlineup.browser.BrowserUtils.RANDOM_FOLDER_PLACEHOLDER;
 import static de.otto.jlineup.config.JobConfig.DEFAULT_REPORT_FORMAT;
 
 @Component
@@ -41,11 +42,11 @@ public class JLineupRunnerFactory {
                 .withReportDirectory(properties.getReportDirectory().replace("{id}", id))
                 .withChromeParameters(properties.getChromeLaunchParameters().stream()
                         .map(param -> param.replace("{id}", id))
-                        .map(param -> param.startsWith("--user-data-dir") ? param + "/{random-folder}" : param)
+                        .map(param -> param.startsWith("--user-data-dir") ? param + "/" + RANDOM_FOLDER_PLACEHOLDER : param)
                         .collect(Collectors.toList()))
                 .withFirefoxParameters(properties.getFirefoxLaunchParameters().stream()
                         .map(param -> param.replace("{id}", id))
-                        .map(param -> param.startsWith("-profile ") || param.startsWith("-P ") ? param + "/{random-folder}" : param)
+                        .map(param -> param.startsWith("-profile ") || param.startsWith("-P ") ? param + "/" + RANDOM_FOLDER_PLACEHOLDER : param)
                         .collect(Collectors.toList()))
                 .withCleanupProfile(properties.isCleanupProfile())
                 .withStep(step)

@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 
 import static de.otto.jlineup.JLineupRunner.LOGFILE_NAME;
 import static de.otto.jlineup.JLineupRunner.REPORT_LOG_NAME_KEY;
+import static de.otto.jlineup.browser.BrowserUtils.RANDOM_FOLDER_PLACEHOLDER;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.stream.Collectors.groupingBy;
@@ -204,7 +205,10 @@ public class Browser implements AutoCloseable {
             if (param.startsWith("--user-data-dir")) {
                 try {
                     String path = param.split("=")[1];
-                    LOG.debug("Deleting user data dir {}", path);
+                    if (path.endsWith("/" + RANDOM_FOLDER_PLACEHOLDER)) {
+                        path = path.substring(0, path.length() - RANDOM_FOLDER_PLACEHOLDER.length() - 1);
+                    }
+                    LOG.debug("Deleting chrome profile dir {}", path);
                     FileUtils.deleteDirectory(path);
                 } catch (Exception e) {
                     LOG.error("Exception while deleting user data dir: " + e.getMessage(), e);
@@ -216,6 +220,9 @@ public class Browser implements AutoCloseable {
             if (param.startsWith("-profile") || param.startsWith("-P")) {
                 try {
                     String path = param.split(" ")[1];
+                    if (path.endsWith("/" + RANDOM_FOLDER_PLACEHOLDER)) {
+                        path = path.substring(0, path.length() - RANDOM_FOLDER_PLACEHOLDER.length() - 1);
+                    }
                     LOG.debug("Deleting firefox profile dir {}", path);
                     FileUtils.deleteDirectory(path);
                 } catch (Exception e) {
