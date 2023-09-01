@@ -166,6 +166,12 @@ public class Browser implements AutoCloseable {
             //grepChromedrivers();
         }
         LOG.debug("Closing webdrivers done.");
+
+        if (runStepConfig.isCleanupProfile()) {
+            LOG.info("Cleaning up profile directory.");
+            cleanupProfileDirectory();
+            LOG.info("Profile cleanup done.");
+        }
     }
 
     public void runSetupAndTakeScreenshots() throws Exception {
@@ -186,10 +192,6 @@ public class Browser implements AutoCloseable {
                     cloudBrowser.takeScreenshots(screenshotContextList);
                 }
             } finally {
-                if (runStepConfig.isCleanupProfile()) {
-                    LOG.info("Cleaning up profile directory.");
-                    cleanupProfileDirectory();
-                }
                 if (!testCleanupContexts.isEmpty()) {
                     LOG.debug("Running test cleanup.");
                     runTestSetupOrCleanup(testCleanupContexts);
@@ -210,6 +212,7 @@ public class Browser implements AutoCloseable {
                     }
                     LOG.debug("Deleting chrome profile dir {}", path);
                     FileUtils.deleteDirectory(path);
+
                 } catch (Exception e) {
                     LOG.error("Exception while deleting user data dir: " + e.getMessage(), e);
                 }

@@ -169,11 +169,12 @@ public class BrowserTest {
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_1125x750.png")));
         when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1.5d);
         Files.createDirectories(new File("/tmp/jlineup-test/jlineup/chrome/12345").toPath());
-        testee.close();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
+        testee.runSetupAndTakeScreenshots();
 
         //when
-        testee.runSetupAndTakeScreenshots();
+
+        testee.close();
 
         //then
         assertThat(Files.exists(new File("/tmp/jlineup-test/jlineup/chrome/12345").toPath()), is(false));
@@ -188,19 +189,19 @@ public class BrowserTest {
                         .withDevices(List.of(DeviceConfig.deviceConfigBuilder().build()))
                         .withPath("/")
                         .build()))
-                .withBrowser(CHROME).build().insertDefaults();
+                .withBrowser(FIREFOX).build().insertDefaults();
         when(runStepConfig.isCleanupProfile()).thenReturn(true);
-        when(runStepConfig.getChromeParameters()).thenReturn(List.of("-profile /tmp/jlineup-test/jlineup/firefox/12345"));
+        when(runStepConfig.getFirefoxParameters()).thenReturn(List.of("-profile /tmp/jlineup-test/jlineup/firefox/12345"));
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(1000L);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(1000L);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_1125x750.png")));
         when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1.5d);
-        Files.createDirectories(new File("/tmp/jlineup-test/jlineup/chrome/12345").toPath());
-        testee.close();
+        Files.createDirectories(new File("/tmp/jlineup-test/jlineup/firefox/12345").toPath());
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
+        testee.runSetupAndTakeScreenshots();
 
         //when
-        testee.runSetupAndTakeScreenshots();
+        testee.close();
 
         //then
         assertThat(Files.exists(new File("/tmp/jlineup-test/jlineup/firefox/12345").toPath()), is(false));
@@ -215,19 +216,19 @@ public class BrowserTest {
                         .withDevices(List.of(DeviceConfig.deviceConfigBuilder().build()))
                         .withPath("/")
                         .build()))
-                .withBrowser(CHROME).build().insertDefaults();
+                .withBrowser(FIREFOX).build().insertDefaults();
         when(runStepConfig.isCleanupProfile()).thenReturn(true);
-        when(runStepConfig.getChromeParameters()).thenReturn(List.of("-P /tmp/jlineup-test/jlineup/firefox/12345"));
+        when(runStepConfig.getFirefoxParameters()).thenReturn(List.of("-P /tmp/jlineup-test/jlineup/firefox/12345"));
         when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(1000L);
         when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(1000L);
         when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/test_image_1125x750.png")));
         when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1.5d);
-        Files.createDirectories(new File("/tmp/jlineup-test/jlineup/chrome/12345").toPath());
-        testee.close();
+        Files.createDirectories(new File("/tmp/jlineup-test/jlineup/firefox/12345").toPath());
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
+        testee.runSetupAndTakeScreenshots();
 
         //when
-        testee.runSetupAndTakeScreenshots();
+        testee.close();
 
         //then
         assertThat(Files.exists(new File("/tmp/jlineup-test/jlineup/firefox/12345").toPath()), is(false));
