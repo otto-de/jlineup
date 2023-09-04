@@ -263,7 +263,9 @@ delete it after the job is finished. If you want to keep the profile,
 set this to false.
 
 A Chrome custom profile directory is specified by `--user-data-dir=/path/to/profile`.
+
 A Firefox custom profile directory is specified by `-profile /path/to/profile`.
+
 Use `{id}` as placeholder in the path to get a unique profile for every job.
 
 * Example: `false`
