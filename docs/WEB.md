@@ -269,4 +269,6 @@ Use `{id}` as placeholder in the path to get a unique profile for every job.
 * Example: `false`
 * Default: `true`
 
+---
+
 [Back to Main page](https://github.com/otto-de/jlineup/blob/main/README.md)
