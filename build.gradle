@@ -7,7 +7,7 @@ buildscript {
         jacksonVersion = '2.15.2'
         nettyVersion = '4.1.97.Final'
         junitJupiterVersion = '5.10.0'
-        slf4jVersion = '2.0.7'
+        slf4jVersion = '2.0.9'
     }
     repositories {
         mavenCentral()
