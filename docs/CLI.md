@@ -262,4 +262,16 @@ Refresh 'before' screenshots for the given url only. Implicitly sets `--keep-exi
 
 ---
 
+### `--cleanup-profile`
+
+If you specify a custom user profile dir for the run, this parameter will delete it after the run.
+It only works, if you specify a custom profile dir for the run.
+_If you don't explicitly set a profile dir, this parameter has no effect._
+
+A Chrome custom profile directory is specified by `--chrome-parameter "--user-data-dir=/path/to/profile"`.
+
+A Firefox custom profile directory is specified by `--firefox-parameter "-profile /path/to/profile"`.
+
+---
+
 [Back to Main page](../README.md)

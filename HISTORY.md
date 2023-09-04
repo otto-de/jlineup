@@ -1,5 +1,10 @@
 # JLineup Release History
 
+## Release 4.9.1
+* Feature: Add `--cleanup-profile` option to CLI to clean up the profile directory after a run.
+* Feature: Add `jlineup.cleanupProfile` option to web version to clean up custom profile directories after a run.
+  __If you use custom profile directories, you have to set this option to `false` to keep the profile.__
+
 ## Release 4.9.0
 * Bugfix: Recent changes to Chrome's webdriver management broke the automatic webdriver download
   This was realized through a change from the webdrivermanager library to Selenium's built-in driver manager
