@@ -34,7 +34,7 @@ dependencies {
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "org.codehaus.janino:janino:3.1.10"
     implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
-    implementation "org.graalvm.sdk:graal-sdk:23.0.1"
+    implementation "org.graalvm.sdk:graal-sdk:23.1.0"
 
     testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
     testCompileOnly 'junit:junit:4.13.2'
