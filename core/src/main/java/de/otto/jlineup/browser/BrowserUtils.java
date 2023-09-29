@@ -71,8 +71,7 @@ public class BrowserUtils {
             options.setProfile(firefoxProfileWithDisabledAnimatedGifs);
             options.addArguments(runStepConfig.getFirefoxParameters());
             if (jobConfig.browser.isHeadless()) {
-                options.setHeadless(true);
-                options.addArguments("-width", device.width + "", "-height", device.height + "");
+                options.addArguments("-headless", "-width", device.width + "", "-height", device.height + "");
             }
             LOG.debug("Creating firefox with options: {}", options.toString());
             driver = new FirefoxDriver(options);
