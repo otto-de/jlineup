@@ -75,9 +75,9 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   FP netty issue
+   Netty does not provide TLS Hostname validation
    ]]></notes>
-        <packageUrl regex="true">^pkg:maven/io\.netty/netty-handler@.*$</packageUrl>
+        <packageUrl regex="true">^pkg:maven/io\.netty/netty-.*@.*$</packageUrl>
         <cve>CVE-2023-4586</cve>
     </suppress>
 </suppressions>
