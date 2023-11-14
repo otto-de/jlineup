@@ -47,8 +47,12 @@ jobs:
     - name: Setup Chrome and Chromedriver (Linux)
       if: runner.os == 'Linux'
       run: |
+        sudo rm -rf /usr/bin/chromedriver
+        sudo rm -rf /usr/bin/google-chrome
         npx @puppeteer/browsers install chrome@119.0.6045.105
         npx @puppeteer/browsers install chromedriver@119.0.6045.105
+        sudo ln -s /home/runner/work/jlineup/jlineup/chromedriver/linux-119.0.6045.105/chromedriver-linux64/chromedriver /usr/bin/chromedriver
+        sudo ln -s /home/runner/work/jlineup/jlineup/chrome/linux-119.0.6045.105/chrome-linux64/chrome /usr/bin/google-chrome
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
