@@ -22,14 +22,16 @@ on:
   schedule:
     - cron: '0 9 * * *'
 
+env:
+  CHROME_VERSION: 119.0.6045.159
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     env:
       DISPLAY: :0
-      SE_BROWSER_PATH=BROWSER_PATH: /home/runner/work/jlineup/jlineup/chrome/linux-119.0.6045.105/chrome-linux64/chrome
-      webdriver.chrome.driver: /home/runner/work/jlineup/jlineup/chromedriver/linux-119.0.6045.105/chromedriver-linux64/chromedriver
+      SE_BROWSER_PATH=BROWSER_PATH: /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome
+      webdriver.chrome.driver: /home/runner/work/jlineup/jlineup/chromedriver/linux-$CHROME_VERSION/chromedriver-linux64/chromedriver
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -49,10 +51,10 @@ jobs:
       run: |
         sudo rm -rf /usr/bin/chromedriver
         sudo rm -rf /usr/bin/google-chrome
-        npx @puppeteer/browsers install chrome@119.0.6045.105
-        npx @puppeteer/browsers install chromedriver@119.0.6045.105
-        sudo ln -s /home/runner/work/jlineup/jlineup/chromedriver/linux-119.0.6045.105/chromedriver-linux64/chromedriver /usr/bin/chromedriver
-        sudo ln -s /home/runner/work/jlineup/jlineup/chrome/linux-119.0.6045.105/chrome-linux64/chrome /usr/bin/google-chrome
+        npx @puppeteer/browsers install chrome@$CHROME_VERSION
+        npx @puppeteer/browsers install chromedriver@$CHROME_VERSION
+        sudo ln -s /home/runner/work/jlineup/jlineup/chromedriver/linux-$CHROME_VERSION/chromedriver-linux64/chromedriver /usr/bin/chromedriver
+        sudo ln -s /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome /usr/bin/google-chrome
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
