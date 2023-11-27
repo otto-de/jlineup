@@ -16,7 +16,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.owasp:dependency-check-gradle:8.4.3'
+        classpath 'org.owasp:dependency-check-gradle:9.0.1'
     }
 }
 
