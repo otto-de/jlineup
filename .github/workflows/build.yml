@@ -58,7 +58,9 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew dependencyCheckAggregate build
+      env:
+        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      run: ./gradlew -DNVD_API_KEY=$NVD_API_KEY dependencyCheckAggregate build
     - name: Archive dependency check report
       uses: actions/upload-artifact@v3
       with:
