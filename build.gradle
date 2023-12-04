@@ -55,6 +55,9 @@ nexusStaging {
 }
 
 dependencyCheck {
+    nvd {
+        apiKey=System.getenv("NVD_API_KEY")
+    }
     failBuildOnCVSS = 4
     suppressionFiles = ["${rootDir}/dependency-check-suppressions.xml"]
 }

@@ -33,9 +33,9 @@ jobs:
       SE_BROWSER_PATH=BROWSER_PATH: /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome
       webdriver.chrome.driver: /home/runner/work/jlineup/jlineup/chromedriver/linux-$CHROME_VERSION/chromedriver-linux64/chromedriver
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: 17
@@ -57,10 +57,20 @@ jobs:
         sudo ln -s /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome /usr/bin/google-chrome
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew dependencyCheckAggregate build
+    - name: Dependency check and build with gradle
+      if: ${{ github.event_name != 'pull_request' && github.event_name != 'merge_group' }}
+      env:
+        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      run: |
+        if [ -z "$NVD_API_KEY" ]; then echo "NVD API KEY is NULL"; else echo "NVD API key is not NULL"; fi
+        ./gradlew -DNVD_API_KEY="$NVD_API_KEY" dependencyCheckAggregate build
     - name: Archive dependency check report
+      if: ${{ github.event_name != 'pull_request' && github.event_name != 'merge_group' }}
       uses: actions/upload-artifact@v3
       with:
         name: dependency-check-report
         path: build/reports/dependency-check-report.html
+    - name: Build with gradle
+      if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+      run: |
+        ./gradlew build
