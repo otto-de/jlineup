@@ -16,7 +16,7 @@ dependencies {
     implementation "software.amazon.awssdk.crt:aws-crt:0.29.1"
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.3'
     implementation 'com.amazonaws:aws-lambda-java-events:3.11.3'
-    implementation platform('com.amazonaws:aws-xray-recorder-sdk-bom:2.14.0')
+    implementation platform('com.amazonaws:aws-xray-recorder-sdk-bom:2.15.0')
     implementation 'com.amazonaws:aws-xray-recorder-sdk-core'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk'
     implementation 'com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor'
