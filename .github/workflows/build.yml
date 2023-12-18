@@ -65,7 +65,7 @@ jobs:
         if [ -z "$NVD_API_KEY" ]; then echo "NVD API KEY is NULL"; else echo "NVD API key is not NULL"; fi
         ./gradlew -DNVD_API_KEY="$NVD_API_KEY" dependencyCheckAggregate build
     - name: Archive dependency check report
-      if: ${{ github.event_name != 'pull_request' && github.event_name != 'merge_group' }}
+      if: ${{ github.event_name == 'schedule' }}
       uses: actions/upload-artifact@v3
       with:
         name: dependency-check-report
