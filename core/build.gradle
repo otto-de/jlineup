@@ -23,7 +23,7 @@ dependencies {
     implementation "io.netty:netty-transport-native-epoll:${nettyVersion}"
     implementation "io.netty:netty-transport-native-kqueue:${nettyVersion}"
 
-    implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.3'
 
     api "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
     api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
@@ -32,7 +32,7 @@ dependencies {
     api "ch.qos.logback:logback-classic:1.4.14"
 
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
-    implementation "org.codehaus.janino:janino:3.1.10"
+    implementation "org.codehaus.janino:janino:3.1.11"
     implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
     implementation "org.graalvm.sdk:graal-sdk:23.1.1"
 
