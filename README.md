@@ -9,6 +9,8 @@
 
 ## News
 
+**2023-12-19**: Ho ho ho, **JLineup 4.9.2** is here! This should fix the flaky Chrome [issue](https://github.com/SeleniumHQ/selenium/issues/13091) with problems parsing a JSON response.
+
 **2023-08-16**: **JLineup 4.9.0**, which fixes latest Chromedriver issues, requires **Java 17** or later due to dependency updates that have this requirement.
 
 **2023-03-09**: **Chrome 111** requires a new parameter to fix the connection with the current Selenium version built
