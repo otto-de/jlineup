@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.9.2 - 2023-12-19
+* Dependency updates - especially Selenium 4.16.1
+
 ## Release 4.9.1 - 2023-10-05
 * Feature: Add `--cleanup-profile` option to CLI to clean up the profile directory after a run.
 * Feature: Add `jlineup.cleanupProfile` option to web version to clean up custom profile directories after a run.
