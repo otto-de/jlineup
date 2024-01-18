@@ -468,7 +468,7 @@ public class BrowserTest {
         UrlConfig urlConfig = urlConfigBuilder()
                 .withPath("/")
                 .withWindowWidths(ImmutableList.of(600))
-                .withJavaScript("console.log(1);jlineup.sleep(5);console.log(2);console.log(3);jlineup.sleep(2);console.log(4);jlineup.sleep(1);")
+                .withJavaScript("console.log(1);jlineup.sleep(5);console.log(2);console.log(3);jlineup.sleep(2);console.log(4);jlineup.sleep(1)")
                 .build();
         JobConfig jobConfig = jobConfigBuilder()
                 .withBrowser(FIREFOX_HEADLESS)
@@ -491,9 +491,9 @@ public class BrowserTest {
 
         verify(webDriverMock, times(1)).executeScript("console.log(1);");
         verify(webDriverMock, times(1)).executeScript("/* sleeping 5 milliseconds */");
-        verify(webDriverMock, times(1)).executeScript("console.log(2);console.log(3);");
+        verify(webDriverMock, times(1)).executeScript(";console.log(2);console.log(3);");
         verify(webDriverMock, times(1)).executeScript("/* sleeping 2 milliseconds */");
-        verify(webDriverMock, times(1)).executeScript("console.log(4);");
+        verify(webDriverMock, times(1)).executeScript(";console.log(4);");
         verify(webDriverMock, times(1)).executeScript("/* sleeping 1 milliseconds */");
 
     }

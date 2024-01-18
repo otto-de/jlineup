@@ -654,9 +654,9 @@ public class Browser implements AutoCloseable {
         executeJavaScript(parts[0]);
 
         for (int i = 1; i < parts.length; i++) {
-            String secondsFollowedByClosingBracketAndSemicolonAndMoreJavaScript = parts[i];
-            String[] secondsAndRemainingJS = secondsFollowedByClosingBracketAndSemicolonAndMoreJavaScript.split("\\);", 2);
-            int milliseconds = Integer.parseInt(secondsAndRemainingJS[0]);
+            String secondsFollowedByClosingBracketAndMaybeASemicolonAndMoreJavaScript = parts[i];
+            String[] secondsAndRemainingJS = secondsFollowedByClosingBracketAndMaybeASemicolonAndMoreJavaScript.split("\\)", 2);
+            int milliseconds = Integer.parseInt(secondsAndRemainingJS[0].replace(";",""));
             LOG.debug("Sleeping for {} milliseconds", milliseconds);
             executeJavaScript("/* sleeping " + milliseconds + " milliseconds */");
             Thread.sleep(milliseconds);
