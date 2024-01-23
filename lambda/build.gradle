@@ -3,7 +3,7 @@ apply plugin: 'org.springframework.boot'
 buildscript {
     ext {
         awsSdkVersion = '2.23.5'
-        amazonAwsJavaSdkVersion = '1.12.639'
+        amazonAwsJavaSdkVersion = '1.12.642'
     }
 }
 
