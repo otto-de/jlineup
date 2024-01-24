@@ -49,6 +49,8 @@ jobs:
     - name: Setup Chrome and Chromedriver (Linux)
       if: runner.os == 'Linux'
       run: |
+        sudo apt-get update
+        sudo apt-get remove google-chrome-stable
         sudo rm -rf /usr/bin/chromedriver
         sudo rm -rf /usr/bin/google-chrome
         npx @puppeteer/browsers install chrome@$CHROME_VERSION
