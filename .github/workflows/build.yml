@@ -30,8 +30,8 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       DISPLAY: :0
-      SE_BROWSER_PATH=BROWSER_PATH: /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome
-      webdriver.chrome.driver: /home/runner/work/jlineup/jlineup/chromedriver/linux-$CHROME_VERSION/chromedriver-linux64/chromedriver
+      SE_BROWSER_PATH=BROWSER_PATH: /usr/bin/google-chrome
+      webdriver.chrome.driver: /usr/bin/chromedriver
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
@@ -63,6 +63,8 @@ jobs:
         sudo ln -s /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome /usr/bin/google-chrome
         echo "Executing: /usr/bin/google-chrome --version"
         /usr/bin/google-chrome --version
+        echo $SE_BROWSER_PATH
+        echo $BROWSER_PATH
         exit 1
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
