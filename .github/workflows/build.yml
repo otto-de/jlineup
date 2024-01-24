@@ -61,6 +61,9 @@ jobs:
         sudo ln -s /home/runner/work/jlineup/jlineup/chromedriver/linux-$CHROME_VERSION/chromedriver-linux64/chromedriver /usr/bin/chromedriver
         echo "Executing: sudo ln -s /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome /usr/bin/google-chrome"
         sudo ln -s /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome /usr/bin/google-chrome
+        echo "Executing: /usr/bin/google-chrome --version"
+        /usr/bin/google-chrome --version
+        exit 1
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Dependency check and build with gradle
