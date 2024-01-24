@@ -50,7 +50,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get remove google-chrome-stable
+        sudo apt-get remove google-chrome-stable chromium -y
         sudo rm -rf /usr/bin/chromedriver
         sudo rm -rf /usr/bin/google-chrome
         echo "Executing: npx @puppeteer/browsers install chrome@$CHROME_VERSION"
