@@ -13,7 +13,7 @@ dependencies {
     implementation "software.amazon.awssdk:lambda:${awsSdkVersion}"
     implementation "software.amazon.awssdk:s3:${awsSdkVersion}"
     implementation "software.amazon.awssdk:s3-transfer-manager:${awsSdkVersion}"
-    implementation "software.amazon.awssdk.crt:aws-crt:0.29.7"
+    implementation "software.amazon.awssdk.crt:aws-crt:0.29.9"
     implementation 'com.amazonaws:aws-lambda-java-core:1.2.3'
     implementation 'com.amazonaws:aws-lambda-java-events:3.11.4'
     implementation platform('com.amazonaws:aws-xray-recorder-sdk-bom:2.15.0')
