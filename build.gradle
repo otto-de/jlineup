@@ -6,7 +6,7 @@ buildscript {
         seleniumVersion = '4.17.0'
         jacksonVersion = '2.16.1'
         nettyVersion = '4.1.106.Final'
-        junitJupiterVersion = '5.10.1'
+        junitJupiterVersion = '5.10.2'
         slf4jVersion = '2.0.11'
     }
     repositories {
