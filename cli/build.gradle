@@ -1,5 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.github.johnrengelman.shadow'
+
 
 dependencies {
     implementation project(":jlineup-core")
@@ -13,15 +18,13 @@ dependencies {
     testCompileOnly 'junit:junit:4.13.2'
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
 
-    //runtimeOnly project(":jlineup-lambda") <- This increases cli jar size by ~ 30 MB
-
     testImplementation "org.mockito:mockito-core:5.10.0"
     testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
         exclude group: 'junit', module: 'junit-dep'
     }
-
 }
 
+/*
 configurations {
     [apiElements, runtimeElements].each {
         it.outgoing.artifacts.removeIf {
@@ -33,6 +36,12 @@ configurations {
 
 tasks.distZip.enabled = false
 tasks.distTar.enabled = false
+
+jar {
+    enabled = false
+}
+
+*/
 
 tasks.bootDistZip {
     archiveBaseName = project.archivesBaseName
@@ -79,9 +88,7 @@ task sourcesJar(type: Jar) {
     archiveClassifier = 'sources'
 }
 
-jar {
-    enabled = false
-}
+
 
 application {
     mainClass.set("de.otto.jlineup.cli.Main")

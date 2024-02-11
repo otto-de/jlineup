@@ -1,5 +1,6 @@
 package de.otto.jlineup.file;
 
+import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.otto.jlineup.browser.BrowserStep;
@@ -11,10 +12,11 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@JsonDeserialize(builder = FileTracker.Builder.class)
+//@JsonDeserialize(builder = FileTracker.Builder.class)
 public class FileTracker {
 
     public final JobConfig jobConfig;
+    @JsonMerge
     public final ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts;
     public final ConcurrentHashMap<BrowserStep, String> browsers;
 
@@ -99,9 +101,10 @@ public class FileTracker {
         assert contexts != null;
         ScreenshotContextFileTracker screenshotContextFileTracker = contexts.get(hash);
         if (screenshotContextFileTracker == null) {
-            throw new IOException("The files in the working directory don't fit the given config.\n" +
-                    "Are you trying to run the 'compare' step for files made with a different config?\n" +
-                    "Please run JLineup before and after with the current config before trying again.");
+            throw new IOException("""
+                    The files in the working directory don't fit the given config.
+                    Are you trying to run the 'compare' step for files made with a different config?
+                    Please run JLineup before and after with the current config before trying again.""");
         }
         return screenshotContextFileTracker.screenshots;
     }
@@ -162,5 +165,14 @@ public class FileTracker {
         public FileTracker build() {
             return new FileTracker(this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "FileTracker{" +
+                "jobConfig=" + jobConfig +
+                ", contexts=" + contexts +
+                ", browsers=" + browsers +
+                '}';
     }
 }

@@ -57,8 +57,6 @@ public class Browser implements AutoCloseable {
     public static final int DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS = 60;
     public static final String JLINEUP_SLEEP_JS_OPENER = "jlineup.sleep";
 
-    private final boolean localRun = true;
-
     public enum Type {
         @JsonProperty(value = "Firefox")
         FIREFOX,
@@ -185,11 +183,12 @@ public class Browser implements AutoCloseable {
                     runTestSetupOrCleanup(testSetupContexts);
                     LOG.debug("Test setup done.");
                 }
-                if (localRun) {
-                    takeScreenshots(screenshotContextList);
-                } else {
-                    CloudBrowser cloudBrowser = CloudBrowserFactory.createCloudBrowser(jobConfig, fileService);
+                try {
+                    CloudBrowser cloudBrowser = CloudBrowserFactory.createCloudBrowser(runStepConfig, jobConfig, fileService);
                     cloudBrowser.takeScreenshots(screenshotContextList);
+                } catch (ClassNotFoundException e) {
+                    LOG.info(e.getMessage());
+                    takeScreenshots(screenshotContextList);
                 }
             } finally {
                 if (!testCleanupContexts.isEmpty()) {
@@ -366,7 +365,7 @@ public class Browser implements AutoCloseable {
         }
 
         if (isThereStorage(screenshotContext)) {
-            //get root page from url to be able to set cookies afterwards
+            //get root page from url to be able to set cookies afterward
             //if you set cookies before getting the page once, it will fail
             if (!localDriver.getCurrentUrl().equals(rootUrl)) {
                 LOG.info(String.format("Getting root url: %s to set local and session storage", rootUrl));
@@ -387,7 +386,7 @@ public class Browser implements AutoCloseable {
 
         //now get the real page
         //Selenium's get() method blocks until the browser/page fires an onload event (files and images referenced in the html have been loaded,
-        //but there might be JS calls that load more stuff dynamically afterwards).
+        //but there might be JS calls that load more stuff dynamically afterward).
         localDriver.get(url);
 
         waitForSelectors(screenshotContext.urlConfig.waitForSelectors,

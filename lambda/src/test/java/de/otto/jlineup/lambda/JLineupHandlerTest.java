@@ -51,14 +51,14 @@ class JLineupHandlerTest {
         JLineupHandler handler = new JLineupHandler();
 
         for (ScreenshotContext screenshotContext : screenshotContextsBefore) {
-            LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, RunStep.before);
+            LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, RunStep.before, screenshotContext.urlKey);
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             handler.handleRequest(new ByteArrayInputStream(objectMapper.writeValueAsBytes(lambdaRequestPayload)), output, context);
             assertTrue(output.toString().contains("Ok"));
         }
 
         for (ScreenshotContext screenshotContext : screenshotContextsAfter) {
-            LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, RunStep.after_only);
+            LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, RunStep.after_only, screenshotContext.urlKey);
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             handler.handleRequest(new ByteArrayInputStream(objectMapper.writeValueAsBytes(lambdaRequestPayload)), output, context);
             assertTrue(output.toString().contains("Ok"));

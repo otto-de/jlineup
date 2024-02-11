@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
@@ -41,8 +42,8 @@ public class JLineupHandler implements RequestStreamHandler {
     public void handleRequest(InputStream input, OutputStream output, Context context) {
         try {
             LambdaRequestPayload event = objectMapper.readValue(input, LambdaRequestPayload.class);
-            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext).withStep(event.step.toBrowserStep()).withUrlConfig(event.jobConfig.urls.get(event.screenshotContext.url)).build();
-            LambdaRunner runner = createRun(event.runId, event.step, event.jobConfig, screenshotContext);
+            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext).withStep(event.step.toBrowserStep()).withUrlKey(event.urlKey).withUrlConfig(event.jobConfig.urls.get(event.screenshotContext.url)).build();
+            LambdaRunner runner = createRun(event.runId, event.step == RunStep.after ? RunStep.after_only : event.step, event.jobConfig, screenshotContext);
             runner.run();
 
             AwsCredentialsProviderChain cp = AwsCredentialsProviderChain
@@ -75,7 +76,10 @@ public class JLineupHandler implements RequestStreamHandler {
                 .withScreenshotsDirectory("jlineup-{id}".replace("{id}", id))
                 .withReportDirectory("jlineup-{id}".replace("{id}", id))
                 .withChromeParameters(ImmutableList.of(
+                        "--single-process",
                         "--headless=new",
+                        "--enable-logging",
+                        "--v=1",
                         "--disable-gpu",
                         "--no-sandbox",
                         "--use-spdy=off",
@@ -86,7 +90,7 @@ public class JLineupHandler implements RequestStreamHandler {
                         "--user-data-dir=/tmp/jlineup/chrome-profile-" + id))
                 .withStep(step)
                 .build();
-        return new LambdaRunner(jobConfig, runStepConfig, screenshotContext);
+        return new LambdaRunner(id, jobConfig, runStepConfig, screenshotContext);
     }
 
 }

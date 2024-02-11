@@ -98,8 +98,30 @@ public class ScreenshotContextFileTracker {
             return this;
         }
 
+        public Builder addScreenshots(Map<Integer, Map<BrowserStep, String>> val) {
+            if (screenshots == null) {
+                screenshots = new ConcurrentSkipListMap<>();
+            }
+            for (Map.Entry<Integer, Map<BrowserStep, String>> integerMapEntry : val.entrySet()) {
+                if (screenshots.containsKey(integerMapEntry.getKey())) {
+                    screenshots.get(integerMapEntry.getKey()).putAll(integerMapEntry.getValue());
+                } else {
+                    screenshots.put(integerMapEntry.getKey(), integerMapEntry.getValue());
+                }
+            }
+            return this;
+        }
+
         public ScreenshotContextFileTracker build() {
             return new ScreenshotContextFileTracker(this);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ScreenshotContextFileTracker{" +
+                "screenshotContext=" + screenshotContext +
+                ", screenshots=" + screenshots +
+                '}';
     }
 }

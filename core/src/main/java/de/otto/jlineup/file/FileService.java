@@ -19,6 +19,7 @@ import java.nio.file.*;
 import java.util.Map;
 
 import static de.otto.jlineup.file.FileUtils.clearDirectory;
+import static de.otto.jlineup.file.ScreenshotContextFileTracker.screenshotContextFileTrackerBuilder;
 import static java.lang.invoke.MethodHandles.lookup;
 
 public class FileService {
@@ -31,7 +32,7 @@ public class FileService {
     public static final String PNG_EXTENSION = ".png";
     private static final int MAX_URL_TO_FILENAME_LENGTH = 180;
 
-    public static final String FILETRACKER_FILENAME = "files.json";
+    public static final String DEFAULT_FILETRACKER_FILENAME = "files.json";
     public static final String REPORT_HTML_FILENAME = "report.html";
     public static final String LEGACY_REPORT_HTML_FILENAME = "report_legacy.html";
     public static final String REPORT_JSON_FILENAME = "report.json";
@@ -39,6 +40,8 @@ public class FileService {
     private final RunStepConfig runStepConfig;
 
     private final FileTracker fileTracker;
+
+    private final String filetrackerFilename;
 
     public FileTracker getFileTracker() {
         return fileTracker;
@@ -49,13 +52,18 @@ public class FileService {
     }
 
     public FileService(RunStepConfig runStepConfig, JobConfig jobConfig) {
+        this(runStepConfig, jobConfig, DEFAULT_FILETRACKER_FILENAME);
+    }
+
+    public FileService(RunStepConfig runStepConfig, JobConfig jobConfig, String filetrackerFilename) {
         this.runStepConfig = runStepConfig;
+        this.filetrackerFilename = filetrackerFilename;
         if (!runStepConfig.isKeepExisting() && (runStepConfig.getStep() == RunStep.before || runStepConfig.getStep() == RunStep.after_only)) {
             //Only create fresh file tracker file when step is before or after_only and --keep-existing is not used.
             this.fileTracker = FileTracker.create(jobConfig);
         } else {
             //Step is after or --keep-existing is set, which leads to reading old file tracker file from former before step, but setting new jobConfig!
-            Path path = Paths.get(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory(), FILETRACKER_FILENAME);
+            Path path = Paths.get(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory(), this.filetrackerFilename);
             FileTracker fileTrackerFromFile;
             try {
                 fileTrackerFromFile = JacksonWrapper.readFileTrackerFile(path.toFile());
@@ -227,7 +235,11 @@ public class FileService {
     }
 
     public void writeFileTrackerData() throws IOException {
-        Path path = Paths.get(getReportDirectory().toString(), FILETRACKER_FILENAME);
+        writeFileTrackerData(this.filetrackerFilename, this.fileTracker);
+    }
+
+    private void writeFileTrackerData(String filetrackerFilename, FileTracker fileTracker) throws IOException {
+        Path path = Paths.get(getReportDirectory().toString(), filetrackerFilename);
         Files.write(path, JacksonWrapper.serializeObject(fileTracker).getBytes());
     }
 
@@ -242,6 +254,25 @@ public class FileService {
     public void writeFileTrackerDataForScreenshotContextOnly(ScreenshotContext context) throws IOException {
         Path path = Paths.get(getScreenshotDirectory().toString(), FILE_SEPARATOR, String.valueOf(context.contextHash()), "metadata_" + context.step.name() + ".json");
         Files.write(path, JacksonWrapper.serializeObject(fileTracker.contexts.get(context.contextHash())).getBytes());
+    }
+
+    public void mergeContextFileTrackersIntoFileTracker(Path directory, FilenameFilter filenameFilter) throws IOException {
+        File dir = directory.toFile();
+        File[] files = dir.listFiles(filenameFilter);
+        assert files != null;
+        for (File file : files) {
+            FileTracker part = JacksonWrapper.readFileTrackerFile(file);
+
+            //fileTracker.contexts.putAll(part.contexts);
+            part.contexts.forEach((contextHash, screenshotContextFileTracker) -> fileTracker.contexts.merge(contextHash, screenshotContextFileTracker, (existingContext, newContext) -> screenshotContextFileTrackerBuilder()
+                    .withScreenshotContext(existingContext.screenshotContext)
+                    .withScreenshots(existingContext.screenshots)
+                    .addScreenshots(newContext.screenshots)
+                    .build()));
+
+            fileTracker.browsers.putAll(part.browsers);
+        }
+        writeFileTrackerData();
     }
 }
 

@@ -1,5 +1,3 @@
-apply plugin: 'org.springframework.boot'
-
 buildscript {
     ext {
         awsSdkVersion = '2.23.16'
@@ -7,8 +5,17 @@ buildscript {
     }
 }
 
+plugins {
+    id 'java-library'
+}
+
+apply plugin: 'org.springframework.boot'
+
 dependencies {
     implementation project(":jlineup-core")
+    implementation project(":jlineup-cli")
+    implementation "info.picocli:picocli:4.7.5"
+    annotationProcessor 'info.picocli:picocli-codegen:4.7.5'
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "software.amazon.awssdk:lambda:${awsSdkVersion}"
     implementation "software.amazon.awssdk:s3:${awsSdkVersion}"
@@ -48,7 +55,6 @@ tasks.bootDistTar {
 }
 
 test {
-    useJUnitPlatform()
     testLogging {
         exceptionFormat = 'full'
         showStandardStreams = true
@@ -79,15 +85,23 @@ task sourcesJar(type: Jar) {
     archiveClassifier = 'sources'
 }
 
-task copyRuntimeDependencies(type: Copy) {
+task copyDependenciesToLib(type: Copy) {
+    into "$buildDir/output/lib"
     from configurations.runtimeClasspath
-    into 'build/dependency'
 }
 
-build.dependsOn copyRuntimeDependencies
+build.dependsOn copyDependenciesToLib
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
+
+compileJava {
+    options.compilerArgs.addAll(["-Aproject=${project.group}/${project.name}"])
+}
+
+application {
+    mainClass.set("de.otto.jlineup.lambda.Main")
+}
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {
@@ -159,7 +173,6 @@ publishing {
 signing {
     sign publishing.publications.mavenJava
 }
-
 
 javadoc {
     if (JavaVersion.current().isJava9Compatible()) {
