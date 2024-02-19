@@ -10,8 +10,6 @@ import de.otto.jlineup.config.JobConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.rmi.ServerError;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,17 +52,21 @@ public class Utils {
             threads = 1;
         }
 
-        final ThreadFactory factory = target -> {
-            String name = String.format("%s-%d", baseName, threadCounter.getAndIncrement());
-            final Thread thread = new Thread(target, name);
-            LOG.debug("Created new worker thread.");
-            thread.setUncaughtExceptionHandler((t, e) -> LOG.error("Exception", e));
-            return thread;
-        };
+        final ThreadFactory factory = createThreadFactory(baseName);
 
         LOG.info("Using a thread pool with {} thread(s) to make screenshots.", threads);
 
         return Executors.newFixedThreadPool(threads, factory);
+    }
+
+    public static ThreadFactory createThreadFactory(String baseName) {
+        return target -> {
+            String name = String.format("%s-%d", baseName, threadCounter.getAndIncrement());
+            final Thread thread = new Thread(target, name);
+            LOG.debug("Created new worker thread named '{}'.", name);
+            thread.setUncaughtExceptionHandler((t, e) -> LOG.error("Exception", e));
+            return thread;
+        };
     }
 
     public static void setLogLevelToDebug() {

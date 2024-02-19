@@ -4,7 +4,8 @@ FROM public.ecr.aws/lambda/java:21-x86_64
 
 USER root
 
-RUN dnf update -y
+RUN echo "2023.3.20240205" > /etc/dnf/vars/releasever
+RUN dnf clean all; dnf upgrade -y
 RUN dnf install -y \
     alsa-lib \
     at-spi2-atk \
@@ -41,12 +42,11 @@ RUN dnf install -y \
     xorg-x11-utils \
     xdg-utils \
     vulkan \
-    nss \
     libva \
     pulseaudio-libs \
+    nss \
     jq
 
-#RUN rpm -i https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
 
 RUN mkdir ${LAMBDA_TASK_ROOT}/lib
 RUN mkdir ${LAMBDA_TASK_ROOT}/lib/firefox

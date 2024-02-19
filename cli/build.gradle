@@ -24,7 +24,6 @@ dependencies {
     }
 }
 
-/*
 configurations {
     [apiElements, runtimeElements].each {
         it.outgoing.artifacts.removeIf {
@@ -40,8 +39,6 @@ tasks.distTar.enabled = false
 jar {
     enabled = false
 }
-
-*/
 
 tasks.bootDistZip {
     archiveBaseName = project.archivesBaseName

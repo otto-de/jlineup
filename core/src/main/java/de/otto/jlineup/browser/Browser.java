@@ -185,6 +185,7 @@ public class Browser implements AutoCloseable {
                 }
                 try {
                     CloudBrowser cloudBrowser = CloudBrowserFactory.createCloudBrowser(runStepConfig, jobConfig, fileService);
+                    LOG.info("Using cloud browser: {}", cloudBrowser.getClass().getCanonicalName());
                     cloudBrowser.takeScreenshots(screenshotContextList);
                 } catch (ClassNotFoundException e) {
                     LOG.info(e.getMessage());

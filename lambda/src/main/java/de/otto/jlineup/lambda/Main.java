@@ -4,7 +4,7 @@ import de.otto.jlineup.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import de.otto.jlineup.cli.JLineup;
+//import de.otto.jlineup.cli.JLineup;
 
 import static java.lang.invoke.MethodHandles.lookup;
 
@@ -17,8 +17,8 @@ public class Main {
 
         Utils.setDebugLogLevelsOfSelectedThirdPartyLibsToWarn();
 
-        int exitCode = new CommandLine(new JLineup()).execute(args);
-        exitWithExitCode(exitCode);
+        //int exitCode = new CommandLine(new JLineup()).execute(args);
+        //exitWithExitCode(exitCode);
     }
 
     private static void exitWithExitCode(int exitCode) {
