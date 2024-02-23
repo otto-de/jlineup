@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
+import static de.otto.jlineup.browser.BrowserUtils.getFullPathToLogFile;
 import static java.lang.invoke.MethodHandles.lookup;
 
 public class JLineupRunner {
@@ -55,7 +56,7 @@ public class JLineupRunner {
             }
         }
 
-        MDC.put(REPORT_LOG_NAME_KEY, getFullPathOfReportDir(runStepConfig) + "/" + LOGFILE_NAME);
+        MDC.put(REPORT_LOG_NAME_KEY, getFullPathToLogFile(runStepConfig));
         LOG.info("JLineup run started for step '{}'", runStepConfig.getStep());
 
         if (runStepConfig.getStep() == RunStep.before || runStepConfig.getStep() == RunStep.after|| runStepConfig.getStep() == RunStep.after_only) {

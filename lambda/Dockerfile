@@ -4,7 +4,7 @@ FROM public.ecr.aws/lambda/java:21-x86_64
 
 USER root
 
-RUN echo "2023.3.20240205" > /etc/dnf/vars/releasever
+RUN echo "2023.3.20240219" > /etc/dnf/vars/releasever
 RUN dnf clean all; dnf upgrade -y
 RUN dnf install -y \
     alsa-lib \
@@ -57,13 +57,15 @@ RUN ln -s ${LAMBDA_TASK_ROOT}/lib/firefox/firefox /usr/bin/firefox
 RUN rm /tmp/firefox.tar.bz2
 
 #RUN CHROME_FOR_TESTING_RELEASE="$(curl --silent https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq '.channels.Stable')"; \
-RUN CHROME_FOR_TESTING_RELEASE=$(curl --silent https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq '.milestones."119"') \
+RUN curl --insecure https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json
+RUN CHROME_FOR_TESTING_RELEASE=$(curl --insecure --silent https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq '.milestones."119"') \
     CHROME_DOWNLOAD_URL="$(echo ""${CHROME_FOR_TESTING_RELEASE}"" | jq -r '.downloads.chrome[] | select(.platform == "linux64") | .url')"; \
-    curl --remote-name --silent "${CHROME_DOWNLOAD_URL}"; \
+    curl --insecure --remote-name --silent "${CHROME_DOWNLOAD_URL}"; \
+    ls -alh; \
     unzip -q chrome-linux64.zip; \
     ln --symbolic "${PWD}/chrome-linux64/chrome" /usr/local/bin/chrome; \
     CHROMEDRIVER_DOWNLOAD_URL="$(echo ""${CHROME_FOR_TESTING_RELEASE}"" | jq -r '.downloads.chromedriver[] | select(.platform == "linux64") | .url')"; \
-    curl --remote-name --silent "${CHROMEDRIVER_DOWNLOAD_URL}"; \
+    curl --insecure --remote-name --silent "${CHROMEDRIVER_DOWNLOAD_URL}"; \
     unzip -q chromedriver-linux64.zip; \
     install --mode=+rwx "${PWD}/chromedriver-linux64/chromedriver" /usr/local/bin/chromedriver
 

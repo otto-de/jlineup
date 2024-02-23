@@ -91,15 +91,6 @@ subprojects {
     }
 }
 
-// This function converts 1.8 -> 8
-static String compat(String src) {
-    if (src.contains('.')) {
-        src.substring(src.lastIndexOf('.')+1)
-    } else {
-        src
-    }
-}
-
 static String runCommand(command) {
     Process proc = command.execute()
     def out = new StringBuffer()

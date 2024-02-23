@@ -13,8 +13,7 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
     implementation project(":jlineup-core")
-    implementation "info.picocli:picocli:4.7.5"
-    annotationProcessor 'info.picocli:picocli-codegen:4.7.5'
+    implementation project(":jlineup-cli")
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "software.amazon.awssdk:lambda:${awsSdkVersion}"
     implementation "software.amazon.awssdk:s3:${awsSdkVersion}"
@@ -42,9 +41,6 @@ configurations {
     }
 }
 
-tasks.distZip.enabled = false
-tasks.distTar.enabled = false
-
 tasks.bootDistZip {
     archiveBaseName = project.archivesBaseName
 }
@@ -61,7 +57,7 @@ test {
 }
 
 jar {
-    enabled = false
+    enabled = true
 }
 
 application {
@@ -104,7 +100,7 @@ application {
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {
-        def version = compat(sourceCompatibility)
+        def version = sourceCompatibility
         project.logger.info("Configuring $name to use --release $version")
         println("Configuring $name to use --release $version")
         options.compilerArgs.addAll(['--release', version])

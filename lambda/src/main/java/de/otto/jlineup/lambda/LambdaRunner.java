@@ -31,6 +31,11 @@ public class LambdaRunner {
     public static final String LOGFILE_NAME = "jlineup.log";
 
     private final JobConfig jobConfig;
+
+    public RunStepConfig getRunStepConfig() {
+        return runStepConfig;
+    }
+
     private final RunStepConfig runStepConfig;
     private final ScreenshotContext screenshotContext;
 

@@ -5,7 +5,6 @@ plugins {
 apply plugin: 'org.springframework.boot'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-
 dependencies {
     implementation project(":jlineup-core")
     implementation "info.picocli:picocli:4.7.5"
@@ -26,9 +25,6 @@ dependencies {
 
 configurations {
     [apiElements, runtimeElements].each {
-        it.outgoing.artifacts.removeIf {
-            it.buildDependencies.getDependencies(null).contains(jar)
-        }
         it.outgoing.artifact(bootJar)
     }
 }
@@ -36,9 +32,9 @@ configurations {
 tasks.distZip.enabled = false
 tasks.distTar.enabled = false
 
-jar {
-    enabled = false
-}
+//jar {
+//    enabled = true
+//}
 
 tasks.bootDistZip {
     archiveBaseName = project.archivesBaseName
@@ -61,7 +57,7 @@ compileJava {
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {
-        def version = compat(sourceCompatibility)
+        def version = sourceCompatibility
         project.logger.info("Configuring $name to use --release $version")
         println("Configuring $name to use --release $version")
         options.compilerArgs.addAll(['--release', version])
@@ -84,8 +80,6 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     archiveClassifier = 'sources'
 }
-
-
 
 application {
     mainClass.set("de.otto.jlineup.cli.Main")
@@ -156,11 +150,4 @@ publishing {
 
 signing {
     sign publishing.publications.mavenJava
-}
-
-
-javadoc {
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
 }

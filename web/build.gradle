@@ -125,7 +125,7 @@ targetCompatibility = JavaVersion.VERSION_17
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {
-        def version = compat(sourceCompatibility)
+        def version = sourceCompatibility
         project.logger.info("Configuring $name to use --release $version")
         println("Configuring $name to use --release $version")
         options.compilerArgs.addAll(['--release', version])
@@ -229,11 +229,4 @@ publishing {
 
 signing {
     sign publishing.publications.mavenJava
-}
-
-
-javadoc {
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
 }

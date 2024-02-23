@@ -35,6 +35,7 @@ dependencies {
     implementation "org.codehaus.janino:janino:3.1.12"
     implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE'
     implementation "org.graalvm.sdk:graal-sdk:23.1.2"
+    implementation "org.reflections:reflections:0.10.2"
 
     testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
     testCompileOnly 'junit:junit:4.13.2'
@@ -164,18 +165,12 @@ signing {
     sign publishing.publications.mavenJava
 }
 
-javadoc {
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
-}
-
 targetCompatibility = JavaVersion.VERSION_17
 sourceCompatibility = JavaVersion.VERSION_17
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {
-        def version = compat(sourceCompatibility)
+        def version = sourceCompatibility
         project.logger.info("Configuring $name to use --release $version")
         println("Configuring $name to use --release $version")
         options.compilerArgs.addAll(['--release', version])

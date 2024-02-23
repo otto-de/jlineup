@@ -2,11 +2,13 @@ package de.otto.jlineup.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
-import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
@@ -23,14 +25,22 @@ import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryUpload;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
+
+import static de.otto.jlineup.JLineupRunner.LOGFILE_NAME;
+import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
 
 public class JLineupHandler implements RequestStreamHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(JLineupHandler.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = JsonMapper.builder()
+            .configure(MapperFeature.USE_ANNOTATIONS, false)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .build();
 
     private S3TransferManager transferManager;
 
@@ -61,7 +71,12 @@ public class JLineupHandler implements RequestStreamHandler {
 
             transferManager = S3TransferManager.builder().s3Client(S3AsyncClient.crtBuilder().credentialsProvider(cp).build()).build();
 
-            CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket("jlineuptest-marco").source(Paths.get("/tmp/jlineup/run-" + event.runId))).completionFuture();
+            Path logfile = Paths.get(getFullPathOfReportDir(runner.getRunStepConfig()) + "/" + LOGFILE_NAME);
+            Path workingDir = Paths.get("/tmp/jlineup/run-" + event.runId);
+            if (Files.exists(logfile)) {
+                Files.move(logfile, Paths.get(getFullPathOfReportDir(runner.getRunStepConfig()) + "/context_" + screenshotContext.contextHash() + "_" + LOGFILE_NAME));
+            }
+            CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket("jlineuptest-marco").source(workingDir)).completionFuture();
             System.out.println(uploadStatus.get().toString());
             output.write("Ok!".getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {

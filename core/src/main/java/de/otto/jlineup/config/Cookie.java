@@ -59,6 +59,18 @@ public class Cookie {
         screenshotContextGiving = builder.screenshotContextGiving;
     }
 
+    /* For Jackson */
+    private Cookie() {
+        this.name = null;
+        this.value = null;
+        this.domain = null;
+        this.path = null;
+        this.expiry = null;
+        this.secure = false;
+        this.showInReport = null;
+        this.screenshotContextGiving = false;
+    }
+
     public static Builder cookieBuilder() {
         return new Builder();
     }

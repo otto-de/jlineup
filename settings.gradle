@@ -2,6 +2,6 @@ rootProject.name = 'jlineup'
 include ('core', 'cli', 'lambda', 'web')
 
 project(":core").name = "jlineup-core"
-project(":lambda").name = "jlineup-lambda"
 project(":cli").name = "jlineup-cli"
+project(":lambda").name = "jlineup-lambda"
 project(":web").name = "jlineup-web"

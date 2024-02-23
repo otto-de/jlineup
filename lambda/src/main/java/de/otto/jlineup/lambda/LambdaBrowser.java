@@ -1,7 +1,10 @@
 package de.otto.jlineup.lambda;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.CloudBrowser;
@@ -20,13 +23,9 @@ import software.amazon.awssdk.services.lambda.model.ServiceException;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryDownload;
-import software.amazon.awssdk.utils.NamedThreadFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -40,9 +39,12 @@ public class LambdaBrowser implements CloudBrowser {
 
     private final RunStepConfig runStepConfig;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     private final ExecutorService executor = Executors.newCachedThreadPool(Utils.createThreadFactory("LambdaBrowserSupervisorThread"));
+
+    private final ObjectMapper objectMapper = JsonMapper.builder()
+            .configure(MapperFeature.USE_ANNOTATIONS, false)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .build();
 
     private final FileService fileService;
 
@@ -58,7 +60,7 @@ public class LambdaBrowser implements CloudBrowser {
         String runId = UUID.randomUUID().toString();
         Set<Future<InvokeResponse>> lambdaCalls = new HashSet<>();
 
-        LOG.info("Starting {} lambda calls...", screenshotContexts.size());
+        LOG.info("Starting {} lambda calls for run '{}'...", screenshotContexts.size(), runId);
 
         DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
         try (LambdaClient lambdaClient = LambdaClient.builder().credentialsProvider(credentialsProvider).region(Region.EU_CENTRAL_1).build()) {
@@ -72,6 +74,12 @@ public class LambdaBrowser implements CloudBrowser {
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
+
+//                System.out.println(objectMapper.writeValueAsString(new LambdaRequestPayload(runId, jobConfig, screenshotContext, runStepConfig.getStep(), screenshotContext.urlKey)));
+//                LambdaRequestPayload event = objectMapper.readValue(objectMapper.writeValueAsString(new LambdaRequestPayload(runId, jobConfig, screenshotContext, runStepConfig.getStep(), screenshotContext.urlKey)), LambdaRequestPayload.class);
+//                System.err.println(event.screenshotContext.urlKey);
+//
+//                System.exit(0);
 
                 Future<InvokeResponse> invokeResponseFuture = executor.submit(() -> lambdaClient.invoke(invokeRequest));
                 lambdaCalls.add(invokeResponseFuture);
@@ -128,6 +136,19 @@ public class LambdaBrowser implements CloudBrowser {
                                     throw new RuntimeException(e);
                                 }
                             });
+                            f.delete();
+                        } else if (f.getName().endsWith(".log")) {
+                            Path lambdaLogPath = Paths.get(this.runStepConfig.getWorkingDirectory(), this.runStepConfig.getReportDirectory(),
+                                    "lambda.log");
+                            boolean first = false;
+                            if (!Files.exists(lambdaLogPath)) {
+                                Files.createFile(lambdaLogPath);
+                                first = true;
+                            }
+                            if (!first) {
+                                Files.write(lambdaLogPath, "\n---\n\n".getBytes(), StandardOpenOption.APPEND);
+                            }
+                            Files.write(lambdaLogPath, Files.readAllBytes(f.toPath()), StandardOpenOption.APPEND);
                             f.delete();
                         } else {
                             Files.move(f.toPath(), Paths.get(this.runStepConfig.getWorkingDirectory(), this.runStepConfig.getScreenshotsDirectory(),

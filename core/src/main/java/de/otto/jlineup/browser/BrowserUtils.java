@@ -21,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import static de.otto.jlineup.JLineupRunner.LOGFILE_NAME;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfigBuilder;
 import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH;
 import static java.lang.invoke.MethodHandles.lookup;
@@ -226,6 +227,13 @@ public class BrowserUtils {
             return null;
         }
         return Paths.get(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory()).toAbsolutePath().toString();
+    }
+
+    public static String getFullPathToLogFile(RunStepConfig runStepConfig) {
+        if (runStepConfig.getReportDirectory() == null) {
+            return null;
+        }
+        return Paths.get(Objects.requireNonNull(getFullPathOfReportDir(runStepConfig)), LOGFILE_NAME).toAbsolutePath().toString();
     }
 
     public static String prepareDomain(final RunStepConfig runStepConfig, final String url) {

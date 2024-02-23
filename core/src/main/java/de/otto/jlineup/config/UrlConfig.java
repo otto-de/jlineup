@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
+import de.otto.jlineup.report.UrlReport;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,6 +58,38 @@ public class UrlConfig {
     public final boolean ignoreAntiAliasing;
     public final boolean strictColorComparison;
     public final float maxColorDistance;
+
+    /* For Jackson */
+    private UrlConfig() {
+        this.url = null;
+        this.paths = null;
+        this.setupPaths = null;
+        this.cleanupPaths = null;
+        this.maxDiff = DEFAULT_MAX_DIFF;
+        this.cookies = null;
+        this.alternatingCookies = null;
+        this.envMapping = null;
+        this.localStorage = null;
+        this.sessionStorage = null;
+        this.windowWidths = null;
+        this.devices = null;
+        this.maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
+        this.waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
+        this.waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
+        this.waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
+        this.warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
+        this.waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
+        this.javaScript = null;
+        this.httpCheck = DEFAULT_HTTP_CHECK_CONFIG;
+        this.hideImages = false;
+        this.removeSelectors = null;
+        this.waitForSelectors = null;
+        this.waitForSelectorsTimeout = DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT;
+        this.failIfSelectorsNotFound = false;
+        this.ignoreAntiAliasing = false;
+        this.strictColorComparison = false;
+        this.maxColorDistance = DEFAULT_MAX_COLOR_DISTANCE;
+    }
 
     private UrlConfig(Builder builder) {
         url = builder.url;
