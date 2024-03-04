@@ -29,7 +29,7 @@ dependencies {
     api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
     api "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
-    api "ch.qos.logback:logback-classic:1.5.0"
+    api "ch.qos.logback:logback-classic:1.5.2"
 
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "org.codehaus.janino:janino:3.1.12"
