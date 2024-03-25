@@ -29,6 +29,8 @@ public class JLineupWebProperties {
             CHROME_HEADLESS,
             FIREFOX_HEADLESS);
 
+    private JLineupWebLambdaProperties lambda = new JLineupWebLambdaProperties();
+
     public String getWorkingDirectory() {
         return workingDirectory;
     }
@@ -127,5 +129,13 @@ public class JLineupWebProperties {
                 ", firefoxLaunchParameters=" + firefoxLaunchParameters +
                 ", installedBrowsers=" + installedBrowsers +
                 '}';
+    }
+
+    public JLineupWebLambdaProperties getLambda() {
+        return lambda;
+    }
+
+    public void setLambda(JLineupWebLambdaProperties lambda) {
+        this.lambda = lambda;
     }
 }

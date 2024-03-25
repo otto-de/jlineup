@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     id 'java-library'
 }
@@ -71,6 +73,22 @@ test {
     }
 }
 
+task lambdaCLIJar(type: BootJar) {
+    enabled = true
+    archiveBaseName = "jlineup-cli-lambda"
+    targetJavaVersion = JavaVersion.VERSION_17
+    mainClass = "de.otto.jlineup.cli.Main"
+    classpath = project(":jlineup-lambda").sourceSets.main.runtimeClasspath + sourceSets.main.runtimeClasspath
+    launchScript()
+}
+
+bootJar {
+    enabled = true
+    dependsOn(lambdaCLIJar)
+    launchScript()
+    mainClass = "de.otto.jlineup.cli.Main"
+}
+
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from 'build/docs/javadoc'
     archiveClassifier = 'javadoc'
@@ -85,13 +103,8 @@ application {
     mainClass.set("de.otto.jlineup.cli.Main")
 }
 
-bootJar {
-    enabled = true
-    launchScript()
-}
-
 publishing {
-    publications {
+    publications { [
         mavenJava(MavenPublication) {
             artifactId = 'jlineup-cli'
             from components.java
@@ -128,7 +141,44 @@ publishing {
                     url = 'https://github.com/otto-de/jlineup'
                 }
             }
-        }
+        },
+        lambdaJava(MavenPublication) {
+            artifact lambdaCLIJar
+            artifactId = 'jlineup-cli-lambda'
+            artifact sourcesJar
+            artifact javadocJar
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'JLineup CLI Lambda'
+                description = 'The cli AWS Lambda variant of JLineup'
+                url = 'https://github.com/otto-de/jlineup'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'MediaMarco'
+                        name = 'Marco Geweke'
+                        email = 'marco.geweke@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git@github.com:otto-de/jlineup.git'
+                    developerConnection = 'scm:git@github.com:otto-de/jlineup.git'
+                    url = 'https://github.com/otto-de/jlineup'
+                }
+            }
+        }]
     }
     repositories {
         maven {

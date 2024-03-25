@@ -21,7 +21,6 @@ public class RunStepConfig {
     private final String webDriverCachePath;
     private final boolean keepExisting;
     private final String refreshUrl;
-
     private final boolean cleanupProfile;
 
     private RunStepConfig(Builder builder) {

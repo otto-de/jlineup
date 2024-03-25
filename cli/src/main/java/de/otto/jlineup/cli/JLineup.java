@@ -1,9 +1,12 @@
 package de.otto.jlineup.cli;
 
+import de.otto.jlineup.GlobalOption;
+import de.otto.jlineup.GlobalOptions;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
+import de.otto.jlineup.browser.CloudBrowserFactory;
 import de.otto.jlineup.config.ConfigMerger;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
@@ -18,10 +21,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import static de.otto.jlineup.cli.Main.NO_EXIT;
@@ -30,7 +31,7 @@ import static de.otto.jlineup.cli.Utils.readConfig;
 import static de.otto.jlineup.file.FileService.REPORT_HTML_FILENAME;
 import static java.lang.invoke.MethodHandles.lookup;
 
-@Command(name = "jlineup", sortOptions = false)
+@Command(name = "jlineup", sortOptions = false, modelTransformer = JLineup.OptionsFilter.class)
 public class JLineup implements Callable<Integer> {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
@@ -97,6 +98,39 @@ public class JLineup implements Callable<Integer> {
 
     @Option(names = {"--cleanup-profile"}, description = "Cleanup browser profile directory after the run has finished and a profile dir was specified with the browser parameters.", order = 200)
     private boolean cleanupProfile = false;
+
+    /**
+     * This options filter adds the lambda options to the command spec if the LambdaBrowser is available in the classpath.
+     */
+    static class OptionsFilter implements CommandLine.IModelTransformer {
+        @Override
+        public CommandLine.Model.CommandSpec transform(CommandLine.Model.CommandSpec commandSpec) {
+
+            try {
+                Class<?> lambdaBrowserClass = Class.forName("de.otto.jlineup.lambda.LambdaBrowser", false, CloudBrowserFactory.class.getClassLoader());
+                LOG.debug("LambdaBrowser '{}' reachable, adding lambda options to command spec.", lambdaBrowserClass.getCanonicalName());
+                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("-F", "--" + GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME.kebabCaseName())
+                        .order(210).description("This specifies the name or the arn of the AWS lambda function")
+                        .parameterConsumer((stack, argSpec, commandSpec1) -> {
+                            String value = stack.pop();
+                            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME, value);
+                            System.err.println("Function name set: " + GlobalOptions.asString());
+                        })
+                        .build());
+                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("-P", "--" + GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE.kebabCaseName())
+                        .order(220).description("The AWS profile for calling the lambda function and for accessing S3")
+                        .parameterConsumer((stack, argSpec, commandSpec1) -> {
+                            String value = stack.pop();
+                            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE, value);
+                            System.err.println("Profile set: " + GlobalOptions.asString());
+                        })
+                        .build());
+            } catch (ClassNotFoundException e) {
+                LOG.debug("No LambdaBrowser reachable.", e);
+            }
+            return commandSpec;
+        }
+    }
 
 
     public JLineup() {

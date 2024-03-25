@@ -13,7 +13,7 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
     implementation project(":jlineup-core")
-    implementation project(":jlineup-cli")
+    //implementation project(":jlineup-cli")
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "software.amazon.awssdk:lambda:${awsSdkVersion}"
     implementation "software.amazon.awssdk:s3:${awsSdkVersion}"

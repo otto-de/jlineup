@@ -183,6 +183,7 @@ public class Browser implements AutoCloseable {
                     runTestSetupOrCleanup(testSetupContexts);
                     LOG.debug("Test setup done.");
                 }
+                //This block tries to create a cloud browser and if it fails, it falls back to the default browser
                 try {
                     CloudBrowser cloudBrowser = CloudBrowserFactory.createCloudBrowser(runStepConfig, jobConfig, fileService);
                     LOG.info("Using cloud browser: {}", cloudBrowser.getClass().getCanonicalName());

@@ -5,6 +5,8 @@ jlineup:
   maxParallelJobs: 1
   chromeLaunchParameters: --use-spdy=off, --disable-dev-shm-usage
   cleanupProfile: true
+  lambda:
+    functionName: jlineup-lambda
 
 edison:
   application:

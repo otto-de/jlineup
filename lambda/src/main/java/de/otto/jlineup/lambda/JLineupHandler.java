@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.common.collect.ImmutableList;
+import de.otto.jlineup.GlobalOptions;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.ScreenshotContext;
@@ -30,6 +31,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 
+import static de.otto.jlineup.GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE;
+import static de.otto.jlineup.GlobalOption.JLINEUP_LAMBDA_S3_BUCKET;
 import static de.otto.jlineup.JLineupRunner.LOGFILE_NAME;
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
 
@@ -65,7 +68,7 @@ public class JLineupHandler implements RequestStreamHandler {
                             EnvironmentVariableCredentialsProvider.create(),
                             ProfileCredentialsProvider
                                     .builder()
-                                    .profileName(LambdaProperties.getProfile())
+                                    .profileName(GlobalOptions.getOption(JLINEUP_LAMBDA_AWS_PROFILE))
                                     .build())
                     .build();
 
@@ -76,8 +79,12 @@ public class JLineupHandler implements RequestStreamHandler {
             if (Files.exists(logfile)) {
                 Files.move(logfile, Paths.get(getFullPathOfReportDir(runner.getRunStepConfig()) + "/context_" + screenshotContext.contextHash() + "_" + LOGFILE_NAME));
             }
-            CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket("jlineuptest-marco").source(workingDir)).completionFuture();
-            System.out.println(uploadStatus.get().toString());
+            String bucketName = GlobalOptions.getOption(JLINEUP_LAMBDA_S3_BUCKET);
+            if (bucketName == null) {
+                throw new RuntimeException("Environment variable JLINEUP_S3_BUCKET not set! Please create a bucket and set the environment variable to contain it's name.");
+            }
+            CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket(bucketName).source(workingDir)).completionFuture();
+            output.write(uploadStatus.get().toString().getBytes(StandardCharsets.UTF_8));
             output.write("Ok!".getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new RuntimeException(e);

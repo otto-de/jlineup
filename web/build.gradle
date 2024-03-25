@@ -185,8 +185,8 @@ publishing {
                 }
             }
             pom {
-                name = 'JLineup Web'
-                description = 'The web variant of JLineup'
+                name = 'JLineup Web Lambda'
+                description = 'The web variant of JLineup with AWS Lambda support'
                 url = 'https://github.com/otto-de/jlineup'
                 licenses {
                     license {
@@ -214,8 +214,8 @@ publishing {
             def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
             def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
             if (project.debugUpload) {
-                releasesRepoUrl = "$buildDir/repos/releases"
-                snapshotsRepoUrl = "$buildDir/repos/snapshots"
+                releasesRepoUrl = "$layout.buildDir/repos/releases"
+                snapshotsRepoUrl = "$layout.buildDir/repos/snapshots"
             } else {
                 credentials {
                     username = sonatypeUsername
