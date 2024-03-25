@@ -131,6 +131,8 @@ public class Browser implements AutoCloseable {
     private final RunStepConfig runStepConfig;
     private final LogErrorChecker logErrorChecker;
 
+    private boolean cloudBrowserUsed = false;
+
     /* Every thread has its own WebDriver and cache warmup marks, this is manually managed through concurrent maps */
     private final ExecutorService threadPool;
     private final ConcurrentHashMap<String, WebDriver> webDrivers = new ConcurrentHashMap<>();
@@ -187,6 +189,7 @@ public class Browser implements AutoCloseable {
                 try {
                     CloudBrowser cloudBrowser = CloudBrowserFactory.createCloudBrowser(runStepConfig, jobConfig, fileService);
                     LOG.info("Using cloud browser: {}", cloudBrowser.getClass().getCanonicalName());
+                    cloudBrowserUsed = true;
                     cloudBrowser.takeScreenshots(screenshotContextList);
                 } catch (ClassNotFoundException e) {
                     LOG.info(e.getMessage());
@@ -203,37 +206,39 @@ public class Browser implements AutoCloseable {
     }
 
     private void cleanupProfileDirectory() {
+        //Don't try to clean up user profile directories when lambda browser was used
+        if (!cloudBrowserUsed) {
+            runStepConfig.getChromeParameters().forEach(param -> {
+                if (param.startsWith("--user-data-dir")) {
+                    try {
+                        String path = param.split("=")[1];
+                        if (path.endsWith("/" + RANDOM_FOLDER_PLACEHOLDER)) {
+                            path = path.substring(0, path.length() - RANDOM_FOLDER_PLACEHOLDER.length() - 1);
+                        }
+                        LOG.debug("Deleting chrome profile dir {}", path);
+                        FileUtils.deleteDirectory(path);
 
-        runStepConfig.getChromeParameters().forEach(param -> {
-            if (param.startsWith("--user-data-dir")) {
-                try {
-                    String path = param.split("=")[1];
-                    if (path.endsWith("/" + RANDOM_FOLDER_PLACEHOLDER)) {
-                        path = path.substring(0, path.length() - RANDOM_FOLDER_PLACEHOLDER.length() - 1);
+                    } catch (Exception e) {
+                        LOG.error("Exception while deleting user data dir: {}", e.getMessage(), e);
                     }
-                    LOG.debug("Deleting chrome profile dir {}", path);
-                    FileUtils.deleteDirectory(path);
-
-                } catch (Exception e) {
-                    LOG.error("Exception while deleting user data dir: " + e.getMessage(), e);
                 }
-            }
-        });
+            });
 
-        runStepConfig.getFirefoxParameters().forEach(param -> {
-            if (param.startsWith("-profile") || param.startsWith("-P")) {
-                try {
-                    String path = param.split(" ")[1];
-                    if (path.endsWith("/" + RANDOM_FOLDER_PLACEHOLDER)) {
-                        path = path.substring(0, path.length() - RANDOM_FOLDER_PLACEHOLDER.length() - 1);
+            runStepConfig.getFirefoxParameters().forEach(param -> {
+                if (param.startsWith("-profile") || param.startsWith("-P")) {
+                    try {
+                        String path = param.split(" ")[1];
+                        if (path.endsWith("/" + RANDOM_FOLDER_PLACEHOLDER)) {
+                            path = path.substring(0, path.length() - RANDOM_FOLDER_PLACEHOLDER.length() - 1);
+                        }
+                        LOG.debug("Deleting firefox profile dir {}", path);
+                        FileUtils.deleteDirectory(path);
+                    } catch (Exception e) {
+                        LOG.error("Exception while deleting firefox profile dir: {}", e.getMessage(), e);
                     }
-                    LOG.debug("Deleting firefox profile dir {}", path);
-                    FileUtils.deleteDirectory(path);
-                } catch (Exception e) {
-                    LOG.error("Exception while deleting firefox profile dir: " + e.getMessage(), e);
                 }
-            }
-        });
+            });
+        }
     }
 
     private void runTestSetupOrCleanup(List<ScreenshotContext> testSetupOrCleanupContexts) throws Exception {
@@ -502,8 +507,8 @@ public class Browser implements AutoCloseable {
 
     private void resizeViewport(WebDriver driver, int width, int height) {
         LOG.debug("Resize viewport of browser window to {}x{}", width, height);
-        JavascriptExecutor js= (JavascriptExecutor)driver;
-        String windowSize = js.executeScript("return (window.outerWidth - window.innerWidth + "+width+") + ',' + (window.outerHeight - window.innerHeight + "+height+"); ").toString();
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        String windowSize = js.executeScript("return (window.outerWidth - window.innerWidth + " + width + ") + ',' + (window.outerHeight - window.innerHeight + " + height + "); ").toString();
 
         int calculatedWindowWidth = Integer.parseInt(windowSize.split(",")[0]);
         int calculatedWindowHeight = Integer.parseInt(windowSize.split(",")[1]);
@@ -622,7 +627,7 @@ public class Browser implements AutoCloseable {
     private Double getDevicePixelRatio() {
         LOG.debug("Getting device pixel ratio.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
-        return ((Number)jse.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).doubleValue();
+        return ((Number) jse.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).doubleValue();
     }
 
     private String getDom() {
@@ -657,7 +662,7 @@ public class Browser implements AutoCloseable {
         for (int i = 1; i < parts.length; i++) {
             String secondsFollowedByClosingBracketAndMaybeASemicolonAndMoreJavaScript = parts[i];
             String[] secondsAndRemainingJS = secondsFollowedByClosingBracketAndMaybeASemicolonAndMoreJavaScript.split("\\)", 2);
-            int milliseconds = Integer.parseInt(secondsAndRemainingJS[0].replace(";",""));
+            int milliseconds = Integer.parseInt(secondsAndRemainingJS[0].replace(";", ""));
             LOG.debug("Sleeping for {} milliseconds", milliseconds);
             executeJavaScript("/* sleeping " + milliseconds + " milliseconds */");
             Thread.sleep(milliseconds);
