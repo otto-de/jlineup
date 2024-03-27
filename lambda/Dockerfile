@@ -1,7 +1,5 @@
 FROM public.ecr.aws/lambda/java:21-x86_64
 
-#WORKDIR /var/task
-
 USER root
 
 RUN echo "2023.3.20240219" > /etc/dnf/vars/releasever
@@ -47,7 +45,6 @@ RUN dnf install -y \
     nss \
     jq
 
-
 RUN mkdir ${LAMBDA_TASK_ROOT}/lib
 RUN mkdir ${LAMBDA_TASK_ROOT}/lib/firefox
 RUN wget --no-check-certificate -nv 'https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US' -O /tmp/firefox.tar.bz2
@@ -78,7 +75,7 @@ RUN /usr/local/bin/chromedriver --version
 
 # Copy function code and runtime dependencies from Gradle layout
 COPY build/classes/java/main ${LAMBDA_TASK_ROOT}
-COPY build/resources/main ${LAMBDA_TASK_ROOT}
+#COPY build/resources/main ${LAMBDA_TASK_ROOT}
 COPY build/output/lib/* ${LAMBDA_TASK_ROOT}/lib/
 
 # Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
