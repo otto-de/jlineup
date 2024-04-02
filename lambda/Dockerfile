@@ -2,7 +2,7 @@ FROM public.ecr.aws/lambda/java:21-x86_64
 
 USER root
 
-RUN echo "2023.3.20240219" > /etc/dnf/vars/releasever
+RUN echo "2023.3.20240304" > /etc/dnf/vars/releasever
 RUN dnf clean all; dnf upgrade -y
 RUN dnf install -y \
     alsa-lib \
