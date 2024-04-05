@@ -3,7 +3,6 @@ public class JLineupWebLambdaProperties {
 
     private String functionName = "jlineup-lambda";
 
-
     public String getFunctionName() {
         return functionName;
     }

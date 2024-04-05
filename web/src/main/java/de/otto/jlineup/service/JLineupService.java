@@ -1,6 +1,8 @@
 package de.otto.jlineup.service;
 
 import com.google.common.collect.ImmutableList;
+import de.otto.jlineup.GlobalOption;
+import de.otto.jlineup.GlobalOptions;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.web.JLineupRunStatus;
@@ -49,6 +51,9 @@ public class JLineupService {
         this.runPersistenceService = runPersistenceService;
         this.executorService = Executors.newFixedThreadPool(jLineupWebProperties.getMaxParallelJobs());
         this.runs.putAll(runPersistenceService.readRuns());
+
+        GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME, jLineupWebProperties.getLambda().getFunctionName());
+
     }
 
     public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) throws Exception {

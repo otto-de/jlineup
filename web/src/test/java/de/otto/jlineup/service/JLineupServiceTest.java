@@ -5,6 +5,7 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.JLineupRunnerFactory;
 import de.otto.jlineup.web.State;
+import de.otto.jlineup.web.configuration.JLineupWebLambdaProperties;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,11 +23,9 @@ import static org.mockito.Mockito.*;
 public class JLineupServiceTest {
 
     private JLineupService testee;
-    private JLineupWebProperties jLineupWebProperties;
     private JLineupRunnerFactory jLineupRunnerFactory;
     private JLineupRunner jLineupRunnerBefore;
     private JLineupRunner jLineupRunnerAfter;
-    private RunPersistenceService runPersistenceService;
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
@@ -36,12 +35,15 @@ public class JLineupServiceTest {
         jLineupRunnerFactory = mock(JLineupRunnerFactory.class);
         jLineupRunnerBefore = mock(JLineupRunner.class);
         jLineupRunnerAfter = mock(JLineupRunner.class);
-        jLineupWebProperties = mock(JLineupWebProperties.class);
-        runPersistenceService = mock(RunPersistenceService.class);
+        JLineupWebProperties jLineupWebProperties = mock(JLineupWebProperties.class);
+        JLineupWebLambdaProperties jLineupWebLambdaProperties = mock(JLineupWebLambdaProperties.class);
+        RunPersistenceService runPersistenceService = mock(RunPersistenceService.class);
 
         when(jLineupRunnerFactory.createBeforeRun(any(), any())).thenReturn(jLineupRunnerBefore);
         when(jLineupRunnerFactory.createAfterRun(any(), any())).thenReturn(jLineupRunnerAfter);
         when(jLineupWebProperties.getMaxParallelJobs()).thenReturn(1);
+        when(jLineupWebProperties.getLambda()).thenReturn(jLineupWebLambdaProperties);
+        when(jLineupWebProperties.getLambda().getFunctionName()).thenReturn("jlineup-lambda-test");
         testee = new JLineupService(jLineupRunnerFactory, jLineupWebProperties, runPersistenceService);
     }
 
