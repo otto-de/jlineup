@@ -89,13 +89,13 @@ public class LambdaBrowser implements CloudBrowser {
                 }
                 if (answer.contains("errorMessage")) {
                     if (answer.contains("SessionNotCreatedException") || answer.contains("disconnected: Unable to receive message from renderer")) {
-                        LOG.warn(answer);
+                        LOG.warn("Retrying lambda call because of specific error message in answer: '{}'", answer);
                         //Do one retry if browser crashed in lambda
                         Future<InvokeResponse> invokeResponseFuture = invokeLambdaAndGetInvokeResponseFuture(lambdaCall.getKey(), runId, lambdaClient);
                         InvokeResponse invokeResponseRetry = invokeResponseFuture.get();
                         String retryAnswer = invokeResponseRetry.payload().asUtf8String();
                         if (retryAnswer.contains("errorMessage")) {
-                            LOG.error(retryAnswer);
+                            //LOG.error(retryAnswer); Is logged outside of this method by catching function
                             throw new RuntimeException("Lambda call failed even when retried: " + retryAnswer);
                         } else {
                             LOG.info("Answer after retry:  {}", retryAnswer);
