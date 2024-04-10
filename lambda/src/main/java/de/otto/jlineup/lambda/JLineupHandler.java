@@ -109,6 +109,7 @@ public class JLineupHandler implements RequestStreamHandler {
                         "--disable-web-security",
                         "--no-zygote",
                         "--force-color-profile=srgb",
+                        "--hide-scrollbars",
                         "--user-data-dir=/tmp/jlineup/chrome-profile-" + id))
                 .withStep(step)
                 .build();
