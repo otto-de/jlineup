@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Relese 4.10.0 - 2024-04-10
+* Feature: First release of the lambda module. You can now run the screenshots part of JLineup as a lambda function in AWS.
+
 ## Release 4.9.2 - 2023-12-19
 * Dependency updates - especially Selenium 4.16.1
 

@@ -30,8 +30,8 @@ grep 'def jlineup_version = ".*-SNAPSHOT"' "$SCRIPT_DIR/build.gradle"
 SNAPSHOT=$?
 set -e
 
-"${SCRIPT_DIR}"/gradlew clean
-"${SCRIPT_DIR}"/gradlew check
+#"${SCRIPT_DIR}"/gradlew clean
+#"${SCRIPT_DIR}"/gradlew check
 "${SCRIPT_DIR}"/gradlew -Dorg.gradle.internal.http.socketTimeout=200000 -Dorg.gradle.internal.http.connectionTimeout=200000 build installBootDist
 "${SCRIPT_DIR}"/gradlew -Dorg.gradle.internal.http.socketTimeout=200000 -Dorg.gradle.internal.http.connectionTimeout=200000 publish
 

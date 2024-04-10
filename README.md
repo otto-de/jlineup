@@ -8,6 +8,9 @@
 ![](https://snyk-widget.herokuapp.com/badge/mvn/de.otto/jlineup-cli/badge.svg)
 
 ## News
+**2024-04-10**: **JLineup 4.10.0** is out! This release contains dependency updates and the brand-new Lambda module. It
+allows you to run the screenshot creation in a lambda function, and it can speed up the process significantly. We have this
+running in an internal beta. Documentation will follow soon.
 
 **2023-12-19**: Ho ho ho, **JLineup 4.9.2** is here! This should fix the flaky Chrome [issue](https://github.com/SeleniumHQ/selenium/issues/13091) with problems parsing a JSON response.
 
@@ -84,7 +87,7 @@ JLineup CLI comes as executable Java Archive. Java 17 or higher has to be availa
 
 Open a terminal and download it like this:
 
-    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.9.2/jlineup-cli-4.9.2.jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.10.0/jlineup-cli-4.10.0.jar -O jlineup.jar
 
 Then type
 
@@ -103,10 +106,10 @@ Let's assume, this is part of a continuous integration pipeline:
 
 ## Browser Compatibility
 
-JLineup 4.9.2 was tested successfully with
+JLineup 4.10.0 was tested successfully with
 
-* Chrome 120.x
-* Firefox 120.x
+* Chrome 123.x
+* Firefox 124.x
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
 
@@ -162,6 +165,10 @@ JLineup uses some third party tools and libraries
 ##### Google Fonts
 
 * [Google Fonts](https://developers.google.com/fonts/) are used in the HTML report. These are the [terms](https://developers.google.com/fonts/terms).
+
+##### AWS SDK
+
+* [AWS SDK for Java 2.0](https://github.com/aws/aws-sdk-java-v2) is licensed under the [Apache 2.0 License](https://github.com/aws/aws-sdk-java-v2?tab=Apache-2.0-1-ov-file#readme).
 
 ### Historic Facts
 

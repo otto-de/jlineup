@@ -229,4 +229,15 @@ publishing {
 
 signing {
     sign publishing.publications.mavenJava
+    sign publishing.publications.lambdaJava
+}
+
+publishLambdaJavaPublicationToMavenRepository {
+    dependsOn signMavenJavaPublication
+    dependsOn signLambdaJavaPublication
+}
+
+publishMavenJavaPublicationToMavenRepository {
+    dependsOn signMavenJavaPublication
+    dependsOn signLambdaJavaPublication
 }
