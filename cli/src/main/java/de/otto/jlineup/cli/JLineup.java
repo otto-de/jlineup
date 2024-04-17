@@ -321,6 +321,12 @@ public class JLineup implements Callable<Integer> {
             jobConfig = ConfigMerger.mergeJobConfigWithMergeConfig(jobConfig, mergeConfig);
         }
 
+        if (jobConfig.mergeConfig != null) {
+            JobConfig mainGlobalConfig = JobConfig.copyOfBuilder(jobConfig).withMergeConfig(null).build();
+            JobConfig mergeGlobalConfig = jobConfig.mergeConfig;
+            jobConfig = ConfigMerger.mergeJobConfigWithMergeConfig(mainGlobalConfig, mergeGlobalConfig);
+        }
+
         jobConfig = jobConfig.insertDefaults();
 
         if (browserOverride != null) {

@@ -110,6 +110,7 @@ public class LambdaBrowser implements CloudBrowser {
             }
 
         } catch (ServiceException e) {
+            LOG.error("Lambda call failed");
             throw new RuntimeException(e);
         }
 

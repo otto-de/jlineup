@@ -92,6 +92,9 @@ public final class JobConfig  {
     @JsonInclude(value = Include.CUSTOM, valueFilter = HttpCheckFilter.class)
     public final HttpCheckConfig httpCheck;
 
+    @JsonInclude(Include.NON_DEFAULT)
+    public final JobConfig mergeConfig;
+
     public JobConfig() {
         this(jobConfigBuilder());
     }
@@ -111,6 +114,7 @@ public final class JobConfig  {
         checkForErrorsInLog = builder.checkForErrorsInLog;
         httpCheck = builder.httpCheck;
         name = builder.name;
+        mergeConfig = builder.mergeConfig;
     }
 
     public static String prettyPrint(JobConfig jobConfig) {
@@ -203,6 +207,10 @@ public final class JobConfig  {
         return httpCheck;
     }
 
+    public JobConfig getMergeConfig() {
+        return mergeConfig;
+    }
+
     /*
      *
      *
@@ -230,6 +238,7 @@ public final class JobConfig  {
                 .withGlobalTimeout(jobConfig.globalTimeout)
                 .withDebug(jobConfig.debug)
                 .withLogToFile(jobConfig.logToFile)
+                .withMergeConfig(jobConfig.mergeConfig)
                 .withCheckForErrorsInLog(jobConfig.checkForErrorsInLog);
     }
 
@@ -238,25 +247,12 @@ public final class JobConfig  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JobConfig jobConfig = (JobConfig) o;
-        return pageLoadTimeout == jobConfig.pageLoadTimeout &&
-                screenshotRetries == jobConfig.screenshotRetries &&
-                threads == jobConfig.threads &&
-                globalTimeout == jobConfig.globalTimeout &&
-                debug == jobConfig.debug &&
-                logToFile == jobConfig.logToFile &&
-                checkForErrorsInLog == jobConfig.checkForErrorsInLog &&
-                Objects.equals(urls, jobConfig.urls) &&
-                browser == jobConfig.browser &&
-                Objects.equals(name, jobConfig.name) &&
-                Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) &&
-                Objects.equals(windowHeight, jobConfig.windowHeight) &&
-                Objects.equals(reportFormat, jobConfig.reportFormat) &&
-                Objects.equals(httpCheck, jobConfig.httpCheck);
+        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(name, jobConfig.name) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(reportFormat, jobConfig.reportFormat) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(urls, browser, name, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog, httpCheck);
+        return Objects.hash(urls, browser, name, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
     }
 
     @Override
@@ -403,6 +399,7 @@ public final class JobConfig  {
         private boolean logToFile = false;
         private boolean checkForErrorsInLog = false;
         private HttpCheckConfig httpCheck = DEFAULT_HTTP_CHECK_CONFIG;
+        public JobConfig mergeConfig;
 
         private Builder() {
         }
@@ -479,6 +476,11 @@ public final class JobConfig  {
         @JsonInclude(value = Include.CUSTOM, valueFilter = HttpCheckFilter.class)
         public Builder withHttpCheck(HttpCheckConfig val) {
             httpCheck = val;
+            return this;
+        }
+
+        public Builder withMergeConfig(JobConfig val) {
+            mergeConfig = val;
             return this;
         }
 

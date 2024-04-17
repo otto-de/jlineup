@@ -55,7 +55,7 @@ public class JLineupHandler implements RequestStreamHandler {
     public void handleRequest(InputStream input, OutputStream output, Context context) {
         try {
             LambdaRequestPayload event = objectMapper.readValue(input, LambdaRequestPayload.class);
-            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext).withStep(event.step.toBrowserStep()).withUrlKey(event.urlKey).withUrlConfig(event.jobConfig.urls.get(event.screenshotContext.url)).build();
+            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext).withStep(event.step.toBrowserStep()).withUrlKey(event.urlKey).withUrlConfig(event.jobConfig.urls.get(event.screenshotContext.urlKey)).build();
             LambdaRunner runner = createRun(event.runId, event.step == RunStep.after ? RunStep.after_only : event.step, event.jobConfig, screenshotContext);
             runner.run();
 

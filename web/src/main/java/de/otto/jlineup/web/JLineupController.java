@@ -3,6 +3,7 @@ package de.otto.jlineup.web;
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.browser.Browser;
+import de.otto.jlineup.config.ConfigMerger;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.service.BrowserNotInstalledException;
@@ -46,6 +47,13 @@ public class JLineupController {
 
     @PostMapping(value = "/runs")
     public ResponseEntity<RunBeforeResponse> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) throws Exception {
+
+        if (jobConfig.mergeConfig != null) {
+            JobConfig mainGlobalConfig = JobConfig.copyOfBuilder(jobConfig).withMergeConfig(null).build();
+            JobConfig mergeGlobalConfig = jobConfig.mergeConfig;
+            jobConfig = ConfigMerger.mergeJobConfigWithMergeConfig(mainGlobalConfig, mergeGlobalConfig);
+        }
+
         String id = jLineupService.startBeforeRun(jobConfig.insertDefaults()).getId();
 
         HttpHeaders headers = new HttpHeaders();
