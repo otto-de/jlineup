@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,7 +31,7 @@ public class ConfigMerger {
             UrlConfig mainUrlConfig = mainUrlConfigEntry.getValue();
             Map<String, UrlConfig> mergeUrls = mergeGlobalConfig.urls;
             for (Map.Entry<String, UrlConfig> mergeUrlConfigEntry : mergeUrls.entrySet()) {
-                if (mainUrlConfigEntry.getKey().matches(mergeUrlConfigEntry.getKey())){
+                if (mainUrlConfigEntry.getKey().matches(Pattern.quote(mergeUrlConfigEntry.getKey()))){
                     LOG.info("Merging merge config for '{}' into '{}'", mergeUrlConfigEntry.getKey(), mainUrlConfigEntry.getKey());
                     UrlConfig mergeUrlConfig = mergeUrlConfigEntry.getValue();
                     UrlConfig.Builder urlConfigBuilder = UrlConfig.urlConfigBuilder();
