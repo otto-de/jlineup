@@ -212,3 +212,13 @@ publishMavenJavaPublicationToMavenRepository {
     dependsOn signMavenJavaPublication
     dependsOn signLambdaJavaPublication
 }
+
+publishLambdaJavaPublicationToMavenLocal {
+    dependsOn signMavenJavaPublication
+    dependsOn signLambdaJavaPublication
+}
+
+publishMavenJavaPublicationToMavenLocal {
+    dependsOn signMavenJavaPublication
+    dependsOn signLambdaJavaPublication
+}
