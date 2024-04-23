@@ -30,7 +30,7 @@ public class GlobalOptions {
         loadOption(appProps, "JLINEUP_AWS_PROFILE", "lambda.aws.profile", DEFAULT_LAMBDA_AWS_PROFILE, JLINEUP_LAMBDA_AWS_PROFILE);
         loadOption(appProps, "JLINEUP_LAMBDA_S3_BUCKET", "lambda.s3.bucket", DEFAULT_LAMBDA_S3_BUCKET, JLINEUP_LAMBDA_S3_BUCKET);
 
-        System.err.println(asString());
+        //System.err.println(asString());
     }
 
     private static void loadOption(Properties appProps, String key, String property, String defaultValue, GlobalOption option) {

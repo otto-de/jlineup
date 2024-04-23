@@ -26,6 +26,4 @@ spring:
   application:
     name: JLineup
   banner:
-    image:
-      width: 200
-      margin: 0
+    location: classpath:banner.txt

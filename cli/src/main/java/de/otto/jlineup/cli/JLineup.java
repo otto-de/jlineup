@@ -114,7 +114,7 @@ public class JLineup implements Callable<Integer> {
                         .parameterConsumer((stack, argSpec, commandSpec1) -> {
                             String value = stack.pop();
                             GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME, value);
-                            System.err.println("Function name set: " + GlobalOptions.asString());
+                            //System.err.println("Function name set: " + GlobalOptions.asString());
                         })
                         .build());
                 commandSpec.addOption(CommandLine.Model.OptionSpec.builder("-P", "--" + GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE.kebabCaseName())
@@ -122,7 +122,7 @@ public class JLineup implements Callable<Integer> {
                         .parameterConsumer((stack, argSpec, commandSpec1) -> {
                             String value = stack.pop();
                             GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE, value);
-                            System.err.println("Profile set: " + GlobalOptions.asString());
+                            //System.err.println("Profile set: " + GlobalOptions.asString());
                         })
                         .build());
             } catch (ClassNotFoundException e) {

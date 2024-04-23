@@ -15,6 +15,7 @@ public class JLineupWebProperties {
 
     public static final int DEFAULT_MAX_PARALLEL_JOBS = 1;
     public static final int DEFAULT_MAX_THREADS_PER_JOB = 4;
+    public static final int DEFAULT_MAX_PERSISTED_RUNS = 100;
 
     private String workingDirectory = "/tmp/jlineup/";
     private String screenshotsDirectory = "report-{id}";
@@ -28,6 +29,38 @@ public class JLineupWebProperties {
     private List<Browser.Type> installedBrowsers = Arrays.asList(
             CHROME_HEADLESS,
             FIREFOX_HEADLESS);
+
+    @Override
+    public String toString() {
+        return "JLineupWebProperties{" +
+                "workingDirectory='" + workingDirectory + '\'' +
+                ", screenshotsDirectory='" + screenshotsDirectory + '\'' +
+                ", reportDirectory='" + reportDirectory + '\'' +
+                ", cleanupProfile=" + cleanupProfile +
+                ", maxParallelJobs=" + maxParallelJobs +
+                ", maxThreadsPerJob=" + maxThreadsPerJob +
+                ", chromeLaunchParameters=" + chromeLaunchParameters +
+                ", firefoxLaunchParameters=" + firefoxLaunchParameters +
+                ", installedBrowsers=" + installedBrowsers +
+                ", maxPersistedRuns=" + maxPersistedRuns +
+                ", lambda=" + lambda +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JLineupWebProperties that = (JLineupWebProperties) o;
+        return cleanupProfile == that.cleanupProfile && maxParallelJobs == that.maxParallelJobs && maxThreadsPerJob == that.maxThreadsPerJob && maxPersistedRuns == that.maxPersistedRuns && Objects.equals(workingDirectory, that.workingDirectory) && Objects.equals(screenshotsDirectory, that.screenshotsDirectory) && Objects.equals(reportDirectory, that.reportDirectory) && Objects.equals(chromeLaunchParameters, that.chromeLaunchParameters) && Objects.equals(firefoxLaunchParameters, that.firefoxLaunchParameters) && Objects.equals(installedBrowsers, that.installedBrowsers) && Objects.equals(lambda, that.lambda);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(workingDirectory, screenshotsDirectory, reportDirectory, cleanupProfile, maxParallelJobs, maxThreadsPerJob, chromeLaunchParameters, firefoxLaunchParameters, installedBrowsers, maxPersistedRuns, lambda);
+    }
+
+    private int maxPersistedRuns = DEFAULT_MAX_PERSISTED_RUNS;
 
     private JLineupWebLambdaProperties lambda = new JLineupWebLambdaProperties();
 
@@ -103,39 +136,19 @@ public class JLineupWebProperties {
         this.cleanupProfile = cleanupProfile;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        JLineupWebProperties that = (JLineupWebProperties) o;
-        return cleanupProfile == that.cleanupProfile && maxParallelJobs == that.maxParallelJobs && maxThreadsPerJob == that.maxThreadsPerJob && Objects.equals(workingDirectory, that.workingDirectory) && Objects.equals(screenshotsDirectory, that.screenshotsDirectory) && Objects.equals(reportDirectory, that.reportDirectory) && Objects.equals(chromeLaunchParameters, that.chromeLaunchParameters) && Objects.equals(firefoxLaunchParameters, that.firefoxLaunchParameters) && Objects.equals(installedBrowsers, that.installedBrowsers);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(workingDirectory, screenshotsDirectory, reportDirectory, cleanupProfile, maxParallelJobs, maxThreadsPerJob, chromeLaunchParameters, firefoxLaunchParameters, installedBrowsers);
-    }
-
-    @Override
-    public String toString() {
-        return "JLineupWebProperties{" +
-                "workingDirectory='" + workingDirectory + '\'' +
-                ", screenshotsDirectory='" + screenshotsDirectory + '\'' +
-                ", reportDirectory='" + reportDirectory + '\'' +
-                ", cleanupProfile=" + cleanupProfile +
-                ", maxParallelJobs=" + maxParallelJobs +
-                ", maxThreadsPerJob=" + maxThreadsPerJob +
-                ", chromeLaunchParameters=" + chromeLaunchParameters +
-                ", firefoxLaunchParameters=" + firefoxLaunchParameters +
-                ", installedBrowsers=" + installedBrowsers +
-                '}';
-    }
-
     public JLineupWebLambdaProperties getLambda() {
         return lambda;
     }
 
     public void setLambda(JLineupWebLambdaProperties lambda) {
         this.lambda = lambda;
+    }
+
+    public int getMaxPersistedRuns() {
+        return maxPersistedRuns;
+    }
+
+    public void setMaxPersistedRuns(int maxPersistedRuns) {
+        this.maxPersistedRuns = maxPersistedRuns;
     }
 }

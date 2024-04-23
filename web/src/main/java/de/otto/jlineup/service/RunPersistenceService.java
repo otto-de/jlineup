@@ -25,7 +25,6 @@ public class RunPersistenceService {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
     private static final String RUNS_FILENAME = "runs.json";
-    public static final int MAX_PERSISTED_RUNS = 100;
 
     private final JLineupWebProperties jLineupWebProperties;
     private final ObjectMapper objectMapper;
@@ -44,7 +43,7 @@ public class RunPersistenceService {
         try {
             Map<String, JLineupRunStatus> mapWithLatestEntries = runs.entrySet().stream()
                     .sorted(Map.Entry.<String, JLineupRunStatus>comparingByValue(comparator).reversed())
-                    .limit(MAX_PERSISTED_RUNS)
+                    .limit(jLineupWebProperties.getMaxPersistedRuns())
                     .collect(Collectors.toMap(Map.Entry<String, JLineupRunStatus>::getKey, Map.Entry<String, JLineupRunStatus>::getValue));
             String serializedRuns = objectMapper.writeValueAsString(mapWithLatestEntries);
             Path path = getRunsFilePath();

@@ -1,6 +1,7 @@
 package de.otto.jlineup.web;
 
 import de.otto.jlineup.service.JLineupService;
+import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static de.otto.jlineup.service.RunPersistenceService.MAX_PERSISTED_RUNS;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -23,12 +23,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class ReportController {
 
     private JLineupService jLineupService;
+    private JLineupWebProperties jLineupWebProperties;
 
     private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm").withZone(ZoneId.systemDefault());
 
     @Autowired
-    public ReportController(JLineupService jLineupService) {
+    public ReportController(JLineupService jLineupService, JLineupWebProperties jLineupWebProperties) {
         this.jLineupService = jLineupService;
+        this.jLineupWebProperties = jLineupWebProperties;
     }
 
     @RequestMapping(
@@ -41,7 +43,7 @@ public class ReportController {
             addObject("reportList", jLineupService.getRunStatus().stream()
                     .sorted(Comparator.comparing(JLineupRunStatus::getStartTime).reversed())
                     .map(Report::new)
-                    .limit(MAX_PERSISTED_RUNS)
+                    .limit(jLineupWebProperties.getMaxPersistedRuns())
                     .collect(toList()));
         }};
     }
