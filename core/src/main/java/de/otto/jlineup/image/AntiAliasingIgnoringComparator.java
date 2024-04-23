@@ -40,14 +40,21 @@ public class AntiAliasingIgnoringComparator {
     private final static double DEFAULT_BRIGHTNESS_TOLERANCE = 0d;
     private final static double JUST_NOTICEABLE_DIFFERENCE = 2.3d;  // Just noticeable difference if ciede2000 >= JND then colors difference is noticeable by human eye
 
-    public static boolean checkIsAntialiased(BufferedImage img1, BufferedImage img2, int x, int y) {
-        boolean isPixelAntiAliased = isAntialiased(img2, x, y, img1)
-                || isAntialiased(img1, x, y, img2);
+    public static boolean checkIsAntialiased(BufferedImage img1, BufferedImage img2, int x, int y, double tolerance) {
+        boolean isPixelAntiAliased = isAntialiased(img2, x, y, img1, tolerance)
+                || isAntialiased(img1, x, y, img2, tolerance);
         LOG.debug("Check if different pixel {}|{} is because of anti-aliasing: {}", x, y, isPixelAntiAliased);
         return isPixelAntiAliased;
     }
 
-    private static boolean isAntialiased(BufferedImage img1, int xPos, int yPos, BufferedImage img2) {
+    public static boolean checkIsAntialiased(BufferedImage img1, BufferedImage img2, int x, int y) {
+        boolean isPixelAntiAliased = isAntialiased(img2, x, y, img1, JUST_NOTICEABLE_DIFFERENCE)
+                || isAntialiased(img1, x, y, img2, JUST_NOTICEABLE_DIFFERENCE);
+        LOG.debug("Check if different pixel {}|{} is because of anti-aliasing: {}", x, y, isPixelAntiAliased);
+        return isPixelAntiAliased;
+    }
+
+    private static boolean isAntialiased(BufferedImage img1, int xPos, int yPos, BufferedImage img2, double tolerance) {
 
         if (xPos >= img1.getWidth() || yPos >= img1.getHeight()) {
             return false;
@@ -62,7 +69,7 @@ public class AntiAliasingIgnoringComparator {
         final int y2 = Math.min(yPos + 1, height - 1);
 
         boolean checkExtremePixels = img2 == null;
-        double brightnessTolerance = checkExtremePixels ? JUST_NOTICEABLE_DIFFERENCE : DEFAULT_BRIGHTNESS_TOLERANCE;
+        double brightnessTolerance = checkExtremePixels ? tolerance : DEFAULT_BRIGHTNESS_TOLERANCE;
 
         int zeroes = 0;
         int positives = 0;
@@ -124,8 +131,8 @@ public class AntiAliasingIgnoringComparator {
 
         // if either the darkest or the brightest pixel has more than 2 equal siblings in both images
         // (definitely not anti-aliased), this pixel is anti-aliased
-        return (!isAntialiased(img1, minX, minY, null) && !isAntialiased(img2, minX, minY, null)) ||
-                (!isAntialiased(img1, maxX, maxY, null) && !isAntialiased(img2, maxX, maxY, null));
+        return (!isAntialiased(img1, minX, minY, null, tolerance) && !isAntialiased(img2, minX, minY, null, tolerance)) ||
+                (!isAntialiased(img1, maxX, maxY, null, tolerance) && !isAntialiased(img2, maxX, maxY, null, tolerance));
     }
 
     private static double brightnessDelta(Color color1, Color color2) {

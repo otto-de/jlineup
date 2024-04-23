@@ -97,7 +97,7 @@ public class ImageService {
                 if (!strictColorComparison && doColorsLookSame(image1Pixels[i1], image2Pixels[i2], maxColorDistance)) {
                     differenceImagePixels[iD] = LOOK_SAME_COLOR;
                     lookSameDiffPixelCounter++;
-                } else if (ignoreAntiAliased && AntiAliasingIgnoringComparator.checkIsAntialiased(image1, image2, x, y)) {
+                } else if (ignoreAntiAliased && AntiAliasingIgnoringComparator.checkIsAntialiased(image1, image2, x, y, 0d)) {
                     differenceImagePixels[iD] = ANTI_ALIAS_DETECTED_COLOR;
                     antiAliasedDiffPixelCounter++;
                 } else {

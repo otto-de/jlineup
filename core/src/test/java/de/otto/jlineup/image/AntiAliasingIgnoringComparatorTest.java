@@ -24,4 +24,16 @@ public class AntiAliasingIgnoringComparatorTest {
         assertThat(AntiAliasingIgnoringComparator.checkIsAntialiased(beforeImageBuffer, afterImageBuffer, 182, 33), is(false));
     }
 
+    @Test
+    public void shouldFindAntiAliasedPixeWithZeroTolerance() throws IOException {
+        //given
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_after.png"));
+        //final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_DIFFERENCE_reference.png"));
+
+        assertThat(AntiAliasingIgnoringComparator.checkIsAntialiased(beforeImageBuffer, afterImageBuffer, 180, 33, 0), is(false));
+        assertThat(AntiAliasingIgnoringComparator.checkIsAntialiased(beforeImageBuffer, afterImageBuffer, 181, 33, 0), is(true));
+        assertThat(AntiAliasingIgnoringComparator.checkIsAntialiased(beforeImageBuffer, afterImageBuffer, 182, 33, 0), is(false));
+    }
+
 }
