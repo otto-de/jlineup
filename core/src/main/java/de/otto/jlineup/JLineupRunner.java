@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathToLogFile;
 import static java.lang.invoke.MethodHandles.lookup;
 
