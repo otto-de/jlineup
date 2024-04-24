@@ -184,5 +184,7 @@ Credit for original Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
 
 If you have questions or proposals, please open an issue or write an email to marco DOT geweke AT otto.de
 
-<div style="text-align:center"><img src="docs/jlineup-logo-2024.png" width="150" /></div>	
+###
+
+<div align="center"><img src="docs/jlineup-logo-2024.png" width="150" /></div>	
 
