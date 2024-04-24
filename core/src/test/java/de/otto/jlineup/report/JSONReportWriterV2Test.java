@@ -78,7 +78,7 @@ public class JSONReportWriterV2Test {
                         "        \"max-diff\" : 0.0," + lineSeparator() +
                         "        \"cookies\" : [ {" + lineSeparator() +
                         "          \"name\" : \"exampleCookieName\"," + lineSeparator() +
-                        "          \"value\" : \"exampleValue\"," + lineSeparator() +
+                        "          \"value\" : \"*****\"," + lineSeparator() +
                         "          \"domain\" : \"www.example.com\"," + lineSeparator() +
                         "          \"path\" : \"/\"," + lineSeparator() +
                         "          \"expiry\" : \"1970-01-01T00:00:01Z\"," + lineSeparator() +
@@ -88,10 +88,10 @@ public class JSONReportWriterV2Test {
                         "          \"live\" : \"www\"" + lineSeparator() +
                         "        }," + lineSeparator() +
                         "        \"local-storage\" : {" + lineSeparator() +
-                        "          \"exampleLocalStorageKey\" : \"value\"" + lineSeparator() +
+                        "          \"exampleLocalStorageKey\" : \"*****\"" + lineSeparator() +
                         "        }," + lineSeparator() +
                         "        \"session-storage\" : {" + lineSeparator() +
-                        "          \"exampleSessionStorageKey\" : \"value\"" + lineSeparator() +
+                        "          \"exampleSessionStorageKey\" : \"*****\"" + lineSeparator() +
                         "        }," + lineSeparator() +
                         "        \"max-scroll-height\" : 100000," + lineSeparator() +
                         "        \"wait-after-page-load\" : 0.0," + lineSeparator() +

@@ -171,6 +171,10 @@ public class Cookie {
         return Objects.hash(name, value, domain, path, expiry, secure, showInReport, screenshotContextGiving);
     }
 
+    public Cookie sanitize() {
+        return new Cookie(name, ( showInReport != null && showInReport ) ? value : "*****", domain, path, expiry, secure, showInReport, screenshotContextGiving);
+    }
+
     public static final class Builder {
         private String name;
         private String value;

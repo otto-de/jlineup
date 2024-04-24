@@ -717,7 +717,7 @@ public class Browser implements AutoCloseable {
 
             String jsCall = String.format(JS_SET_LOCAL_STORAGE_CALL, localStorageEntry.getKey(), entry);
             jse.executeScript(jsCall);
-            LOG.debug("LocalStorage call: {}", jsCall);
+            LOG.debug("LocalStorage call: {}", jsCall.replace(entry, "*****"));
         }
     }
 
@@ -763,7 +763,7 @@ public class Browser implements AutoCloseable {
 
             String jsCall = String.format(JS_SET_SESSION_STORAGE_CALL, sessionStorageEntry.getKey(), entry);
             jse.executeScript(jsCall);
-            LOG.debug("SessionStorage call: {}", jsCall);
+            LOG.debug("SessionStorage call: {}", jsCall.replace(entry, "*****"));
         }
     }
 
@@ -777,7 +777,7 @@ public class Browser implements AutoCloseable {
             cookieBuilder.isSecure(cookie.secure);
 
             org.openqa.selenium.Cookie seleniumCookie = cookieBuilder.build();
-            LOG.debug("Setting cookie through webdriver : {}", seleniumCookie);
+            LOG.debug("Setting cookie through webdriver : {}", seleniumCookie.toString().replace(cookie.value, "*****"));
             getWebDriver().manage().addCookie(seleniumCookie);
         }
     }

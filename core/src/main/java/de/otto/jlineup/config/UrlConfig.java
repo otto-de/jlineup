@@ -120,7 +120,6 @@ public class UrlConfig {
         waitForSelectors = builder.waitForSelectors;
         waitForSelectorsTimeout = builder.waitForSelectorsTimeout;
         failIfSelectorsNotFound = builder.failIfSelectorsNotFound;
-
     }
 
     /*
@@ -293,6 +292,18 @@ public class UrlConfig {
         builder.failIfSelectorsNotFound = copy.failIfSelectorsNotFound;
 
         return builder;
+    }
+
+    /**
+     * This replaces all cookie, local and session storage values with sanitized values.
+     */
+    public UrlConfig sanitize() {
+        return copyOfBuilder(this)
+                .withCookies(cookies != null ? cookies.stream().map(Cookie::sanitize).collect(Collectors.toList()) : null)
+                .withAlternatingCookies(alternatingCookies != null ? alternatingCookies.stream().map(alternatingCookies -> alternatingCookies.stream().map(Cookie::sanitize).collect(Collectors.toList())).collect(Collectors.toList()) : null)
+                .withLocalStorage(localStorage != null ? localStorage.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> "*****")) : null)
+                .withSessionStorage(sessionStorage != null ? sessionStorage.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> "*****")) : null)
+                .build();
     }
 
     //@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)

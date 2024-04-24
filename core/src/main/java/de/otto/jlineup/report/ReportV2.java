@@ -17,7 +17,7 @@ public class ReportV2 {
 
     public ReportV2(Summary summary, JobConfig jobConfig, List<UrlReportV2> urlReports, Map<BrowserStep, String> browsers) {
         this.summary = summary;
-        this.config = jobConfig;
+        this.config = jobConfig.sanitize();
         this.urlReports = urlReports;
         this.browsers = browsers;
     }

@@ -15,7 +15,7 @@ public class Report {
     public Report(Summary summary, Map<String, UrlReport> screenshotComparisons, JobConfig config) {
         this.summary = summary;
         this.screenshotComparisonsForUrl = screenshotComparisons;
-        this.config = config;
+        this.config = config.sanitize();
     }
 
     public List<ScreenshotComparisonResult> getFlatResultList() {

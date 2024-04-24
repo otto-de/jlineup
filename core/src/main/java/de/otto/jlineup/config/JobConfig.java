@@ -316,7 +316,6 @@ public final class JobConfig  {
                 );
     }
 
-
     public static JobConfig readConfig(final String workingDir, final String configFileName) throws IOException {
         List<String> searchPaths = new ArrayList<>();
         Path configFilePath = Paths.get(workingDir + "/" + configFileName);
@@ -497,5 +496,15 @@ public final class JobConfig  {
             }
             return this;
         }
+    }
+
+    /**
+     * This removes all cookie values from the config (used to write the config to the report)
+     * @return
+     */
+    public JobConfig sanitize() {
+        return JobConfig.copyOfBuilder(this)
+                .withUrls(this.urls.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> entry.getValue().sanitize())))
+                .build();
     }
 }
