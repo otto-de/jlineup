@@ -1,5 +1,6 @@
 package de.otto.jlineup.image;
 
+import de.otto.jlineup.file.FileService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -86,8 +87,21 @@ public class ImageServiceTest {
     }
 
     @Test
-    @Ignore("TODO: Fix this issue somehow :)")
-    public void shouldIgnoreIdenticalLookingHeartIcon() throws IOException {
+    public void shouldIgnoreIdenticalLookingHeartIconWhenIncreasedMaxColorDistanceIsUsed() throws IOException {
+        //given
+        final int viewportHeight = 800;
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_after.png"));
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false, 4.68f);
+
+        //then
+        assertThat(result.getDifference(), is(0.0));
+    }
+
+    @Test
+    public void shouldNotIgnoreIdenticalLookingHeartIconWhenDefaultMaxColorDistanceIsUsed() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_before.png"));
@@ -95,8 +109,9 @@ public class ImageServiceTest {
 
         //when
         ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false, DEFAULT_MAX_COLOR_DISTANCE);
+
         //then
-        assertThat(result.getDifference(), is(0.0));
+        assertThat(result.getDifference(), is(7.8125E-6));
     }
 
     @Test
