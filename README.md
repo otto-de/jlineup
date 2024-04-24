@@ -1,4 +1,4 @@
-[![JLineup](docs/jlineup-logo-2024.png)](#)
+<img src="docs/jlineup-logo-2024.png" width="500" />
 
 ## Status
 [![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg)](https://github.com/otto-de/jlineup/actions?query=workflow%3ABuild)
