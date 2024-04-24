@@ -1,4 +1,4 @@
-[![JLineup](docs/jlineup-logo_small.png)](#)
+[![JLineup](docs/jlineup-logo-2024.png)](#)
 
 ## Status
 [![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg)](https://github.com/otto-de/jlineup/actions?query=workflow%3ABuild)
