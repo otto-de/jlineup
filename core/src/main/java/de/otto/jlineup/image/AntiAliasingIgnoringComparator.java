@@ -38,18 +38,11 @@ public class AntiAliasingIgnoringComparator {
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     private final static double DEFAULT_BRIGHTNESS_TOLERANCE = 0d;
-    private final static double JUST_NOTICEABLE_DIFFERENCE = 2.3d;  // Just noticeable difference if ciede2000 >= JND then colors difference is noticeable by human eye
+    //private final static double JUST_NOTICEABLE_DIFFERENCE = 2.3d;  // Just noticeable difference if ciede2000 >= JND then colors difference is noticeable by human eye
 
     public static boolean checkIsAntialiased(BufferedImage img1, BufferedImage img2, int x, int y, double tolerance) {
         boolean isPixelAntiAliased = isAntialiased(img2, x, y, img1, tolerance)
                 || isAntialiased(img1, x, y, img2, tolerance);
-        LOG.debug("Check if different pixel {}|{} is because of anti-aliasing: {}", x, y, isPixelAntiAliased);
-        return isPixelAntiAliased;
-    }
-
-    public static boolean checkIsAntialiased(BufferedImage img1, BufferedImage img2, int x, int y) {
-        boolean isPixelAntiAliased = isAntialiased(img2, x, y, img1, JUST_NOTICEABLE_DIFFERENCE)
-                || isAntialiased(img1, x, y, img2, JUST_NOTICEABLE_DIFFERENCE);
         LOG.debug("Check if different pixel {}|{} is because of anti-aliasing: {}", x, y, isPixelAntiAliased);
         return isPixelAntiAliased;
     }

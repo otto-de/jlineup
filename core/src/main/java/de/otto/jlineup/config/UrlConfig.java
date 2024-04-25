@@ -56,8 +56,9 @@ public class UrlConfig {
     public final boolean failIfSelectorsNotFound;
 
     public final boolean ignoreAntiAliasing;
+    public final double maxAntiAliasColorDistance;
     public final boolean strictColorComparison;
-    public final float maxColorDistance;
+    public final double maxColorDistance;
 
     /* For Jackson */
     private UrlConfig() {
@@ -87,6 +88,7 @@ public class UrlConfig {
         this.waitForSelectorsTimeout = DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT;
         this.failIfSelectorsNotFound = false;
         this.ignoreAntiAliasing = false;
+        this.maxAntiAliasColorDistance = DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE;
         this.strictColorComparison = false;
         this.maxColorDistance = DEFAULT_MAX_COLOR_DISTANCE;
     }
@@ -114,6 +116,7 @@ public class UrlConfig {
         httpCheck = builder.httpCheck;
         hideImages = builder.hideImages;
         ignoreAntiAliasing = builder.ignoreAntiAliasing;
+        maxAntiAliasColorDistance = builder.maxAntiAliasColorDistance;
         strictColorComparison = builder.strictColorComparison;
         maxColorDistance = builder.maxColorDistance;
         removeSelectors = builder.removeSelectors;
@@ -222,11 +225,15 @@ public class UrlConfig {
         return ignoreAntiAliasing;
     }
 
+    public double getMaxAntiAliasColorDistance() {
+        return maxAntiAliasColorDistance;
+    }
+
     public boolean isStrictColorComparison() {
         return strictColorComparison;
     }
 
-    public float getMaxColorDistance() {
+    public double getMaxColorDistance() {
         return maxColorDistance;
     }
 
@@ -284,6 +291,7 @@ public class UrlConfig {
         builder.httpCheck = copy.httpCheck;
         builder.hideImages = copy.hideImages;
         builder.ignoreAntiAliasing = copy.ignoreAntiAliasing;
+        builder.maxAntiAliasColorDistance = copy.maxAntiAliasColorDistance;
         builder.strictColorComparison = copy.strictColorComparison;
         builder.maxColorDistance = copy.maxColorDistance;
         builder.removeSelectors = copy.removeSelectors;
@@ -331,8 +339,9 @@ public class UrlConfig {
         private HttpCheckConfig httpCheck = DEFAULT_HTTP_CHECK_CONFIG;
         private boolean hideImages;
         private boolean ignoreAntiAliasing;
+        private double maxAntiAliasColorDistance = DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE;
         private boolean strictColorComparison;
-        private float maxColorDistance = DEFAULT_MAX_COLOR_DISTANCE;
+        private double maxColorDistance = DEFAULT_MAX_COLOR_DISTANCE;
         private Set<String> removeSelectors;
         private Set<String> waitForSelectors;
         private float waitForSelectorsTimeout = DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT;
@@ -467,12 +476,17 @@ public class UrlConfig {
             return this;
         }
 
+        public Builder withMaxAntiAliasColorDistance(double val) {
+            maxAntiAliasColorDistance = val;
+            return this;
+        }
+
         public Builder withStrictColorComparison(boolean val) {
             strictColorComparison = val;
             return this;
         }
 
-        public Builder withMaxColorDistance(float val) {
+        public Builder withMaxColorDistance(double val) {
             maxColorDistance = val;
             return this;
         }
@@ -536,6 +550,7 @@ public class UrlConfig {
                 ", waitForSelectorsTimeout=" + waitForSelectorsTimeout +
                 ", failIfSelectorsNotFound=" + failIfSelectorsNotFound +
                 ", ignoreAntiAliasing=" + ignoreAntiAliasing +
+                ", maxAntiAliasColorDistance=" + maxAntiAliasColorDistance +
                 ", strictColorComparison=" + strictColorComparison +
                 ", maxColorDistance=" + maxColorDistance +
                 '}';
@@ -546,11 +561,12 @@ public class UrlConfig {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UrlConfig urlConfig = (UrlConfig) o;
-        return Double.compare(urlConfig.maxDiff, maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(urlConfig.waitAfterPageLoad, waitAfterPageLoad) == 0 && Float.compare(urlConfig.waitAfterScroll, waitAfterScroll) == 0 && Float.compare(urlConfig.waitForNoAnimationAfterScroll, waitForNoAnimationAfterScroll) == 0 && Float.compare(urlConfig.warmupBrowserCacheTime, warmupBrowserCacheTime) == 0 && Float.compare(urlConfig.waitForFontsTime, waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(urlConfig.waitForSelectorsTimeout, waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && strictColorComparison == urlConfig.strictColorComparison && Float.compare(urlConfig.maxColorDistance, maxColorDistance) == 0 && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors);
+        return Double.compare(maxDiff, urlConfig.maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(waitAfterPageLoad, urlConfig.waitAfterPageLoad) == 0 && Float.compare(waitAfterScroll, urlConfig.waitAfterScroll) == 0 && Float.compare(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) == 0 && Float.compare(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime) == 0 && Float.compare(waitForFontsTime, urlConfig.waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(waitForSelectorsTimeout, urlConfig.waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && Double.compare(maxAntiAliasColorDistance, urlConfig.maxAntiAliasColorDistance) == 0 && strictColorComparison == urlConfig.strictColorComparison && Double.compare(maxColorDistance, urlConfig.maxColorDistance) == 0 && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, strictColorComparison, maxColorDistance);
+        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, maxAntiAliasColorDistance, strictColorComparison, maxColorDistance);
     }
+
 }

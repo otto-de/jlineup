@@ -95,11 +95,13 @@ public class ScreenshotsComparator {
                     }
 
                     if (error) {
-                        screenshotComparisonResults.add(ScreenshotComparisonResult.noAfterImageComparisonResult(screenshotContext.contextHash(), fullUrlWithPath, screenshotContext.deviceConfig, yPosition, buildRelativePathFromReportDir(beforeFileName)));
+                        screenshotComparisonResults.add(ScreenshotComparisonResult
+                                .noAfterImageComparisonResult(screenshotContext.contextHash(), fullUrlWithPath, screenshotContext.deviceConfig, yPosition, buildRelativePathFromReportDir(beforeFileName)));
                         continue;
                     }
 
-                    ImageService.ImageComparisonResult imageComparisonResult = imageService.compareImages(imageBefore, imageAfter, screenshotContext.deviceConfig.height, screenshotContext.urlConfig.ignoreAntiAliasing, screenshotContext.urlConfig.strictColorComparison, screenshotContext.urlConfig.maxColorDistance);
+                    ImageService.ImageComparisonResult imageComparisonResult = imageService
+                            .compareImages(imageBefore, imageAfter, screenshotContext.deviceConfig.height, screenshotContext.urlConfig.ignoreAntiAliasing, screenshotContext.urlConfig.maxAntiAliasColorDistance, screenshotContext.urlConfig.strictColorComparison, screenshotContext.urlConfig.maxColorDistance);
                     String differenceImageFileName = null;
                     if ((imageComparisonResult.getDifference() > 0 || imageComparisonResult.getAcceptedDifferentPixels() > 0) && imageComparisonResult.getDifferenceImage().isPresent()) {
                         differenceImageFileName = fileService.writeScreenshot(screenshotContext, imageComparisonResult.getDifferenceImage().orElse(null), yPosition);

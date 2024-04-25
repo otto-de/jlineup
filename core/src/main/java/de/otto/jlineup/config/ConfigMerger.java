@@ -46,6 +46,7 @@ public class ConfigMerger {
                     urlConfigBuilder.withIgnoreAntiAliasing(mainUrlConfig.ignoreAntiAliasing || mergeUrlConfig.ignoreAntiAliasing);
                     urlConfigBuilder.withJavaScript(mainUrlConfig.javaScript == null && mergeUrlConfig.javaScript == null ? null : "" + mainUrlConfig.javaScript + ";" + mergeUrlConfig.javaScript);
                     urlConfigBuilder.withLocalStorage(merge(mainUrlConfig.localStorage, mergeUrlConfig.localStorage));
+                    urlConfigBuilder.withMaxAntiAliasColorDistance(mainUrlConfig.maxAntiAliasColorDistance != DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE ? mainUrlConfig.maxAntiAliasColorDistance : mergeUrlConfig.maxAntiAliasColorDistance);
                     urlConfigBuilder.withMaxColorDistance(mainUrlConfig.maxColorDistance != DEFAULT_MAX_COLOR_DISTANCE ? mainUrlConfig.maxColorDistance : mergeUrlConfig.maxColorDistance);
                     urlConfigBuilder.withMaxDiff(mainUrlConfig.maxDiff != DEFAULT_MAX_DIFF ? mainUrlConfig.maxDiff : mergeUrlConfig.maxDiff);
                     urlConfigBuilder.withMaxScrollHeight(mainUrlConfig.maxScrollHeight != DEFAULT_MAX_SCROLL_HEIGHT ? mainUrlConfig.maxScrollHeight : mergeUrlConfig.maxScrollHeight);

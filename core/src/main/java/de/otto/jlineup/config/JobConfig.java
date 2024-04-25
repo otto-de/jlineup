@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -57,7 +58,8 @@ public final class JobConfig  {
     static final float DEFAULT_WAIT_AFTER_SCROLL = 0;
     static final float DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
     static final float DEFAULT_WAIT_FOR_FONTS_TIME = 0;
-    public static final float DEFAULT_MAX_COLOR_DISTANCE = 2.3f;
+    public static final double DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE = 2.3d;
+    public static final double DEFAULT_MAX_COLOR_DISTANCE = 2.3d;
     static final int DEFAULT_THREADS = 0; // '0' means not set which is transformed to '1' when creating the threadpool
     static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
@@ -336,6 +338,10 @@ public final class JobConfig  {
         return JacksonWrapper.deserializeConfig(br);
     }
 
+    /**
+     * This function actively checks for unset values that need to be replaced with defaults
+     * @return a new JobConfig including the former values with defaults added
+     */
     public JobConfig insertDefaults() {
 
         //If no urls are configured, insertDefaults can't really work, validation will fail in a later step

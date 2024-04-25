@@ -1,8 +1,6 @@
 package de.otto.jlineup.image;
 
-import de.otto.jlineup.file.FileService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.imageio.ImageIO;
@@ -10,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE;
 import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_COLOR_DISTANCE;
 import static de.otto.jlineup.image.ImageService.bufferedImagesEqual;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,7 +33,7 @@ public class ImageServiceTest {
         final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, true, DEFAULT_MAX_COLOR_DISTANCE);
 
         //then
         assertThat(result.getDifference(), is(0.07005));
@@ -50,7 +49,7 @@ public class ImageServiceTest {
         final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_DIFFERENCE.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, true, DEFAULT_MAX_COLOR_DISTANCE);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, true, DEFAULT_MAX_COLOR_DISTANCE);
 
         //then
         assertThat(result.getAcceptedDifferentPixels(), is(0));
@@ -66,7 +65,7 @@ public class ImageServiceTest {
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_after.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, false, DEFAULT_MAX_COLOR_DISTANCE);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE);
 
         //then
         assertThat(result.getDifference(), is(0.0));
@@ -81,7 +80,7 @@ public class ImageServiceTest {
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/shoppromo_after.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false, DEFAULT_MAX_COLOR_DISTANCE);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE);
         //then
         assertThat(result.getDifference(), is(0.0));
     }
@@ -94,7 +93,21 @@ public class ImageServiceTest {
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_after.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false, 4.68f);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, 4.68f);
+
+        //then
+        assertThat(result.getDifference(), is(0.0));
+    }
+
+    @Test
+    public void shouldIgnoreIdenticalLookingHeartIconWhenIncreasedMaxAntiAliasColorDistanceIsUsed() throws IOException {
+        //given
+        final int viewportHeight = 800;
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_after.png"));
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, 20f, true, DEFAULT_MAX_COLOR_DISTANCE);
 
         //then
         assertThat(result.getDifference(), is(0.0));
@@ -108,7 +121,7 @@ public class ImageServiceTest {
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_after.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false, DEFAULT_MAX_COLOR_DISTANCE);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE);
 
         //then
         assertThat(result.getDifference(), is(7.8125E-6));
@@ -122,7 +135,7 @@ public class ImageServiceTest {
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/nordic_style_image_blur_after.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false, 3f);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, 3f);
         //then
         assertThat(result.getDifference(), is(0.0));
     }
@@ -135,7 +148,7 @@ public class ImageServiceTest {
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/testAdditionalCombos_after.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false, 3.6f);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, 3.6f);
         //then
         assertThat(result.getDifference(), is(0.0));
     }
@@ -149,7 +162,7 @@ public class ImageServiceTest {
         final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_diff2.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, false, DEFAULT_MAX_COLOR_DISTANCE);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE);
 
         //then
         assertThat(result.getDifference(), is(0.0));
@@ -165,7 +178,7 @@ public class ImageServiceTest {
         final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_diff.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, false, DEFAULT_MAX_COLOR_DISTANCE);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE);
 
         //then
         assertThat(result.getDifference(), greaterThan(0d));
@@ -181,7 +194,7 @@ public class ImageServiceTest {
         final BufferedImage referenceImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/ideaDifferenceReference.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, true, DEFAULT_MAX_COLOR_DISTANCE);
         //ImageIO.write(result.getDifferenceImage().orElse(null), "png", new File("src/test/resources/screenshots/ideaDifferenceReferenceNew.png"));
 
         //then
@@ -197,7 +210,7 @@ public class ImageServiceTest {
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/more_height.png"));
 
         //when
-        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight);
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, true, DEFAULT_MAX_COLOR_DISTANCE);
 
         //then
         assertThat(result.getDifference(), is(0.475));

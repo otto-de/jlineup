@@ -192,6 +192,7 @@ public class JLineupWebApplicationTests {
         return jobConfigBuilder()
                 .withUrls(ImmutableMap.of("https://www.example.com",
                         UrlConfig.urlConfigBuilder().withWindowWidths(of(600)).withMaxScrollHeight(100000).build()))
+                .withGlobalWaitAfterPageLoad(2f)
                 .build()
                 .insertDefaults();
     }

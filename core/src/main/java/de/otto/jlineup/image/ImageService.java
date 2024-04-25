@@ -1,7 +1,5 @@
 package de.otto.jlineup.image;
 
-import de.otto.jlineup.config.JobConfig;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -45,11 +43,7 @@ public class ImageService {
         }
     }
 
-    public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight) {
-        return this.compareImages(image1, image2, viewportHeight, false, true, JobConfig.DEFAULT_MAX_COLOR_DISTANCE);
-    }
-
-    public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight, boolean ignoreAntiAliased, boolean strictColorComparison, float maxColorDistance) {
+    public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight, boolean ignoreAntiAliased, double maxAntiAliasColorDistance, boolean strictColorComparison, double maxColorDistance) {
 
         if (image1 == null || image2 == null) throw new NullPointerException("Can't compare null imagebuffers");
 
@@ -97,7 +91,7 @@ public class ImageService {
                 if (!strictColorComparison && doColorsLookSame(image1Pixels[i1], image2Pixels[i2], maxColorDistance)) {
                     differenceImagePixels[iD] = LOOK_SAME_COLOR;
                     lookSameDiffPixelCounter++;
-                } else if (ignoreAntiAliased && AntiAliasingIgnoringComparator.checkIsAntialiased(image1, image2, x, y, 0d)) {
+                } else if (ignoreAntiAliased && AntiAliasingIgnoringComparator.checkIsAntialiased(image1, image2, x, y, maxAntiAliasColorDistance)) {
                     differenceImagePixels[iD] = ANTI_ALIAS_DETECTED_COLOR;
                     antiAliasedDiffPixelCounter++;
                 } else {
