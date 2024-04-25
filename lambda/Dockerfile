@@ -55,7 +55,7 @@ RUN rm /tmp/firefox.tar.bz2
 
 #RUN CHROME_FOR_TESTING_RELEASE="$(curl --silent https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq '.channels.Stable')"; \
 RUN curl --insecure https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json
-RUN CHROME_FOR_TESTING_RELEASE=$(curl --insecure --silent https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq '.milestones."123"') \
+RUN CHROME_FOR_TESTING_RELEASE=$(curl --insecure --silent https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq '.milestones."124"') \
     CHROME_DOWNLOAD_URL="$(echo ""${CHROME_FOR_TESTING_RELEASE}"" | jq -r '.downloads.chrome[] | select(.platform == "linux64") | .url')"; \
     curl --insecure --remote-name --silent "${CHROME_DOWNLOAD_URL}"; \
     ls -alh; \
