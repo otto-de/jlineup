@@ -272,6 +272,8 @@ public class UrlConfig {
     public static Builder copyOfBuilder(UrlConfig copy) {
         Builder builder = new Builder();
         builder.url = copy.url;
+        builder.setupPaths = copy.setupPaths;
+        builder.cleanupPaths = copy.cleanupPaths;
         builder.paths = copy.paths;
         builder.maxDiff = copy.maxDiff;
         builder.cookies = copy.cookies;
