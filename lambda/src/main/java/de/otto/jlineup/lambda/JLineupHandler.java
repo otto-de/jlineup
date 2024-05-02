@@ -84,7 +84,7 @@ public class JLineupHandler implements RequestStreamHandler {
                 throw new RuntimeException("Environment variable JLINEUP_LAMBDA_S3_BUCKET not set! Please create a bucket and set the environment variable to contain it's name.");
             }
             CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket(bucketName).source(workingDir)).completionFuture();
-            //output.write(uploadStatus.get().toString().getBytes(StandardCharsets.UTF_8));
+            output.write(("Upload status: " + uploadStatus.get().toString()).getBytes(StandardCharsets.UTF_8));
             output.write(("Ok! (Retries: " + retries + ")").getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             throw new RuntimeException(e);
