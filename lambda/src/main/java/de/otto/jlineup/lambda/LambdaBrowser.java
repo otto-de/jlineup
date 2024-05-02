@@ -98,14 +98,14 @@ public class LambdaBrowser implements CloudBrowser {
                             //LOG.error(retryAnswer); Is logged outside of this method by catching function
                             throw new RuntimeException("Lambda call failed even when retried: " + retryAnswer);
                         } else {
-                            LOG.info("Answer after retry:  {}", retryAnswer);
+                            LOG.info("Answer from Lambda after retry: '{}'", retryAnswer);
                         }
                     } else {
                         //LOG.error(answer); Is logged outside of this method by catching function
                         throw new RuntimeException("Lambda call failed: " + answer);
                     }
                 } else {
-                    LOG.info("Answer:  {}", answer);
+                    LOG.info("Answer from Lambda: '{}'", answer);
                 }
             }
 
