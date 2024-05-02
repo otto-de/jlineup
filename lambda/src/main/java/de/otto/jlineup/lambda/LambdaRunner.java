@@ -12,12 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
@@ -49,7 +47,7 @@ public class LambdaRunner {
         validateConfig();
     }
 
-    public boolean run() {
+    public int run() {
         final FileService fileService = new FileService(runStepConfig, jobConfig, "files_" + runStepConfig.getStep() + "_" + screenshotContext.contextHash() + ".json");
         try {
             fileService.createWorkingDirectoryIfNotExists();
@@ -61,8 +59,12 @@ public class LambdaRunner {
         MDC.put(REPORT_LOG_NAME_KEY, getFullPathOfReportDir(runStepConfig) + "/" + LOGFILE_NAME);
         LOG.info("JLineup run started for context '{}'", screenshotContext);
         BrowserUtils browserUtils = new BrowserUtils();
+        int retries = 0;
         try (Browser browser = new Browser(runStepConfig, jobConfig, fileService, browserUtils)) {
-            browser.runForScreenshotContext(screenshotContext);
+            retries = tryToTakeScreenshotsForContextNTimes(browser, screenshotContext, jobConfig.screenshotRetries);
+            if (retries > 0) {
+                LOG.warn("It took '{}' retries to take screenshots", retries);
+            }
         } catch (Exception exception) {
             Path pathToDebugFile = Paths.get("/tmp", "jlineup", "chrome-profile-" + this.id, "chrome_debug.log");
             try {
@@ -90,7 +92,26 @@ public class LambdaRunner {
 
         LOG.info("JLineup run finished for context '{}'", screenshotContext);
         MDC.remove(REPORT_LOG_NAME_KEY);
-        return true;
+        return retries;
+    }
+
+    private int tryToTakeScreenshotsForContextNTimes(Browser browser, ScreenshotContext screenshotContext, int maxRetries) throws Exception {
+        int retries = 0;
+        while (retries <= maxRetries) {
+            try {
+                browser.runForScreenshotContext(screenshotContext);
+                return retries;
+            } catch (Exception e) {
+                if (retries < maxRetries) {
+                    LOG.warn("try '{}' to take screen failed", retries, e);
+                } else {
+                    LOG.error("'{}' retries did not help, giving up. Last exception was: '{}'", retries, e.getMessage());
+                    throw e;
+                }
+            }
+            retries++;
+        }
+        return Integer.MAX_VALUE;
     }
 
     private void validateConfig() throws ValidationError {

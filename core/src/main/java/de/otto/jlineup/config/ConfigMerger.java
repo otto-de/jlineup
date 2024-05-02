@@ -17,6 +17,7 @@ public class ConfigMerger {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
+    //TODO: Write test for new merge method which is different from the old distinct list merge
     public static JobConfig mergeJobConfigWithMergeConfig(JobConfig mainGlobalConfig, JobConfig mergeGlobalConfig) {
 
         JobConfig.Builder mergedJobConfigBuilder = JobConfig.jobConfigBuilder();
@@ -35,10 +36,10 @@ public class ConfigMerger {
                     UrlConfig mergeUrlConfig = mergeUrlConfigEntry.getValue();
                     UrlConfig.Builder urlConfigBuilder = UrlConfig.urlConfigBuilder();
                     urlConfigBuilder.withUrl(mainUrlConfig.url);
-                    urlConfigBuilder.withAlternatingCookies(merge(mainUrlConfig.alternatingCookies, mergeUrlConfig.alternatingCookies));
+                    urlConfigBuilder.withAlternatingCookies(mergeAndOnlyKeepDistinct(mainUrlConfig.alternatingCookies, mergeUrlConfig.alternatingCookies));
                     urlConfigBuilder.withCleanupPaths(merge(mainUrlConfig.cleanupPaths, mergeUrlConfig.cleanupPaths));
-                    urlConfigBuilder.withCookies(merge(mainUrlConfig.cookies, mergeUrlConfig.cookies));
-                    urlConfigBuilder.withDevices(merge(mainUrlConfig.devices, mergeUrlConfig.devices));
+                    urlConfigBuilder.withCookies(mergeAndOnlyKeepDistinct(mainUrlConfig.cookies, mergeUrlConfig.cookies));
+                    urlConfigBuilder.withDevices(mergeAndOnlyKeepDistinct(mainUrlConfig.devices, mergeUrlConfig.devices));
                     urlConfigBuilder.withEnvMapping(merge(mainUrlConfig.envMapping, mergeUrlConfig.envMapping));
                     urlConfigBuilder.withFailIfSelectorsNotFound(mainUrlConfig.failIfSelectorsNotFound || mergeUrlConfig.failIfSelectorsNotFound);
                     urlConfigBuilder.withHideImages(mainUrlConfig.hideImages || mergeUrlConfig.hideImages);
@@ -50,7 +51,7 @@ public class ConfigMerger {
                     urlConfigBuilder.withMaxColorDistance(mainUrlConfig.maxColorDistance != DEFAULT_MAX_COLOR_DISTANCE ? mainUrlConfig.maxColorDistance : mergeUrlConfig.maxColorDistance);
                     urlConfigBuilder.withMaxDiff(mainUrlConfig.maxDiff != DEFAULT_MAX_DIFF ? mainUrlConfig.maxDiff : mergeUrlConfig.maxDiff);
                     urlConfigBuilder.withMaxScrollHeight(mainUrlConfig.maxScrollHeight != DEFAULT_MAX_SCROLL_HEIGHT ? mainUrlConfig.maxScrollHeight : mergeUrlConfig.maxScrollHeight);
-                    urlConfigBuilder.withPaths(merge(mainUrlConfig.paths, mergeUrlConfig.paths));
+                    urlConfigBuilder.withPaths(mergeAndOnlyKeepDistinct(mainUrlConfig.paths, mergeUrlConfig.paths));
                     urlConfigBuilder.withRemoveSelectors(merge(mainUrlConfig.removeSelectors, mergeUrlConfig.removeSelectors));
                     urlConfigBuilder.withSessionStorage(merge(mainUrlConfig.sessionStorage, mergeUrlConfig.sessionStorage));
                     urlConfigBuilder.withSetupPaths(merge(mainUrlConfig.setupPaths, mergeUrlConfig.setupPaths));
@@ -62,7 +63,7 @@ public class ConfigMerger {
                     urlConfigBuilder.withWaitForSelectors(merge(mainUrlConfig.waitForSelectors, mergeUrlConfig.waitForSelectors));
                     urlConfigBuilder.withWaitForSelectorsTimeout(mainUrlConfig.waitForSelectorsTimeout != DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT ? mainUrlConfig.waitForSelectorsTimeout : mergeUrlConfig.waitForSelectorsTimeout);
                     urlConfigBuilder.withWarmupBrowserCacheTime(mainUrlConfig.warmupBrowserCacheTime != DEFAULT_WARMUP_BROWSER_CACHE_TIME ? mainUrlConfig.warmupBrowserCacheTime : mergeUrlConfig.warmupBrowserCacheTime);
-                    urlConfigBuilder.withWindowWidths(merge(mainUrlConfig.windowWidths, mergeUrlConfig.windowWidths));
+                    urlConfigBuilder.withWindowWidths(mergeAndOnlyKeepDistinct(mainUrlConfig.windowWidths, mergeUrlConfig.windowWidths));
 
                     mainUrlConfig = urlConfigBuilder.build();
                 }
@@ -72,12 +73,17 @@ public class ConfigMerger {
         return mergedJobConfigBuilder.build();
     }
 
+    private static List<String> merge(List<String> one, List<String> two) {
+        if (one == null && two == null) return null;
+        return Stream.concat(one != null ? one.stream() : Stream.empty(), two != null ? two.stream() : Stream.empty()).collect(Collectors.toList());
+    }
+
     private static <T> Set<T> merge(Set<T> one, Set<T> two) {
         if (one == null && two == null) return null;
         return Stream.concat(one != null ? one.stream() : Stream.empty(), two != null ? two.stream() : Stream.empty()).collect(Collectors.toSet());
     }
 
-    private static <T> List<T> merge(List<T> one, List<T> two) {
+    private static <T> List<T> mergeAndOnlyKeepDistinct(List<T> one, List<T> two) {
         if (one == null && two == null) return null;
         return Stream.concat(one != null ? one.stream() : Stream.empty(), two != null ? two.stream() : Stream.empty()).distinct().collect(Collectors.toList());
     }
