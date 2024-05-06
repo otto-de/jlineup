@@ -2,9 +2,12 @@
 
 ## Release 4.11.0 - 2024-05-06
 * Feature: Add `merge-config` field to the global config. The merge config can include a full config that is
-           merged with the main config.
-* Feature: Make max anti alias color difference configurable via `max-anti-alias-color-difference` field in the global config.
-* Bugfix:  The `setup-paths` and `cleanup-paths` feature did not work since introduction of the `--merge-config` option.
+  merged with the main config.
+* Feature: Make max anti alias color difference configurable via `max-anti-alias-color-difference` field in the 
+  global config.
+* Improvement: Cookie, LocalStorage and SessionStorage values are now masked in the report and in logs to not 
+  accidentally leak sensitive data.
+* Bugfix: The `setup-paths` and `cleanup-paths` feature did not work since introduction of the `--merge-config` option.
 
 ## Release 4.10.0 - 2024-04-10
 * Feature: First release of the lambda module. You can now run the screenshots part of JLineup as a lambda function in AWS.
@@ -27,7 +30,7 @@
 * Dependency updates
 
 ## Release 4.8.3 - 2023-03-09
-* Bugfix: Add '--remote-allow-origins=*' to Chrome options to fix issues with Chrome 111 and the webdriver connection. 
+* Bugfix: Add `--remote-allow-origins=*` to Chrome options to fix issues with Chrome 111 and the webdriver connection. 
   * JLineup might update to Java 11 or 17 soon to switch to Java HttpClient
     (https://www.selenium.dev/blog/2022/using-java11-httpclient/).
   * Some background information: https://groups.google.com/g/chromedriver-users/c/xL5-13_qGaA/m/oTA9W3cQAgAJ
