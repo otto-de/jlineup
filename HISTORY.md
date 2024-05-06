@@ -1,6 +1,12 @@
 # JLineup Release History
 
-## Relese 4.10.0 - 2024-04-10
+## Release 4.11.0 - 2024-05-06
+* Feature: Add `merge-config` field to the global config. The merge config can include a full config that is
+           merged with the main config.
+* Feature: Make max anti alias color difference configurable via `max-anti-alias-color-difference` field in the global config.
+* Bugfix:  The `setup-paths` and `cleanup-paths` feature did not work since introduction of the `--merge-config` option.
+
+## Release 4.10.0 - 2024-04-10
 * Feature: First release of the lambda module. You can now run the screenshots part of JLineup as a lambda function in AWS.
 
 ## Release 4.9.2 - 2023-12-19
@@ -14,8 +20,8 @@
 ## Release 4.9.0 - 2023-08-16
 * Bugfix: Recent changes to Chrome's webdriver management broke the automatic webdriver download
   This was realized through a change from the webdrivermanager library to Selenium's built-in driver manager
-* **Breaking change**: Many dependency updates (Spring Boot 3, including the move from javax.servlet to jakarta.servlet packages) that
-  bump the Java minimum requirements to Java 17.
+* **Breaking change**: Many dependency updates (Spring Boot 3, including the move from javax.servlet to 
+  jakarta.servlet packages) that bump the Java minimum requirements to Java 17.
 
 ## Release 4.8.4 - 2023-06-03
 * Dependency updates

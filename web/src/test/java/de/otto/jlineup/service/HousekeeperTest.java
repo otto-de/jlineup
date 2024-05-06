@@ -40,17 +40,17 @@ public class HousekeeperTest {
     }
 
     @Test
-    public void shouldDeleteReportsOlderThanOneWeek() throws IOException {
+    public void shouldDeleteReportsOlderThanThreeWeeks() throws IOException {
 
         //Given:
 
         //Two folders with last modified 8 days ago
         Path report1dir = Files.createDirectories(tempJLineupDirectory.resolve("report-1"));
         Files.createDirectories(report1dir.resolve("subdir"));
-        Files.setLastModifiedTime(report1dir, FileTime.from(Instant.now().minus(Duration.ofDays(8))));
+        Files.setLastModifiedTime(report1dir, FileTime.from(Instant.now().minus(Duration.ofDays(22))));
         Path report2dir = Files.createDirectories(tempJLineupDirectory.resolve("report-2"));
         Files.createDirectories(report2dir.resolve("subdir"));
-        Files.setLastModifiedTime(report2dir, FileTime.from(Instant.now().minus(Duration.ofDays(8))));
+        Files.setLastModifiedTime(report2dir, FileTime.from(Instant.now().minus(Duration.ofDays(23))));
 
         //One folder with current time
         Path report3dir = Files.createDirectories(tempJLineupDirectory.resolve("report-3"));
