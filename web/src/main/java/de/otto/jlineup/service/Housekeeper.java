@@ -19,7 +19,7 @@ import static java.lang.invoke.MethodHandles.lookup;
 
 public class Housekeeper {
 
-    private static final int DELETE_REPORTS_AFTER_DAYS = 7;
+    private static final int DELETE_REPORTS_AFTER_DAYS = 21;
     private static final int DELETE_SCREENSHOTS_AFTER_DAYS = 1;
     private static final int ONE_HOUR_IN_MILLIS = 60 * 60 * 1000;
     private static final String SELENIUM_SCREENSHOT_PREFIX = "screenshot";
@@ -61,29 +61,28 @@ public class Housekeeper {
     }
 
     private void deleteReportsOlderThan(Duration duration) throws IOException {
-
         Instant pointInTime = Instant.now().minus(duration);
-
         LOG.info("delete reports older than {}", pointInTime);
-
-        Files.list(path)
-                .filter(filesOlderThan(pointInTime))
-                .forEach(deletePath());
+        try(Stream<Path> pathStream = Files.list(path)) {
+            pathStream.filter(filesOlderThan(pointInTime))
+                    .forEach(deletePath());
+        }
     }
 
     private void deleteFile(Path path) {
             try {
                 Files.delete(path);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error("Could not delete file {}", path, e);
             }
     }
+
     private Consumer<Path> deletePath() {
         return file -> {
             try {
                 FileUtils.deleteDirectory(file);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error("Could not delete directory {}", file, e);
             }
         };
     }
@@ -94,7 +93,7 @@ public class Housekeeper {
                 Instant fileDate = Files.getLastModifiedTime(file).toInstant();
                 return fileDate.isBefore(pointInTime);
             } catch (IOException e) {
-                e.printStackTrace();
+                LOG.error("Could not read last modified time of file {}", file, e);
                 return false;
             }
         };
