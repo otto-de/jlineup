@@ -1,5 +1,8 @@
 package de.otto.jlineup.image;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -10,14 +13,18 @@ import java.util.Optional;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static java.lang.invoke.MethodHandles.lookup;
 
 public class ImageService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     public static final int SAME_COLOR = Color.BLACK.getRGB();
     public static final int HIGHLIGHT_COLOR = Color.WHITE.getRGB();
     public static final int DIFFERENT_SIZE_COLOR = Color.GRAY.getRGB();
     public static final int LOOK_SAME_COLOR = Color.BLUE.getRGB();
     public static final int ANTI_ALIAS_DETECTED_COLOR = Color.GREEN.getRGB();
+    public static final int PIXELMATCH_ANTI_ALIAS_DETECTED_COLOR = new Color(100, 255, 100).getRGB();
 
     public static class ImageComparisonResult {
         private final BufferedImage differenceImage;
@@ -90,9 +97,15 @@ public class ImageService {
             if (image1Pixels[i1] != image2Pixels[i2]) {
                 if (!strictColorComparison && doColorsLookSame(image1Pixels[i1], image2Pixels[i2], maxColorDistance)) {
                     differenceImagePixels[iD] = LOOK_SAME_COLOR;
+                    LOG.debug("Same-looking pixels detected at pixel {}|{} with a max color distance of {}", x, y, maxColorDistance);
                     lookSameDiffPixelCounter++;
                 } else if (ignoreAntiAliased && AntiAliasingIgnoringComparator.checkIsAntialiased(image1, image2, x, y, maxAntiAliasColorDistance)) {
                     differenceImagePixels[iD] = ANTI_ALIAS_DETECTED_COLOR;
+                    LOG.debug("Anti-aliasing detected with looks-same at pixel {}|{} with a max anti alias color distance of {}", x, y, maxAntiAliasColorDistance);
+                    antiAliasedDiffPixelCounter++;
+                } else if (ignoreAntiAliased && width1 == width2 && height1 == height2 && PixelMatch.isAntiAliased(image1, x, y, width1, height1, image2)) {
+                    differenceImagePixels[iD] = PIXELMATCH_ANTI_ALIAS_DETECTED_COLOR;
+                    LOG.debug("Anti-aliasing detected with pixelmatch at pixel {}|{}", x, y);
                     antiAliasedDiffPixelCounter++;
                 } else {
                     differenceImagePixels[iD] = HIGHLIGHT_COLOR;

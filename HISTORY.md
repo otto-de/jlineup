@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 4.11.1 - 2024-05-07
+* Feature: New additional anti-alias detection ported from Pixelmatch. Runs automatically if
+  ìgnore-anti-aliasing` is set to `true`.
+
 ## Release 4.11.0 - 2024-05-06
 * Feature: Add `merge-config` field to the global config. The merge config can include a full config that is
   merged with the main config.

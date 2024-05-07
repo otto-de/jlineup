@@ -104,6 +104,7 @@ public class BrowserUtils {
                 options.addArguments("--disable-checker-imaging");
                 options.addArguments("--run-all-compositor-stages-before-draw");
                 options.addArguments("--enable-surface-synchronization");
+                options.addArguments("--force-color-profile=srgb");
             }
 
             if (device.isMobile()) {

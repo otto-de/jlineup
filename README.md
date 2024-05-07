@@ -8,6 +8,10 @@
 ![](https://snyk-widget.herokuapp.com/badge/mvn/de.otto/jlineup-cli/badge.svg)
 
 ## News
+
+**2024-05-07**: **JLineup 4.11.1** is here! This release contains an improved anti-alias detection ported from Pixelmatch.
+It also fixes some bugs, updates dependencies and masks sensitive data in the log and report output.
+
 **2024-04-10**: **JLineup 4.10.0** is out! This release contains dependency updates and the brand-new Lambda module. It
 allows you to run the screenshot creation in a lambda function, and it can speed up the process significantly. We have this
 running in an internal beta. Documentation will follow soon.
@@ -87,7 +91,7 @@ JLineup CLI comes as executable Java Archive. Java 17 or higher has to be availa
 
 Open a terminal and download it like this:
 
-    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.11.0/jlineup-cli-4.11.0.jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.11.1/jlineup-cli-4.11.1.jar -O jlineup.jar
 
 Then type
 
@@ -169,6 +173,16 @@ JLineup uses some third party tools and libraries
 ##### AWS SDK
 
 * [AWS SDK for Java 2.0](https://github.com/aws/aws-sdk-java-v2) is licensed under the [Apache 2.0 License](https://github.com/aws/aws-sdk-java-v2?tab=Apache-2.0-1-ov-file#readme).
+
+##### Pixelmatch
+
+Some code from Pixelmatch was ported to Java for JLineup.
+* [Pixelmatch](https://github.com/mapbox/pixelmatch) is licensed under the [ISC License](https://github.com/mapbox/pixelmatch?tab=ISC-1-ov-file#readme).
+
+##### Looks-same
+
+Some code from Looks-same was ported to Java for JLineup.
+* [Looks-same](https://github.com/gemini-testing/looks-same) is licensed under the [MIT License](https://github.com/gemini-testing/looks-same#MIT-1-ov-file).
 
 ### Historic Facts
 

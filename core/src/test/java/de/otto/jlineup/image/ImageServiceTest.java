@@ -73,6 +73,21 @@ public class ImageServiceTest {
     }
 
     @Test
+    public void shouldIgnoreSlightDifferenceInBenefitImageThroughAntiAliasDetection() throws IOException {
+        //given
+        final int viewportHeight = 800;
+        final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/benefit_before.png"));
+        final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/benefit_after.png"));
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, viewportHeight, true, 2.3d, true, 0);
+
+        //then
+        assertThat(result.getDifference(), is(0.0));
+        assertThat(result.getAcceptedDifferentPixels(), is(1));
+    }
+
+    @Test
     public void shouldIgnoreRoundedEdgeAntialiasDifference() throws IOException {
         //given
         final int viewportHeight = 800;
