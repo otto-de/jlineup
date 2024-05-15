@@ -30,6 +30,8 @@ import static java.time.temporal.ChronoUnit.SECONDS;
 public class BrowserUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
+    //These options, hidden behind this flag, try to make Chrome render deterministically
+    //See this bug ticket also: https://issues.chromium.org/issues/40039960
     private static final boolean CHROME_DETERMINISTIC_OPTIONS = true;
     public static final String RANDOM_FOLDER_PLACEHOLDER = "{random-folder}";
 
@@ -94,17 +96,23 @@ public class BrowserUtils {
             //There were problems to render Webfonts, SVGs and progressive JPGs deterministically on huge pages (i.e. otto.de)
             //Beware of dragons
             if (CHROME_DETERMINISTIC_OPTIONS) {
-                options.addArguments("--disable-threaded-animation");
                 //options.addArguments("--disable-threaded-compositing"); // This option breaks rendering completely as of Chrome 70 (2019-01-07)
-                options.addArguments("--disable-threaded-scrolling");
-                options.addArguments("--num-raster-threads=1");
-                options.addArguments("--disable-histogram-customizer");
-                options.addArguments("--disable-composited-antialiasing");
                 options.addArguments("--deterministic-mode");
                 options.addArguments("--disable-checker-imaging");
-                options.addArguments("--run-all-compositor-stages-before-draw");
+                options.addArguments("--disable-composited-antialiasing");
+                options.addArguments("--disable-gpu");
+                options.addArguments("--disable-gpu-rasterization");
+                options.addArguments("--disable-histogram-customizer");
+                options.addArguments("--disable-partial-raster");
+                options.addArguments("--disable-skia-runtime-opts");
+                options.addArguments("--disable-smooth-scrolling");
+                options.addArguments("--disable-threaded-animation");
+                options.addArguments("--disable-threaded-scrolling");
                 options.addArguments("--enable-surface-synchronization");
                 options.addArguments("--force-color-profile=srgb");
+                options.addArguments("--num-raster-threads=1");
+                options.addArguments("--run-all-compositor-stages-before-draw");
+                options.addArguments("--override-use-software-gl-for-tests");
             }
 
             if (device.isMobile()) {
