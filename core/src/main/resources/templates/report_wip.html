@@ -639,8 +639,9 @@
                 </tr>
                 <tr th:each="result,iterationStatus : ${contextReport.results}">
                     <td>
-                        <div class="infotext">Pos: [[${result.verticalScrollPosition}]]<br/>
-                            Diff: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%
+                        <div class="infotext"><span title="Vertical scroll position">Pos: [[${result.verticalScrollPosition}]]</span><br/>
+                            <span title="Percentage of different pixels in compared before and after images">Diff: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%</span><br />
+                            <span title="Maximum detected color difference">ColDiff:&nbsp;[[${#numbers.formatDecimal(result.maxDetectedColorDifference,1,2)}]]</span><br />
                         </div>
                         <div class="infotext">
                             <div th:switch="${result.screenshotBeforeFileName!=null}">

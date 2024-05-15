@@ -389,7 +389,8 @@
                     <div class="deviceinfo"
                          th:utext="${#strings.replace( #strings.escapeXml(resultContext.deviceInfo),'\n','&lt;br /&gt;')}"></div>
                     <div class="infotext">Scroll pos: [[${result.verticalScrollPosition}]]<br/>
-                        Difference: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%
+                        Difference: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%<br/>
+                        Max detected color difference: [[${result.maxDetectedColorDifference}]]<br/>
                     </div>
                 </td>
                 <td th:switch="${result.screenshotBeforeFileName!=null}">

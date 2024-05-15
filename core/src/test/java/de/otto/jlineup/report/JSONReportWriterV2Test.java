@@ -33,7 +33,7 @@ public class JSONReportWriterV2Test {
     public void shouldWriteComparisonReportAsJson() throws Exception {
 
         ScreenshotComparisonResult screenshotComparisonResult =
-                new ScreenshotComparisonResult(1887, "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, "before", "after", "differenceImageFileName", 0);
+                new ScreenshotComparisonResult(1887, "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, 0d, "before", "after", "differenceImageFileName", 0);
         final Summary globalSummary = new Summary(false, 0d, 0d, 0);
         final Summary localSummary = new Summary(false, 0d, 0d, 0);
         Report report = new Report(globalSummary, Collections.singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), exampleConfig());
