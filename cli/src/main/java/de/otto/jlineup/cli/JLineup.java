@@ -100,29 +100,35 @@ public class JLineup implements Callable<Integer> {
     private boolean cleanupProfile = false;
 
     /**
-     * This options filter adds the lambda options to the command spec if the LambdaBrowser is available in the classpath.
+     * This options filter adds the fitting global options to the command spec.
      */
     static class OptionsFilter implements CommandLine.IModelTransformer {
         @Override
         public CommandLine.Model.CommandSpec transform(CommandLine.Model.CommandSpec commandSpec) {
 
+            commandSpec.addOption(CommandLine.Model.OptionSpec.builder("--" + GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT.kebabCaseNameWithoutJLineupPrefix())
+                    .order(201).description("If this is set, JLineup will crop the last screenshot when scrolling to match the previous one.")
+                    .parameterConsumer((stack, argSpec, commandSpec1) -> {
+                        String value = stack.pop();
+                        GlobalOptions.setOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT, value);
+                    })
+                    .build());
+
             try {
                 Class<?> lambdaBrowserClass = Class.forName("de.otto.jlineup.lambda.LambdaBrowser", false, CloudBrowserFactory.class.getClassLoader());
                 LOG.debug("LambdaBrowser '{}' reachable, adding lambda options to command spec.", lambdaBrowserClass.getCanonicalName());
-                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("-F", "--" + GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME.kebabCaseName())
+                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("-F", "--" + GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME.kebabCaseNameWithoutJLineupPrefix())
                         .order(210).description("This specifies the name or the arn of the AWS lambda function")
                         .parameterConsumer((stack, argSpec, commandSpec1) -> {
                             String value = stack.pop();
                             GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME, value);
-                            //System.err.println("Function name set: " + GlobalOptions.asString());
                         })
                         .build());
-                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("-P", "--" + GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE.kebabCaseName())
+                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("-P", "--" + GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE.kebabCaseNameWithoutJLineupPrefix())
                         .order(220).description("The AWS profile for calling the lambda function and for accessing S3")
                         .parameterConsumer((stack, argSpec, commandSpec1) -> {
                             String value = stack.pop();
                             GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE, value);
-                            //System.err.println("Profile set: " + GlobalOptions.asString());
                         })
                         .build());
             } catch (ClassNotFoundException e) {

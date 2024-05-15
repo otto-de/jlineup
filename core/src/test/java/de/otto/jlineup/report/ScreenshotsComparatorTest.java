@@ -88,7 +88,7 @@ public class ScreenshotsComparatorTest {
                         givenDeviceConfig,
                         2002,
                         0.1337,
-                        "screenshots/http_url_root_ff3c40c_1001_02002_before.png",
+                        0d, "screenshots/http_url_root_ff3c40c_1001_02002_before.png",
                         "screenshots/http_url_root_ff3c40c_1001_02002_after.png",
                         "screenshots/http_url_root_ff3c40c_1001_02002_compare.png",
                         10),
@@ -105,7 +105,7 @@ public class ScreenshotsComparatorTest {
                         givenDeviceConfig,
                         2002,
                         0.1337,
-                        "screenshots/http_url2_root_ff3c40c_1001_02002_before.png",
+                        0d, "screenshots/http_url2_root_ff3c40c_1001_02002_before.png",
                         "screenshots/http_url2_root_ff3c40c_1001_02002_after.png",
                         "screenshots/http_url2_root_ff3c40c_1001_02002_compare.png",
                         10),
@@ -146,11 +146,11 @@ public class ScreenshotsComparatorTest {
                 afterBuffer2);
 
         BufferedImage differenceBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
-        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10));
+        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10, 0d));
         when(fileService.writeScreenshot(screenshotContext, differenceBuffer, 2002)).thenReturn("http_url_root_ff3c40c_1001_02002_compare.png");
 
         BufferedImage differenceBuffer2 = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
-        when(imageService.compareImages(beforeBuffer2, afterBuffer2, WINDOW_HEIGHT, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer2, 0.1337d, 10));
+        when(imageService.compareImages(beforeBuffer2, afterBuffer2, WINDOW_HEIGHT, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer2, 0.1337d, 10, 0d));
         when(fileService.writeScreenshot(screenshotContext2, differenceBuffer2, 2002)).thenReturn("http_url2_root_ff3c40c_1001_02002_compare.png");
 
         //when

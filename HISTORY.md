@@ -1,5 +1,10 @@
 # JLineup Release History
 
+## Release 4.11.2 - 2024-05-15
+* Improvement: Set some more Chrome options to try to improve deterministic rendering
+* Improvement: The max detected color difference is now printed in the report, additionally
+               the delta is visualized in the diff image (brighter means more difference)
+
 ## Release 4.11.1 - 2024-05-07
 * Feature: New additional anti-alias detection ported from Pixelmatch. Runs automatically if
   ìgnore-anti-aliasing` is set to `true`.

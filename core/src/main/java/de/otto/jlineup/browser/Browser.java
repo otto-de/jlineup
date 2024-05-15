@@ -2,6 +2,8 @@ package de.otto.jlineup.browser;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.otto.jlineup.GlobalOption;
+import de.otto.jlineup.GlobalOptions;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.config.Cookie;
@@ -448,6 +450,12 @@ public class Browser implements AutoCloseable {
             LOG.debug("Scrolling info: yPosition: {}, pageHeight: {}, maxScrollHeight: {}, viewPortHeight: {}", yPosition, pageHeight, screenshotContext.urlConfig.maxScrollHeight, viewportHeight);
             BufferedImage currentScreenshot = takeScreenshot();
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
+
+            if (yPosition + viewportHeight > pageHeight && GlobalOptions.getOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT).equalsIgnoreCase("true")) {
+                LOG.debug("Last screenshot. Will crop image. Page height: {}, yPosition: {}, viewportHeight: {}", pageHeight, yPosition, viewportHeight);
+                currentScreenshot = currentScreenshot.getSubimage(0, (int)((yPosition + viewportHeight - pageHeight) * getDevicePixelRatio()), currentScreenshot.getWidth(), (int)((pageHeight.intValue() - yPosition) * getDevicePixelRatio()));
+            }
+
             fileService.writeScreenshot(screenshotContext,
                     currentScreenshot, yPosition);
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);

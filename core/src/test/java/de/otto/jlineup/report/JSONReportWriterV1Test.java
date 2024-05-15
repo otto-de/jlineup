@@ -30,7 +30,7 @@ public class JSONReportWriterV1Test {
     public void shouldWriteComparisonReportAsJson() throws Exception {
 
         ScreenshotComparisonResult screenshotComparisonResult =
-                new ScreenshotComparisonResult(1887, "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, "before", "after", "differenceImageFileName", 0);
+                new ScreenshotComparisonResult(1887, "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, 0d, "before", "after", "differenceImageFileName", 0);
         final Summary localSummary = new Summary(false, 0d, 0d, 0);
         final Summary globalSummary = new Summary(false, 0d, 0d, 0);
         Report report = new Report(globalSummary, singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), JobConfig.exampleConfig());
@@ -46,6 +46,7 @@ public class JSONReportWriterV1Test {
                 "  }," + lineSeparator() +
                 "  \"verticalScrollPosition\" : 1979," + lineSeparator() +
                 "  \"difference\" : 0.0," + lineSeparator() +
+                "  \"maxDetectedColorDifference\" : 0.0," + lineSeparator() +
                 "  \"screenshotBeforeFileName\" : \"before\"," + lineSeparator() +
                 "  \"screenshotAfterFileName\" : \"after\"," + lineSeparator() +
                 "  \"differenceImageFileName\" : \"differenceImageFileName\"," + lineSeparator() +

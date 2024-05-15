@@ -103,6 +103,9 @@ public class ScreenshotsComparator {
                     ImageService.ImageComparisonResult imageComparisonResult = imageService
                             .compareImages(imageBefore, imageAfter, screenshotContext.deviceConfig.height, screenshotContext.urlConfig.ignoreAntiAliasing, screenshotContext.urlConfig.maxAntiAliasColorDistance, screenshotContext.urlConfig.strictColorComparison, screenshotContext.urlConfig.maxColorDistance);
                     String differenceImageFileName = null;
+                    if (imageComparisonResult.getAcceptedDifferentPixels() > 0 && imageComparisonResult.getDifferenceImage().isEmpty()) {
+                        LOG.warn("Accepted different pixels but no difference image available. This should not happen.");
+                    }
                     if ((imageComparisonResult.getDifference() > 0 || imageComparisonResult.getAcceptedDifferentPixels() > 0) && imageComparisonResult.getDifferenceImage().isPresent()) {
                         differenceImageFileName = fileService.writeScreenshot(screenshotContext, imageComparisonResult.getDifferenceImage().orElse(null), yPosition);
                     }
@@ -112,6 +115,7 @@ public class ScreenshotsComparator {
                             screenshotContext.deviceConfig,
                             yPosition,
                             imageComparisonResult.getDifference(),
+                            imageComparisonResult.getMaxDetectedColorDistance(),
                             buildRelativePathFromReportDir(beforeFileName),
                             buildRelativePathFromReportDir(afterFileName),
                             buildRelativePathFromReportDir(differenceImageFileName),

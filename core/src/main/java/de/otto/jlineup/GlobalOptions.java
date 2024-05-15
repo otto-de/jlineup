@@ -14,6 +14,8 @@ public class GlobalOptions {
     private final static String DEFAULT_LAMBDA_AWS_PROFILE = "default";
     private final static String DEFAULT_LAMBDA_S3_BUCKET = "jlineup-lambda";
 
+    private final static String DEFAULT_CROP_LAST_SCREENSHOT = "false";
+
     static private final Map<GlobalOption, String> options;
 
     static {
@@ -26,11 +28,10 @@ public class GlobalOptions {
             LOG.debug("No settings found");
         }
 
-        loadOption(appProps, "JLINEUP_LAMBDA_FUNCTION_NAME", "lambda.function.name", DEFAULT_LAMBDA_FUNCTION_NAME, JLINEUP_LAMBDA_FUNCTION_NAME);
-        loadOption(appProps, "JLINEUP_AWS_PROFILE", "lambda.aws.profile", DEFAULT_LAMBDA_AWS_PROFILE, JLINEUP_LAMBDA_AWS_PROFILE);
-        loadOption(appProps, "JLINEUP_LAMBDA_S3_BUCKET", "lambda.s3.bucket", DEFAULT_LAMBDA_S3_BUCKET, JLINEUP_LAMBDA_S3_BUCKET);
-
-        //System.err.println(asString());
+        loadOption(appProps, "JLINEUP_LAMBDA_FUNCTION_NAME", "jlineup.lambda.function-name", DEFAULT_LAMBDA_FUNCTION_NAME, JLINEUP_LAMBDA_FUNCTION_NAME);
+        loadOption(appProps, "JLINEUP_AWS_PROFILE", "jlineup.lambda.aws-profile", DEFAULT_LAMBDA_AWS_PROFILE, JLINEUP_LAMBDA_AWS_PROFILE);
+        loadOption(appProps, "JLINEUP_LAMBDA_S3_BUCKET", "jlineup.lambda.s3-bucket", DEFAULT_LAMBDA_S3_BUCKET, JLINEUP_LAMBDA_S3_BUCKET);
+        loadOption(appProps, "JLINEUP_CROP_LAST_SCREENSHOT", "jlineup.crop-last-screenshot", DEFAULT_CROP_LAST_SCREENSHOT, JLINEUP_CROP_LAST_SCREENSHOT);
     }
 
     private static void loadOption(Properties appProps, String key, String property, String defaultValue, GlobalOption option) {

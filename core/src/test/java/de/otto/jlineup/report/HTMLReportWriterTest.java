@@ -36,7 +36,7 @@ public class HTMLReportWriterTest {
     @Mock
     private FileService fileServiceMock;
 
-    private final List<ScreenshotComparisonResult> screenshotComparisonResults = singletonList(new ScreenshotComparisonResult(1887, "someurl/somepath", DeviceConfig.deviceConfig(1337, 200), 1338, 0d, "before", "after", "differenceSum", 0));
+    private final List<ScreenshotComparisonResult> screenshotComparisonResults = singletonList(new ScreenshotComparisonResult(1887, "someurl/somepath", DeviceConfig.deviceConfig(1337, 200), 1338, 0d, 0d, "before", "after", "differenceSum", 0));
     private Summary summary = new Summary(true, 1d, 0.5d, 0);
     private Summary localSummary = new Summary(true, 2d, 0.3d, 0);
     private final Map<String, UrlReport> screenshotComparisonResultList =
