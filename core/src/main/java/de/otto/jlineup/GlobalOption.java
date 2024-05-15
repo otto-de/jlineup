@@ -11,4 +11,8 @@ public enum GlobalOption {
         return name().toLowerCase().replace("_", "-");
     }
 
+    public String kebabCaseNameWithoutJLineupPrefix() {
+        return kebabCaseName().replace("jlineup-", "");
+    }
+
 }
