@@ -1,9 +1,13 @@
 # JLineup Release History
 
-## Release 4.11.2 - 2024-05-15
+## Release 4.12.0 - 2024-05-15
 * Improvement: Set some more Chrome options to try to improve deterministic rendering
 * Improvement: The max detected color difference is now printed in the report, additionally
                the delta is visualized in the diff image (brighter means more difference)
+* Feature: Add option to crop last screenshot to match the previous screenshots on a scrolling page.
+           The cli parameter is `--crop-last-screenshot` and can be set to true or false (false is default).
+           The `JLINEUP_CROP_LAST_SCREENSHOT` environment variable can be used to set this also (in lambda for example).
+           If you prefer to use a settings.properties file you can set `jlineup.crop-last-screenshot=true` in there.
 
 ## Release 4.11.1 - 2024-05-07
 * Feature: New additional anti-alias detection ported from Pixelmatch. Runs automatically if

@@ -116,7 +116,7 @@
         div.legend {
             position: fixed;
             bottom: 20px;
-            right: 20px;
+            left: 20px;
             z-index: 51;
         }
 
@@ -450,6 +450,7 @@
             document.getElementById("zoombox").classList.remove("invisible");
             document.getElementById("zoombox").classList.add("visible");
             imageZoomForContext(element.dataset.contextid);
+            document.getElementsByClassName("legend")[0].style.display = "block";
         }
 
         function stopZoom() {
@@ -460,6 +461,7 @@
                 zoomLens.classList.add("invisible");
                 zoomLens.classList.remove("visible");
             }
+            document.getElementsByClassName("legend")[0].style.display = "none";
         }
 
         function imageZoomForContext(context) {
