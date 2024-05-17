@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
+import java.awt.image.*;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -62,6 +59,18 @@ public class ImageService {
 
         if (bufferedImagesEqualQuick(image1, image2)) {
             return new ImageComparisonResult(null, 0, 0, 0d);
+        }
+
+        final boolean hasAlphaChannel = image1.getAlphaRaster() != null;
+        if (!hasAlphaChannel) {
+            LOG.debug("Add alpha channel to images to have 4 bits per pixel (makes pixelmatch work).");
+            BufferedImage newImage1 = new BufferedImage(image1.getWidth(), image1.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+            BufferedImage newImage2 = new BufferedImage(image2.getWidth(), image2.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+            ColorConvertOp colorConvertOp = new ColorConvertOp(null);
+            colorConvertOp.filter(image1, newImage1);
+            colorConvertOp.filter(image2, newImage2);
+            image1 = newImage1;
+            image2 = newImage2;
         }
 
         // cache image widths and heights
@@ -197,7 +206,7 @@ public class ImageService {
         final BufferedImage out = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
         out.setRGB(0, 0, maxWidth, maxHeight, differenceImagePixels, 0, maxWidth);
 
-        LOG.info("checkedPixelCounter: {}, diffPixelCounter: {}, lookSameDiffPixelCounter: {}, antiAliasedDiffPixelCounter: {}, maxDetectedColorDistance: {}", checkedPixelCounter, diffPixelCounter, lookSameDiffPixelCounter, antiAliasedDiffPixelCounter, maxDetectedColorDistance);
+        LOG.debug("checkedPixelCounter: {}, diffPixelCounter: {}, lookSameDiffPixelCounter: {}, antiAliasedDiffPixelCounter: {}, maxDetectedColorDistance: {}", checkedPixelCounter, diffPixelCounter, lookSameDiffPixelCounter, antiAliasedDiffPixelCounter, maxDetectedColorDistance);
 
         return new ImageComparisonResult(out, difference, lookSameDiffPixelCounter + antiAliasedDiffPixelCounter, maxDetectedColorDistance);
     }

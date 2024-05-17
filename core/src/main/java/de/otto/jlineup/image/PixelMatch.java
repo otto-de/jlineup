@@ -1,7 +1,13 @@
 package de.otto.jlineup.image;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.awt.image.DataBufferByte;
+
+import static java.lang.invoke.MethodHandles.lookup;
 
 /**
  * This class is ported from pixelmatch by mapbox.
@@ -27,15 +33,28 @@ import java.awt.image.DataBufferByte;
 
 public class PixelMatch {
 
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
+
     public static boolean isAntiAliased(BufferedImage bufferedImage, int x1, int y1, int width, int height, BufferedImage bufferedImage2) {
 
         final boolean hasAlphaChannel = bufferedImage.getAlphaRaster() != null;
-        if (!hasAlphaChannel) {
+        final boolean hasImage2AlphaChannel = bufferedImage2.getAlphaRaster() != null;
+        if (!hasAlphaChannel || !hasImage2AlphaChannel) {
             throw new RuntimeException("Image must have an alpha channel");
+            //LOG.warn("Image 1 ({},{}) and image 2 ({},{}) must have an alpha channel for pixelmatch to work", bufferedImage, hasAlphaChannel, bufferedImage2, hasImage2AlphaChannel);
+            //return false;
         }
 
-        byte[] img = ((DataBufferByte) bufferedImage.getRaster().getDataBuffer()).getData();
+        byte[] img1 = ((DataBufferByte) bufferedImage.getRaster().getDataBuffer()).getData();
         byte[] img2 = ((DataBufferByte) bufferedImage2.getRaster().getDataBuffer()).getData();
+
+        if (img1.length != width * height * 4) {
+            LOG.debug("Image 1 data size does not match width/height.");
+            return false;
+        } else if (img2.length != width * height * 4) {
+            LOG.debug("Image 2 data size does not match width/height.");
+            return false;
+        }
 
         int x0 = Math.max(x1 - 1, 0);
         int y0 = Math.max(y1 - 1, 0);
@@ -46,15 +65,13 @@ public class PixelMatch {
         double min = 0, max = 0;
         int minX = 0, minY = 0, maxX = 0, maxY = 0;
 
-
-
         // go through 8 adjacent pixels
         for (int x = x0; x <= x2; x++) {
             for (int y = y0; y <= y2; y++) {
                 if (x == x1 && y == y1) continue;
 
                 // brightness delta between the center pixel and adjacent one
-                double delta = colorDelta(img, img, pos, (y * width + x) * 4, true);
+                double delta = colorDelta(img1, img1, pos, (y * width + x) * 4, true);
 
                 // count the number of equal, darker and brighter adjacent pixels
                 if (delta == 0) {
@@ -82,8 +99,8 @@ public class PixelMatch {
 
         // if either the darkest or the brightest pixel has 3+ equal siblings in both images
         // (definitely not anti-aliased), this pixel is anti-aliased
-        return (hasManySiblings(img, minX, minY, width, height) && hasManySiblings(img2, minX, minY, width, height)) ||
-                (hasManySiblings(img, maxX, maxY, width, height) && hasManySiblings(img2, maxX, maxY, width, height));
+        return (hasManySiblings(img1, minX, minY, width, height) && hasManySiblings(img2, minX, minY, width, height)) ||
+                (hasManySiblings(img1, maxX, maxY, width, height) && hasManySiblings(img2, maxX, maxY, width, height));
     }
 
     // check if a pixel has 3+ adjacent pixels of the same color.
@@ -117,6 +134,7 @@ public class PixelMatch {
     // calculate color difference according to the paper "Measuring perceived color difference
     // using YIQ NTSC transmission color space in mobile applications" by Y. Kotsarenko and F. Ramos
     static double colorDelta(byte[] img1, byte[] img2, int k, int m, boolean yOnly) {
+
         double r1 = img1[k + 0] + 128;
         double g1 = img1[k + 1] + 128;
         double b1 = img1[k + 2] + 128;
