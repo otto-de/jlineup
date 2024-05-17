@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 4.12.1 - 2024-05-17
+* Bugfix: Possible NullPointerException in Pixelmatch implementation
+* Update: Selenium was updated to 4.21.0
+
 ## Release 4.12.0 - 2024-05-15
 * Improvement: Set some more Chrome options to try to improve deterministic rendering
 * Improvement: The max detected color difference is now printed in the report, additionally

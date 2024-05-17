@@ -7,27 +7,6 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/otto-de/jlineup?label=GitHub&nbsp;Release)](https://github.com/otto-de/jlineup/releases)
 ![](https://snyk-widget.herokuapp.com/badge/mvn/de.otto/jlineup-cli/badge.svg)
 
-## News
-
-**2024-05-07**: **JLineup 4.11.1** is here! This release contains an improved anti-alias detection ported from Pixelmatch.
-It also fixes some bugs, updates dependencies and masks sensitive data in the log and report output.
-
-**2024-04-10**: **JLineup 4.10.0** is out! This release contains dependency updates and the brand-new Lambda module. It
-allows you to run the screenshot creation in a lambda function, and it can speed up the process significantly. We have this
-running in an internal beta. Documentation will follow soon.
-
-**2023-12-19**: Ho ho ho, **JLineup 4.9.2** is here! This should fix the flaky Chrome [issue](https://github.com/SeleniumHQ/selenium/issues/13091) with problems parsing a JSON response.
-
-**2023-08-16**: **JLineup 4.9.0**, which fixes latest Chromedriver issues, requires **Java 17** or later due to dependency updates that have this requirement.
-
-**2023-03-09**: **Chrome 111** requires a new parameter to fix the connection with the current Selenium version built
-into JLineup. This was added in [JLineup 4.8.3](https://github.com/otto-de/jlineup/releases/tag/v4.8.3). Background
-information may be found in this [thread](https://groups.google.com/g/chromedriver-users/c/xL5-13_qGaA/m/oTA9W3cQAgAJ).
-
-**2023-02-14**: **Chrome 110** replaced the "old" `--headless` parameter, that was used by JLineup. If you face problems with CHROME_HEADLESS runs,
-please update to [JLineup 4.8.3](https://github.com/otto-de/jlineup/releases/tag/v4.8.3), which uses the new `--headless=new` parameter.
-Chrome headless mode's device size specifications now include the Browser controls and the window frame, except you switch to mobile emulation.
-
 ## About
 
 JLineup is a tool which is useful for automated visual regression tests of web pages, especially in continuous delivery pipelines.
@@ -91,7 +70,7 @@ JLineup CLI comes as executable Java Archive. Java 17 or higher has to be availa
 
 Open a terminal and download it like this:
 
-    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.12.0/jlineup-cli-4.12.0.jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.12.1/jlineup-cli-4.12.1.jar -O jlineup.jar
 
 Then type
 
