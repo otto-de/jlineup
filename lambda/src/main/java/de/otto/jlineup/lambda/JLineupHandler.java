@@ -13,6 +13,7 @@ import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
+import de.otto.jlineup.file.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
@@ -84,8 +85,15 @@ public class JLineupHandler implements RequestStreamHandler {
                 throw new RuntimeException("Environment variable JLINEUP_LAMBDA_S3_BUCKET not set! Please create a bucket and set the environment variable to contain it's name.");
             }
             CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket(bucketName).source(workingDir)).completionFuture();
-            output.write(("Upload status: " + uploadStatus.get().toString() + "\n").getBytes(StandardCharsets.UTF_8));
+
+            //Block until upload is completed
+            CompletedDirectoryUpload completedDirectoryUpload = uploadStatus.get();
+
+            output.write(("Upload status: " + completedDirectoryUpload.toString() + "\n").getBytes(StandardCharsets.UTF_8));
             output.write(("Ok! (Retries: " + retries + ")\n").getBytes(StandardCharsets.UTF_8));
+
+            FileUtils.deleteDirectory(workingDir);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
