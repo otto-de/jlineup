@@ -109,8 +109,7 @@ public class JLineup implements Callable<Integer> {
             commandSpec.addOption(CommandLine.Model.OptionSpec.builder("--" + GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT.kebabCaseNameWithoutJLineupPrefix())
                     .order(201).description("If this is set, JLineup will crop the last screenshot when scrolling to match the previous one.")
                     .parameterConsumer((stack, argSpec, commandSpec1) -> {
-                        String value = stack.pop();
-                        GlobalOptions.setOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT, value);
+                        GlobalOptions.setOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT, "true");
                     })
                     .build());
 
