@@ -5,7 +5,7 @@
     </envs>
     <option name="MAIN_CLASS_NAME" value="de.otto.jlineup.cli.Main" />
     <module name="jlineup.jlineup-cli.main" />
-    <option name="PROGRAM_PARAMETERS" value="--chrome-parameter=&quot;--hide-scrollbars&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="--crop-last-screenshot --chrome-parameter=&quot;--hide-scrollbars&quot;" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
