@@ -126,6 +126,7 @@ public class Browser implements AutoCloseable {
     static final String JS_CHECK_FOR_ELEMENT_CALL = "return document.querySelector('%s') !== null;";
 
     static final String JS_GET_DEVICE_PIXEL_RATIO_CALL = "return window.devicePixelRatio;";
+    static final String JS_GET_BODY_COLOR_CALL = "return window.getComputedStyle(document.body).getPropertyValue('background-color').match(/\\d+/g);";
 
     private final JobConfig jobConfig;
     private final FileService fileService;
@@ -453,7 +454,14 @@ public class Browser implements AutoCloseable {
 
             if (yPosition + viewportHeight > pageHeight && GlobalOptions.getOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT).equalsIgnoreCase("true")) {
                 LOG.debug("Last screenshot. Will crop image. Page height: {}, yPosition: {}, viewportHeight: {}", pageHeight, yPosition, viewportHeight);
-                currentScreenshot = currentScreenshot.getSubimage(0, (int)((yPosition + viewportHeight - pageHeight) * getDevicePixelRatio()), currentScreenshot.getWidth(), (int)((pageHeight.intValue() - yPosition) * getDevicePixelRatio()));
+
+                BufferedImage croppedAndFilledScreenshot = new BufferedImage(currentScreenshot.getWidth(), currentScreenshot.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+                Graphics2D g = croppedAndFilledScreenshot.createGraphics();
+                g.setColor(getBodyColor());
+                g.fillRect(0, 0, currentScreenshot.getWidth(), currentScreenshot.getHeight());
+                // Draw shifted image
+                g.drawImage(currentScreenshot, 0, -(int)((yPosition + viewportHeight - pageHeight) * getDevicePixelRatio()), null);
+                currentScreenshot = croppedAndFilledScreenshot;
             }
 
             fileService.writeScreenshot(screenshotContext,
@@ -685,6 +693,13 @@ public class Browser implements AutoCloseable {
         LOG.debug("Getting browser user agent.");
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         return (String) jse.executeScript(JS_GET_USER_AGENT_CALL);
+    }
+
+    private Color getBodyColor() {
+        LOG.debug("Getting body color.");
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
+        List<String> bodyColor = (List<String>) jse.executeScript(JS_GET_BODY_COLOR_CALL);
+        return new Color(Integer.parseInt(bodyColor.get(0)), Integer.parseInt(bodyColor.get(1)), Integer.parseInt(bodyColor.get(2)));
     }
 
     void scrollTo(int yPosition) throws InterruptedException {
