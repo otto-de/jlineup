@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.GetFunctionRequest;
@@ -29,6 +30,7 @@ import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryDownload;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -62,8 +64,14 @@ public class LambdaBrowser implements CloudBrowser {
 
         LOG.info("Starting {} lambda calls for run '{}'...", screenshotContexts.size(), runId);
         final String s3Bucket;
-        DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
-        try (LambdaClient lambdaClient = LambdaClient.builder().credentialsProvider(credentialsProvider).region(Region.EU_CENTRAL_1).build()) {
+        try (LambdaClient lambdaClient = LambdaClient.builder()
+                .credentialsProvider(DefaultCredentialsProvider.create())
+                .region(Region.EU_CENTRAL_1)
+                .httpClientBuilder(ApacheHttpClient.builder()
+                        .maxConnections(screenshotContexts.size() + 10)
+                        .socketTimeout(Duration.ofSeconds(jobConfig.globalTimeout))
+                        .connectionTimeout(Duration.ofSeconds(jobConfig.globalTimeout)))
+                .build()) {
             s3Bucket = lambdaClient.getFunction(GetFunctionRequest.builder()
                             .functionName(GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME))
                             .build())
