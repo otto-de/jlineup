@@ -64,8 +64,9 @@ public class LambdaBrowser implements CloudBrowser {
 
         LOG.info("Starting {} lambda calls for run '{}'...", screenshotContexts.size(), runId);
         final String s3Bucket;
+        DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
         try (LambdaClient lambdaClient = LambdaClient.builder()
-                .credentialsProvider(DefaultCredentialsProvider.create())
+                .credentialsProvider(credentialsProvider)
                 .region(Region.EU_CENTRAL_1)
                 .httpClientBuilder(ApacheHttpClient.builder()
                         .maxConnections(screenshotContexts.size() + 10)
