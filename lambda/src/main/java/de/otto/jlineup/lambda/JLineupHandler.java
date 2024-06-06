@@ -88,9 +88,7 @@ public class JLineupHandler implements RequestStreamHandler {
 
             //Block until upload is completed
             CompletedDirectoryUpload completedDirectoryUpload = uploadStatus.get();
-
-            output.write(("Upload status: " + completedDirectoryUpload.toString() + "\n").getBytes(StandardCharsets.UTF_8));
-            output.write(("Ok! (Retries: " + retries + ")").getBytes(StandardCharsets.UTF_8));
+            output.write(("OK! S3 upload status: " + completedDirectoryUpload.toString() + " - Retries: " + retries).getBytes(StandardCharsets.UTF_8));
 
             // Introduced to avoid the following error: "java.lang.RuntimeException: java.nio.file.FileSystemException: /tmp/jlineup/run-c5f6232e-4e76-4b39-90f0-151ff69223f9/jlineup-c5f6232e-4e76-4b39-90f0-151ff69223f9/150886105: No space left on device","errorType":"java.lang.RuntimeException","stackTrace":["de.otto.jlineup.lambda.JLineupHandler.handleRequest(JLineupHandler.java:90)","java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)","java.base/java.lang.reflect.Method.invoke(Unknown Source)"]}
             //	at de.otto.jlineup.lambda.LambdaBrowser.takeScreenshots(LambdaBrowser.java:105)
