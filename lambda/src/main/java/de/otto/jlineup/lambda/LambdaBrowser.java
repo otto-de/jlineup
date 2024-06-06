@@ -100,7 +100,8 @@ public class LambdaBrowser implements CloudBrowser {
                     if (answer.contains("SessionNotCreatedException")
                             || answer.contains("disconnected: Unable to receive message from renderer")
                             || answer.contains("disconnected: not connected to DevTools")
-                            || answer.contains("unknown error: unhandled inspector error")) {
+                            || answer.contains("unknown error: unhandled inspector error")
+                            || answer.contains("error writing PNG file")) {
                         LOG.warn("Retrying lambda call because of specific error message in answer: '{}'", answer);
                         //Do one retry if browser crashed in lambda
                         Future<InvokeResponse> invokeResponseFuture = invokeLambdaAndGetInvokeResponseFuture(lambdaCall.getKey(), runId, lambdaClient);
