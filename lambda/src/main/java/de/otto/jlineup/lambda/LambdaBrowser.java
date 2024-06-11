@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.google.common.base.Strings;
 import de.otto.jlineup.GlobalOption;
 import de.otto.jlineup.GlobalOptions;
 import de.otto.jlineup.RunStepConfig;
@@ -88,13 +89,17 @@ public class LambdaBrowser implements CloudBrowser {
 
             LOG.info("All lambda calls started, waiting for results...");
 
+            int i = 0;
+            int digits = String.valueOf(screenshotContexts.size()).length();
             for (Map.Entry<ScreenshotContext, Future<InvokeResponse>> lambdaCall : lambdaCalls.entrySet()) {
+                i++;
+                String indexString = Strings.padStart(String.valueOf(i), digits, '0');
                 InvokeResponse invokeResponse = lambdaCall.getValue().get();
                 String answer = invokeResponse.payload().asUtf8String();
                 String logResult = invokeResponse.logResult();
                 //write out the return value
                 if (logResult != null) {
-                    LOG.error("Log: {}", logResult);
+                    LOG.error("[{}] Log: {}", indexString, logResult);
                 }
                 if (answer.contains("errorMessage")) {
                     if (answer.contains("SessionNotCreatedException")
@@ -102,23 +107,23 @@ public class LambdaBrowser implements CloudBrowser {
                             || answer.contains("disconnected: not connected to DevTools")
                             || answer.contains("unknown error: unhandled inspector error")
                             || answer.contains("error writing PNG file")) {
-                        LOG.warn("Retrying lambda call because of specific error message in answer: '{}'", answer);
+                        LOG.warn("[{}] Retrying lambda call because of specific error message in answer: '{}'", indexString, answer);
                         //Do one retry if browser crashed in lambda
                         Future<InvokeResponse> invokeResponseFuture = invokeLambdaAndGetInvokeResponseFuture(lambdaCall.getKey(), runId, lambdaClient);
                         InvokeResponse invokeResponseRetry = invokeResponseFuture.get();
                         String retryAnswer = invokeResponseRetry.payload().asUtf8String();
                         if (retryAnswer.contains("errorMessage")) {
                             //LOG.error(retryAnswer); Is logged outside of this method by catching function
-                            throw new RuntimeException("Lambda call failed even when retried: " + retryAnswer);
+                            throw new RuntimeException("Lambda call [" + indexString + "] failed even when retried: " + retryAnswer);
                         } else {
-                            LOG.info("Answer from Lambda after retry: '{}'", retryAnswer);
+                            LOG.info("[{}] Answer from Lambda after retry: '{}'", indexString, retryAnswer);
                         }
                     } else {
                         //LOG.error(answer); Is logged outside of this method by catching function
                         throw new RuntimeException("Lambda call failed: " + answer);
                     }
                 } else {
-                    LOG.info("Answer from Lambda: '{}'", answer);
+                    LOG.info("[{}] Answer from Lambda: '{}'", indexString, answer);
                 }
             }
 
