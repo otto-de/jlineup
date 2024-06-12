@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import static de.otto.edison.navigation.NavBarItem.bottom;
 import static de.otto.edison.navigation.NavBarItem.navBarItem;
 
 @Component
@@ -13,10 +14,12 @@ import static de.otto.edison.navigation.NavBarItem.navBarItem;
 public class NavigationConfiguration {
 
     @Autowired
-    public NavigationConfiguration(final NavBar mainNavBar,
+    public NavigationConfiguration(final NavBar mainNavBar, final NavBar rightNavBar,
                                    final EdisonApplicationProperties  properties) {
         mainNavBar.register(navBarItem(0, "Status", String.format("%s/status", properties.getManagement().getBasePath())));
         mainNavBar.register(navBarItem(1, "Reports", String.format("%s/reports", properties.getManagement().getBasePath())));
+
+        rightNavBar.register(navBarItem(bottom(), "Example run", "/exampleRun"));
     }
 }
 
