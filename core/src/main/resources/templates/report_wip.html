@@ -780,6 +780,8 @@
     </div>
 </div>
 
+<div th:if="${report.summary.error == true && report.config.approvalLink != null}"><a th:href="${report.config.approvalLink}">I checked the differences - approve changes!</a></div>
+
 <div id="zoombox" class="invisible">
     <div id="zoomfix">
         <table>

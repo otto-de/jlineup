@@ -101,7 +101,7 @@ public class JLineupController {
         }
 
         currentExampleRun.set(jLineupService.startBeforeRun(jobConfigBuilder.build().insertDefaults()).getId());
-        return "Example run startet with 'before' step with Browser '" + jobConfigBuilder.build().insertDefaults().browser + "'.";
+        return "Example run started with 'before' step with Browser '" + jobConfigBuilder.build().insertDefaults().browser + "'.";
     }
 
     @PostMapping("/runs/{runId}")

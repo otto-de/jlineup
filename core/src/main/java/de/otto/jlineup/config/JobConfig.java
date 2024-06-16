@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -74,6 +73,9 @@ public final class JobConfig  {
     @JsonInclude(Include.NON_DEFAULT)
     public final String name;
 
+    @JsonInclude(Include.NON_DEFAULT)
+    public final String approvalLink;
+
     @JsonProperty("wait-after-page-load")
     @JsonAlias({"async-wait"})
     public final Float globalWaitAfterPageLoad;
@@ -102,6 +104,8 @@ public final class JobConfig  {
     }
 
     private JobConfig(Builder builder) {
+        name = builder.name;
+        approvalLink = builder.approvalLink;
         urls = builder.urls;
         browser = builder.browser;
         globalWaitAfterPageLoad = builder.globalWaitAfterPageLoad;
@@ -115,7 +119,6 @@ public final class JobConfig  {
         logToFile = builder.logToFile;
         checkForErrorsInLog = builder.checkForErrorsInLog;
         httpCheck = builder.httpCheck;
-        name = builder.name;
         mergeConfig = builder.mergeConfig;
     }
 
@@ -163,6 +166,10 @@ public final class JobConfig  {
 
     public String getName() {
         return name;
+    }
+
+    public String getApprovalLink() {
+        return approvalLink;
     }
 
     public Float getGlobalWaitAfterPageLoad() {
@@ -228,6 +235,7 @@ public final class JobConfig  {
     public static Builder copyOfBuilder(JobConfig jobConfig) {
         return jobConfigBuilder()
                 .withName(jobConfig.name)
+                .withApprovalLink(jobConfig.approvalLink)
                 .withUrls(jobConfig.urls)
                 .withHttpCheck(jobConfig.httpCheck)
                 .withBrowser(jobConfig.browser)
@@ -249,12 +257,7 @@ public final class JobConfig  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JobConfig jobConfig = (JobConfig) o;
-        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(name, jobConfig.name) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(reportFormat, jobConfig.reportFormat) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(urls, browser, name, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
+        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(name, jobConfig.name) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(reportFormat, jobConfig.reportFormat) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
     }
 
     @Override
@@ -263,6 +266,7 @@ public final class JobConfig  {
                 "urls=" + urls +
                 ", browser=" + browser +
                 ", name='" + name + '\'' +
+                ", approvalLink='" + approvalLink + '\'' +
                 ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
                 ", pageLoadTimeout=" + pageLoadTimeout +
                 ", windowHeight=" + windowHeight +
@@ -274,7 +278,13 @@ public final class JobConfig  {
                 ", logToFile=" + logToFile +
                 ", checkForErrorsInLog=" + checkForErrorsInLog +
                 ", httpCheck=" + httpCheck +
+                ", mergeConfig=" + mergeConfig +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(urls, browser, name, approvalLink, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
     }
 
     public static JobConfig defaultConfig() {
@@ -391,6 +401,7 @@ public final class JobConfig  {
 
     public static final class Builder {
         private String name = null;
+        private String approvalLink = null;
         private Map<String, UrlConfig> urls = null;
         private Browser.Type browser = DEFAULT_BROWSER;
         private float globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
@@ -411,6 +422,11 @@ public final class JobConfig  {
 
         public Builder withName(String val) {
             name = val;
+            return this;
+        }
+
+        public Builder withApprovalLink(String val) {
+            approvalLink = val;
             return this;
         }
 

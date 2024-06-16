@@ -53,7 +53,6 @@ public class JLineupService {
         this.runs.putAll(runPersistenceService.readRuns());
 
         GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME, jLineupWebProperties.getLambda().getFunctionName());
-
     }
 
     public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) throws Exception {

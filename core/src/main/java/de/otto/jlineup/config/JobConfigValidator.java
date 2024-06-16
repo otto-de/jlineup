@@ -13,7 +13,7 @@ public class JobConfigValidator {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
-    public static void validateJobConfig(JobConfig jobConfig) {
+    public static void validateJobConfig(final JobConfig jobConfig) {
 
         //Check urls
         if (jobConfig.urls == null || jobConfig.urls.isEmpty()) {
@@ -57,7 +57,7 @@ public class JobConfigValidator {
         jobConfig.urls.forEach((urlKey, urlConfig) -> validateUrlConfig(jobConfig, urlKey));
     }
 
-    private static void validateUrlConfig(JobConfig jobConfig, String urlKey) {
+    private static void validateUrlConfig(final JobConfig jobConfig, final String urlKey) {
 
         UrlConfig urlConfig = jobConfig.urls.get(urlKey);
 
@@ -71,7 +71,7 @@ public class JobConfigValidator {
 
     }
 
-    private static void validateDeviceConfig(JobConfig jobConfig, String urlKey, DeviceConfig deviceConfig) {
+    private static void validateDeviceConfig(final JobConfig jobConfig, final String urlKey, final DeviceConfig deviceConfig) {
         if (deviceConfig.isMobile()) {
             if (!deviceConfig.isGenericMobile()) { //A device name is specified
                 if (deviceConfig.userAgent != null) {

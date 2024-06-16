@@ -36,6 +36,13 @@ public class JLineupRunnerFactory {
 
         JobConfig webJobConfig = sanitizeJobConfig(jobConfig);
 
+        //Replace id placeholder in approval link with runId
+        if (webJobConfig.approvalLink != null && webJobConfig.approvalLink.contains("{id}")) {
+            webJobConfig = JobConfig.copyOfBuilder(webJobConfig)
+                    .withApprovalLink(webJobConfig.approvalLink.replace("{id}", id))
+                    .build();
+        }
+
         return new JLineupRunner(webJobConfig, RunStepConfig.runStepConfigBuilder()
                 .withWorkingDirectory(properties.getWorkingDirectory())
                 .withScreenshotsDirectory(properties.getScreenshotsDirectory().replace("{id}", id))
@@ -53,7 +60,7 @@ public class JLineupRunnerFactory {
                 .build());
     }
 
-    JobConfig sanitizeJobConfig(JobConfig jobConfig) throws BrowserNotInstalledException {
+    JobConfig sanitizeJobConfig(final JobConfig jobConfig) throws BrowserNotInstalledException {
 
         if (!properties.getInstalledBrowsers().contains(jobConfig.browser)) {
             throw new BrowserNotInstalledException(jobConfig.browser);
