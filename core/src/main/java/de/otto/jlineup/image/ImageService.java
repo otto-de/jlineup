@@ -61,7 +61,7 @@ public class ImageService {
             return new ImageComparisonResult(null, 0, 0, 0d);
         }
 
-        final boolean hasAlphaChannel = image1.getAlphaRaster() != null;
+        final boolean hasAlphaChannel = image1.getAlphaRaster() != null && image2.getAlphaRaster() != null;
         if (!hasAlphaChannel) {
             LOG.debug("Add alpha channel to images to have 4 bits per pixel (makes pixelmatch work).");
             BufferedImage newImage1 = new BufferedImage(image1.getWidth(), image1.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
