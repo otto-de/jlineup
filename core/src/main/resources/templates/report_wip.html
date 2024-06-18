@@ -780,7 +780,11 @@
     </div>
 </div>
 
-<div th:if="${report.summary.error == true && report.config.approvalLink != null}"><a th:href="${report.config.approvalLink}">I checked the differences - approve changes!</a></div>
+<div th:if="${report.summary.error == true && report.config.approvalLink != null}" style="padding: 5px; border-radius: 5px; background-color: #44AAFF">
+    <div style="margin: 5px; border-radius: 5px; background-color: red;">
+        <p><a th:href="${report.config.approvalLink}" style="color: white;">I checked the differences - <strong>approve changes!</strong></a></p>
+    </div>
+</div>
 
 <div id="zoombox" class="invisible">
     <div id="zoomfix">
