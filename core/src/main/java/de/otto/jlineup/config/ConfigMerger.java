@@ -99,6 +99,7 @@ public class ConfigMerger {
     private static void mergeGlobalScopeConfigItems(JobConfig originalConfig, JobConfig mergeConfig, Builder mergedJobConfigBuilder) {
         mergedJobConfigBuilder.withBrowser(originalConfig.browser != DEFAULT_BROWSER ? originalConfig.browser : mergeConfig.browser);
         mergedJobConfigBuilder.withName(originalConfig.name != null ? originalConfig.name : mergeConfig.name);
+        mergedJobConfigBuilder.withMessage(originalConfig.message != null ? originalConfig.message : mergeConfig.message);
         mergedJobConfigBuilder.withApprovalLink(originalConfig.approvalLink != null ? originalConfig.approvalLink : mergeConfig.approvalLink);
         mergedJobConfigBuilder.withGlobalWaitAfterPageLoad(originalConfig.globalWaitAfterPageLoad != DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD ? originalConfig.globalWaitAfterPageLoad : mergeConfig.globalWaitAfterPageLoad);
         mergedJobConfigBuilder.withPageLoadTimeout(originalConfig.pageLoadTimeout != DEFAULT_PAGELOAD_TIMEOUT ? originalConfig.pageLoadTimeout : mergeConfig.pageLoadTimeout);

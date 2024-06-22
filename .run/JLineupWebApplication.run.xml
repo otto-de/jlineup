@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="JLineupWebApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <module name="jlineup.jlineup-web.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="de.otto.jlineup.web.JLineupWebApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
