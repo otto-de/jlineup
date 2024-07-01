@@ -4,6 +4,7 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
     implementation project(":jlineup-core")
+    implementation project(":jlineup-lambda")
     implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     implementation 'org.yaml:snakeyaml:2.2'
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
