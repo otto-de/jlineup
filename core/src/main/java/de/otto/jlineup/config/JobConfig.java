@@ -1,9 +1,6 @@
 package de.otto.jlineup.config;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -174,6 +171,11 @@ public final class JobConfig  {
 
     public String getMessage() {
         return message;
+    }
+
+    @JsonIgnore
+    public String getSanitizedMessage() {
+        return message != null ? message.replace("\\n", "\n") : null;
     }
 
     public String getApprovalLink() {
