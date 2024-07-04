@@ -15,38 +15,14 @@ dependencies {
     implementation project(":jlineup-core")
     //implementation project(":jlineup-cli")
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
-    implementation("software.amazon.awssdk:lambda:${awsSdkVersion}") {
-        exclude group: "commons-logging", module: "commons-logging"
-        exclude group: "org.slf4j", module: "slf4j-api"
-    }
-    implementation("software.amazon.awssdk:apache-client:${awsSdkVersion}") {
-        exclude group: "commons-logging", module: "commons-logging"
-        exclude group: "org.slf4j", module: "slf4j-api"
-    }
-    implementation("software.amazon.awssdk:s3:${awsSdkVersion}") {
-        exclude group: "commons-logging", module: "commons-logging"
-        exclude group: "org.slf4j", module: "slf4j-api"
-    }
-    implementation("software.amazon.awssdk:s3-transfer-manager:${awsSdkVersion}") {
-        exclude group: "commons-logging", module: "commons-logging"
-        exclude group: "org.slf4j", module: "slf4j-api"
-    }
-    implementation("software.amazon.awssdk.crt:aws-crt:0.29.25") {
-        exclude group: "commons-logging", module: "commons-logging"
-        exclude group: "org.slf4j", module: "slf4j-api"
-    }
-    implementation("com.amazonaws:aws-lambda-java-core:1.2.3") {
-        exclude group: "commons-logging", module: "commons-logging"
-        exclude group: "org.slf4j", module: "slf4j-api"
-    }
-    implementation("com.amazonaws:aws-lambda-java-events:3.11.6") {
-        exclude group: "commons-logging", module: "commons-logging"
-        exclude group: "org.slf4j", module: "slf4j-api"
-    }
-    implementation("com.amazonaws:aws-java-sdk-core:${amazonAwsJavaSdkVersion}") {
-        exclude group: "commons-logging", module: "commons-logging"
-        exclude group: "org.slf4j", module: "slf4j-api"
-    }
+    implementation("software.amazon.awssdk:lambda:${awsSdkVersion}")
+    implementation("software.amazon.awssdk:apache-client:${awsSdkVersion}")
+    implementation("software.amazon.awssdk:s3:${awsSdkVersion}")
+    implementation("software.amazon.awssdk:s3-transfer-manager:${awsSdkVersion}")
+    implementation("software.amazon.awssdk.crt:aws-crt:0.29.25")
+    implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
+    implementation("com.amazonaws:aws-lambda-java-events:3.11.6")
+    implementation("com.amazonaws:aws-java-sdk-core:${amazonAwsJavaSdkVersion}")
     testImplementation platform("com.amazonaws:aws-xray-recorder-sdk-bom:2.16.0")
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-core")
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk")
