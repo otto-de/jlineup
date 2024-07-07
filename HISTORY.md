@@ -1,5 +1,14 @@
 # JLineup Release History
 
+## Release 4.13.0 - 2024-07-07
+* Bugfix: The `--crop-last-screenshot` option was adjusted to fill cropped areas with pixels in the background color to
+          match screenshot sizes.
+* Feature: It's possible to add a `message` field to the job config. This message is displayed in the report.
+* Feature: There's a new `approval-link` field in the job config. If set, the report will contain a link to this URL in
+           case of a difference. This can be used to directly approve the differences to continue a CI run.
+* Improvement: The lambda browser retries on more error messages now to improve stability.
+* Dependency updates
+
 ## Release 4.12.1 - 2024-05-17
 * Bugfix: Possible NullPointerException in Pixelmatch implementation
 * Update: Selenium was updated to 4.21.0
