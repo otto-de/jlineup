@@ -22,7 +22,7 @@ dependencies {
     testCompileOnly 'junit:junit:4.13.2'
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
     testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
-    testImplementation('io.rest-assured:rest-assured:5.4.0')
+    testImplementation('io.rest-assured:rest-assured:5.5.0')
     testImplementation("org.awaitility:awaitility:4.2.1")
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
