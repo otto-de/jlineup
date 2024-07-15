@@ -23,7 +23,7 @@ dependencies {
     implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
     implementation("com.amazonaws:aws-lambda-java-events:3.11.6")
     implementation("com.amazonaws:aws-java-sdk-core:${amazonAwsJavaSdkVersion}")
-    testImplementation platform("com.amazonaws:aws-xray-recorder-sdk-bom:2.16.0")
+    testImplementation platform("com.amazonaws:aws-xray-recorder-sdk-bom:2.17.0")
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-core")
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk")
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor")
