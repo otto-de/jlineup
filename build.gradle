@@ -8,6 +8,7 @@ buildscript {
         nettyVersion = '4.1.112.Final'
         junitJupiterVersion = '5.10.3'
         slf4jVersion = '2.0.13'
+        graalvmVersion = '24.0.1'
     }
     repositories {
         mavenCentral()
