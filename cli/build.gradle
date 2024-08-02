@@ -13,7 +13,7 @@ dependencies {
     annotationProcessor 'info.picocli:picocli-codegen:4.7.6'
     compileOnly "org.graalvm.nativeimage:svm:${graalvmVersion}"
 
-    testImplementation "org.hamcrest:hamcrest:2.2"
+    testImplementation "org.hamcrest:hamcrest:3.0"
     testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
     testCompileOnly 'junit:junit:4.13.2'
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
