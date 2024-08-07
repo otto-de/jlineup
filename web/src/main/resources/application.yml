@@ -5,6 +5,10 @@ jlineup:
   maxParallelJobs: 1
   chromeLaunchParameters: --use-spdy=off, --disable-dev-shm-usage
   cleanupProfile: true
+  allowedUrlPrefixes:
+    - https://www.otto.de
+    - https://develop.otto.de
+    - https://www.example.com
   lambda:
     functionName: jlineup-lambda
 

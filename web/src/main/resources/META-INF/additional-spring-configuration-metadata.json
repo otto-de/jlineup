@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "jlineup.allowedUrlPrefixes",
+      "type": "java.util.List<java.lang.String>",
+      "description": "All URLs that you tell JLineup to call via REST api have to begin with one of these prefixes. This is a security feature to prevent JLineup from calling arbitrary URLs."
+  }
+] }

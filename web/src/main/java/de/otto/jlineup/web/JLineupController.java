@@ -157,4 +157,9 @@ public class JLineupController {
     public ResponseEntity<String> exceptionHandler(final ValidationError exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> exceptionHandler(final IllegalArgumentException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
 }

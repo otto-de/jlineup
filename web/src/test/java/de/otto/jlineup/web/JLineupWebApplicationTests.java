@@ -127,6 +127,12 @@ public class JLineupWebApplicationTests {
         expectStatusCodeForConfig(jobConfig, UNPROCESSABLE_ENTITY.value());
     }
 
+    @Test
+    public void shouldFailForForbiddenUrl() {
+        JobConfig jobConfig = copyOfBuilder(createTestConfig()).addUrlConfig("https://www.forbidden.com", UrlConfig.urlConfigBuilder().build()).build();
+        expectStatusCodeForConfig(jobConfig, UNPROCESSABLE_ENTITY.value());
+    }
+
     private void assertReportExists(JLineupRunStatus finalState) {
         when()
                 .get(contextPath + "/reports/report-" + finalState.getId() + "/report.json")

@@ -1,12 +1,15 @@
 package de.otto.jlineup.web;
 
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.config.JobConfig.*;
@@ -23,11 +26,12 @@ public class JLineupRunnerFactoryTest {
         jLineupWebProperties = new JLineupWebProperties();
         jLineupWebProperties.setInstalledBrowsers(Arrays.asList(CHROME, CHROME_HEADLESS));
         jLineupWebProperties.setMaxThreadsPerJob(10);
+        jLineupWebProperties.setAllowedUrlPrefixes(List.of("https://www.example.com"));
         jLineupRunnerFactory = new JLineupRunnerFactory(jLineupWebProperties);
     }
 
     @Test
-    public void shouldSanitizeJobConfig() throws BrowserNotInstalledException {
+    public void shouldSanitizeJobConfigForInstalledBrowsers() throws BrowserNotInstalledException {
 
         //Given
         JobConfig evilJobConfig = copyOfBuilder(exampleConfig())
@@ -54,6 +58,30 @@ public class JLineupRunnerFactoryTest {
         JobConfig jobConfig = copyOfBuilder(exampleConfig())
                 .withBrowser(FIREFOX)
                 .build();
+
+        //When
+        jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionBecauseURLIsNotAllowed() throws IllegalArgumentException, BrowserNotInstalledException {
+        // Given
+        JobConfig jobConfig = copyOfBuilder(exampleConfig())
+                .withUrls(Map.of("Some Url", UrlConfig.copyOfBuilder(exampleConfig().urls.values().stream().findFirst().get()).withUrl("https://www.notallowed.org").build()))
+                .build();
+
+        //When
+        jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
+    }
+
+    @Test
+    public void shouldNotThrowIllegalArgumentExceptionWhenURLPrefixesAreNotSet() throws BrowserNotInstalledException {
+        // Given
+        JobConfig jobConfig = copyOfBuilder(exampleConfig())
+                .withUrls(Map.of("Some Url", UrlConfig.copyOfBuilder(exampleConfig().urls.values().stream().findFirst().get()).withUrl("https://www.notallowed.org").build()))
+                .build();
+
+        jLineupWebProperties.setAllowedUrlPrefixes(List.of());
 
         //When
         jLineupRunnerFactory.sanitizeJobConfig(jobConfig);

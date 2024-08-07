@@ -4,6 +4,7 @@ import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
+import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +61,18 @@ public class JLineupRunnerFactory {
                 .build());
     }
 
-    JobConfig sanitizeJobConfig(final JobConfig jobConfig) throws BrowserNotInstalledException {
+    JobConfig sanitizeJobConfig(final JobConfig jobConfig) throws BrowserNotInstalledException, IllegalArgumentException {
 
         if (!properties.getInstalledBrowsers().contains(jobConfig.browser)) {
             throw new BrowserNotInstalledException(jobConfig.browser);
+        }
+
+        if (!properties.getAllowedUrlPrefixes().isEmpty()) {
+            for (UrlConfig urlConfig : jobConfig.urls.values()) {
+                if (properties.getAllowedUrlPrefixes().stream().noneMatch(urlConfig.getUrl()::startsWith)) {
+                    throw new IllegalArgumentException("URL " + urlConfig.url + " is not allowed. Allowed prefixes are: " + properties.getAllowedUrlPrefixes());
+                }
+            }
         }
 
         return JobConfig.copyOfBuilder(jobConfig)
