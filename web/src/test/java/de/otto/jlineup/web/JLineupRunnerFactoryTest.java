@@ -74,6 +74,29 @@ public class JLineupRunnerFactoryTest {
         jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIllegalArgumentExceptionBecauseJavaScriptContainsHttpsURLThatIsNotInTheAllowedPrefixes() throws IllegalArgumentException, BrowserNotInstalledException {
+        // Given
+        JobConfig jobConfig = copyOfBuilder(exampleConfig())
+                .withUrls(Map.of("Some Url", UrlConfig.copyOfBuilder(exampleConfig().urls.values().stream().findFirst().get()).withJavaScript("fetch('https%25253A%25252F%25252Fwww.example.com');fetch('https%25253A%25252F%25252Fwww.notallowed.com');").build()))
+                .build();
+
+        //When
+        jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
+    }
+
+    @Test
+    public void shouldNotThrowIllegalArgumentExceptionBecauseJavaScriptContainsAllowedURLAfterHttps() throws IllegalArgumentException, BrowserNotInstalledException {
+        // Given
+        JobConfig jobConfig = copyOfBuilder(exampleConfig())
+                .withUrls(Map.of("Some Url", UrlConfig.copyOfBuilder(exampleConfig().urls.values().stream().findFirst().get()).withJavaScript("fetch('https%25253A%25252F%25252Fwww.example.com')").build()))
+                .build();
+
+        //When
+        jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
+    }
+
+
     @Test
     public void shouldNotThrowIllegalArgumentExceptionWhenURLPrefixesAreNotSet() throws BrowserNotInstalledException {
         // Given

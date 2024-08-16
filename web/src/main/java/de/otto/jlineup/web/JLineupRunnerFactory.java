@@ -10,6 +10,12 @@ import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.browser.BrowserUtils.RANDOM_FOLDER_PLACEHOLDER;
@@ -72,6 +78,32 @@ public class JLineupRunnerFactory {
                 if (properties.getAllowedUrlPrefixes().stream().noneMatch(urlConfig.getUrl()::startsWith)) {
                     throw new IllegalArgumentException("URL " + urlConfig.url + " is not allowed. Allowed prefixes are: " + properties.getAllowedUrlPrefixes());
                 }
+
+                if (urlConfig.javaScript != null) {
+                    String javaScript = urlConfig.javaScript;
+                    try {
+                        while (true) {
+                            String decodedJavaScript = URLDecoder.decode(javaScript, "UTF-8");
+                            if (!decodedJavaScript.equals(javaScript)) {
+                                javaScript = decodedJavaScript;
+                            } else {
+                                break;
+                            }
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        throw new IllegalArgumentException("JavaScript code must be UTF-8 encoded.");
+                    }
+                    if (javaScript.contains("http://") || javaScript.contains("https://")) {
+                        //Check the javascript code for urls that dont start with one of the allowed prefixes
+                        List<String> urls = findSubstringsStartingWithSearchString(javaScript, "http://");
+                        urls.addAll(findSubstringsStartingWithSearchString(javaScript, "https://"));
+                        for (String url : urls) {
+                            if (properties.getAllowedUrlPrefixes().stream().noneMatch(url::startsWith)) {
+                                throw new IllegalArgumentException("URL " + url + " is not allowed. Allowed prefixes are: " + properties.getAllowedUrlPrefixes());
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -85,6 +117,26 @@ public class JLineupRunnerFactory {
 
     private int calculateNumberOfThreads(JobConfig jobConfig) {
         return jobConfig.threads == 0 ? properties.getMaxThreadsPerJob() : Math.min(jobConfig.threads, properties.getMaxThreadsPerJob());
+    }
+
+    private static List<String> findSubstringsStartingWithSearchString(String input, String searchString) {
+        List<String> substrings = new ArrayList<>();
+        int index = 0;
+
+        while (index < input.length()) {
+            index = input.indexOf(searchString, index);
+            if (index == -1) {
+                break;
+            }
+            int endIndex = input.indexOf(' ', index);
+            if (endIndex == -1) {
+                endIndex = input.length();
+            }
+            substrings.add(input.substring(index, endIndex));
+            index += searchString.length();
+        }
+
+        return substrings;
     }
 
 }
