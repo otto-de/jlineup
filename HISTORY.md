@@ -1,8 +1,10 @@
 # JLineup Release History
 
-## Release 4.13.1-SNAPSHOT
+## Release 4.13.1 - 2024-08-23
 * Feature: Add security feature that limits the allowed urls to certain defined prefixes for the web version. You can
            define those prefixes in the application properties with the `jlineup.allowed-urls-prefixes` property.
+* Update:  Selenium 4.23.1
+* Update:  Further Dependency Updates
 
 ## Release 4.13.0 - 2024-07-07
 * Bugfix: The `--crop-last-screenshot` option was adjusted to fill cropped areas with pixels in the background color to
