@@ -349,12 +349,13 @@ public class JLineupCLIAcceptanceTest {
 
     @Test
     public void shouldRunJLineupWithMergedConfig() throws Exception {
+
         Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--merge-config", "src/test/resources/acceptance/acceptance-merge.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
         Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--merge-config", "src/test/resources/acceptance/acceptance-merge.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         assertThat(systemOutCaptor.toString(), containsString("test.html"));
         assertThat(systemOutCaptor.toString(), containsString("test_remove1.html"));
-        assertThat(systemOutCaptor.toString(), containsString("678x456"));
+        assertThat(systemOutCaptor.toString(), containsString("1234x999"));
         assertThat(systemOutCaptor.toString(), not(containsString("800x800")));
         assertThat(systemOutCaptor.toString(), containsString("Sum of overall screenshot differences: 0.0 (0 %)"));
     }
