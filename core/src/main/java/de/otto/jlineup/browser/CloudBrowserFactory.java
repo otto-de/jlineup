@@ -35,7 +35,7 @@ public class CloudBrowserFactory {
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
             LOG.debug("No LambdaBrowser reachable.", e);
         }
-        throw new ClassNotFoundException("Could not create any CloudBrowser instance, will do a local run.");
+        throw new ClassNotFoundException("Using a locally installed browser.");
     }
 
 }

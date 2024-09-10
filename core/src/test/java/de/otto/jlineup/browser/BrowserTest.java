@@ -1,12 +1,10 @@
 package de.otto.jlineup.browser;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.*;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.file.FileService;
-import de.otto.jlineup.file.FileUtils;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -16,7 +14,6 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.logging.Logs;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;

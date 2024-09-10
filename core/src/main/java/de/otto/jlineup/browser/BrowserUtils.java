@@ -84,6 +84,8 @@ public class BrowserUtils {
             options.addArguments("--no-sandbox");
             options.addArguments("--whitelisted-ips");
             options.addArguments("--remote-allow-origins=*");
+            options.addArguments("--disable-search-engine-choice-screen");
+
             //If there are multiple chrome drivers started with the same user profile dir, chrome will crash,
             //so the JLineupRunnerFactory adds a {random-folder} string to the profile-dir name which is replaced
             //with a UUID here to don't have two drivers running in the same user profile directory.

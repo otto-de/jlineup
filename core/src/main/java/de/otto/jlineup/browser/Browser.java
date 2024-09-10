@@ -364,6 +364,9 @@ public class Browser implements AutoCloseable {
         // If you use chrome with a specific device name, it sizes the viewport to match that device automatically.
         if ((jobConfig.browser.isChrome() || jobConfig.browser.isChromium()) && jobConfig.browser.isHeadless() && !screenshotContext.deviceConfig.isMobile()) {
             resizeViewport(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
+            //Since chrome 128 we have to do it twice, because the first resize does not work sometimes (At least on MacOS)
+            //TODO: Investigate if this will be fixed
+            resizeViewport(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
 
         final String url = buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);

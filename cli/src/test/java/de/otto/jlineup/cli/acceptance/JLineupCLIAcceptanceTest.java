@@ -170,6 +170,7 @@ public class JLineupCLIAcceptanceTest {
             } else if ("mobile2".equals(deviceConfig.userAgent)) {
                 checkScreenshotSize(filename, 320, 480);
             } else if (deviceConfig.deviceName.equals("DESKTOP")) {
+                //This checks if the magic chrome resize function works
                 checkScreenshotSize(filename, 1000, 1000);
             } else {
                 fail("Context should not be here");
