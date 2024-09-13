@@ -1,0 +1,86 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      git-ref:
+        description: Git Ref (Optional)
+        required: false
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**/README.md'
+      - '**/HISTORY.md'
+      - 'docs/**'
+  pull_request:
+    branches: [ main ]
+  merge_group:
+    branches: [ main ]
+  schedule:
+    - cron: '0 9 * * *'
+
+env:
+  CHROME_VERSION: 128.0.6613.84
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    env:
+      DISPLAY: :0
+      #SE_BROWSER_PATH: /usr/bin/google-chrome
+      webdriver.chrome.driver: /usr/bin/chromedriver
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: 21
+        cache: gradle
+    - name: Setup xvfb (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get install -y xvfb libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xinput0 libxcb-xfixes0
+        # start xvfb in the background
+        sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
+    - name: Setup Chrome and Chromedriver (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get remove google-chrome-stable chromium -y
+        sudo rm -rf /usr/bin/chromedriver
+        sudo rm -rf /usr/bin/google-chrome
+        echo "Executing: npx @puppeteer/browsers install chrome@$CHROME_VERSION"
+        npx @puppeteer/browsers install chrome@$CHROME_VERSION
+        echo "Executing: npx @puppeteer/browsers install chromedriver@$CHROME_VERSION"
+        npx @puppeteer/browsers install chromedriver@$CHROME_VERSION
+        echo "Executing: sudo ln -s /home/runner/work/jlineup/jlineup/chromedriver/linux-$CHROME_VERSION/chromedriver-linux64/chromedriver /usr/bin/chromedriver"
+        sudo ln -s /home/runner/work/jlineup/jlineup/chromedriver/linux-$CHROME_VERSION/chromedriver-linux64/chromedriver /usr/bin/chromedriver
+        echo "Executing: sudo ln -s /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome /usr/bin/google-chrome"
+        sudo ln -s /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome /usr/bin/google-chrome
+        echo "Executing: /usr/bin/google-chrome --version"
+        /usr/bin/google-chrome --version
+        echo "SE_BROWSER_PATH:"
+        echo $SE_BROWSER_PATH
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Dependency check and build with gradle
+      if: ${{ github.event_name == 'schedule' }}
+      env:
+        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+      run: |
+        if [ -z "$NVD_API_KEY" ]; then echo "NVD API KEY is NULL"; else echo "NVD API key is not NULL"; fi
+        ./gradlew -DNVD_API_KEY="$NVD_API_KEY" build
+    - name: Archive dependency check report
+      if: ${{ github.event_name == 'REMOVE_ME_WHEN_DEPENDENCY_CHECK_WORKS_AGAINschedule' }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: dependency-check-report
+        path: build/reports/dependency-check-report.html
+    - name: Build with gradle
+      if: ${{ github.event_name != 'schedule' }}
+      run: |
+        ./gradlew build
