@@ -91,7 +91,11 @@ subprojects {
 
     test {
         useJUnitPlatform()
+
+        // To allow monitoring System.Exit() we need to allow security manager so it can be overridden in tests
+        systemProperty("java.security.manager", "allow")
     }
+
 }
 
 static String runCommand(command) {
