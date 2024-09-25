@@ -163,8 +163,8 @@ public class JLineupCLIAcceptanceTest {
         fileTracker.contexts.forEach((k, v) -> {
             DeviceConfig deviceConfig = v.screenshotContext.deviceConfig;
             String filename = v.screenshots.get(0).get(BrowserStep.before);
-            if (deviceConfig.deviceName.equals("iPhone X")) {
-                checkScreenshotSize(filename, 1125, 2436); //iPhone X screen size
+            if (deviceConfig.deviceName.equals("iPhone 12 Pro")) {
+                checkScreenshotSize(filename, 1170, 2532); //iPhone 12 Pro screen size
             } else if ("mobile1".equals(deviceConfig.userAgent)) {
                 checkScreenshotSize(filename, 1500, 3000);
             } else if ("mobile2".equals(deviceConfig.userAgent)) {
