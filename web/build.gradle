@@ -7,7 +7,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     implementation 'org.yaml:snakeyaml:2.3'
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
-    implementation("de.otto.edison:edison-core:3.3.2")
+    implementation("de.otto.edison:edison-core:3.3.3")
 
     //Update hibernate validator that comes with edison-core
     implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
