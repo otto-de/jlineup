@@ -80,7 +80,7 @@
 <div class="report">
     <h2>JLineup unfinished report</h2>
     <h3 th:if="${config.name}" th:text="${config.name}"></h3>
-    <p>The JLineup run was not finished yet. If you came here, because there was an error somewhere, a look into the <a th:href="jlineup.log">JLineup run log file</a> may help.</p>
+    <p>The JLineup run was not finished yet (before and after steps have to be finished to generate a screenshot comparison report) or ran into an error. You might check the <a th:href="jlineup.log">JLineup run log file</a> for details.</p>
 </div>
 
 <p class="footer">Generated with Jlineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
