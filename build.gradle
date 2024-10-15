@@ -6,7 +6,7 @@ buildscript {
         seleniumVersion = '4.25.0'
         jacksonVersion = '2.17.2'
         nettyVersion = '4.1.114.Final'
-        junitJupiterVersion = '5.11.1'
+        junitJupiterVersion = '5.11.2'
         slf4jVersion = '2.0.16'
         logbackVersion = '1.5.10'
         graalvmVersion = '24.1.0'
