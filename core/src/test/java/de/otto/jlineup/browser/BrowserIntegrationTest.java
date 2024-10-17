@@ -1,5 +1,6 @@
 package de.otto.jlineup.browser;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.JLineupRunner;
@@ -11,6 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -199,6 +201,10 @@ public class BrowserIntegrationTest {
 
     @Test
     public void shouldSetAllCookies() throws ValidationError, IOException {
+
+        //ch.qos.logback.classic.Logger apache = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.apache.hc.client5.http");
+        //apache.setLevel(Level.DEBUG);
+
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(new HttpCheckConfig(true, ImmutableList.of(HttpStatus.SERVICE_UNAVAILABLE.value(), HttpStatus.UNAUTHORIZED.value())))
                 .withAlternatingCookies(ImmutableList.of(
@@ -206,7 +212,7 @@ public class BrowserIntegrationTest {
                         ImmutableList.of(new Cookie("alternating", "UNAUTHORIZED"))
                 ))
                 .withPaths(ImmutableList.of("/")).build();
-        JobConfig jobConfig = localTestConfig("cookies", Browser.Type.CHROME_HEADLESS, false, urlConfig);
+        JobConfig jobConfig = localTestConfig("cookies", Browser.Type.FIREFOX_HEADLESS, false, urlConfig);
         runJLineup(jobConfig, RunStep.before);
         RunStepConfig runStepConfig = runJLineup(jobConfig, RunStep.after);
         //no exception

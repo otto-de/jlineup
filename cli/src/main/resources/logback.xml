@@ -1,4 +1,5 @@
 <configuration>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <Target>System.out</Target>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">

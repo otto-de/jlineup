@@ -105,7 +105,7 @@ class JLineupHttpClient {
         //If a cookie is added without a domain, Apache HTTP Client 4.5.5 throws a NullPointerException, so we extract the domain from the URL here
         String domain;
         if (isUrlLocalHost(screenshotContext.url)) {
-            domain = ".localhost";
+            domain = "localhost";
         } else {
             domain = ".".concat(InternetDomainName.from(new URL(screenshotContext.url).getHost()).topPrivateDomain().toString());
         }

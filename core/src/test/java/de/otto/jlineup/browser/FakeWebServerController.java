@@ -1,6 +1,8 @@
 package de.otto.jlineup.browser;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,9 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Map;
 
+import static java.lang.invoke.MethodHandles.lookup;
+
 @Controller
 @SpringBootApplication
 public class FakeWebServerController {
+
+    private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     @GetMapping({"/200", "/200/ "})
     public ResponseEntity<String> get200() {
@@ -54,8 +60,12 @@ public class FakeWebServerController {
     }
 
     @GetMapping({"/cookies","/cookies/"})
-    public ResponseEntity<String> testAlteringCookies(@CookieValue("alternating") String alternatingCookieValue) {
-        System.out.println("ACV: " + alternatingCookieValue);
+    public ResponseEntity<String> testAlteringCookies(@CookieValue(value = "alternating", required = false) String alternatingCookieValue, HttpServletRequest request) {
+        LOG.info("Request URI is {}", request.getRequestURI());
+        LOG.info("Cookie value is {}", alternatingCookieValue);
+        if (alternatingCookieValue == null) {
+            return new ResponseEntity<>("No cookie found", HttpStatus.OK);
+        }
         return new ResponseEntity<>("Alternating cookie value is " + alternatingCookieValue, HttpStatus.valueOf(alternatingCookieValue));
     }
 
