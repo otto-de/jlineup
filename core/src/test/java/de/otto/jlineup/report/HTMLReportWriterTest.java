@@ -72,7 +72,7 @@ public class HTMLReportWriterTest {
                 "</body>" + n +
                 "</html>";
 
-        final String report = testee.renderReport("report", JobConfig.exampleConfig(), screenshotComparisonResults);
+        final String report = testee.renderReport("report_legacy", JobConfig.exampleConfig(), screenshotComparisonResults);
 
         assertThat(report, startsWith(expectedHtmlStart));
         assertThat(report, endsWith(expectedHtmlEnd));
