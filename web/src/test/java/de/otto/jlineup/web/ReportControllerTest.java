@@ -10,9 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 public class ReportControllerTest {
 
-    @MockBean
+    @MockitoBean
     private JLineupService jLineupService;
 
     @Autowired
@@ -47,7 +47,7 @@ public class ReportControllerTest {
     private MockMvc mockMvc;
 
     @Before
-    public void setupMockMvc(){
+    public void setupMockMvc() {
 
         initMocks(this);
 
@@ -102,11 +102,10 @@ public class ReportControllerTest {
         ));
 
 
-
         //when
         ModelAndView modelAndView = mockMvc.perform(get("/jlineup-ctxpath/internal/reports").contextPath("/jlineup-ctxpath").accept(MediaType.TEXT_HTML))
 
-        //then
+                //then
                 .andExpect(status().isOk())
                 .andExpect(view().name("reports"))
                 .andExpect(model().attributeExists("reportList"))
@@ -126,7 +125,7 @@ public class ReportControllerTest {
                 .andReturn().getModelAndView();
 
         @SuppressWarnings("unchecked")
-        List<ReportController.Report> reportList = (List<ReportController.Report>)modelAndView.getModelMap().get("reportList");
+        List<ReportController.Report> reportList = (List<ReportController.Report>) modelAndView.getModelMap().get("reportList");
 
         assertThat(reportList.get(0).getId(), is("someId"));
         assertThat(reportList.get(0).getName(), is("someName"));
