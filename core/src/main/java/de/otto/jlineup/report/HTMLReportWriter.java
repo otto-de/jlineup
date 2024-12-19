@@ -7,7 +7,6 @@ import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.image.ImageService;
 import org.thymeleaf.TemplateEngine;
@@ -35,11 +34,11 @@ public class HTMLReportWriter {
     }
 
     public void writeReport(Report report) throws FileNotFoundException {
-        fileService.writeHtmlReportLegacy(renderReport("report", report.config, report.getFlatResultList()));
+        fileService.writeHtmlReportLegacy(renderReport("report_legacy", report.config, report.getFlatResultList()));
     }
 
     public void writeReportV2(ReportV2 report) throws FileNotFoundException {
-        fileService.writeHtmlReport(renderReportV2("report_wip", report), FileService.REPORT_HTML_FILENAME);
+        fileService.writeHtmlReport(renderReportV2("report", report), FileService.REPORT_HTML_FILENAME);
     }
 
     public void writeNotFinishedReport(RunStepConfig runStepConfig, JobConfig jobConfig) throws FileNotFoundException {
@@ -111,6 +110,7 @@ public class HTMLReportWriter {
     private int getContextHash(final ScreenshotComparisonResult screenshotComparisonResult) {
         return screenshotComparisonResult.contextHash;
     }
+
     private class ScreenshotComparisonResultContext {
 
 

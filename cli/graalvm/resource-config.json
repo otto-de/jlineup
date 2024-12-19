@@ -26,7 +26,7 @@
       "pattern":"\\Qtemplates/report_not_finished.html\\E"
     }, 
     {
-      "pattern":"\\Qtemplates/report_wip.html\\E"
+      "pattern":"\\Qtemplates/report_legacy.html\\E"
     }, 
     {
       "pattern":"\\Qversion.properties\\E"
