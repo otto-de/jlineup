@@ -8,7 +8,7 @@ buildscript {
         nettyVersion = '4.1.116.Final'
         junitJupiterVersion = '5.11.4'
         slf4jVersion = '2.0.16'
-        logbackVersion = '1.5.12'
+        logbackVersion = '1.5.14'
         graalvmVersion = '24.1.1'
     }
 
