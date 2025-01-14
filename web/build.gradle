@@ -12,7 +12,7 @@ dependencies {
     //Update hibernate validator that comes with edison-core
     implementation("org.hibernate.validator:hibernate-validator:8.0.2.Final")
     //Update commons-codec
-    implementation("commons-codec:commons-codec:1.17.1")
+    implementation("commons-codec:commons-codec:1.17.2")
     //Update embedded tomcat
     implementation("org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}")
     implementation("org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}")
