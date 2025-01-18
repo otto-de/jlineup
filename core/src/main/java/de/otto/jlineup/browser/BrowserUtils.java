@@ -1,5 +1,7 @@
 package de.otto.jlineup.browser;
 
+import de.otto.jlineup.GlobalOption;
+import de.otto.jlineup.GlobalOptions;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.DeviceConfig;
@@ -76,6 +78,12 @@ public class BrowserUtils {
             if (jobConfig.browser.isHeadless()) {
                 options.addArguments("-headless", "-width", device.width + "", "-height", device.height + "");
             }
+
+            String firefoxVersionOverride = GlobalOptions.getOption(GlobalOption.JLINEUP_FIREFOX_VERSION);
+            if (firefoxVersionOverride != null) {
+                options.setBrowserVersion(firefoxVersionOverride);
+            }
+
             LOG.debug("Creating firefox with options: {}", options.toString());
             driver = new FirefoxDriver(options);
         } else if (jobConfig.browser.isChrome()) {
@@ -127,6 +135,11 @@ public class BrowserUtils {
             if (jobConfig.browser.isHeadless()) {
                 options.addArguments("--headless=new");
                 options.addArguments("--window-size=" + device.width + "," + device.height);
+            }
+
+            String chromeVersionOverride = GlobalOptions.getOption(GlobalOption.JLINEUP_CHROME_VERSION);
+            if (chromeVersionOverride != null) {
+                options.setBrowserVersion(chromeVersionOverride);
             }
 
             LOG.debug("Creating chrome with options: {}", options);

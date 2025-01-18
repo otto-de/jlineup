@@ -32,6 +32,9 @@ public class GlobalOptions {
         loadOption(appProps, "JLINEUP_AWS_PROFILE", "jlineup.lambda.aws-profile", DEFAULT_LAMBDA_AWS_PROFILE, JLINEUP_LAMBDA_AWS_PROFILE);
         loadOption(appProps, "JLINEUP_LAMBDA_S3_BUCKET", "jlineup.lambda.s3-bucket", DEFAULT_LAMBDA_S3_BUCKET, JLINEUP_LAMBDA_S3_BUCKET);
         loadOption(appProps, "JLINEUP_CROP_LAST_SCREENSHOT", "jlineup.crop-last-screenshot", DEFAULT_CROP_LAST_SCREENSHOT, JLINEUP_CROP_LAST_SCREENSHOT);
+
+        loadOption(appProps, "JLINEUP_CHROME_VERSION", "jlineup.chrome-version", null, JLINEUP_CHROME_VERSION);
+        loadOption(appProps, "JLINEUP_FIREFOX_VERSION", "jlineup.firefox-version", null, JLINEUP_FIREFOX_VERSION);
     }
 
     private static void loadOption(Properties appProps, String key, String property, String defaultValue, GlobalOption option) {
