@@ -20,7 +20,7 @@ management:
         include: '*'
   endpoint:
     loggers:
-      enabled: true
+      access: unrestricted
 
 spring:
   application:
