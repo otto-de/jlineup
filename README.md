@@ -90,10 +90,10 @@ Let's assume, this is part of a continuous integration pipeline:
 
 ## Browser Compatibility
 
-JLineup 4.13 was tested successfully with
+JLineup 4.13.2 was tested successfully with
 
-* Chrome 128.x
-* Firefox 130.x
+* Chrome 131.x
+* Firefox 134.x
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
 

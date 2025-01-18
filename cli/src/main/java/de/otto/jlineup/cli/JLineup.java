@@ -113,6 +113,22 @@ public class JLineup implements Callable<Integer> {
                     })
                     .build());
 
+            commandSpec.addOption(CommandLine.Model.OptionSpec.builder("--" + GlobalOption.JLINEUP_CHROME_VERSION.kebabCaseNameWithoutJLineupPrefix())
+                    .order(202).description("The version of the Chrome browser to use. If not set, the installed or default version is used.")
+                    .parameterConsumer((stack, argSpec, commandSpec1) -> {
+                        String value = stack.pop();
+                        GlobalOptions.setOption(GlobalOption.JLINEUP_CHROME_VERSION, value);
+                    })
+                    .build());
+
+            commandSpec.addOption(CommandLine.Model.OptionSpec.builder("--" + GlobalOption.JLINEUP_FIREFOX_VERSION.kebabCaseNameWithoutJLineupPrefix())
+                    .order(203).description("The version of the Firefox browser to use. If not set, the installed or default version is used.")
+                    .parameterConsumer((stack, argSpec, commandSpec1) -> {
+                        String value = stack.pop();
+                        GlobalOptions.setOption(GlobalOption.JLINEUP_FIREFOX_VERSION, value);
+                    })
+                    .build());
+
             try {
                 Class<?> lambdaBrowserClass = Class.forName("de.otto.jlineup.lambda.LambdaBrowser", false, CloudBrowserFactory.class.getClassLoader());
                 LOG.debug("LambdaBrowser '{}' reachable, adding lambda options to command spec.", lambdaBrowserClass.getCanonicalName());

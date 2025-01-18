@@ -20,3 +20,4 @@ bin
 /lambda/dockerstuff.sh
 /lambda/src/main/resources/settings.properties
 .DS_Store
+/web/unknown
