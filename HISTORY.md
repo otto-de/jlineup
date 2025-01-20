@@ -8,6 +8,8 @@
   use a specific browser version for your tests. The command line options are named `--chrome-version` and
   `--firefox-version`. Selenium will try to download the specified version and a matching driver if it's not already
   installed on the system.
+* Breaking change: If you used `management.endpoint.loggers.enabled = true` in your application.properties for the web
+  variant, please replace it with `management.endpoint.loggers.access = unrestricted` to enable the loggers endpoint.
 
 ## Release 4.13.1 - 2024-08-23
 
