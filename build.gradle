@@ -9,7 +9,7 @@ buildscript {
         junitJupiterVersion = '5.11.4'
         slf4jVersion = '2.0.16'
         logbackVersion = '1.5.16'
-        graalvmVersion = '24.1.1'
+        graalvmVersion = '24.1.2'
     }
 
     repositories {
