@@ -23,6 +23,7 @@ RUN dnf install -y \
     glibc-devel \
     gtk3 \
     ipa-gothic-fonts \
+    jq \
     libdrm \
     libXScrnSaver \
     libXcomposite \
@@ -37,10 +38,14 @@ RUN dnf install -y \
     libxkbcommon \
     mesa-libgbm \
     libgbm \
+    libva \
+    nss \
     pango \
+    pulseaudio-libs \
     procps \
     tar \
     util-linux \
+    vulkan \
     wget \
     xorg-x11-fonts-100dpi \
     xorg-x11-fonts-75dpi \
@@ -48,19 +53,15 @@ RUN dnf install -y \
     xorg-x11-fonts-misc \
     xorg-x11-utils \
     xdg-utils \
-    vulkan \
-    libva \
-    pulseaudio-libs \
-    nss \
-    jq
+    xz
 
 RUN mkdir ${LAMBDA_TASK_ROOT}/lib
 RUN mkdir ${LAMBDA_TASK_ROOT}/lib/firefox
-RUN wget --no-check-certificate -nv 'https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US' -O /tmp/firefox.tar.bz2
-RUN tar -xf /tmp/firefox.tar.bz2 --directory ${LAMBDA_TASK_ROOT}/lib/
+RUN wget --no-check-certificate -nv 'https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US' -O /tmp/firefox.tar.xz
+RUN tar -xf /tmp/firefox.tar.xz --directory ${LAMBDA_TASK_ROOT}/lib/
 RUN ln -s ${LAMBDA_TASK_ROOT}/lib/firefox/firefox ${LAMBDA_TASK_ROOT}/firefox
 RUN ln -s ${LAMBDA_TASK_ROOT}/lib/firefox/firefox /usr/bin/firefox
-RUN rm /tmp/firefox.tar.bz2
+RUN rm /tmp/firefox.tar.xz
 
 #RUN CHROME_FOR_TESTING_RELEASE="$(curl --silent https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | jq '.channels.Stable')"; \
 RUN curl --insecure https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json
