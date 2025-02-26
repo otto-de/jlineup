@@ -38,7 +38,7 @@ dependencies {
     implementation "org.reflections:reflections:0.10.2"
 
     testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
-    testCompileOnly 'junit:junit:4.13.2'
+    testCompileOnly "junit:junit:${junitVintageVersion}"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
     testImplementation "org.hamcrest:hamcrest:3.0"
     testImplementation "org.mockito:mockito-core:5.15.2"
