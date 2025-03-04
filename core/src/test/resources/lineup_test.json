@@ -5,6 +5,12 @@
         "/",
         "multimedia"
       ],
+      "setup-paths": [
+        "setup"
+      ],
+      "cleanup-paths": [
+        "cleanup"
+      ],
       "max-diff": 0.05,
       "cookies": [
         {

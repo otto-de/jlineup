@@ -240,7 +240,7 @@ public class BrowserUtils {
             for (final String path : paths) {
                 //TODO: alternatingCookies
                 screenshotContextList.add(new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getValue().url), path, deviceConfigBuilder().build(),
-                        Collections.emptyList(), runStepConfig.getBrowserStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig), false, urlConfigEntry.getKey()));
+                        urlConfigEntry.getValue().cookies, runStepConfig.getBrowserStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig), false, urlConfigEntry.getKey()));
             }
         }
         return screenshotContextList;

@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.springframework.boot.autoconfigure.batch.BatchProperties;
 
 import java.io.IOException;
 import java.util.List;
@@ -84,8 +85,8 @@ public class BrowserUtilsTest {
                 ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(600, expectedHeight), before, expectedUrlConfigForOttoDe, expectedUrlConfigForOttoDe.cookies),
                 ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(800, expectedHeight), before, expectedUrlConfigForOttoDe, expectedUrlConfigForOttoDe.cookies),
                 ScreenshotContext.of("https://www.otto.de", "multimedia", deviceConfig(1200, expectedHeight), before, expectedUrlConfigForOttoDe, expectedUrlConfigForOttoDe.cookies),
-                ScreenshotContext.of("http://www.doodle.de", "/",         deviceConfig(1200, expectedHeight), before, expectedUrlConfigForGoogleDe, Stream.concat(expectedUrlConfigForGoogleDe.cookies.stream(), expectedUrlConfigForGoogleDe.alternatingCookies.get(0).stream()).collect(Collectors.toList()),"http://www.google.de"),
-                ScreenshotContext.of("http://www.doodle.de", "/",         deviceConfig(1200, expectedHeight), before, expectedUrlConfigForGoogleDe, Stream.concat(expectedUrlConfigForGoogleDe.cookies.stream(), expectedUrlConfigForGoogleDe.alternatingCookies.get(1).stream()).collect(Collectors.toList()),"http://www.google.de")
+                ScreenshotContext.of("http://www.doodle.de", "/", deviceConfig(1200, expectedHeight), before, expectedUrlConfigForGoogleDe, Stream.concat(expectedUrlConfigForGoogleDe.cookies.stream(), expectedUrlConfigForGoogleDe.alternatingCookies.get(0).stream()).collect(Collectors.toList()), "http://www.google.de"),
+                ScreenshotContext.of("http://www.doodle.de", "/", deviceConfig(1200, expectedHeight), before, expectedUrlConfigForGoogleDe, Stream.concat(expectedUrlConfigForGoogleDe.cookies.stream(), expectedUrlConfigForGoogleDe.alternatingCookies.get(1).stream()).collect(Collectors.toList()), "http://www.google.de")
         );
 
         //when
@@ -130,11 +131,55 @@ public class BrowserUtilsTest {
         assertThat(result, is("www.bonprix.de"));
     }
 
+    @Test
+    public void shouldGetFirefoxDriver() {
+        final JobConfig jobConfig = jobConfigBuilder().withBrowser(FIREFOX).build();
+        assertSetDriverType(jobConfig, FirefoxDriver.class);
+    }
+
+    @Test
+    public void shouldGetChromeDriver() {
+        final JobConfig jobConfig = jobConfigBuilder().withBrowser(CHROME).build();
+        assertSetDriverType(jobConfig, ChromeDriver.class);
+    }
+
+    @Test
+    public void shouldGetChromeDriverForHeadlessChrome() {
+        final JobConfig jobConfig = jobConfigBuilder().withBrowser(CHROME_HEADLESS).build();
+        assertSetDriverType(jobConfig, ChromeDriver.class);
+    }
+
+    @Test
+    public void shouldAddCookiesToTestSetupCalls() {
+        final JobConfig jobConfig = jobConfigBuilder().addUrlConfig(getExpectedUrlConfigForOttoDe().url, getExpectedUrlConfigForOttoDe()).build();
+        List<ScreenshotContext> screenshotContexts = BrowserUtils.buildTestSetupContexts(runStepConfigBuilder().withStep(RunStep.before).build(), jobConfig);
+        assertThat(screenshotContexts.size(), is(1));
+        assertThat(screenshotContexts.get(0).cookies.size(), is(2));
+        assertThat(screenshotContexts.get(0).cookies.get(0).name, is("testcookie1"));
+        assertThat(screenshotContexts.get(0).cookies.get(0).value, is("true"));
+        assertThat(screenshotContexts.get(0).cookies.get(1).name, is("testcookie2"));
+        assertThat(screenshotContexts.get(0).cookies.get(1).value, is("1"));
+    }
+
+    @Test
+    public void shouldAddCookiesToTestCleanupCalls() {
+        final JobConfig jobConfig = jobConfigBuilder().addUrlConfig(getExpectedUrlConfigForOttoDe().url, getExpectedUrlConfigForOttoDe()).build();
+        List<ScreenshotContext> screenshotContexts = BrowserUtils.buildTestCleanupContexts(runStepConfigBuilder().withStep(RunStep.before).build(), jobConfig);
+        assertThat(screenshotContexts.size(), is(1));
+        assertThat(screenshotContexts.get(0).cookies.size(), is(2));
+        assertThat(screenshotContexts.get(0).cookies.get(0).name, is("testcookie1"));
+        assertThat(screenshotContexts.get(0).cookies.get(0).value, is("true"));
+        assertThat(screenshotContexts.get(0).cookies.get(1).name, is("testcookie2"));
+        assertThat(screenshotContexts.get(0).cookies.get(1).value, is("1"));
+    }
+
     public static UrlConfig getExpectedUrlConfigForOttoDe() {
 
         return UrlConfig.urlConfigBuilder()
                 .withUrl("https://www.otto.de")
                 .withPaths(ImmutableList.of("/", "multimedia"))
+                .withSetupPaths(ImmutableList.of("setup"))
+                .withCleanupPaths(ImmutableList.of("cleanup"))
                 .withMaxDiff(0.05d)
                 .withCookies(ImmutableList.of(new Cookie("testcookie1", "true"), new Cookie("testcookie2", "1")))
                 .withEnvMapping(ImmutableMap.of("live", "www"))
@@ -166,25 +211,6 @@ public class BrowserUtilsTest {
                 .withMaxScrollHeight(100000)
                 .build();
     }
-
-    @Test
-    public void shouldGetFirefoxDriver() {
-        final JobConfig jobConfig = jobConfigBuilder().withBrowser(FIREFOX).build();
-        assertSetDriverType(jobConfig, FirefoxDriver.class);
-    }
-
-    @Test
-    public void shouldGetChromeDriver() {
-        final JobConfig jobConfig = jobConfigBuilder().withBrowser(CHROME).build();
-        assertSetDriverType(jobConfig, ChromeDriver.class);
-    }
-
-    @Test
-    public void shouldGetChromeDriverForHeadlessChrome() {
-        final JobConfig jobConfig = jobConfigBuilder().withBrowser(CHROME_HEADLESS).build();
-        assertSetDriverType(jobConfig, ChromeDriver.class);
-    }
-
 
     private void assertSetDriverType(JobConfig jobConfig, Class<? extends WebDriver> driverClass) {
         WebDriver driver = null;
