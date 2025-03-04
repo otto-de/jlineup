@@ -7,7 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static de.otto.jlineup.browser.Browser.Type.*;
+import static de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS;
+import static de.otto.jlineup.browser.Browser.Type.FIREFOX_HEADLESS;
 import static java.util.Collections.emptyList;
 
 @ConfigurationProperties(prefix = "jlineup")

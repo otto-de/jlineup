@@ -1,6 +1,5 @@
 package de.otto.jlineup.report;
 
-import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 

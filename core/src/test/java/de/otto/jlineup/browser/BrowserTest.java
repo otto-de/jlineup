@@ -2,15 +2,20 @@ package de.otto.jlineup.browser;
 
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.config.*;
 import de.otto.jlineup.config.Cookie;
+import de.otto.jlineup.config.DeviceConfig;
+import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.openqa.selenium.*;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.Logs;
 
 import java.io.File;

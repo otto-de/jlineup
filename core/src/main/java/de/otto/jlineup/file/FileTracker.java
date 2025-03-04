@@ -2,11 +2,9 @@ package de.otto.jlineup.file;
 
 import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.RunStep;
 
 import java.io.IOException;
 import java.util.Map;

@@ -3,7 +3,6 @@ package de.otto.jlineup.file;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.ScreenshotContext;
-import de.otto.jlineup.config.RunStep;
 
 import java.util.HashMap;
 import java.util.Map;

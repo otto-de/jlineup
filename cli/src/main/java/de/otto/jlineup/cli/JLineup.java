@@ -21,8 +21,10 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import static de.otto.jlineup.cli.Main.NO_EXIT;

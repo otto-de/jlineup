@@ -3,12 +3,14 @@ package de.otto.jlineup.browser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.config.*;
+import de.otto.jlineup.config.Cookie;
+import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.RunStep;
+import de.otto.jlineup.config.UrlConfig;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
 
 import java.io.IOException;
 import java.util.List;

@@ -13,10 +13,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.google.common.collect.Maps.toMap;
 import static de.otto.jlineup.web.State.DEAD;
 import static java.lang.invoke.MethodHandles.lookup;
 

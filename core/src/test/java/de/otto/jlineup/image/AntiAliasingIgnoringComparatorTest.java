@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class AntiAliasingIgnoringComparatorTest {
 

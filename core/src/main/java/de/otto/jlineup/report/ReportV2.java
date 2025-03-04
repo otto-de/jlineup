@@ -2,7 +2,6 @@ package de.otto.jlineup.report;
 
 import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.config.JobConfig;
-import de.otto.jlineup.config.RunStep;
 
 import java.util.List;
 import java.util.Map;

@@ -3,9 +3,7 @@ package de.otto.jlineup.config;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.concurrent.Immutable;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UrlConfigTest {
 

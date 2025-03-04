@@ -21,7 +21,8 @@ import java.util.List;
 
 import static de.otto.jlineup.RunStepConfig.runStepConfigBuilder;
 import static de.otto.jlineup.browser.BrowserStep.before;
-import static de.otto.jlineup.file.FileService.*;
+import static de.otto.jlineup.file.FileService.FILE_SEPARATOR;
+import static de.otto.jlineup.file.FileService.generateScreenshotFileName;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.MockitoAnnotations.initMocks;

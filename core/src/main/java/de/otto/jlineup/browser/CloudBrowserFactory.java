@@ -3,25 +3,13 @@ package de.otto.jlineup.browser;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
-import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
-import org.reflections.scanners.Scanners;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
 
 import static java.lang.invoke.MethodHandles.lookup;
-import static org.reflections.scanners.Scanners.*;
 
 public class CloudBrowserFactory {
 
