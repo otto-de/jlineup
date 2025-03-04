@@ -18,7 +18,7 @@ dependencies {
     testCompileOnly "junit:junit:${junitVintageVersion}"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
 
-    testImplementation "org.mockito:mockito-core:5.15.2"
+    testImplementation "org.mockito:mockito-core:5.16.0"
     testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
         exclude group: 'junit', module: 'junit-dep'
     }
