@@ -1,5 +1,10 @@
 # JLineup Release History
 
+## Release 4.13.3 - 2025-03-14
+
+* Bugfix: Also add cookies for browsing to setup-paths and cleanup-paths
+* Dependency updates
+
 ## Release 4.13.2 - 2025-01-18
 
 * Feature: Add possibility to override the browser version via environment variables, command line parameter or
@@ -52,7 +57,7 @@
 
 * Feature: Add `merge-config` field to the global config. The merge config can include a full config that is
   merged with the main config.
-* Feature: Make max anti alias color difference configurable via `max-anti-alias-color-difference` field in the
+* Feature: Make max anti-alias color difference configurable via `max-anti-alias-color-difference` field in the
   global config.
 * Improvement: Cookie, LocalStorage and SessionStorage values are now masked in the report and in logs to not
   accidentally leak sensitive data.
