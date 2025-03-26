@@ -30,6 +30,7 @@ dependencies {
     testImplementation("com.amazonaws:aws-java-sdk-xray:${amazonAwsJavaSdkVersion}")
     runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.0"
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformLauncherVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
 }
 

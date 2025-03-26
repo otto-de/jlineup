@@ -13,11 +13,11 @@ dependencies {
     annotationProcessor 'info.picocli:picocli-codegen:4.7.6'
     compileOnly "org.graalvm.nativeimage:svm:${graalvmVersion}"
 
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformLauncherVersion}"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
+    testCompileOnly "junit:junit:${junitVintageVersion}"
     testImplementation "org.hamcrest:hamcrest:3.0"
     testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
-    testCompileOnly "junit:junit:${junitVintageVersion}"
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
-
     testImplementation "org.mockito:mockito-core:5.16.1"
     testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
         exclude group: 'junit', module: 'junit-dep'
