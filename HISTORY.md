@@ -1,5 +1,10 @@
 # JLineup Release History
 
+## Release 4.13.4 - 2025-03-26
+
+* Update: Selenium 4.30.0
+* Update: Further Dependency Updates
+
 ## Release 4.13.3 - 2025-03-14
 
 * Bugfix: Also add cookies for browsing to setup-paths and cleanup-paths
