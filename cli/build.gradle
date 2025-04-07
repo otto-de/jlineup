@@ -18,7 +18,7 @@ dependencies {
     testCompileOnly "junit:junit:${junitVintageVersion}"
     testImplementation "org.hamcrest:hamcrest:3.0"
     testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
-    testImplementation "org.mockito:mockito-core:5.16.1"
+    testImplementation "org.mockito:mockito-core:5.17.0"
     testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
         exclude group: 'junit', module: 'junit-dep'
     }
