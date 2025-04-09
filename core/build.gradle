@@ -10,7 +10,7 @@ dependencies {
         exclude module: "htmlunit"
     }
 
-    api "com.google.guava:guava:33.4.6-jre"
+    api "com.google.guava:guava:33.4.7-jre"
     api 'com.google.code.gson:gson:2.12.1'
 
     //Update netty (selenium has older version)
