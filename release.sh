@@ -11,7 +11,7 @@ check_configured() {
 
 check_configuration() {
     if [ ! -f ${USER_JRELEASER_PROPERTIES} ]; then
-        echo "${USER_JRELEASER_PROPERTIES} does not exist. Edison Microservice uses JReleaser to release packages. Pleaser create the file and add the following variables:"
+        echo "${USER_JRELEASER_PROPERTIES} does not exist. We use JReleaser to release packages. Pleaser create the file and add the following variables:"
         echo "JRELEASER_GPG_PASSPHRASE=\"your_gpg_passphrase\""
         echo "JRELEASER_GPG_PUBLIC_KEY=\"your_gpg_public_key\""
         echo "JRELEASER_GPG_SECRET_KEY=\"your_gpg_secret_key\""
@@ -44,7 +44,7 @@ else
   echo "INFO: This is a SNAPSHOT release. Packages will be released to GitHub packages only."
 fi
 
-"${SCRIPT_DIR}"/gradlew clean jreleaserConfig check
+"${SCRIPT_DIR}"/gradlew jreleaserConfig check
 "${SCRIPT_DIR}"/gradlew publish
 "${SCRIPT_DIR}"/gradlew jreleaserFullRelease
 
