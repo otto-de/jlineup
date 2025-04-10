@@ -27,8 +27,8 @@ buildscript {
 }
 
 plugins {
-    id 'io.codearte.nexus-staging' version '0.30.0'
     id "com.github.johnrengelman.shadow" version "8.1.1"
+    id 'org.jreleaser' version '1.17.0'
 }
 
 //
@@ -51,13 +51,60 @@ repositories {
 }
 
 apply plugin: 'java'
-apply plugin: 'io.codearte.nexus-staging'
 apply plugin: 'org.owasp.dependencycheck'
 
-nexusStaging {
-    username = sonatypeUsername
-    password = sonatypePassword
-    packageGroup = 'de.otto'
+group = 'de.otto'
+version = jlineup_version
+
+jreleaser {
+    release {
+        github {
+            update {
+                enabled = true
+            }
+        }
+    }
+    project {
+        snapshot {
+            fullChangelog = true
+        }
+    }
+    gitRootSearch = true
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+            github {
+                app {
+                    snapshotSupported = true
+                    active = 'ALWAYS'
+                    url = "https://maven.pkg.github.com/otto-de/jlineup"
+                    stagingRepository('build/staging-deploy')
+                }
+            }
+            mavenCentral {
+                app {
+                    snapshotSupported = false
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('build/staging-deploy')
+
+                    // Time to wait between state transition checks, in seconds.
+                    // Defaults to `10`.
+                    //
+                    retryDelay = 10
+
+                    // Maximum number of attempts to verify state transition.
+                    // Defaults to `60`.
+                    // Maven Central release can currently take up to 20 minutes, so we increased this to 120
+                    //
+                    maxRetries = 120
+                }
+            }
+        }
+    }
 }
 
 dependencyCheck {
@@ -85,7 +132,6 @@ subprojects {
     apply plugin: 'maven-publish'
 
     apply plugin: 'project-report'
-    apply plugin: 'signing'
     apply plugin: 'idea'
 
     jar {
@@ -94,9 +140,52 @@ subprojects {
 
     test {
         useJUnitPlatform()
-
         // To allow monitoring System.Exit() we need to allow security manager so it can be overridden in tests
         systemProperty("java.security.manager", "allow")
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                versionMapping {
+                    usage('java-api') {
+                        fromResolutionOf('runtimeClasspath')
+                    }
+                    usage('java-runtime') {
+                        fromResolutionResult()
+                    }
+                }
+                pom {
+                    url = 'https://github.com/otto-de/jlineup'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'MediaMarco'
+                            name = 'Marco Geweke'
+                            email = 'marco.geweke@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:https://github.com/otto-de/jlineup.git'
+                        developerConnection = 'scm:git:ssh://github.com/otto-de/jlineup.git'
+                        url = 'https://github.com/otto-de/jlineup'
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                // Our settingsDirectory is the project root dir.
+                // We want to 'publish' to the specified dir to have the artifacts uploaded with JReleaser from that location afterwards.
+                url = layout.settingsDirectory.dir('build/staging-deploy')
+            }
+        }
     }
 
 }

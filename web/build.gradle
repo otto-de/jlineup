@@ -138,36 +138,9 @@ publishing {
             from components.java
             artifact sourcesJar
             artifact javadocJar
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
             pom {
                 name = 'JLineup Web'
                 description = 'The web variant of JLineup'
-                url = 'https://github.com/otto-de/jlineup'
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'MediaMarco'
-                        name = 'Marco Geweke'
-                        email = 'marco.geweke@gmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git@github.com:otto-de/jlineup.git'
-                    developerConnection = 'scm:git@github.com:otto-de/jlineup.git'
-                    url = 'https://github.com/otto-de/jlineup'
-                }
             }
         },
         lambdaJava(MavenPublication) {
@@ -208,45 +181,4 @@ publishing {
             }
         } ]
     }
-    repositories {
-        maven {
-            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-            if (project.debugUpload) {
-                releasesRepoUrl = "$layout.buildDir/repos/releases"
-                snapshotsRepoUrl = "$layout.buildDir/repos/snapshots"
-            } else {
-                credentials {
-                    username = sonatypeUsername
-                    password = sonatypePassword
-                }
-            }
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-        }
-    }
-}
-
-signing {
-    sign publishing.publications.mavenJava
-    sign publishing.publications.lambdaJava
-}
-
-publishLambdaJavaPublicationToMavenRepository {
-    dependsOn signMavenJavaPublication
-    dependsOn signLambdaJavaPublication
-}
-
-publishMavenJavaPublicationToMavenRepository {
-    dependsOn signMavenJavaPublication
-    dependsOn signLambdaJavaPublication
-}
-
-publishLambdaJavaPublicationToMavenLocal {
-    dependsOn signMavenJavaPublication
-    dependsOn signLambdaJavaPublication
-}
-
-publishMavenJavaPublicationToMavenLocal {
-    dependsOn signMavenJavaPublication
-    dependsOn signLambdaJavaPublication
 }
