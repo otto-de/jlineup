@@ -3,6 +3,11 @@ name: "Delete old SNAPSHOTS"
 on:
   schedule:
     - cron: '37 13 * * *'
+  workflow_dispatch:
+    inputs:
+      git-ref:
+        description: Git Ref (Optional)
+        required: false
 
 jobs:
   delete:
