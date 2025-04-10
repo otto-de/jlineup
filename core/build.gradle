@@ -10,6 +10,11 @@ dependencies {
         exclude module: "htmlunit"
     }
 
+    api "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+    api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    api "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
+    api "ch.qos.logback:logback-classic:${logbackVersion}"
     api "com.google.guava:guava:33.4.7-jre"
     api 'com.google.code.gson:gson:2.12.1'
 
@@ -24,12 +29,6 @@ dependencies {
     implementation "io.netty:netty-transport-native-kqueue:${nettyVersion}"
 
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.4.3'
-
-    api "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
-    api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
-    api "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
-    api "ch.qos.logback:logback-classic:${logbackVersion}"
 
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation "org.codehaus.janino:janino:3.1.12"
