@@ -1,0 +1,29 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    runtimeOnly project(":jlineup-lambda")
+    runtimeOnly project(":jlineup-web")
+}
+
+application {
+    mainClass.set("de.otto.jlineup.web.JLineupWebApplication")
+}
+
+bootJar {
+    mainClass = "de.otto.jlineup.web.JLineupWebApplication"
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = "de.otto"
+            artifactId = 'jlineup-web-lambda'
+            from components.java
+            pom {
+                name = 'JLineup Web Lambda'
+                description = 'The web variant of JLineup with AWS Lambda support'
+            }
+        }
+    }
+}

@@ -29,14 +29,14 @@ dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
 }
 
-configurations {
-    [apiElements, runtimeElements].each {
-        it.outgoing.artifacts.removeIf {
-            it.buildDependencies.getDependencies(null).contains(jar)
-        }
-        it.outgoing.artifact(bootJar)
-    }
-}
+//configurations {
+//    [apiElements, runtimeElements].each {
+//        it.outgoing.artifacts.removeIf {
+//            it.buildDependencies.getDependencies(null).contains(jar)
+//        }
+//        it.outgoing.artifact(bootJar)
+//    }
+//}
 
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
@@ -55,130 +55,24 @@ configurations.all {
     exclude group: 'commons-logging', module: 'commons-logging'
 }
 
-tasks.distZip.enabled = false
-tasks.distTar.enabled = false
-
-tasks.bootDistZip {
-    archiveBaseName = project.archivesBaseName
-}
-
-tasks.bootDistTar {
-    archiveBaseName = project.archivesBaseName
-}
-
-test {
-    testLogging {
-        exceptionFormat = 'full'
-        showStandardStreams = true
-    }
-}
-
-jar {
-    enabled = false
-}
-
 application {
     mainClass.set("de.otto.jlineup.web.JLineupWebApplication")
 }
 
-project(":jlineup-lambda") {
-    sourceSets {
-        main {
-            configurations {
-                //exclude group: 'commons-logging', module: 'commons-logging'
-            }
-        }
-
-    }
-}
-
-task lambdaWebJar(type: BootJar) {
-    enabled = true
-    archiveBaseName = "jlineup-web-lambda"
-    targetJavaVersion = JavaVersion.VERSION_17
-    mainClass = "de.otto.jlineup.web.JLineupWebApplication"
-
-    classpath = project(":jlineup-lambda").sourceSets.main.runtimeClasspath + sourceSets.main.runtimeClasspath
-    launchScript()
-}
-
 bootJar {
-    enabled = true
     mainClass = "de.otto.jlineup.web.JLineupWebApplication"
-    dependsOn lambdaWebJar
-    launchScript()
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    from 'build/docs/javadoc'
-    archiveClassifier = 'javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
-}
-
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-project.afterEvaluate {
-    tasks.withType(JavaCompile) {
-        def version = sourceCompatibility
-        project.logger.info("Configuring $name to use --release $version")
-        println("Configuring $name to use --release $version")
-        options.compilerArgs.addAll(['--release', version])
-    }
 }
 
 publishing {
     publications {
-        [ mavenJava(MavenPublication) {
+        mavenJava(MavenPublication) {
+            groupId = "de.otto"
             artifactId = 'jlineup-web'
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
             pom {
                 name = 'JLineup Web'
                 description = 'The web variant of JLineup'
             }
-        },
-        lambdaJava(MavenPublication) {
-            artifact lambdaWebJar
-            artifactId = 'jlineup-web-lambda'
-            artifact sourcesJar
-            artifact javadocJar
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-            pom {
-                name = 'JLineup Web Lambda'
-                description = 'The web variant of JLineup with AWS Lambda support'
-                url = 'https://github.com/otto-de/jlineup'
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'MediaMarco'
-                        name = 'Marco Geweke'
-                        email = 'marco.geweke@gmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git@github.com:otto-de/jlineup.git'
-                    developerConnection = 'scm:git@github.com:otto-de/jlineup.git'
-                    url = 'https://github.com/otto-de/jlineup'
-                }
-            }
-        } ]
+        }
     }
 }

@@ -35,13 +35,11 @@ plugins {
 //\
 ///\
 ////\
-def jlineup_version = "4.13.5-SNAPSHOT"
+def jlineup_version = "4.13.5"
 /////
 ////
 ///
 //
-
-project.ext.set("debugUpload", false)
 
 repositories {
     mavenCentral()
@@ -57,13 +55,6 @@ group = 'de.otto'
 version = jlineup_version
 
 jreleaser {
-    release {
-        github {
-            update {
-                enabled = true
-            }
-        }
-    }
     project {
         snapshot {
             fullChangelog = true
@@ -79,7 +70,7 @@ jreleaser {
             github {
                 app {
                     snapshotSupported = true
-                    active = 'ALWAYS'
+                    active = 'NEVER'
                     url = "https://maven.pkg.github.com/otto-de/jlineup"
                     stagingRepository('build/staging-deploy')
                 }
@@ -130,31 +121,61 @@ subprojects {
 
     apply plugin: 'application'
     apply plugin: 'maven-publish'
-
     apply plugin: 'project-report'
+    apply plugin: 'org.springframework.boot'
     apply plugin: 'idea'
 
+    tasks.distZip.enabled = false
+    tasks.distTar.enabled = false
+
+    tasks.bootDistZip {
+        archiveBaseName = project.archivesBaseName
+    }
+
+    tasks.bootDistTar {
+        archiveBaseName = project.archivesBaseName
+    }
+
+    if (project.name != 'jlineup-core') {
+        bootJar {
+            enabled = true
+            launchScript()
+        }
+
+        jar {
+            enabled = true
+        }
+    }
+
     jar {
-        manifest.attributes provider: 'gradle'
+        manifest {
+            attributes(
+                    provider: 'gradle',
+                    'Implementation-Vendor': project.group,
+                    'Implementation-Title': project.name,
+                    'Implementation-Version': project.version
+            )
+        }
+    }
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
     }
 
     test {
         useJUnitPlatform()
         // To allow monitoring System.Exit() we need to allow security manager so it can be overridden in tests
         systemProperty("java.security.manager", "allow")
+        testLogging {
+            exceptionFormat = 'full'
+            showStandardStreams = true
+        }
     }
 
     publishing {
         publications {
             mavenJava(MavenPublication) {
-                versionMapping {
-                    usage('java-api') {
-                        fromResolutionOf('runtimeClasspath')
-                    }
-                    usage('java-runtime') {
-                        fromResolutionResult()
-                    }
-                }
                 pom {
                     url = 'https://github.com/otto-de/jlineup'
                     licenses {
@@ -185,6 +206,22 @@ subprojects {
                 // We want to 'publish' to the specified dir to have the artifacts uploaded with JReleaser from that location afterwards.
                 url = layout.settingsDirectory.dir('build/staging-deploy')
             }
+        }
+    }
+
+    compileJava {
+        options.compilerArgs.addAll(["-Aproject=${project.group}/${project.name}"])
+    }
+
+    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_17
+
+    project.afterEvaluate {
+        tasks.withType(JavaCompile) {
+            def version = sourceCompatibility
+            project.logger.info("Configuring $name to use --release $version")
+            println("Configuring $name to use --release $version")
+            options.compilerArgs.addAll(['--release', version])
         }
     }
 

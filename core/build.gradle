@@ -75,16 +75,6 @@ test {
     maxHeapSize = "1024m"
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
-}
-
 tasks.processResources.doLast { task ->
     def resourcesDir = project.sourceSets.main.output.resourcesDir
     resourcesDir.mkdirs()
@@ -105,26 +95,13 @@ tasks.processResources.doLast { task ->
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId = "de.otto"
             artifactId = 'jlineup-core'
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
             pom {
                 name = 'JLineup Core'
                 description = 'The core module of JLineup'
             }
         }
-    }
-}
-
-targetCompatibility = JavaVersion.VERSION_17
-sourceCompatibility = JavaVersion.VERSION_17
-
-project.afterEvaluate {
-    tasks.withType(JavaCompile) {
-        def version = sourceCompatibility
-        project.logger.info("Configuring $name to use --release $version")
-        println("Configuring $name to use --release $version")
-        options.compilerArgs.addAll(['--release', version])
     }
 }

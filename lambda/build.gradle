@@ -28,103 +28,50 @@ dependencies {
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor")
     testImplementation("com.amazonaws:aws-java-sdk-xray:${amazonAwsJavaSdkVersion}")
     runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.0"
+
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformLauncherVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
 }
 
-configurations {
-    [apiElements, runtimeElements].each {
-        it.outgoing.artifacts.removeIf {
-            it.buildDependencies.getDependencies(null).contains(jar)
-        }
-        it.outgoing.artifact(bootJar)
-    }
-}
-
-tasks.bootDistZip {
-    archiveBaseName = project.archivesBaseName
-}
-
-tasks.bootDistTar {
-    archiveBaseName = project.archivesBaseName
-}
-
-test {
-    testLogging {
-        exceptionFormat = 'full'
-        showStandardStreams = true
-    }
-}
-
-jar {
-    enabled = true
-}
+//configurations {
+//    [apiElements, runtimeElements].each {
+//        it.outgoing.artifacts.removeIf {
+//            it.buildDependencies.getDependencies(null).contains(jar)
+//        }
+//        it.outgoing.artifact(bootJar)
+//    }
+//}
 
 application {
     mainClass.set("de.otto.jlineup.lambda.JLineupHandler")
 }
 
 bootJar {
-    enabled = true
     mainClass = "de.otto.jlineup.lambda.JLineupHandler"
-    launchScript()
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    from 'build/docs/javadoc'
-    archiveClassifier = 'javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
-}
-
-task copyDependenciesToLib(type: Copy) {
-    into "$buildDir/output/lib"
+tasks.register('copyDependenciesToLib', Copy) {
+    into project.layout.buildDirectory.dir("output/lib")
     from configurations.runtimeClasspath
 }
 
 build.dependsOn copyDependenciesToLib
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-compileJava {
-    options.compilerArgs.addAll(["-Aproject=${project.group}/${project.name}"])
-}
-
 application {
     mainClass.set("de.otto.jlineup.lambda.Main")
-}
-
-project.afterEvaluate {
-    tasks.withType(JavaCompile) {
-        def version = sourceCompatibility
-        project.logger.info("Configuring $name to use --release $version")
-        println("Configuring $name to use --release $version")
-        options.compilerArgs.addAll(['--release', version])
-    }
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId = "de.otto"
             artifactId = 'jlineup-lambda'
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
             pom {
                 name = 'JLineup Lambda'
                 description = 'The AWS lambda handler of JLineup'
             }
         }
-    }
-}
-
-javadoc {
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
     }
 }

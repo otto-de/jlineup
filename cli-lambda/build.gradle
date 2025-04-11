@@ -1,0 +1,57 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    runtimeOnly project(":jlineup-lambda")
+    runtimeOnly project(":jlineup-cli")
+}
+
+configurations {
+    [apiElements, runtimeElements].each {
+        it.outgoing.artifact(bootJar)
+    }
+}
+
+tasks.bootDistZip {
+    archiveBaseName = project.archivesBaseName
+}
+
+tasks.bootDistTar {
+    archiveBaseName = project.archivesBaseName
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+        showStandardStreams = true
+    }
+}
+
+jar {
+    enabled = false
+}
+
+bootJar {
+    enabled = true
+    launchScript()
+    mainClass = "de.otto.jlineup.cli.Main"
+}
+
+application {
+    mainClass.set("de.otto.jlineup.cli.Main")
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = "de.otto"
+            artifactId = 'jlineup-cli-lambda'
+            from components.java
+
+            pom {
+                name = 'JLineup CLI Lambda'
+                description = 'The cli AWS Lambda variant of JLineup'
+            }
+        }
+    }
+}
