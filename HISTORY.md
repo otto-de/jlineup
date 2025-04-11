@@ -1,6 +1,6 @@
 # JLineup Release History
 
-## Release 4.13.5 - 2025-04-10
+## Release 4.13.5 - 2025-04-11
 
 * Update: Selenium 4.31.0
 * Update: Further dependency updates
