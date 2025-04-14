@@ -187,7 +187,7 @@ Failed to process deployment: Error on building manifests: No Archiver found for
 ```
 
 After some investigation I found out, that the problem was caused by the fact, that some JLineup jar files were executable jar files,
-which were enriched by the Spring Boot Gradle Plugin with the 'launchScript()' functionality. This is obviously not supported by the new
+which were enriched by the Spring Boot Gradle Plugin with the `launchScript()` functionality. This is obviously not supported by the new
 publishing API and leads to problems after the uploading of the bundle.zip.
 
 I commented the 'launchScript()' functionality in the build.gradle file and was able to publish the artifacts successfully.
