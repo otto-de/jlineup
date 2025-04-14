@@ -6,6 +6,14 @@ dependencies {
     runtimeOnly project(":jlineup-web")
 }
 
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("de.otto.jlineup-lambda"))
+                .using(module("de.otto.jlineup-lambda"))
+                .withClassifier("plain")
+    }
+}
+
 application {
     mainClass.set("de.otto.jlineup.web.JLineupWebApplication")
 }
@@ -19,6 +27,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = "de.otto"
             artifactId = 'jlineup-web-lambda'
+            //artifact bootJar
             from components.java
             pom {
                 name = 'JLineup Web Lambda'

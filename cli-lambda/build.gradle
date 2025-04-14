@@ -6,12 +6,6 @@ dependencies {
     runtimeOnly project(":jlineup-cli")
 }
 
-configurations {
-    [apiElements, runtimeElements].each {
-        it.outgoing.artifact(bootJar)
-    }
-}
-
 tasks.bootDistZip {
     archiveBaseName = project.archivesBaseName
 }
@@ -44,6 +38,7 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = "de.otto"
             artifactId = 'jlineup-cli-lambda'
+            //artifact bootJar
             from components.java
 
             pom {

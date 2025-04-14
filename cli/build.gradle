@@ -24,16 +24,6 @@ dependencies {
     }
 }
 
-//configurations {
-//    [apiElements, runtimeElements].each {
-//        it.outgoing.artifact(bootJar)
-//    }
-//}
-
-//jar {
-//    enabled = true
-//}
-
 //tasks.shadowJar {
 //    mainClassName = "de.otto.jlineup.cli.Main"
 //}
@@ -62,8 +52,8 @@ publishing {
         mavenJava(MavenPublication) {
             groupId = "de.otto"
             artifactId = 'jlineup-cli'
+            //artifact bootJar
             from components.java
-
             pom {
                 name = 'JLineup CLI'
                 description = 'The cli version of JLineup'

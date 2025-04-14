@@ -100,7 +100,7 @@ jreleaser {
 
 dependencyCheck {
     nvd {
-        apiKey=System.getenv("NVD_API_KEY")
+        apiKey = System.getenv("NVD_API_KEY")
     }
     failBuildOnCVSS = 4
     suppressionFiles = ["${rootDir}/dependency-check-suppressions.xml"]
@@ -144,6 +144,15 @@ subprojects {
 
         jar {
             enabled = true
+        }
+
+        configurations {
+            [apiElements, runtimeElements].each {
+//                it.outgoing.artifacts.removeIf {
+//                    it.buildDependencies.getDependencies(null).contains(jar)
+//                }
+                it.outgoing.artifact(bootJar)
+            }
         }
     }
 
