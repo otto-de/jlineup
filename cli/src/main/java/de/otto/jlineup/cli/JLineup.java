@@ -149,7 +149,7 @@ public class JLineup implements Callable<Integer> {
                         })
                         .build());
             } catch (ClassNotFoundException e) {
-                LOG.debug("No LambdaBrowser reachable.", e);
+                LOG.error("No LambdaBrowser reachable.", e);
             }
             return commandSpec;
         }

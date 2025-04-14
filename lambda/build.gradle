@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        awsSdkVersion = '2.31.10'
+        awsSdkVersion = '2.31.21'
         amazonAwsJavaSdkVersion = '1.12.782'
     }
 }
@@ -13,13 +13,12 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
     implementation project(":jlineup-core")
-    //implementation project(":jlineup-cli")
     implementation "org.slf4j:slf4j-api:${slf4jVersion}"
     implementation("software.amazon.awssdk:lambda:${awsSdkVersion}")
     implementation("software.amazon.awssdk:apache-client:${awsSdkVersion}")
     implementation("software.amazon.awssdk:s3:${awsSdkVersion}")
     implementation("software.amazon.awssdk:s3-transfer-manager:${awsSdkVersion}")
-    implementation("software.amazon.awssdk.crt:aws-crt:0.37.0")
+    implementation("software.amazon.awssdk.crt:aws-crt:0.38.1")
     implementation("com.amazonaws:aws-lambda-java-core:1.2.3")
     implementation("com.amazonaws:aws-lambda-java-events:3.15.0")
     implementation("com.amazonaws:aws-java-sdk-core:${amazonAwsJavaSdkVersion}")
@@ -29,150 +28,50 @@ dependencies {
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor")
     testImplementation("com.amazonaws:aws-java-sdk-xray:${amazonAwsJavaSdkVersion}")
     runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.0"
+
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformLauncherVersion}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
 }
 
-configurations {
-    [apiElements, runtimeElements].each {
-        it.outgoing.artifacts.removeIf {
-            it.buildDependencies.getDependencies(null).contains(jar)
-        }
-        it.outgoing.artifact(bootJar)
-    }
-}
-
-tasks.bootDistZip {
-    archiveBaseName = project.archivesBaseName
-}
-
-tasks.bootDistTar {
-    archiveBaseName = project.archivesBaseName
-}
-
-test {
-    testLogging {
-        exceptionFormat = 'full'
-        showStandardStreams = true
-    }
-}
-
-jar {
-    enabled = true
-}
+//configurations {
+//    [apiElements, runtimeElements].each {
+//        it.outgoing.artifacts.removeIf {
+//            it.buildDependencies.getDependencies(null).contains(jar)
+//        }
+//        it.outgoing.artifact(bootJar)
+//    }
+//}
 
 application {
     mainClass.set("de.otto.jlineup.lambda.JLineupHandler")
 }
 
 bootJar {
-    enabled = true
     mainClass = "de.otto.jlineup.lambda.JLineupHandler"
-    launchScript()
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    from 'build/docs/javadoc'
-    archiveClassifier = 'javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
-}
-
-task copyDependenciesToLib(type: Copy) {
-    into "$buildDir/output/lib"
+tasks.register('copyDependenciesToLib', Copy) {
+    into project.layout.buildDirectory.dir("output/lib")
     from configurations.runtimeClasspath
 }
 
 build.dependsOn copyDependenciesToLib
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-compileJava {
-    options.compilerArgs.addAll(["-Aproject=${project.group}/${project.name}"])
-}
-
 application {
     mainClass.set("de.otto.jlineup.lambda.Main")
-}
-
-project.afterEvaluate {
-    tasks.withType(JavaCompile) {
-        def version = sourceCompatibility
-        project.logger.info("Configuring $name to use --release $version")
-        println("Configuring $name to use --release $version")
-        options.compilerArgs.addAll(['--release', version])
-    }
 }
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
+            groupId = "de.otto"
             artifactId = 'jlineup-lambda'
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
             pom {
                 name = 'JLineup Lambda'
                 description = 'The AWS lambda handler of JLineup'
-                url = 'https://github.com/otto-de/jlineup'
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'MediaMarco'
-                        name = 'Marco Geweke'
-                        email = 'marco.geweke@gmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git@github.com:otto-de/jlineup.git'
-                    developerConnection = 'scm:git@github.com:otto-de/jlineup.git'
-                    url = 'https://github.com/otto-de/jlineup'
-                }
             }
         }
-    }
-    repositories {
-        maven {
-            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-            if (project.debugUpload) {
-                releasesRepoUrl = "$buildDir/repos/releases"
-                snapshotsRepoUrl = "$buildDir/repos/snapshots"
-            } else {
-                credentials {
-                    username = sonatypeUsername
-                    password = sonatypePassword
-                }
-            }
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-        }
-    }
-}
-
-signing {
-    sign publishing.publications.mavenJava
-}
-
-javadoc {
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
     }
 }

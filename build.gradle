@@ -4,14 +4,16 @@ buildscript {
         springVersion = '6.2.3'
         tomcatVersion = '10.1.40'
         seleniumVersion = '4.30.0'
+        seleniumVersion = '4.31.0'
         jacksonVersion = '2.18.3'
-        nettyVersion = '4.1.119.Final'
-        junitPlatformLauncherVersion = '1.12.1'
-        junitJupiterVersion = '5.12.1'
+        nettyVersion = '4.2.0.Final'
+        junitPlatformLauncherVersion = '1.12.2'
+        junitJupiterVersion = '5.12.2'
         junitVintageVersion = '4.13.2'
         slf4jVersion = '2.0.17'
         logbackVersion = '1.5.18'
         graalvmVersion = '24.2.0'
+        mockitoCoreVersion = '5.17.0'
     }
 
     repositories {
@@ -26,21 +28,19 @@ buildscript {
 }
 
 plugins {
-    id 'io.codearte.nexus-staging' version '0.30.0'
     id "com.github.johnrengelman.shadow" version "8.1.1"
+    id 'org.jreleaser' version '1.17.0'
 }
 
 //
 //\
 ///\
 ////\
-def jlineup_version = "4.13.5-SNAPSHOT"
+def jlineup_version = "4.13.5"
 /////
 ////
 ///
 //
-
-project.ext.set("debugUpload", false)
 
 repositories {
     mavenCentral()
@@ -50,13 +50,53 @@ repositories {
 }
 
 apply plugin: 'java'
-apply plugin: 'io.codearte.nexus-staging'
 apply plugin: 'org.owasp.dependencycheck'
 
-nexusStaging {
-    username = sonatypeUsername
-    password = sonatypePassword
-    packageGroup = 'de.otto'
+group = 'de.otto'
+version = jlineup_version
+
+jreleaser {
+    project {
+        snapshot {
+            fullChangelog = true
+        }
+    }
+    gitRootSearch = true
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+            github {
+                app {
+                    snapshotSupported = true
+                    active = 'NEVER'
+                    url = "https://maven.pkg.github.com/otto-de/jlineup"
+                    stagingRepository('build/staging-deploy')
+                }
+            }
+            mavenCentral {
+                app {
+                    snapshotSupported = false
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('build/staging-deploy')
+
+                    // Time to wait between state transition checks, in seconds.
+                    // Defaults to `10`.
+                    //
+                    retryDelay = 10
+
+                    // Maximum number of attempts to verify state transition.
+                    // Defaults to `60`.
+                    // Maven Central release can currently take up to 20 minutes, so we increased this to 120
+                    //
+                    maxRetries = 120
+                }
+            }
+        }
+    }
 }
 
 dependencyCheck {
@@ -82,20 +122,108 @@ subprojects {
 
     apply plugin: 'application'
     apply plugin: 'maven-publish'
-
     apply plugin: 'project-report'
-    apply plugin: 'signing'
+    apply plugin: 'org.springframework.boot'
     apply plugin: 'idea'
 
+    tasks.distZip.enabled = false
+    tasks.distTar.enabled = false
+
+    tasks.bootDistZip {
+        archiveBaseName = project.archivesBaseName
+    }
+
+    tasks.bootDistTar {
+        archiveBaseName = project.archivesBaseName
+    }
+
+    if (project.name != 'jlineup-core') {
+        bootJar {
+            enabled = true
+            //launchScript()
+        }
+
+        jar {
+            enabled = true
+        }
+    }
+
     jar {
-        manifest.attributes provider: 'gradle'
+        manifest {
+            attributes(
+                    provider: 'gradle',
+                    'Implementation-Vendor': project.group,
+                    'Implementation-Title': project.name,
+                    'Implementation-Version': project.version
+            )
+        }
+    }
+
+    java {
+        withJavadocJar()
+        withSourcesJar()
     }
 
     test {
         useJUnitPlatform()
-
         // To allow monitoring System.Exit() we need to allow security manager so it can be overridden in tests
         systemProperty("java.security.manager", "allow")
+        testLogging {
+            exceptionFormat = 'full'
+            showStandardStreams = true
+        }
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                pom {
+                    url = 'https://github.com/otto-de/jlineup'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'MediaMarco'
+                            name = 'Marco Geweke'
+                            email = 'marco.geweke@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:https://github.com/otto-de/jlineup.git'
+                        developerConnection = 'scm:git:ssh://github.com/otto-de/jlineup.git'
+                        url = 'https://github.com/otto-de/jlineup'
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                // Our settingsDirectory is the project root dir.
+                // We want to 'publish' to the specified dir to have the artifacts uploaded with JReleaser from that location afterwards.
+                url = layout.settingsDirectory.dir('build/staging-deploy')
+            }
+        }
+    }
+
+    compileJava {
+        options.compilerArgs.addAll(["-Aproject=${project.group}/${project.name}"])
+    }
+
+    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_17
+
+    project.afterEvaluate {
+        tasks.withType(JavaCompile) {
+            def version = sourceCompatibility
+            project.logger.info("Configuring $name to use --release $version")
+            println("Configuring $name to use --release $version")
+            options.compilerArgs.addAll(['--release', version])
+        }
     }
 
 }

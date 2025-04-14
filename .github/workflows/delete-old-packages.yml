@@ -1,0 +1,58 @@
+name: "Delete old SNAPSHOTS"
+
+on:
+  schedule:
+    - cron: '37 13 * * *'
+  workflow_dispatch:
+    inputs:
+      git-ref:
+        description: Git Ref (Optional)
+        required: false
+
+jobs:
+  delete:
+    name: "Delete old SNAPSHOTS"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Delete de.otto.jlineup-core"
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'de.otto.jlineup-core'
+          package-type: 'maven'
+          min-versions-to-keep: 10
+          delete-only-pre-release-versions: "true"
+      - name: "Delete de.otto.jlineup-cli"
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'de.otto.jlineup-cli'
+          package-type: 'maven'
+          min-versions-to-keep: 10
+          delete-only-pre-release-versions: "true"
+      - name: "Delete de.otto.jlineup-cli-lambda"
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'de.otto.jlineup-cli-lambda'
+          package-type: 'maven'
+          min-versions-to-keep: 10
+          delete-only-pre-release-versions: "true"
+      - name: "Delete de.otto.jlineup-web"
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'de.otto.jlineup-web'
+          package-type: 'maven'
+          min-versions-to-keep: 10
+          delete-only-pre-release-versions: "true"
+      - name: "Delete de.otto.jlineup-web-lambda"
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'de.otto.jlineup-web-lambda'
+          package-type: 'maven'
+          min-versions-to-keep: 10
+          delete-only-pre-release-versions: "true"
+      - name: "Delete de.otto.jlineup-lambda"
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: 'de.otto.jlineup-lambda'
+          package-type: 'maven'
+          min-versions-to-keep: 10
+          delete-only-pre-release-versions: "true"

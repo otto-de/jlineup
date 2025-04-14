@@ -71,7 +71,7 @@ JLineup CLI comes as executable Java Archive. Java 17 or higher has to be availa
 
 Open a terminal and download it like this:
 
-    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.13.4/jlineup-cli-4.13.4.jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.13.5/jlineup-cli-4.13.5.jar -O jlineup.jar
 
 Then type
 
@@ -90,10 +90,10 @@ Let's assume, this is part of a continuous integration pipeline:
 
 ## Browser Compatibility
 
-JLineup 4.13.4 was tested successfully with
+JLineup 4.13.5 was tested successfully with
 
-* Chrome 134.x
-* Firefox 136.x
+* Chrome 135.x
+* Firefox 137.x
         
 Chrome or Firefox have to be installed on the system if you want to use one of them.
 
@@ -173,12 +173,43 @@ a Ruby tool, but is not maintained any more.
 
 Credit for original Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
 
+## Publishing to Sonatype's Central Publisher Portal was challenging
+
+This is a note regarding the migration of JLineup's publishing process because of https://central.sonatype.org/news/20250326_ossrh_sunset/.
+
+During migration from OSSRH on oss.sonatype.org to the Central Publisher Portal central.sonatype.com I faced
+a problem uploading the JLineup artifacts, that were accepted by the old publishing process without problems:
+
+```
+Component Summary
+1 failed Deployment Validation
+Failed to process deployment: Error on building manifests: No Archiver found for the stream signature Details: No Archiver found for the stream signature
+```
+
+![Maven Central Error Screenshot](docs/maven-central-publishing-failure.png)
+
+
+After some investigation I found out, that the problem was caused by the fact, that some JLineup jar files were executable jar files,
+which were enriched by the Spring Boot Gradle Plugin with the `launchScript()` functionality. This is obviously not supported by the new
+publishing API and leads to problems after the uploading of the bundle.zip.
+
+I commented the 'launchScript()' functionality in the build.gradle file and was able to publish the artifacts successfully.
+
+```
+bootJar {
+  enabled = true
+  //launchScript()
+}
+```
+
+I just leave this here to help others, who might face the same problem.
 
 ### Contact
 
 If you have questions or proposals, please open an issue or write an email to marco DOT geweke AT otto.de
 
-###
+
+
 
 <div align="center"><img src="docs/jlineup-logo-2024.png" width="150" /></div>	
 

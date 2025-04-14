@@ -1,9 +1,15 @@
 # JLineup Release History
 
+## Release 4.13.5 - 2025-04-11
+
+* Update: Selenium 4.31.0
+* Update: Further dependency updates
+* Internal Feature: JReleaser is now used to release JLineup.
+
 ## Release 4.13.4 - 2025-03-26
 
 * Update: Selenium 4.30.0
-* Update: Further Dependency Updates
+* Update: Further dependency updates
 
 ## Release 4.13.3 - 2025-03-14
 

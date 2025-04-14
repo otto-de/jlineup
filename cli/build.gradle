@@ -5,7 +5,7 @@ plugins {
 }
 
 apply plugin: 'org.springframework.boot'
-apply plugin: 'com.github.johnrengelman.shadow'
+//apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
     implementation project(":jlineup-core")
@@ -18,43 +18,27 @@ dependencies {
     testCompileOnly "junit:junit:${junitVintageVersion}"
     testImplementation "org.hamcrest:hamcrest:3.0"
     testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
-    testImplementation "org.mockito:mockito-core:5.16.1"
+    testImplementation "org.mockito:mockito-core:${mockitoCoreVersion}"
     testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
         exclude group: 'junit', module: 'junit-dep'
     }
 }
 
-configurations {
-    [apiElements, runtimeElements].each {
-        it.outgoing.artifact(bootJar)
-    }
-}
-
-tasks.distZip.enabled = false
-tasks.distTar.enabled = false
+//configurations {
+//    [apiElements, runtimeElements].each {
+//        it.outgoing.artifact(bootJar)
+//    }
+//}
 
 //jar {
 //    enabled = true
 //}
 
-tasks.bootDistZip {
-    archiveBaseName = project.archivesBaseName
-}
+//tasks.shadowJar {
+//    mainClassName = "de.otto.jlineup.cli.Main"
+//}
 
-tasks.bootDistTar {
-    archiveBaseName = project.archivesBaseName
-}
-
-tasks.shadowJar {
-    mainClassName = "de.otto.jlineup.cli.Main"
-}
-
-targetCompatibility = JavaVersion.VERSION_17
 sourceCompatibility = JavaVersion.VERSION_17
-
-compileJava {
-    options.compilerArgs.addAll(["-Aproject=${project.group}/${project.name}"])
-}
 
 project.afterEvaluate {
     tasks.withType(JavaCompile) {
@@ -65,37 +49,8 @@ project.afterEvaluate {
     }
 }
 
-test {
-    testLogging {
-        exceptionFormat = 'full'
-        showStandardStreams = true
-    }
-}
-
-task lambdaCLIJar(type: BootJar) {
-    enabled = true
-    archiveBaseName = "jlineup-cli-lambda"
-    targetJavaVersion = JavaVersion.VERSION_17
-    mainClass = "de.otto.jlineup.cli.Main"
-    classpath = project(":jlineup-lambda").sourceSets.main.runtimeClasspath + sourceSets.main.runtimeClasspath
-    launchScript()
-}
-
 bootJar {
-    enabled = true
-    dependsOn(lambdaCLIJar)
-    launchScript()
     mainClass = "de.otto.jlineup.cli.Main"
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    from 'build/docs/javadoc'
-    archiveClassifier = 'javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
 }
 
 application {
@@ -103,121 +58,16 @@ application {
 }
 
 publishing {
-    publications { [
+    publications {
         mavenJava(MavenPublication) {
+            groupId = "de.otto"
             artifactId = 'jlineup-cli'
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
+
             pom {
                 name = 'JLineup CLI'
                 description = 'The cli version of JLineup'
-                url = 'https://github.com/otto-de/jlineup'
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'MediaMarco'
-                        name = 'Marco Geweke'
-                        email = 'marco.geweke@gmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git@github.com:otto-de/jlineup.git'
-                    developerConnection = 'scm:git@github.com:otto-de/jlineup.git'
-                    url = 'https://github.com/otto-de/jlineup'
-                }
             }
-        },
-        lambdaJava(MavenPublication) {
-            artifact lambdaCLIJar
-            artifactId = 'jlineup-cli-lambda'
-            artifact sourcesJar
-            artifact javadocJar
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-            pom {
-                name = 'JLineup CLI Lambda'
-                description = 'The cli AWS Lambda variant of JLineup'
-                url = 'https://github.com/otto-de/jlineup'
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'MediaMarco'
-                        name = 'Marco Geweke'
-                        email = 'marco.geweke@gmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git@github.com:otto-de/jlineup.git'
-                    developerConnection = 'scm:git@github.com:otto-de/jlineup.git'
-                    url = 'https://github.com/otto-de/jlineup'
-                }
-            }
-        }]
-    }
-    repositories {
-        maven {
-            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-            if (project.debugUpload) {
-                releasesRepoUrl = "$buildDir/repos/releases"
-                snapshotsRepoUrl = "$buildDir/repos/snapshots"
-            } else {
-                credentials {
-                    username = sonatypeUsername
-                    password = sonatypePassword
-                }
-            }
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
     }
-}
-
-signing {
-    sign publishing.publications.mavenJava
-    sign publishing.publications.lambdaJava
-}
-
-publishLambdaJavaPublicationToMavenRepository {
-    dependsOn signMavenJavaPublication
-    dependsOn signLambdaJavaPublication
-}
-
-publishMavenJavaPublicationToMavenRepository {
-    dependsOn signMavenJavaPublication
-    dependsOn signLambdaJavaPublication
-}
-
-publishLambdaJavaPublicationToMavenLocal {
-    dependsOn signMavenJavaPublication
-    dependsOn signLambdaJavaPublication
-}
-
-publishMavenJavaPublicationToMavenLocal {
-    dependsOn signMavenJavaPublication
-    dependsOn signLambdaJavaPublication
 }
