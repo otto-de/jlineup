@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 4.13.6 - 2025-04-14
+
+* Fix: Release 4.13.5 does not include executable jars
+
 ## Release 4.13.5 - 2025-04-11
 
 * Update: Selenium 4.31.0
