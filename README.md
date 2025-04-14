@@ -186,6 +186,9 @@ Component Summary
 Failed to process deployment: Error on building manifests: No Archiver found for the stream signature Details: No Archiver found for the stream signature
 ```
 
+![Maven Central Error Screenshot](docs/maven-central-publishing-failure.png)
+
+
 After some investigation I found out, that the problem was caused by the fact, that some JLineup jar files were executable jar files,
 which were enriched by the Spring Boot Gradle Plugin with the `launchScript()` functionality. This is obviously not supported by the new
 publishing API and leads to problems after the uploading of the bundle.zip.
@@ -205,7 +208,8 @@ I just leave this here to help others, who might face the same problem.
 
 If you have questions or proposals, please open an issue or write an email to marco DOT geweke AT otto.de
 
-###
+
+
 
 <div align="center"><img src="docs/jlineup-logo-2024.png" width="150" /></div>	
 
