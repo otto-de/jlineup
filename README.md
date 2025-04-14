@@ -173,6 +173,33 @@ a Ruby tool, but is not maintained any more.
 
 Credit for original Lineup goes to [Finn Lorbeer](http://www.lor.beer/).
 
+## Publishing to Sonatype's Central Publisher Portal was challenging
+
+This is a note regarding the migration of JLineup's publishing process because of https://central.sonatype.org/news/20250326_ossrh_sunset/.
+
+During migration from OSSRH on oss.sonatype.org to the Central Publisher Portal central.sonatype.com I faced
+a problem uploading the JLineup artifacts, that were accepted by the old publishing process without problems:
+
+```
+Component Summary
+1 failed Deployment Validation
+Failed to process deployment: Error on building manifests: No Archiver found for the stream signature Details: No Archiver found for the stream signature
+```
+
+After some investigation I found out, that the problem was caused by the fact, that some JLineup jar files were executable jar files,
+which were enriched by the Spring Boot Gradle Plugin with the 'launchScript()' functionality. This is obviously not supported by the new
+publishing API and leads to problems after the uploading of the bundle.zip.
+
+I commented the 'launchScript()' functionality in the build.gradle file and was able to publish the artifacts successfully.
+
+```
+bootJar {
+  enabled = true
+  //launchScript()
+}
+```
+
+I just leave this here to help others, who might face the same problem.
 
 ### Contact
 

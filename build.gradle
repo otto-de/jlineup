@@ -139,7 +139,7 @@ subprojects {
     if (project.name != 'jlineup-core') {
         bootJar {
             enabled = true
-            launchScript()
+            //launchScript()
         }
 
         jar {

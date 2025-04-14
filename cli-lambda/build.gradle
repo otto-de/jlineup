@@ -32,8 +32,6 @@ jar {
 }
 
 bootJar {
-    enabled = true
-    launchScript()
     mainClass = "de.otto.jlineup.cli.Main"
 }
 
