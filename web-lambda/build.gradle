@@ -1,9 +1,20 @@
-import org.springframework.boot.gradle.tasks.bundling.BootJar
 apply plugin: 'org.springframework.boot'
 
 dependencies {
-    runtimeOnly project(":jlineup-lambda")
-    runtimeOnly project(":jlineup-web")
+    runtimeOnly(project(":jlineup-lambda")) {
+        artifact {
+            name = "jlineup-lambda"
+            type = "jar"
+            classifier = "plain"
+        }
+    }
+    runtimeOnly(project(":jlineup-web")) {
+        artifact {
+            name = "jlineup-web"
+            type = "jar"
+            classifier = "plain"
+        }
+    }
 }
 
 application {

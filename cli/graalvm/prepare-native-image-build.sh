@@ -45,10 +45,10 @@ echo ""
 echo "$JAVA_HOME"
 
 cd cli
-"${GRAAL_HOME}"/bin/java -agentlib:native-image-agent=config-output-dir=graalvm -jar build/libs/jlineup-cli-4.13.5-all.jar --config graalvm/lineup_chrome_headless.json --step before || true
-"${GRAAL_HOME}"/bin/java -agentlib:native-image-agent=config-merge-dir=graalvm -jar build/libs/jlineup-cli-4.13.5-all.jar --config graalvm/lineup_chrome_headless.json --step after || true
-"${GRAAL_HOME}"/bin/java -agentlib:native-image-agent=config-merge-dir=graalvm -jar build/libs/jlineup-cli-4.13.5-all.jar --config graalvm/lineup_firefox_headless.json --step before || true
-"${GRAAL_HOME}"/bin/java -agentlib:native-image-agent=config-merge-dir=graalvm -jar build/libs/jlineup-cli-4.13.5-all.jar --config graalvm/lineup_chrome.json --step before || true
-"${GRAAL_HOME}"/bin/java -agentlib:native-image-agent=config-merge-dir=graalvm -jar build/libs/jlineup-cli-4.13.5-all.jar --url www.otto.de --step before || true
+"${GRAAL_HOME}"/bin/java -agentlib:native-image-agent=config-output-dir=graalvm -jar build/libs/jlineup-cli-4.13.6-all.jar --config graalvm/lineup_chrome_headless.json --step before || true
+"${GRAAL_HOME}"/bin/java -agentlib:native-image-agent=config-merge-dir=graalvm -jar build/libs/jlineup-cli-4.13.6-all.jar --config graalvm/lineup_chrome_headless.json --step after || true
+"${GRAAL_HOME}"/bin/java -agentlib:native-image-agent=config-merge-dir=graalvm -jar build/libs/jlineup-cli-4.13.6-all.jar --config graalvm/lineup_firefox_headless.json --step before || true
+"${GRAAL_HOME}"/bin/java -agentlib:native-image-agent=config-merge-dir=graalvm -jar build/libs/jlineup-cli-4.13.6-all.jar --config graalvm/lineup_chrome.json --step before || true
+"${GRAAL_HOME}"/bin/java -agentlib:native-image-agent=config-merge-dir=graalvm -jar build/libs/jlineup-cli-4.13.6-all.jar --url www.otto.de --step before || true
 
 #-J-Djava.security.properties=graalvm/java.security.overrides \

@@ -1,5 +1,3 @@
-import org.springframework.boot.gradle.tasks.bundling.BootJar
-
 plugins {
     id 'java-library'
 }
@@ -23,16 +21,6 @@ dependencies {
         exclude group: 'junit', module: 'junit-dep'
     }
 }
-
-//configurations {
-//    [apiElements, runtimeElements].each {
-//        it.outgoing.artifact(bootJar)
-//    }
-//}
-
-//jar {
-//    enabled = true
-//}
 
 //tasks.shadowJar {
 //    mainClassName = "de.otto.jlineup.cli.Main"
