@@ -16,7 +16,7 @@ dependencies {
     api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
     api "ch.qos.logback:logback-classic:${logbackVersion}"
     api "com.google.guava:guava:33.4.8-jre"
-    api 'com.google.code.gson:gson:2.13.0'
+    api 'com.google.code.gson:gson:2.13.1'
 
     //Update netty (selenium has older version)
     implementation "io.netty:netty-codec:${nettyVersion}"
