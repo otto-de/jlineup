@@ -1,4 +1,4 @@
-<img src="docs/jlineup-logo-2024.png" width="500" />
+<img src="docs/jlineup-repository-image.png" width="640" />
 
 ## Status
 [![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg)](https://github.com/otto-de/jlineup/actions?query=workflow%3ABuild)
