@@ -1,4 +1,4 @@
-<img src="docs/jlineup-repository-image.png" width="640" />
+<div align="center"><img src="docs/jlineup-repository-image.png" width="640" /></div>
 
 ## Status
 [![Build](https://github.com/otto-de/jlineup/workflows/Build/badge.svg)](https://github.com/otto-de/jlineup/actions?query=workflow%3ABuild)
@@ -14,7 +14,7 @@ JLineup is a tool which is useful for automated visual regression tests of web p
 It can be used as a simple command line tool or as a small web service which is controlled via REST API.
 
 JLineup shoots and compares screenshots of a web page at two consecutive points in time.
-It does a pixel by pixel comparison of both runs and generates a HTML and a JSON report.
+It does a pixel by pixel comparison of both runs and generates an HTML and a JSON report.
 Behind the scenes, it uses Selenium and a browser of choice (currently Chrome, Chromium and Firefox are supported).
 
 JLineup has no other dependencies than web browser (Firefox or Chrome/Chromium) and a JVM.

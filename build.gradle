@@ -1,10 +1,10 @@
 buildscript {
     ext {
-        springBootVersion = '3.4.4'
-        springVersion = '6.2.3'
+        springBootVersion = '3.4.5'
+        springVersion = '6.2.6'
         tomcatVersion = '10.1.40'
-        seleniumVersion = '4.31.0'
-        jacksonVersion = '2.18.3'
+        seleniumVersion = '4.32.0'
+        jacksonVersion = '2.19.0'
         nettyVersion = '4.2.0.Final'
         junitPlatformLauncherVersion = '1.12.2'
         junitJupiterVersion = '5.12.2'
@@ -13,6 +13,7 @@ buildscript {
         logbackVersion = '1.5.18'
         graalvmVersion = '24.2.1'
         mockitoCoreVersion = '5.17.0'
+        picoCliVersion = '4.7.7'
     }
 
     repositories {
