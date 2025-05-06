@@ -18,7 +18,8 @@ JLineup shoots and compares screenshots of a web page at two consecutive points 
 It does a pixel by pixel comparison of both runs and generates an HTML and a JSON report.
 Behind the scenes, it uses Selenium and a browser of choice (currently Chrome, Chromium and Firefox are supported).
 
-JLineup has no other dependencies than web browser (Firefox or Chrome/Chromium) and a JVM.
+JLineup has no other dependencies than a web browser (Firefox or Chrome/Chromium) and a JVM. If the configured
+browser is not installed, it will be downloaded automatically by JLineup.
 *Experimental*: There's also a self-contained Linux AMD64 build of the CLI version that doesn't even require a JVM.
 
 ## Example
@@ -91,12 +92,9 @@ Let's assume, this is part of a continuous integration pipeline:
 
 ## Browser Compatibility
 
-JLineup 4.13.7 was tested successfully with
-
-* Chrome 135.x
-* Firefox 137.x
-        
-Chrome or Firefox have to be installed on the system if you want to use one of them.
+JLineup 4.13.7 was tested successfully with latest Chrome and Firefox. If not installed,
+the configured browser is downloaded automatically by
+[Selenium's integrated manager](https://www.selenium.dev/documentation/selenium_manager/).
 
 ## Documentation
 
