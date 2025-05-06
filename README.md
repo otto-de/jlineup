@@ -11,7 +11,8 @@
 ## About
 
 JLineup is a tool which is useful for automated visual regression tests of web pages, especially in continuous delivery pipelines.
-It can be used as a simple command line tool or as a small web service which is controlled via REST API.
+It can be used as a simple command line tool or as a small web service which is controlled via REST API. The comparison screenshots
+can even be made in AWS Lambda functions, which makes it blazing fast, even with multiple resolutions and device emulations.
 
 JLineup shoots and compares screenshots of a web page at two consecutive points in time.
 It does a pixel by pixel comparison of both runs and generates an HTML and a JSON report.
