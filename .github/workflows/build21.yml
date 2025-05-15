@@ -23,7 +23,7 @@ on:
     - cron: '0 9 * * *'
 
 env:
-  CHROME_VERSION: 132.0.6834.83
+  CHROME_VERSION: 137.0.7151.15
 
 jobs:
   build:
@@ -63,8 +63,7 @@ jobs:
         sudo ln -s /home/runner/work/jlineup/jlineup/chrome/linux-$CHROME_VERSION/chrome-linux64/chrome /usr/bin/google-chrome
         echo "Executing: /usr/bin/google-chrome --version"
         /usr/bin/google-chrome --version
-        echo "SE_BROWSER_PATH:"
-        echo $SE_BROWSER_PATH
+        echo "SE_BROWSER_PATH: '$SE_BROWSER_PATH'"
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Dependency check and build with gradle
