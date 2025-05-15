@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       DISPLAY: :0
-      #SE_BROWSER_PATH: /usr/bin/google-chrome
+      SE_BROWSER_PATH: /usr/bin/google-chrome
       webdriver.chrome.driver: /usr/bin/chromedriver
     steps:
     - uses: actions/checkout@v4
