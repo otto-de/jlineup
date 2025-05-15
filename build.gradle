@@ -5,7 +5,7 @@ buildscript {
         tomcatVersion = '10.1.41'
         seleniumVersion = '4.32.0'
         jacksonVersion = '2.19.0'
-        nettyVersion = '4.2.0.Final'
+        nettyVersion = '4.2.1.Final'
         junitPlatformLauncherVersion = '1.12.2'
         junitJupiterVersion = '5.12.2'
         junitVintageVersion = '4.13.2'
@@ -29,7 +29,7 @@ buildscript {
 
 plugins {
     id "com.github.johnrengelman.shadow" version "8.1.1"
-    id 'org.jreleaser' version '1.17.0'
+    id 'org.jreleaser' version '1.18.0'
 }
 
 //
