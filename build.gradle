@@ -12,7 +12,7 @@ buildscript {
         slf4jVersion = '2.0.17'
         logbackVersion = '1.5.18'
         graalvmVersion = '24.2.1'
-        mockitoCoreVersion = '5.17.0'
+        mockitoCoreVersion = '5.18.0'
         picoCliVersion = '4.7.7'
     }
 
