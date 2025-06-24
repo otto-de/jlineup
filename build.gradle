@@ -5,7 +5,7 @@ buildscript {
         tomcatVersion = '10.1.42'
         seleniumVersion = '4.32.0'
         jacksonVersion = '2.19.0'
-        nettyVersion = '4.2.1.Final'
+        nettyVersion = '4.2.2.Final'
         junitPlatformLauncherVersion = '1.12.2'
         junitJupiterVersion = '5.12.2'
         junitVintageVersion = '4.13.2'
