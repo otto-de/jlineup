@@ -14,13 +14,18 @@ edison:
     description: Takes screenshots of webpages and checks for differences
 
 management:
+  endpoint:
+    metrics:
+      access: unrestricted
+    prometheus:
+      access: unrestricted
+    loggers:
+      access: unrestricted
+
   endpoints:
     web:
       exposure:
         include: '*'
-  endpoint:
-    loggers:
-      access: unrestricted
 
 spring:
   application:
