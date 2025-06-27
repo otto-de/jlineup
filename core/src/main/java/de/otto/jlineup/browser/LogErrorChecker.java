@@ -8,6 +8,8 @@ import org.openqa.selenium.logging.LogType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
@@ -32,7 +34,7 @@ public class LogErrorChecker {
             }
 
             if (jobConfig.browser.isChrome()) {
-                driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS);
+                driver.manage().timeouts().implicitlyWait(Duration.ZERO);
                 try {
                     WebElement element = driver.findElement(By.className("error-code"));
                     if (element != null && element.getText() != null) {
@@ -42,7 +44,7 @@ public class LogErrorChecker {
                 } catch (NoSuchElementException e) {
                     //ignore
                 } finally {
-                    driver.manage().timeouts().implicitlyWait(Browser.DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS, TimeUnit.SECONDS);
+                    driver.manage().timeouts().implicitlyWait(Duration.of(Browser.DEFAULT_IMPLICIT_WAIT_TIME_IN_SECONDS, ChronoUnit.SECONDS));
                 }
             }
         } else {
