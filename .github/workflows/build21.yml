@@ -23,7 +23,7 @@ on:
     - cron: '0 9 * * *'
 
 env:
-  CHROME_VERSION: 137.0.7151.15
+  CHROME_VERSION: 138.0.7204.49
 
 jobs:
   build:
