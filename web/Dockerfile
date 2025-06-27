@@ -6,7 +6,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y wget \
     && apt-get install -yf chromium-browser firefox libjpeg-progs \
-    && wget -U "jlineup-docker" -O jlineup-web.jar https://repo1.maven.org/maven2/de/otto/jlineup-web/4.13.7/jlineup-web-4.13.7.jar
+    && wget -U "jlineup-docker" -O jlineup-web.jar https://repo1.maven.org/maven2/de/otto/jlineup-web/4.13.8/jlineup-web-4.13.8.jar
 ADD docker/application.yml application.yml
 RUN apt-get remove --auto-remove perl -yf && apt-get purge --auto-remove perl -yf
 EXPOSE 8080

@@ -1,9 +1,15 @@
 # JLineup Release History
 
+## Release 4.13.8 - 2025-06-27
+
+* Feature: The web version exposed a prometheus endpoint now.
+* Update: Selenium 4.33.0
+* Update: Dependency updates
+
 ## Release 4.13.7 - 2025-05-06
 
 * Update: Selenium 4.32.0
-* Update: Dependency Updates
+* Update: Dependency updates
 
 ## Release 4.13.6 - 2025-04-14
 
