@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        awsSdkVersion = '2.31.72'
+        awsSdkVersion = '2.32.8'
         amazonAwsJavaSdkVersion = '1.12.788'
     }
 }
@@ -18,11 +18,11 @@ dependencies {
     implementation("software.amazon.awssdk:apache-client:${awsSdkVersion}")
     implementation("software.amazon.awssdk:s3:${awsSdkVersion}")
     implementation("software.amazon.awssdk:s3-transfer-manager:${awsSdkVersion}")
-    implementation("software.amazon.awssdk.crt:aws-crt:0.38.5")
+    implementation("software.amazon.awssdk.crt:aws-crt:0.38.7")
     implementation("com.amazonaws:aws-lambda-java-core:1.3.0")
-    implementation("com.amazonaws:aws-lambda-java-events:3.16.0")
+    implementation("com.amazonaws:aws-lambda-java-events:3.16.1")
     implementation("com.amazonaws:aws-java-sdk-core:${amazonAwsJavaSdkVersion}")
-    testImplementation platform("com.amazonaws:aws-xray-recorder-sdk-bom:2.18.2")
+    testImplementation platform("com.amazonaws:aws-xray-recorder-sdk-bom:2.18.3")
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-core")
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk")
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor")
