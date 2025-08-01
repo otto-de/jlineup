@@ -20,8 +20,10 @@ updates:
       include:
         - "com.amazonaws:*"
         - "software.amazon.awssdk:*"
+        - "software.amazon.awssdk.crt:*"
     groups:
       aws-dependencies:
         patterns:
           - "com.amazonaws:*"
           - "software.amazon.awssdk:*"
+          - "software.amazon.awssdk.crt:*"
