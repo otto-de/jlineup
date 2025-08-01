@@ -13,3 +13,15 @@ updates:
     ignore:
       - dependency-name: "org.apache.tomcat.embed:*"
         update-types: [ "version-update:semver-major" ]
+    cooldown:
+      semver-major-days: 7
+      semver-minor-days: 7
+      semver-patch-days: 7
+      include:
+        - "com.amazonaws:*"
+        - "software.amazon.awssdk:*"
+    groups:
+      aws-dependencies:
+        patterns:
+          - "com.amazonaws:*"
+          - "software.amazon.awssdk:*"
