@@ -27,3 +27,9 @@ updates:
           - "com.amazonaws:*"
           - "software.amazon.awssdk:*"
           - "software.amazon.awssdk.crt:*"
+      test-dependencies:
+        patterns:
+          - "org.junit.*"
+          - "junit:junit:*"
+          - "org.mockito.*"
+          - "org.hamcrest.*"
