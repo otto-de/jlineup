@@ -120,6 +120,7 @@ subprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'project-report'
     apply plugin: 'org.springframework.boot'
+    //apply plugin: 'io.spring.dependency-management'
     apply plugin: 'idea'
 
     tasks.distZip.enabled = false

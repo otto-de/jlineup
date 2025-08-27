@@ -1,12 +1,15 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+ext['selenium.version'] = "${seleniumVersion}"
 
 dependencies {
     implementation project(":jlineup-core")
-    implementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation 'org.yaml:snakeyaml:2.4'
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("de.otto.edison:edison-core:3.5.4")
     implementation("io.micrometer:micrometer-registry-prometheus:1.15.3")
 
@@ -19,29 +22,29 @@ dependencies {
     implementation("org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}")
     implementation("org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}")
 
-    testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
-    testCompileOnly 'junit:junit:4.13.2'
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformLauncherVersion}"
-    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testCompileOnly 'junit:junit'
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation('io.rest-assured:rest-assured:5.5.6')
     testImplementation("org.awaitility:awaitility:4.3.0")
 
-    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor:${springBootVersion}"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if (details.requested.group == 'org.springframework.boot') {
-            details.useVersion "${springBootVersion}"
-            details.because 'Enforce spring boot version'
-        }
-        else if (details.requested.group == 'org.springframework') {
-            details.useVersion "${springVersion}"
-            details.because 'Enforce spring boot version'
-        }
-    }
-}
+//configurations.all {
+//    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+//        if (details.requested.group == 'org.springframework.boot') {
+//            details.useVersion "${springBootVersion}"
+//            details.because 'Enforce spring boot version'
+//        }
+//        else if (details.requested.group == 'org.springframework') {
+//            details.useVersion "${springVersion}"
+//            details.because 'Enforce spring boot version'
+//        }
+//    }
+//}
 
 configurations.all {
     exclude group: 'commons-logging', module: 'commons-logging'

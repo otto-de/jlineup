@@ -1,4 +1,7 @@
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+ext['selenium.version'] = "${seleniumVersion}"
 
 dependencies {
     runtimeOnly(project(":jlineup-lambda")) {
