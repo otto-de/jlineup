@@ -13,7 +13,7 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
     implementation project(":jlineup-core")
-    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    implementation "org.slf4j:slf4j-api"
     implementation("software.amazon.awssdk:lambda:${awsSdkVersion}")
     implementation("software.amazon.awssdk:apache-client:${awsSdkVersion}")
     implementation("software.amazon.awssdk:s3:${awsSdkVersion}")
@@ -29,9 +29,9 @@ dependencies {
     testImplementation("com.amazonaws:aws-java-sdk-xray:${amazonAwsJavaSdkVersion}")
     runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.0"
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitJupiterVersion}"
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformLauncherVersion}"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitJupiterVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 }
 
 application {

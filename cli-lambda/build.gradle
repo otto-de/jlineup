@@ -1,4 +1,3 @@
-import org.springframework.boot.gradle.tasks.bundling.BootJar
 apply plugin: 'org.springframework.boot'
 
 dependencies {

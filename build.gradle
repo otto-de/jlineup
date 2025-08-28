@@ -1,18 +1,8 @@
 buildscript {
     ext {
         springBootVersion = '3.5.5'
-        springVersion = '6.2.6'
-        tomcatVersion = '10.1.44'
         seleniumVersion = '4.35.0'
-        jacksonVersion = '2.19.2'
-        nettyVersion = '4.2.4.Final'
-        junitPlatformLauncherVersion = '1.13.4'
-        junitJupiterVersion = '5.13.4'
-        junitVintageVersion = '4.13.2'
-        slf4jVersion = '2.0.17'
-        logbackVersion = '1.5.18'
         graalvmVersion = '24.2.2'
-        mockitoCoreVersion = '5.19.0'
         picoCliVersion = '4.7.7'
     }
 
@@ -23,7 +13,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath 'org.owasp:dependency-check-gradle:10.0.3'
+        classpath("org.owasp:dependency-check-gradle:10.0.3")
     }
 }
 
@@ -49,6 +39,9 @@ repositories {
 
 apply plugin: 'java'
 apply plugin: 'org.owasp.dependencycheck'
+apply plugin: 'io.spring.dependency-management'
+
+ext['selenium.version'] = "${seleniumVersion}"
 
 group = 'de.otto'
 version = jlineup_version
@@ -120,7 +113,7 @@ subprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'project-report'
     apply plugin: 'org.springframework.boot'
-    //apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'io.spring.dependency-management'
     apply plugin: 'idea'
 
     tasks.distZip.enabled = false

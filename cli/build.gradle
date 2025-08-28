@@ -11,12 +11,12 @@ dependencies {
     annotationProcessor "info.picocli:picocli-codegen:${picoCliVersion}"
     compileOnly "org.graalvm.nativeimage:svm:${graalvmVersion}"
 
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformLauncherVersion}"
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
-    testCompileOnly "junit:junit:${junitVintageVersion}"
-    testImplementation "org.hamcrest:hamcrest:3.0"
-    testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
-    testImplementation "org.mockito:mockito-core:${mockitoCoreVersion}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
+    testCompileOnly "junit:junit"
+    testImplementation "org.hamcrest:hamcrest"
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.mockito:mockito-core"
     testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
         exclude group: 'junit', module: 'junit-dep'
     }

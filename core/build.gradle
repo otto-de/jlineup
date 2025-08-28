@@ -3,55 +3,55 @@ plugins {
 }
 
 dependencies {
-    implementation("org.seleniumhq.selenium:selenium-java:${seleniumVersion}") {
+    implementation("org.seleniumhq.selenium:selenium-java") {
         exclude module: "selenium-edge-driver"
         exclude module: "selenium-ie-driver"
         exclude module: "selenium-opera-driver"
         exclude module: "htmlunit"
     }
 
-    api "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
-    api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
-    api "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:${jacksonVersion}"
-    api "ch.qos.logback:logback-classic:${logbackVersion}"
+    api "com.fasterxml.jackson.core:jackson-core"
+    api "com.fasterxml.jackson.core:jackson-annotations"
+    api "com.fasterxml.jackson.core:jackson-databind"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+    api "ch.qos.logback:logback-classic"
     api "com.google.guava:guava:33.4.8-jre"
-    api 'com.google.code.gson:gson:2.13.1'
+    api "com.google.code.gson:gson"
 
     //Update netty (selenium has older version)
-    implementation "io.netty:netty-codec:${nettyVersion}"
-    implementation "io.netty:netty-codec-http:${nettyVersion}"
-    implementation "io.netty:netty-codec-http2:${nettyVersion}"
-    implementation "io.netty:netty-handler:${nettyVersion}"
-    implementation "io.netty:netty-codec-socks:${nettyVersion}"
-    implementation "io.netty:netty-handler-proxy:${nettyVersion}"
-    implementation "io.netty:netty-transport-native-epoll:${nettyVersion}"
-    implementation "io.netty:netty-transport-native-kqueue:${nettyVersion}"
+    implementation "io.netty:netty-codec"
+    implementation "io.netty:netty-codec-http"
+    implementation "io.netty:netty-codec-http2"
+    implementation "io.netty:netty-handler"
+    implementation "io.netty:netty-codec-socks"
+    implementation "io.netty:netty-handler-proxy"
+    implementation "io.netty:netty-transport-native-epoll"
+    implementation "io.netty:netty-transport-native-kqueue"
 
-    implementation 'org.apache.httpcomponents.client5:httpclient5:5.5'
+    implementation 'org.apache.httpcomponents.client5:httpclient5'
 
-    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
-    implementation "org.codehaus.janino:janino:3.1.12"
-    implementation 'org.thymeleaf:thymeleaf:3.1.3.RELEASE'
+    implementation "org.slf4j:slf4j-api"
+    implementation "org.codehaus.janino:janino"
+    implementation 'org.thymeleaf:thymeleaf'
     implementation "org.graalvm.sdk:graal-sdk:${graalvmVersion}"
     implementation "org.reflections:reflections:0.10.2"
 
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformLauncherVersion}"
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine:${junitJupiterVersion}"
-    testCompileOnly "junit:junit:${junitVintageVersion}"
-    testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
-    testImplementation "org.hamcrest:hamcrest:3.0"
-    testImplementation "org.mockito:mockito-core:${mockitoCoreVersion}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
+    testCompileOnly "junit:junit"
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.hamcrest:hamcrest"
+    testImplementation "org.mockito:mockito-core"
     testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
         exclude group: 'junit', module: 'junit-dep'
     }
 
-    testImplementation("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
-    testImplementation("org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}")
-    testImplementation("org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}")
-    testImplementation("org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}")
-    testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf:${springBootVersion}")
-    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+    testImplementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
+    testImplementation("org.apache.tomcat.embed:tomcat-embed-el")
+    testImplementation("org.apache.tomcat.embed:tomcat-embed-websocket")
+    testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 configurations.all {
@@ -60,6 +60,9 @@ configurations.all {
 //            details.useVersion "2.13.3"
 //            details.because 'Enforce databind version'
 //        }
+        if (details.requested.group == 'org.apache.httpcomponents') {
+            details.useVersion "4.5.14"
+        }
     }
 }
 
