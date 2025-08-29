@@ -1,5 +1,12 @@
 # JLineup Release History
 
+## Release 4.14.0 - 2025-08-29
+
+* Update: Support for Chrome 137 to 139 (other versions may still work well)
+* Update: Switch to Spring Boot's dependency management for common dependencies
+* Update: Selenium 4.35.0
+* Update: Dependency updates
+
 ## Release 4.13.8 - 2025-06-27
 
 * Feature: The web version exposed a prometheus endpoint now.

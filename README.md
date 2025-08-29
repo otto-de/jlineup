@@ -92,7 +92,7 @@ Let's assume, this is part of a continuous integration pipeline:
 
 ## Browser Compatibility
 
-JLineup 4.13.8 was tested successfully with latest Chrome and Firefox. If not installed,
+JLineup 4.14.0 was tested successfully with latest Chrome and Firefox. If not installed,
 the configured browser is downloaded automatically by
 [Selenium's integrated manager](https://www.selenium.dev/documentation/selenium_manager/).
 
