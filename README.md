@@ -73,7 +73,7 @@ JLineup CLI comes as executable Java Archive. Java 17 or higher has to be availa
 
 Open a terminal and download it like this:
 
-    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.13.7/jlineup-cli-4.13.7.jar -O jlineup.jar
+    wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/4.14.0/jlineup-cli-4.14.0.jar -O jlineup.jar
 
 Then type
 
