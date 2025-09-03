@@ -32,3 +32,8 @@ spring:
     name: JLineup
   banner:
     location: classpath:banner.txt
+
+server:
+  error:
+    whitelabel:
+      enabled: false

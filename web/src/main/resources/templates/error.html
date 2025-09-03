@@ -1,0 +1,25 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head  :: head}" />
+
+<body>
+
+<div th:replace="~{fragments/navigation  :: navigation}" />
+
+
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Error page</h3>
+        </div>
+        <div class="panel-body">
+            <p>Ooooops, the requested page is not here.</p>
+            <p><a th:href="@{|${edisonManagementBasePath}/status|}">Take me to the status page!</a></p>
+        </div>
+    </div>
+</div>
+
+<span th:replace="~{fragments/footer :: footer}" />
+
+</body>
+</html>
