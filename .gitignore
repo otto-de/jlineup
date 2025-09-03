@@ -21,3 +21,5 @@ bin
 /lambda/src/main/resources/settings.properties
 .DS_Store
 /web/unknown
+unknown
+/web-lambda/unknown
