@@ -15,7 +15,7 @@ dependencies {
     api "com.fasterxml.jackson.core:jackson-databind"
     api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
     api "ch.qos.logback:logback-classic"
-    api "com.google.guava:guava:33.4.8-jre"
+    api "com.google.guava:guava:33.5.0-jre"
     api "com.google.code.gson:gson"
 
     //Update netty (selenium has older version)
