@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 4.14.1 - 2025-11-05
+
+* Dependency updates
+
 ## Release 4.14.0 - 2025-08-29
 
 * Update: Support for Chrome 137 to 139 (other versions may still work well)
