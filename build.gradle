@@ -26,7 +26,7 @@ plugins {
 //\
 ///\
 ////\
-def jlineup_version = "4.14.1"
+def jlineup_version = "4.14.2-SNAPSHOT"
 /////
 ////
 ///
@@ -81,9 +81,9 @@ jreleaser {
 
                     // Maximum number of attempts to verify state transition.
                     // Defaults to `60`.
-                    // Maven Central release can currently take up to 30 minutes, so we increased this to 180
+                    // Maven Central release can currently take up to 60 minutes, so we increased this to 360
                     //
-                    maxRetries = 180
+                    maxRetries = 360
                 }
             }
         }
