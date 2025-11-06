@@ -22,12 +22,6 @@ dependencies {
     }
 }
 
-//tasks.shadowJar {
-//    mainClassName = "de.otto.jlineup.cli.Main"
-//}
-
-sourceCompatibility = JavaVersion.VERSION_17
-
 project.afterEvaluate {
     tasks.withType(JavaCompile) {
         def version = sourceCompatibility

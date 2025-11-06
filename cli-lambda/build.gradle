@@ -18,11 +18,11 @@ dependencies {
 }
 
 tasks.bootDistZip {
-    archiveBaseName = project.archivesBaseName
+    archiveBaseName = project.name
 }
 
 tasks.bootDistTar {
-    archiveBaseName = project.archivesBaseName
+    archiveBaseName = project.name
 }
 
 test {

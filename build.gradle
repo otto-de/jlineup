@@ -8,8 +8,8 @@ buildscript {
 
     repositories {
         mavenCentral()
-        maven { url "https://repo.spring.io/snapshot" }
-        maven { url "https://repo.spring.io/milestone" }
+        maven { url = "https://repo.spring.io/snapshot" }
+        maven { url = "https://repo.spring.io/milestone" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -120,11 +120,11 @@ subprojects {
     tasks.distTar.enabled = false
 
     tasks.bootDistZip {
-        archiveBaseName = project.archivesBaseName
+        archiveBaseName = project.name
     }
 
     tasks.bootDistTar {
-        archiveBaseName = project.archivesBaseName
+        archiveBaseName = project.name
     }
 
     if (project.name != 'jlineup-core') {
@@ -210,8 +210,10 @@ subprojects {
         options.compilerArgs.addAll(["-Aproject=${project.group}/${project.name}"])
     }
 
-    targetCompatibility = JavaVersion.VERSION_17
-    sourceCompatibility = JavaVersion.VERSION_17
+    java {
+        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_17
+    }
 
     project.afterEvaluate {
         tasks.withType(JavaCompile) {
