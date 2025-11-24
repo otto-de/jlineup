@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        awsSdkVersion = '2.38.4'
+        awsSdkVersion = '2.38.7'
         amazonAwsJavaSdkVersion = '1.12.793'
     }
 }
