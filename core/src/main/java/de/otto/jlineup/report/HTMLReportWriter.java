@@ -20,7 +20,7 @@ public class HTMLReportWriter {
 
     private final FileService fileService;
 
-    ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+    final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
     TemplateEngine templateEngine = new TemplateEngine();
 
     public HTMLReportWriter(FileService fileService) {
@@ -29,7 +29,7 @@ public class HTMLReportWriter {
         templateResolver.setTemplateMode("HTML");
         templateResolver.setPrefix("templates/");
         templateResolver.setSuffix(".html");
-        templateEngine = new TemplateEngine();
+        //templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
     }
 

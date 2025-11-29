@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 4.14.2 - 2025-11-29
+* Feature: Add option to define scroll distance per screenshot in url config via `scroll-distance-factor` field.
+           The factor is a value between 0 and 1 that is multiplied with the viewport height to define the scroll distance.
+           The default that matches the known behavior is `1.0`. A value of or near `0`will lead to a near infinite
+           number of screenshots until the timeout hits, so beware!
+
 ## Release 4.14.1 - 2025-11-05
 
 * Dependency updates

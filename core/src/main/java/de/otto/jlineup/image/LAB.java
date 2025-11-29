@@ -3,20 +3,20 @@ package de.otto.jlineup.image;
 /**
  * Copyright (c) 2011, Stanford University
  * All rights reserved.
- *
+ * <p>
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * <p>
  * * Redistributions of source code must retain the above copyright notice, this
  *   list of conditions and the following disclaimer.
- *
+ * <p>
  * * Redistributions in binary form must reproduce the above copyright notice,
  *   this list of conditions and the following disclaimer in the documentation
  *   and/or other materials provided with the distribution.
- *
+ * <p>
  * * The name Stanford University may not be used to endorse or promote products
  *   derived from this software without specific prior written permission.
- *
+ * <p>
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -31,9 +31,9 @@ package de.otto.jlineup.image;
 
 public class LAB
 {
-    public double L;
-    public double a;
-    public double b;
+    public final double L;
+    public final double a;
+    public final double b;
     public int c = -1;
     public double[] w;
     public double s = -1;

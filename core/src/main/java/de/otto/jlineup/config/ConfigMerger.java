@@ -35,35 +35,36 @@ public class ConfigMerger {
                     LOG.info("Merging merge config for '{}' into '{}'", mergeUrlConfigEntry.getKey(), mainUrlConfigEntry.getKey());
                     UrlConfig mergeUrlConfig = mergeUrlConfigEntry.getValue();
                     UrlConfig.Builder urlConfigBuilder = UrlConfig.urlConfigBuilder();
-                    urlConfigBuilder.withUrl(mainUrlConfig.url);
-                    urlConfigBuilder.withAlternatingCookies(mergeAndOnlyKeepDistinct(mainUrlConfig.alternatingCookies, mergeUrlConfig.alternatingCookies));
-                    urlConfigBuilder.withCleanupPaths(merge(mainUrlConfig.cleanupPaths, mergeUrlConfig.cleanupPaths));
-                    urlConfigBuilder.withCookies(mergeAndOnlyKeepDistinct(mainUrlConfig.cookies, mergeUrlConfig.cookies));
-                    urlConfigBuilder.withDevices(mergeAndOnlyKeepDistinct(mainUrlConfig.devices, mergeUrlConfig.devices));
-                    urlConfigBuilder.withEnvMapping(merge(mainUrlConfig.envMapping, mergeUrlConfig.envMapping));
-                    urlConfigBuilder.withFailIfSelectorsNotFound(mainUrlConfig.failIfSelectorsNotFound || mergeUrlConfig.failIfSelectorsNotFound);
-                    urlConfigBuilder.withHideImages(mainUrlConfig.hideImages || mergeUrlConfig.hideImages);
-                    urlConfigBuilder.withHttpCheck(mainUrlConfig.httpCheck != DEFAULT_HTTP_CHECK_CONFIG ? mainUrlConfig.httpCheck : mergeUrlConfig.httpCheck);
-                    urlConfigBuilder.withIgnoreAntiAliasing(mainUrlConfig.ignoreAntiAliasing || mergeUrlConfig.ignoreAntiAliasing);
-                    urlConfigBuilder.withJavaScript(mainUrlConfig.javaScript == null && mergeUrlConfig.javaScript == null ? null : "" + mainUrlConfig.javaScript + ";" + mergeUrlConfig.javaScript);
-                    urlConfigBuilder.withLocalStorage(merge(mainUrlConfig.localStorage, mergeUrlConfig.localStorage));
-                    urlConfigBuilder.withMaxAntiAliasColorDistance(mainUrlConfig.maxAntiAliasColorDistance != DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE ? mainUrlConfig.maxAntiAliasColorDistance : mergeUrlConfig.maxAntiAliasColorDistance);
-                    urlConfigBuilder.withMaxColorDistance(mainUrlConfig.maxColorDistance != DEFAULT_MAX_COLOR_DISTANCE ? mainUrlConfig.maxColorDistance : mergeUrlConfig.maxColorDistance);
-                    urlConfigBuilder.withMaxDiff(mainUrlConfig.maxDiff != DEFAULT_MAX_DIFF ? mainUrlConfig.maxDiff : mergeUrlConfig.maxDiff);
-                    urlConfigBuilder.withMaxScrollHeight(mainUrlConfig.maxScrollHeight != DEFAULT_MAX_SCROLL_HEIGHT ? mainUrlConfig.maxScrollHeight : mergeUrlConfig.maxScrollHeight);
-                    urlConfigBuilder.withPaths(mergeAndOnlyKeepDistinct(mainUrlConfig.paths, mergeUrlConfig.paths));
-                    urlConfigBuilder.withRemoveSelectors(merge(mainUrlConfig.removeSelectors, mergeUrlConfig.removeSelectors));
-                    urlConfigBuilder.withSessionStorage(merge(mainUrlConfig.sessionStorage, mergeUrlConfig.sessionStorage));
-                    urlConfigBuilder.withSetupPaths(merge(mainUrlConfig.setupPaths, mergeUrlConfig.setupPaths));
-                    urlConfigBuilder.withStrictColorComparison(mainUrlConfig.strictColorComparison || mergeUrlConfig.strictColorComparison);
-                    urlConfigBuilder.withWaitAfterPageLoad(mainUrlConfig.waitAfterPageLoad != DEFAULT_WAIT_AFTER_PAGE_LOAD ? mainUrlConfig.waitAfterPageLoad : mergeUrlConfig.waitAfterPageLoad);
-                    urlConfigBuilder.withWaitAfterScroll(mainUrlConfig.waitAfterScroll != DEFAULT_WAIT_AFTER_SCROLL ? mainUrlConfig.waitAfterScroll : mergeUrlConfig.waitAfterScroll);
-                    urlConfigBuilder.withWaitForFontsTime(mainUrlConfig.waitForFontsTime != DEFAULT_WAIT_FOR_FONTS_TIME ? mainUrlConfig.waitForFontsTime : mergeUrlConfig.waitForFontsTime);
-                    urlConfigBuilder.withWaitForNoAnimationAfterScroll(mainUrlConfig.waitForNoAnimationAfterScroll != DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL ? mainUrlConfig.waitForNoAnimationAfterScroll : mergeUrlConfig.waitForNoAnimationAfterScroll);
-                    urlConfigBuilder.withWaitForSelectors(merge(mainUrlConfig.waitForSelectors, mergeUrlConfig.waitForSelectors));
-                    urlConfigBuilder.withWaitForSelectorsTimeout(mainUrlConfig.waitForSelectorsTimeout != DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT ? mainUrlConfig.waitForSelectorsTimeout : mergeUrlConfig.waitForSelectorsTimeout);
-                    urlConfigBuilder.withWarmupBrowserCacheTime(mainUrlConfig.warmupBrowserCacheTime != DEFAULT_WARMUP_BROWSER_CACHE_TIME ? mainUrlConfig.warmupBrowserCacheTime : mergeUrlConfig.warmupBrowserCacheTime);
-                    urlConfigBuilder.withWindowWidths(mergeAndOnlyKeepDistinct(mainUrlConfig.windowWidths, mergeUrlConfig.windowWidths));
+                    urlConfigBuilder.withUrl(mainUrlConfig.url)
+                    .withAlternatingCookies(mergeAndOnlyKeepDistinct(mainUrlConfig.alternatingCookies, mergeUrlConfig.alternatingCookies))
+                    .withCleanupPaths(merge(mainUrlConfig.cleanupPaths, mergeUrlConfig.cleanupPaths))
+                    .withCookies(mergeAndOnlyKeepDistinct(mainUrlConfig.cookies, mergeUrlConfig.cookies))
+                    .withDevices(mergeAndOnlyKeepDistinct(mainUrlConfig.devices, mergeUrlConfig.devices))
+                    .withEnvMapping(merge(mainUrlConfig.envMapping, mergeUrlConfig.envMapping))
+                    .withFailIfSelectorsNotFound(mainUrlConfig.failIfSelectorsNotFound || mergeUrlConfig.failIfSelectorsNotFound)
+                    .withHideImages(mainUrlConfig.hideImages || mergeUrlConfig.hideImages)
+                    .withHttpCheck(mainUrlConfig.httpCheck != DEFAULT_HTTP_CHECK_CONFIG ? mainUrlConfig.httpCheck : mergeUrlConfig.httpCheck)
+                    .withIgnoreAntiAliasing(mainUrlConfig.ignoreAntiAliasing || mergeUrlConfig.ignoreAntiAliasing)
+                    .withJavaScript(mainUrlConfig.javaScript == null && mergeUrlConfig.javaScript == null ? null : "" + mainUrlConfig.javaScript + ";" + mergeUrlConfig.javaScript)
+                    .withLocalStorage(merge(mainUrlConfig.localStorage, mergeUrlConfig.localStorage))
+                    .withMaxAntiAliasColorDistance(mainUrlConfig.maxAntiAliasColorDistance != DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE ? mainUrlConfig.maxAntiAliasColorDistance : mergeUrlConfig.maxAntiAliasColorDistance)
+                    .withMaxColorDistance(mainUrlConfig.maxColorDistance != DEFAULT_MAX_COLOR_DISTANCE ? mainUrlConfig.maxColorDistance : mergeUrlConfig.maxColorDistance)
+                    .withMaxDiff(mainUrlConfig.maxDiff != DEFAULT_MAX_DIFF ? mainUrlConfig.maxDiff : mergeUrlConfig.maxDiff)
+                    .withMaxScrollHeight(mainUrlConfig.maxScrollHeight != DEFAULT_MAX_SCROLL_HEIGHT ? mainUrlConfig.maxScrollHeight : mergeUrlConfig.maxScrollHeight)
+                    .withScrollDistanceFactor(mainUrlConfig.scrollDistanceFactor != DEFAULT_SCROLL_DISTANCE_FACTOR ? mainUrlConfig.scrollDistanceFactor : mergeUrlConfig.scrollDistanceFactor)
+                    .withPaths(mergeAndOnlyKeepDistinct(mainUrlConfig.paths, mergeUrlConfig.paths))
+                    .withRemoveSelectors(merge(mainUrlConfig.removeSelectors, mergeUrlConfig.removeSelectors))
+                    .withSessionStorage(merge(mainUrlConfig.sessionStorage, mergeUrlConfig.sessionStorage))
+                    .withSetupPaths(merge(mainUrlConfig.setupPaths, mergeUrlConfig.setupPaths))
+                    .withStrictColorComparison(mainUrlConfig.strictColorComparison || mergeUrlConfig.strictColorComparison)
+                    .withWaitAfterPageLoad(mainUrlConfig.waitAfterPageLoad != DEFAULT_WAIT_AFTER_PAGE_LOAD ? mainUrlConfig.waitAfterPageLoad : mergeUrlConfig.waitAfterPageLoad)
+                    .withWaitAfterScroll(mainUrlConfig.waitAfterScroll != DEFAULT_WAIT_AFTER_SCROLL ? mainUrlConfig.waitAfterScroll : mergeUrlConfig.waitAfterScroll)
+                    .withWaitForFontsTime(mainUrlConfig.waitForFontsTime != DEFAULT_WAIT_FOR_FONTS_TIME ? mainUrlConfig.waitForFontsTime : mergeUrlConfig.waitForFontsTime)
+                    .withWaitForNoAnimationAfterScroll(mainUrlConfig.waitForNoAnimationAfterScroll != DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL ? mainUrlConfig.waitForNoAnimationAfterScroll : mergeUrlConfig.waitForNoAnimationAfterScroll)
+                    .withWaitForSelectors(merge(mainUrlConfig.waitForSelectors, mergeUrlConfig.waitForSelectors))
+                    .withWaitForSelectorsTimeout(mainUrlConfig.waitForSelectorsTimeout != DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT ? mainUrlConfig.waitForSelectorsTimeout : mergeUrlConfig.waitForSelectorsTimeout)
+                    .withWarmupBrowserCacheTime(mainUrlConfig.warmupBrowserCacheTime != DEFAULT_WARMUP_BROWSER_CACHE_TIME ? mainUrlConfig.warmupBrowserCacheTime : mergeUrlConfig.warmupBrowserCacheTime)
+                    .withWindowWidths(mergeAndOnlyKeepDistinct(mainUrlConfig.windowWidths, mergeUrlConfig.windowWidths));
 
                     mainUrlConfig = urlConfigBuilder.build();
                 }

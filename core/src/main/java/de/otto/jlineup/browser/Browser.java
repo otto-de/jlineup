@@ -47,6 +47,7 @@ import static de.otto.jlineup.JLineupRunner.LOGFILE_NAME;
 import static de.otto.jlineup.JLineupRunner.REPORT_LOG_NAME_KEY;
 import static de.otto.jlineup.browser.BrowserUtils.RANDOM_FOLDER_PLACEHOLDER;
 import static de.otto.jlineup.browser.BrowserUtils.buildUrl;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_SCROLL_DISTANCE_FACTOR;
 import static java.lang.invoke.MethodHandles.lookup;
 import static java.util.stream.Collectors.groupingBy;
 
@@ -446,16 +447,22 @@ public class Browser implements AutoCloseable {
         viewportHeight = validateViewportHeight(viewportHeight);
         LOG.debug("Viewport height of browser window: {}", viewportHeight);
 
+        //Calculate scroll distance
+        int scrollDistance = viewportHeight;
+        if (screenshotContext.urlConfig.scrollDistanceFactor != DEFAULT_SCROLL_DISTANCE_FACTOR) {
+            scrollDistance = Math.round(screenshotContext.urlConfig.scrollDistanceFactor * viewportHeight);
+        }
+        LOG.debug("Scroll distance will be: {} (client height * scroll distance factor: {} * {})", scrollDistance, viewportHeight, screenshotContext.urlConfig.scrollDistanceFactor);
+
         //
         // Start with screenshots
         //
-
-        for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += viewportHeight) {
-            LOG.debug("Scrolling info: yPosition: {}, pageHeight: {}, maxScrollHeight: {}, viewPortHeight: {}", yPosition, pageHeight, screenshotContext.urlConfig.maxScrollHeight, viewportHeight);
+        for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += scrollDistance) {
+            LOG.debug("Scrolling info: yPosition: {}, pageHeight: {}, maxScrollHeight: {}, viewPortHeight: {}", yPosition, pageHeight, screenshotContext.urlConfig.maxScrollHeight, scrollDistance);
             BufferedImage currentScreenshot = takeScreenshot();
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
 
-            if (yPosition + viewportHeight > pageHeight && GlobalOptions.getOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT).equalsIgnoreCase("true")) {
+            if (scrollDistance == viewportHeight && yPosition + viewportHeight > pageHeight && GlobalOptions.getOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT).equalsIgnoreCase("true")) {
                 LOG.debug("Last screenshot. Will crop image. Page height: {}, yPosition: {}, viewportHeight: {}", pageHeight, yPosition, viewportHeight);
 
                 BufferedImage croppedAndFilledScreenshot = new BufferedImage(currentScreenshot.getWidth(), currentScreenshot.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
@@ -470,8 +477,8 @@ public class Browser implements AutoCloseable {
             fileService.writeScreenshot(screenshotContext,
                     currentScreenshot, yPosition);
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
-            scrollTo(yPosition + viewportHeight);
-            LOG.debug("Scroll by {} done", viewportHeight);
+            scrollTo(yPosition + scrollDistance);
+            LOG.debug("Scroll by {} done", scrollDistance);
 
             if (screenshotContext.urlConfig.waitAfterScroll > 0) {
                 LOG.debug("Waiting for {} seconds (wait after scroll).", screenshotContext.urlConfig.waitAfterScroll);

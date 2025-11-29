@@ -155,6 +155,40 @@ public class BrowserTest {
     }
 
     @Test
+    public void shouldScrollWithScrollDistanceFactor() throws Exception {
+        //given
+        JobConfig jobConfig = jobConfigBuilder()
+                .withUrls(of("otto", urlConfigBuilder()
+                        .withUrl("https://www.otto.de")
+                        .withDevices(List.of(DeviceConfig.deviceConfigBuilder().build()))
+                        .withPath("/")
+                        .withScrollDistanceFactor(0.1f)
+                        .withDevices(List.of(DeviceConfig.deviceConfigBuilder()
+                                        .withWidth(1000)
+                                        .withHeight(673)
+                                .build()))
+                        .build()))
+                .withBrowser(CHROME).build().insertDefaults();
+
+        testee.close();
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
+
+        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenReturn(673L);
+        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(673L);
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenReturn(new File(getFilePath("screenshots/ideaVertical.png")));
+        when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1d);
+
+        //when
+        testee.runSetupAndTakeScreenshots();
+
+        //then
+        for (int i = 1; i <= 10; i++) {
+            verify(webDriverMock, times(1)).executeScript(String.format(JS_SCROLL_TO_CALL, 67 * i));
+        }
+
+    }
+
+    @Test
     public void shouldDeleteTheBrowserProfileDirectoryForChrome() throws Exception {
         //given
         JobConfig jobConfig = jobConfigBuilder()

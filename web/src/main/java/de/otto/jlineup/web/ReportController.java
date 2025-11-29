@@ -22,10 +22,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 public class ReportController {
 
-    private JLineupService jLineupService;
-    private JLineupWebProperties jLineupWebProperties;
+    private final JLineupService jLineupService;
+    private final JLineupWebProperties jLineupWebProperties;
 
-    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm").withZone(ZoneId.systemDefault());
+    private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm").withZone(ZoneId.systemDefault());
 
     @Autowired
     public ReportController(JLineupService jLineupService, JLineupWebProperties jLineupWebProperties) {
@@ -77,7 +77,7 @@ public class ReportController {
     public static class Report {
 
         private String id;
-        private String name;
+        private final String name;
         private String reportUrl;
         private String logUrl;
         private String duration;

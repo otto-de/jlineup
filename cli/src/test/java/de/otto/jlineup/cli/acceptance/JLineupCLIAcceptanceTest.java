@@ -44,12 +44,12 @@ public class JLineupCLIAcceptanceTest {
 
     private static final String CWD = Paths.get(".").toAbsolutePath().normalize().toString();
 
-    private PrintStream stdout = System.out;
-    private PrintStream stderr = System.err;
+    private final PrintStream stdout = System.out;
+    private final PrintStream stderr = System.err;
 
     private Path tempDirectory;
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Before
     public void setUpStreams() {

@@ -52,6 +52,7 @@ public final class JobConfig  {
     static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
     static final float DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
     static final float DEFAULT_WAIT_AFTER_SCROLL = 0;
+    public static final float DEFAULT_SCROLL_DISTANCE_FACTOR = 1.0f;
     static final float DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL = 0;
     static final float DEFAULT_WAIT_FOR_FONTS_TIME = 0;
     public static final double DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE = 2.3d;
@@ -541,7 +542,7 @@ public final class JobConfig  {
 
     /**
      * This removes all cookie values from the config (used to write the config to the report)
-     * @return
+     * @return a sanitized JobConfig
      */
     public JobConfig sanitize() {
         return JobConfig.copyOfBuilder(this)

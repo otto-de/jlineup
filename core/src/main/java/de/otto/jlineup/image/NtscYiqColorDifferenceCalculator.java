@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
  *
  * Logic converted from https://github.com/mapbox/pixelmatch, which has an ISC License
  *
- * Idea taken from: http://www.progmat.uaem.mx:8080/artVol2Num2/Articulo3Vol2Num2.pdf
+ * Idea taken from: www.progmat.uaem.mx:8080/artVol2Num2/Articulo3Vol2Num2.pdf
  *
  * ISC License
  *

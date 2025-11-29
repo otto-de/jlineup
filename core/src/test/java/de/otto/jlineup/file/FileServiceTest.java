@@ -35,7 +35,7 @@ public class FileServiceTest {
     private JobConfig jobConfig;
 
     @Rule
-    public TemporaryFolder tempDir = new TemporaryFolder();
+    public final TemporaryFolder tempDir = new TemporaryFolder();
 
     private String tempDirPath;
     private String writeScreenshotTestPath;

@@ -39,6 +39,8 @@ public class UrlConfig {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public final float waitForNoAnimationAfterScroll;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    public final float scrollDistanceFactor;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public final float warmupBrowserCacheTime;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public final float waitForFontsTime;
@@ -77,6 +79,7 @@ public class UrlConfig {
         this.waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
         this.waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
         this.waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
+        this.scrollDistanceFactor = DEFAULT_SCROLL_DISTANCE_FACTOR;
         this.warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
         this.waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
         this.javaScript = null;
@@ -109,6 +112,7 @@ public class UrlConfig {
         waitAfterPageLoad = builder.waitAfterPageLoad;
         waitAfterScroll = builder.waitAfterScroll;
         waitForNoAnimationAfterScroll = builder.waitForNoAnimationAfterScroll;
+        scrollDistanceFactor = builder.scrollDistanceFactor;
         warmupBrowserCacheTime = builder.warmupBrowserCacheTime;
         waitForFontsTime = builder.waitForFontsTime;
         javaScript = builder.javaScript;
@@ -200,6 +204,10 @@ public class UrlConfig {
         return waitForNoAnimationAfterScroll;
     }
 
+    public float getScrollDistanceFactor() {
+        return scrollDistanceFactor;
+    }
+
     public float getWarmupBrowserCacheTime() {
         return warmupBrowserCacheTime;
     }
@@ -286,6 +294,7 @@ public class UrlConfig {
         builder.waitAfterPageLoad = copy.waitAfterPageLoad;
         builder.waitAfterScroll = copy.waitAfterScroll;
         builder.waitForNoAnimationAfterScroll = copy.waitForNoAnimationAfterScroll;
+        builder.scrollDistanceFactor = copy.scrollDistanceFactor;
         builder.warmupBrowserCacheTime = copy.warmupBrowserCacheTime;
         builder.waitForFontsTime = copy.waitForFontsTime;
         builder.javaScript = copy.javaScript;
@@ -334,6 +343,7 @@ public class UrlConfig {
         private float waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
         private float waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
         private float waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
+        private float scrollDistanceFactor = DEFAULT_SCROLL_DISTANCE_FACTOR;
         private float warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
         private float waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
         private String javaScript;
@@ -451,6 +461,11 @@ public class UrlConfig {
             return this;
         }
 
+        public Builder withScrollDistanceFactor(float val) {
+            scrollDistanceFactor = val;
+            return this;
+        }
+
         public Builder withWarmupBrowserCacheTime(float val) {
             warmupBrowserCacheTime = val;
             return this;
@@ -541,6 +556,7 @@ public class UrlConfig {
                 ", waitAfterPageLoad=" + waitAfterPageLoad +
                 ", waitAfterScroll=" + waitAfterScroll +
                 ", waitForNoAnimationAfterScroll=" + waitForNoAnimationAfterScroll +
+                ", scrollDistanceFactor=" + scrollDistanceFactor +
                 ", warmupBrowserCacheTime=" + warmupBrowserCacheTime +
                 ", waitForFontsTime=" + waitForFontsTime +
                 ", javaScript='" + javaScript + '\'' +
@@ -559,15 +575,14 @@ public class UrlConfig {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UrlConfig urlConfig = (UrlConfig) o;
-        return Double.compare(maxDiff, urlConfig.maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(waitAfterPageLoad, urlConfig.waitAfterPageLoad) == 0 && Float.compare(waitAfterScroll, urlConfig.waitAfterScroll) == 0 && Float.compare(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) == 0 && Float.compare(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime) == 0 && Float.compare(waitForFontsTime, urlConfig.waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(waitForSelectorsTimeout, urlConfig.waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && Double.compare(maxAntiAliasColorDistance, urlConfig.maxAntiAliasColorDistance) == 0 && strictColorComparison == urlConfig.strictColorComparison && Double.compare(maxColorDistance, urlConfig.maxColorDistance) == 0 && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors);
+        return Double.compare(maxDiff, urlConfig.maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(waitAfterPageLoad, urlConfig.waitAfterPageLoad) == 0 && Float.compare(waitAfterScroll, urlConfig.waitAfterScroll) == 0 && Float.compare(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) == 0 && Float.compare(scrollDistanceFactor, urlConfig.scrollDistanceFactor) == 0 && Float.compare(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime) == 0 && Float.compare(waitForFontsTime, urlConfig.waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(waitForSelectorsTimeout, urlConfig.waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && Double.compare(maxAntiAliasColorDistance, urlConfig.maxAntiAliasColorDistance) == 0 && strictColorComparison == urlConfig.strictColorComparison && Double.compare(maxColorDistance, urlConfig.maxColorDistance) == 0 && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, maxAntiAliasColorDistance, strictColorComparison, maxColorDistance);
+        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, scrollDistanceFactor, warmupBrowserCacheTime, waitForFontsTime, javaScript, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, maxAntiAliasColorDistance, strictColorComparison, maxColorDistance);
     }
 
 }

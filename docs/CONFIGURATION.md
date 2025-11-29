@@ -383,6 +383,27 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Example: `"wait-after-scroll": 1.1`
  
 ---
+
+### `scroll-distance-factor`
+
+ This factor is used to calculate the distance that is scrolled vertically before each screenshot. The formula is:
+ 
+ `scroll-distance = viewport-height * scroll-distance-factor`
+ 
+ So with a viewport height of 800 pixels and a scroll-distance-factor of 0.5, JLineup would scroll 400 pixels
+ in each step and take screenshots until the maximum scroll height or the end of the page is reached.
+ 
+ This can be helpful if your site loads or renders content dynamically during scrolling, and you want to have 
+ more granular scrolling steps.
+ 
+ * Scope: Site
+ * Type: Float
+ * Default: `1.0`
+ * Example: `"scroll-distance-factor": 0.5`
+ 
+ Since: 4.14.2
+
+---
  
 ### `warmup-browser-cache-time`
 

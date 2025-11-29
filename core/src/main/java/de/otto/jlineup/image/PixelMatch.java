@@ -10,17 +10,17 @@ import static java.lang.invoke.MethodHandles.lookup;
 
 /**
  * This class is ported from pixelmatch by mapbox.
- *
+ * <p>
  * This is pixelmatch's license:
- *
+ * <p>
  * ISC License
- *
+ * <p>
  * Copyright (c) 2019, Mapbox
- *
+ * <p>
  * Permission to use, copy, modify, and/or distribute this software for any purpose
  * with or without fee is hereby granted, provided that the above copyright notice
  * and this permission notice appear in all copies.
- *
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
  * REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,

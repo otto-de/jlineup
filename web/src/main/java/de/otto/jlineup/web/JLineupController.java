@@ -32,7 +32,7 @@ public class JLineupController {
 
     private final JLineupWebProperties properties;
 
-    private AtomicReference<String> currentExampleRun = new AtomicReference<>();
+    private final AtomicReference<String> currentExampleRun = new AtomicReference<>();
 
     @Autowired
     public JLineupController(JLineupService jLineupService, JLineupWebProperties properties) {
