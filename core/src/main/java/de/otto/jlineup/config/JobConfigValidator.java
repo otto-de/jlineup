@@ -31,7 +31,7 @@ public class JobConfigValidator {
             String url = urlConfig.url;
 
             //Check browser window widths
-            for (Integer width : (urlConfig.windowWidths != null ? urlConfig.windowWidths : urlConfig.devices.stream().map(d -> d.width).collect(Collectors.toList()))) {
+            for (Integer width : (urlConfig.windowWidths != null ? urlConfig.windowWidths : urlConfig.devices.stream().map(d -> d.width).toList())) {
                 if (width < 10 || width > 10000) {
                     throw new ValidationError(String.format("One of the configured window widths for %s is invalid: %d. Valid values are between 10 and 10000", url, width));
                 }
@@ -51,6 +51,11 @@ public class JobConfigValidator {
             //Check max scroll height
             if (urlConfig.maxScrollHeight < 0) {
                 throw new ValidationError(String.format("Configured max scroll height (%d) for %s must not be negative)", urlConfig.maxScrollHeight, url));
+            }
+
+            //Scroll distance factor should be between 0.01 and 1.0
+            if (urlConfig.scrollDistanceFactor < 0.01 || urlConfig.scrollDistanceFactor > 1.0) {
+                throw new ValidationError(String.format("Configured scroll distance factor (%f) for %s is invalid. Valid values are between 0.01 and 1.0", urlConfig.scrollDistanceFactor, url));
             }
         }
 
