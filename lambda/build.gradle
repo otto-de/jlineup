@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        awsSdkVersion = '2.40.14'
-        amazonAwsJavaSdkVersion = '1.12.796'
+        awsSdkVersion = '2.41.4'
+        amazonAwsJavaSdkVersion = '1.12.797'
     }
 }
 
@@ -21,7 +21,7 @@ dependencies {
     implementation("software.amazon.awssdk:sso:${awsSdkVersion}")
     implementation("software.amazon.awssdk:ssooidc:${awsSdkVersion}")
     implementation("software.amazon.awssdk:sts:${awsSdkVersion}")
-    implementation("software.amazon.awssdk.crt:aws-crt:0.41.0")
+    implementation("software.amazon.awssdk.crt:aws-crt:0.42.1")
     implementation("com.amazonaws:aws-lambda-java-core:1.4.0")
     implementation("com.amazonaws:aws-lambda-java-events:3.16.1")
     implementation("com.amazonaws:aws-java-sdk-core:${amazonAwsJavaSdkVersion}")
