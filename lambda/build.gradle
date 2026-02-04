@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        awsSdkVersion = '2.39.1'
-        amazonAwsJavaSdkVersion = '1.12.793'
+        awsSdkVersion = '2.41.15'
+        amazonAwsJavaSdkVersion = '1.12.797'
     }
 }
 
@@ -21,7 +21,7 @@ dependencies {
     implementation("software.amazon.awssdk:sso:${awsSdkVersion}")
     implementation("software.amazon.awssdk:ssooidc:${awsSdkVersion}")
     implementation("software.amazon.awssdk:sts:${awsSdkVersion}")
-    implementation("software.amazon.awssdk.crt:aws-crt:0.40.0")
+    implementation("software.amazon.awssdk.crt:aws-crt:0.42.2")
     implementation("com.amazonaws:aws-lambda-java-core:1.4.0")
     implementation("com.amazonaws:aws-lambda-java-events:3.16.1")
     implementation("com.amazonaws:aws-java-sdk-core:${amazonAwsJavaSdkVersion}")
@@ -30,7 +30,7 @@ dependencies {
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk")
     testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor")
     testImplementation("com.amazonaws:aws-java-sdk-xray:${amazonAwsJavaSdkVersion}")
-    runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.0"
+    runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.1"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
