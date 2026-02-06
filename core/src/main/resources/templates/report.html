@@ -683,26 +683,26 @@
                     result.verticalScrollPosition}" th:id="${'lens-before_' + contextReport.contextHash + '-' +
                     result.verticalScrollPosition}">
                             </div>
-                            <img width="100%"
+                            <img width="100%" loading="lazy"
                                  th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
                             <div class="zoom-lens invisible keep" th:classappend="${'lens-' + contextReport.contextHash + '-' +
                     result.verticalScrollPosition}" th:id="${'lens-after_' + contextReport.contextHash + '-' +
                     result.verticalScrollPosition}"></div>
-                            <img width="100%"
+                            <img width="100%" loading="lazy"
                                  th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
                         </div>
                         <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}"
                              class="icv">
-                            <img class="screenshot-difference" width="100%"
+                            <img class="screenshot-difference" width="100%" loading="lazy"
                                  th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
                             <span class="icv__label icv__label-after keep on-hover">Before (only)</span>
                         </div>
                         <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}"
                              class="icv">
-                            <img class="screenshot-difference" width="100%"
+                            <img class="screenshot-difference" width="100%" loading="lazy"
                                  th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
                             <span class="icv__label icv__label-after keep on-hover">After (only)</span>
@@ -720,7 +720,7 @@
                             <div class="zoom-lens"
                                  th:classappend="${'lens-' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  th:id="${'lens-difference_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"></div>
-                            <img class="screenshot-difference" width="100%"
+                            <img class="screenshot-difference" width="100%" loading="lazy"
                                  th:src="${result.differenceImageFileNameForHTML}"
                                  th:id="${'diff_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                             />
@@ -729,18 +729,18 @@
                              th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
                              th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">
                             <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}" th:style="${'background-color: ' + legend_different_size_rgb}">
-                                <img class="screenshot-difference screenshot-transparent" width="100%"
+                                <img class="screenshot-difference screenshot-transparent" width="100%" loading="lazy"
                                      th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
 
                             </div>
                             <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}" th:style="${'background-color: ' + legend_different_size_rgb}">
-                                <img class="screenshot-difference screenshot-transparent" width="100%"
+                                <img class="screenshot-difference screenshot-transparent" width="100%" loading="lazy"
                                      th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
                             </div>
                             <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML != null}" th:style="${'background-color: ' + legend_same_rgb}">
-                                <img class="screenshot-difference screenshot-transparent" width="100%"
+                                <img class="screenshot-difference screenshot-transparent" width="100%" loading="lazy"
                                      th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
                             </div>
