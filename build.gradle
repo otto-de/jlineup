@@ -1,7 +1,7 @@
 buildscript {
     ext {
         springBootVersion = '3.5.10'
-        seleniumVersion = '4.35.0'
+        seleniumVersion = '4.40.0'
         graalvmVersion = '25.0.2'
         picoCliVersion = '4.7.7'
     }
@@ -26,7 +26,7 @@ plugins {
 //\
 ///\
 ////\
-def jlineup_version = "4.14.3-SNAPSHOT"
+def jlineup_version = "4.14.3"
 /////
 ////
 ///
