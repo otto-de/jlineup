@@ -3,7 +3,11 @@ plugins {
 }
 
 dependencies {
-    implementation("org.seleniumhq.selenium:selenium-java") {
+    // We sctually set the selenium version by defining it in the root gradle as ext['selenium.version'] = "${seleniumVersion}"
+    // which overrides the selenium version defined in the dependency management of spring-boot-starter-test.
+    // This is necessary to get a more recent selenium version, which is required for the latest chrome versions.
+    // We also put this here to have dependabot handle it, it can't see updates for the simple ext notation.
+    implementation("org.seleniumhq.selenium:selenium-java:${seleniumVersion}") {
         exclude module: "selenium-edge-driver"
         exclude module: "selenium-ie-driver"
         exclude module: "selenium-opera-driver"
