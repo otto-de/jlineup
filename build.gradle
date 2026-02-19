@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '3.5.10'
+        springBootVersion = '4.0.3'
         seleniumVersion = '4.40.0'
         graalvmVersion = '25.0.2'
         picoCliVersion = '4.7.7'
