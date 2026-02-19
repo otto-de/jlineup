@@ -106,10 +106,13 @@ public class BrowserUtils {
             //There were problems to render Webfonts, SVGs and progressive JPGs deterministically on huge pages (i.e. otto.de)
             //Beware of dragons
             if (CHROME_DETERMINISTIC_OPTIONS) {
-                //options.addArguments("--disable-threaded-compositing"); // This option breaks rendering completely as of Chrome 70 (2019-01-07)
+   //             options.addArguments("--disable-threaded-compositing"); // This option breaks rendering completely as of Chrome 70 (2019-01-07)
+
+                options.addArguments("--allow-pre-commit-input");
                 options.addArguments("--deterministic-mode");
                 options.addArguments("--disable-checker-imaging");
                 options.addArguments("--disable-composited-antialiasing");
+                options.addArguments("--disable-features=PaintHolding");
                 options.addArguments("--disable-gpu");
                 options.addArguments("--disable-gpu-rasterization");
                 options.addArguments("--disable-histogram-customizer");
@@ -120,9 +123,12 @@ public class BrowserUtils {
                 options.addArguments("--disable-threaded-scrolling");
                 options.addArguments("--enable-surface-synchronization");
                 options.addArguments("--force-color-profile=srgb");
+                options.addArguments("--in-process-gpu");
                 options.addArguments("--num-raster-threads=1");
-                options.addArguments("--run-all-compositor-stages-before-draw");
                 options.addArguments("--override-use-software-gl-for-tests");
+                options.addArguments("--run-all-compositor-stages-before-draw");
+                //options.addArguments("--single-process");
+                options.addArguments("--use-gl=\"swiftshader\"");
             }
 
             if (device.isMobile()) {
@@ -135,6 +141,8 @@ public class BrowserUtils {
             if (jobConfig.browser.isHeadless()) {
                 options.addArguments("--headless=new");
                 options.addArguments("--window-size=" + device.width + "," + device.height);
+                options.addArguments("--new-window");
+                options.addArguments("--force-color-profile=srgb");
             }
 
             String chromeVersionOverride = GlobalOptions.getOption(GlobalOption.JLINEUP_CHROME_VERSION);
