@@ -32,7 +32,7 @@
                     <td th:text="${report.state}">OK</td>
                     <td th:text="${report.startTime}">2018-09-09T20:00:00.000Z</td>
                     <td th:text="${report.duration}">10:20:30</td>
-                    <td><a th:if="${report.reportUrl != null}" th:href="${report.reportUrl}" target="_blank" class="btn btn-primary" role="button">Report</a></td>
+                    <td><a th:if="${report.reportUrl != null}" th:href="${report.reportUrl}" target="_blank" class="btn" th:classappend="${report.reportUrl.contains('before') ? 'btn-default' : 'btn-primary'}" role="button">Report</a></td>
                     <td><a th:if="${report.logUrl != null}" th:href="${report.logUrl}" target="_blank"class="btn btn-info" role="button">Log</a></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(reportList)}"><td colspan="7">No runs since start.</td></tr>

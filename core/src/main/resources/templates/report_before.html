@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:if="${report.config.name == null}">JLineup Reference Report</title>
+    <title th:if="${report.config.name}" th:text="${report.config.name + ' - JLineup Reference Report'}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <meta http-equiv="Expires" content="-1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+
+        * {
+            font-family: 'Lato', Arial, Helvetica, sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: white;
+            font-weight: 400;
+            margin-left: 10px;
+            margin-top: 10px;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 2.4em;
+            margin: 5px 0 15px 0;
+        }
+
+        h2 {
+            font-weight: 700;
+            font-size: 2em;
+            margin: 5px 0 15px 0;
+        }
+
+        h3 {
+            font-weight: 700;
+            font-size: 1.6em;
+            margin: 5px 0 5px 0;
+        }
+
+        h4 {
+            font-weight: 700;
+            font-size: 1.4em;
+            margin: 0;
+        }
+
+        h5 {
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .footer {
+            margin-top: 25px;
+            font-size: 10px;
+            color: grey;
+        }
+
+        .url {
+            background-color: #ededed;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .urlReport {
+            background-color: #dedede;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .urlReport > table {
+            padding: 0 0 0 0;
+            border-spacing: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .urlReport > table tr:nth-child(even) {
+            background-color: #eee;
+        }
+
+        .urlReport > table tr:nth-child(odd) {
+            background-color: #ccc;
+        }
+
+        .urlReport > table th {
+            color: white;
+            background-color: #565656;
+            border-radius: 4px 4px 0 0;
+            padding: 1px 1px 3px 1px;
+            overflow: hidden;
+            max-width: 0;
+        }
+
+        .urlReport > table td:first-child {
+            padding: 4px;
+        }
+
+        .urlReport > table td {
+            padding: 0 0 0 0;
+            border-collapse: collapse;
+            vertical-align: top;
+            position: relative;
+        }
+
+        div.legend {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 51;
+        }
+
+        .legend {
+            font-size: small;
+            display: none;
+        }
+
+        .legend > table {
+            background-color: white;
+            border-spacing: 2px;
+            border: 1px solid black;
+            #border-collapse: collapse;
+        }
+
+        .legend > table th {
+            background-color: black;
+            padding: 3px;
+            color: white;
+        }
+
+        .legend > table td {
+            padding: 3px;
+            border: 0;
+        }
+
+        .legend > table td:first-child {
+            padding: 4px;
+            border: 1px solid black;
+        }
+
+        .deviceinfo {
+            font-size: small;
+        }
+
+        .infotext {
+            font-size: small;
+        }
+
+        p {
+            padding: 5px;
+        }
+
+        .report label {
+            cursor: pointer;
+        }
+
+        .urlReport input[type=checkbox] {
+            display: none;
+        }
+
+        .urlReport input[type=checkbox]:checked ~ table {
+            display: block;
+        }
+
+        .urlReport input[type=checkbox]:checked ~ label .open-icon {
+            display: none;
+        }
+
+        .urlReport input[type=checkbox]:checked ~ label .close-icon {
+            display: inline;
+        }
+
+        .urlReport input[type=checkbox]:checked ~ label .open-report {
+            display: none;
+        }
+
+        .urlReport input[type=checkbox]:checked ~ label .close-report {
+            display: inline;
+        }
+
+        .open-report {
+            display: inline;
+        }
+
+        .close-report {
+            display: none;
+        }
+
+        .open-icon {
+            display: inline;
+            font-family: monospace;
+            font-size: xx-large;
+        }
+
+        .close-icon {
+            display: none;
+            font-family: monospace;
+            font-size: xx-large;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .failure {
+            color: red;
+        }
+
+        .zoom-lens {
+            position: absolute;
+            border: 1px solid #c3c3c3;
+            width: 44px;
+            height: 44px;
+            z-index: 20;
+            cursor: pointer;
+        }
+
+        .zoom {
+            #border: 1px solid #c3c3c3;
+            width: 320px;
+            height: 320px;
+            image-rendering: pixelated;
+        }
+
+        #zoombox {
+            position: relative;
+        }
+
+        #zoomfix {
+            position: fixed;
+            z-index: 10;
+            background-color: #ffffff;
+            border-radius: 10px;
+        }
+
+        #zoomfix > table {
+            position: relative;
+            background-color: transparent;
+            border-spacing: 5px;
+            padding: 0 0 0 0;
+            border-collapse: separate;
+        }
+
+        #zoomfix > table th {
+            color: white;
+            padding: 0 0 0 0;
+            background-color: #565656;
+        }
+
+        #zoomfix > table th:nth-child(1) {
+            border-radius: 10px 0 0 0;
+        }
+
+        #zoomfix > table th:nth-child(3) {
+            border-radius: 0 10px 0 0;
+        }
+
+        #zoomfix > table td {
+            color: white;
+            padding: 1px;
+            background-color: #111111;
+        }
+
+        .visible {
+            visibility: visible;
+            transition-property: opacity;
+            transition-delay: 1s;
+        }
+
+        .invisible {
+            visibility: hidden;
+            transition-property: opacity;
+            transition-delay: 1s;
+        }
+
+        a, a:visited, a:hover, a:active {
+            color: inherit;
+        }
+
+        .screenshot-difference {
+            display: block;
+            cursor: pointer;
+        }
+
+        .screenshot-transparent {
+            opacity: 0;
+        }
+
+        .info {
+            max-width: 10vw;
+        }
+
+        .icv__label {
+            font-weight: bold;
+            #top: 1rem;
+            #bottom: unset;
+        }
+
+        .inline-size {
+            font-size: 0.7em;
+        }
+
+        .result-col-header {
+            min-width: 5em;
+        }
+
+        .result-col {
+            writing-mode: vertical-rl;
+            vertical-align: middle !important;
+            text-align: center;
+        }
+
+        #black {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 49;
+            display: none;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        #clickdiff {
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            display: none;
+        }
+
+        #imagediv {
+
+        }
+
+        #imagediv img {
+            position: fixed;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            z-index: 51;
+        }
+
+        #clickclose {
+            position: fixed;
+            color: white;
+            top: 30px;
+            right: 30px;
+            font-size: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: block;
+            border-radius: 10px;
+            padding: 4px 16px 4px 16px;
+            z-index: 51;
+        }
+
+        #clickimagelabel {
+            position: fixed;
+            color: white;
+            top: 30px;
+            left: 30px;
+            font-size: 50px;
+            font-weight: bold;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: block;
+            border-radius: 10px;
+            padding: 4px 8px 8px 8px;
+            z-index: 51;
+        }
+
+        #clickimage {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="report">
+    <h5 style="color: #777777; margin: 0;">JLineup Reference Report</h5>
+    <h1 th:if="${report.config.name}" th:text="${report.config.name}"></h1>
+    <div th:if="${report.config.sanitizedMessage}"style="background-color: #eeeeee; border-radius: 5px; padding: 5px;">
+        <h5 style="margin: 5px;">Message</h5>
+        <p  style="margin: 5px; background-color: #dedede; border-radius: 5px; white-space: pre;" th:utext="${report.config.sanitizedMessage}">Some Message</p>
+    </div>
+
+    <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}">
+        <h3 th:text="${urlReport.urlKey}"></h3>
+        <div class="urlReport" th:each="contextReport,iterationStatus : ${urlReport.contextReports}">
+            <input type="checkbox" th:attr="id=${contextReport.contextHash}"/>
+            <label th:attr="for=${contextReport.contextHash}">
+                <h4>
+                    <span class="open-icon">[+]</span>
+                    <span class="close-icon">[-]</span>
+                    [[${#strings.substringAfter(contextReport.url,urlReport.url)}]]
+                    <span class="inline-size">([[${#strings.replace(contextReport.deviceInfo,'\n',', ')}]])</span>
+                    <span th:if="${#strings.isEmpty(contextReport.shownCookiesString) == false}" class="inline-size">([[${contextReport.shownCookiesString}]])</span>
+                </h4>
+            </label>
+            <table>
+                <tr>
+                    <th>Info</th>
+                    <th>Before</th>
+                </tr>
+                <tr th:each="result,iterationStatus : ${contextReport.results}">
+                    <td>
+                        <div class="infotext"><span title="Vertical scroll position">Pos: [[${result.verticalScrollPosition}]]</span></div>
+                        <div class="infotext">
+                            <div th:switch="${result.screenshotBeforeFileName!=null}">
+                                <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}"
+                                   target="_blank">
+                                    &#8599;&nbsp;Before
+                                </a>
+                                <span th:case="${false}">No&nbsp;before&nbsp;image</span>
+                            </div>
+                            <div>
+                                <a th:href="${contextReport.url}" target="_blank" th:title="${contextReport.url}">&#8599;&nbsp;Open&nbsp;page</a>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div th:if="${result.screenshotBeforeFileNameForHTML != null}"
+                             class="icv">
+                            <img class="screenshot-difference" width="100%" loading="lazy"
+                                 th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                 th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+    </div>
+</div>
+
+<div id="zoombox" class="invisible">
+    <div id="zoomfix">
+        <table>
+            <tr>
+                <th>Before</th>
+            </tr>
+            <tr>
+                <td>
+                    <div id="zoom_before" class="zoom"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div id="black" onclick="closeClickDiff()"></div>
+
+<div id="clickdiff">
+    <div id="imagediv">
+        <img id="clickimage" />
+        <div id="clickimagelabel">Before</div>
+        <div id="clickclose" onclick="closeClickDiff()">&#10006;</div>
+    </div>
+</div>
+
+<p class="footer">Generated with JLineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
+    [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]].
+    <span>The 'before' step was rendered with "[[${report.getBrowser("before")}]]".</span>
+</p>
+
+</body>
+</html>

@@ -37,6 +37,7 @@ public class FileService {
 
     public static final String DEFAULT_FILETRACKER_FILENAME = "files.json";
     public static final String REPORT_HTML_FILENAME = "report.html";
+    public static final String REPORT_BEFORE_HTML_FILENAME = "report_before.html";
     public static final String LEGACY_REPORT_HTML_FILENAME = "report_legacy.html";
     public static final String REPORT_JSON_FILENAME = "report.json";
 

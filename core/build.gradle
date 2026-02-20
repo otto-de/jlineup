@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    // We sctually set the selenium version by defining it in the root gradle as ext['selenium.version'] = "${seleniumVersion}"
+    // We actually set the selenium version by defining it in the root gradle as ext['selenium.version'] = "${seleniumVersion}"
     // which overrides the selenium version defined in the dependency management of spring-boot-starter-test.
     // This is necessary to get a more recent selenium version, which is required for the latest chrome versions.
     // We also put this here to have dependabot handle it, it can't see updates for the simple ext notation.
@@ -60,10 +60,6 @@ dependencies {
 
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-//        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
-//            details.useVersion "2.13.3"
-//            details.because 'Enforce databind version'
-//        }
         if (details.requested.group == 'org.apache.httpcomponents') {
             details.useVersion "4.5.14"
         }

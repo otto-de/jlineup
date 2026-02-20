@@ -111,6 +111,10 @@ public class HTMLReportWriter {
         return screenshotComparisonResult.contextHash;
     }
 
+    public void writeReportAfterBeforeStep(ReportV2 reportBefore) throws FileNotFoundException {
+        fileService.writeHtmlReport(renderReportV2("report_before", reportBefore), FileService.REPORT_BEFORE_HTML_FILENAME);
+    }
+
     private class ScreenshotComparisonResultContext {
 
 
