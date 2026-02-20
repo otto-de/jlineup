@@ -5,7 +5,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.yaml:snakeyaml")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("de.otto.edison:edison-core:3.5.6")
+    implementation("de.otto.edison:edison-core:3.5.11")
     implementation("io.micrometer:micrometer-registry-prometheus")
 
     implementation("org.hibernate.validator:hibernate-validator")
