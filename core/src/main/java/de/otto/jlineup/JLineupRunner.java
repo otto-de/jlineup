@@ -65,6 +65,17 @@ public class JLineupRunner {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+
+            if (runStepConfig.getStep() == RunStep.before) {
+                ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
+                try {
+                    Map<String, List<ScreenshotComparisonResult>> onlyBeforeScreenshotsInThisComparisonResult = screenshotsComparator.compare();
+                    final ReportV2 reportAfterBeforeStep = new ReportGeneratorV2(fileService).generateReport(onlyBeforeScreenshotsInThisComparisonResult, jobConfig);
+                    htmlReportWriter.writeReportAfterBeforeStep(reportAfterBeforeStep);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
         try {

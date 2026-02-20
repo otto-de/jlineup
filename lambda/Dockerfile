@@ -1,6 +1,7 @@
 FROM public.ecr.aws/lambda/java:21-x86_64
 
 # This is used to grep the latest full release URL of Chrome with this Major version from the Chrome for Testing website
+# Chrome 145 matches the CDP in the latest Selenium version 4.41.0
 ARG CHROME_MAJOR_VERSION="145"
 
 # This sets the specific version of the AMI Linux 2023 release

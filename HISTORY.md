@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 4.15.0 - 2026-02-19
+* Feature: Generate report after before step to already see the reference shots.
+
 ## Release 4.14.3 - 2026-02-09
 * Update: Lazy loading of images in report to improve performance.
 * Update: Dependency updates

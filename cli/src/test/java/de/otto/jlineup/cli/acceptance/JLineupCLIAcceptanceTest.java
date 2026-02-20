@@ -132,6 +132,10 @@ public class JLineupCLIAcceptanceTest {
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_WithChrome() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+
+        final Path reportBeforeHtml = Paths.get(tempDirectory.toString(), "report", "report_before.html");
+        assertThat("Report Reference HTML exists", Files.exists(reportBeforeHtml));
+
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
@@ -199,6 +203,10 @@ public class JLineupCLIAcceptanceTest {
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_WithChromeHeadless() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-headless.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+
+        final Path reportBeforeHtml = Paths.get(tempDirectory.toString(), "report", "report_before.html");
+        assertThat("Report Reference HTML exists", Files.exists(reportBeforeHtml));
+
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-headless.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
@@ -258,6 +266,10 @@ public class JLineupCLIAcceptanceTest {
     @Test
     public void shouldRunJLineupWithTestPageThatDoesntChange_WithFirefox() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
+
+        final Path reportBeforeHtml = Paths.get(tempDirectory.toString(), "report", "report_before.html");
+        assertThat("Report Reference HTML exists", Files.exists(reportBeforeHtml));
+
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
 
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");

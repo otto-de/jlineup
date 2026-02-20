@@ -86,22 +86,30 @@ public class JLineupServiceTest {
         //given
         JobConfig jobConfig = JobConfig.exampleConfig();
         when(jLineupRunnerBefore.run()).thenReturn(true);
+
+        //when
         JLineupRunStatus beforeStatus = testee.startBeforeRun(jobConfig);
 
         when(jLineupRunnerAfter.run()).thenReturn(true);
         beforeStatus.getCurrentJobStepFuture().get().get();
+
+        //then
+
+        Optional<JLineupRunStatus> currentStatus = testee.getRun(beforeStatus.getId());
+        assertThat(currentStatus.get().getState(), is(State.BEFORE_DONE));
+        assertThat(currentStatus.get().getReports().getHtmlUrl(), is("/reports/report-" + beforeStatus.getId() + "/report_before.html"));
+
+        //when
         JLineupRunStatus afterStatus = testee.startAfterRun(beforeStatus.getId());
         afterStatus.getCurrentJobStepFuture().get().get();
 
-
-        //when
-        Optional<JLineupRunStatus> status = testee.getRun(beforeStatus.getId());
+        currentStatus = testee.getRun(beforeStatus.getId());
 
         //then
-        assertTrue(status.isPresent());
-        assertThat(status.get().getState(), is(State.FINISHED_WITHOUT_DIFFERENCES));
-        assertThat(status.get().getReports().getHtmlUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.html"));
-        assertThat(status.get().getReports().getJsonUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.json"));
+        assertTrue(currentStatus.isPresent());
+        assertThat(currentStatus.get().getState(), is(State.FINISHED_WITHOUT_DIFFERENCES));
+        assertThat(currentStatus.get().getReports().getHtmlUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.html"));
+        assertThat(currentStatus.get().getReports().getJsonUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.json"));
 
     }
 

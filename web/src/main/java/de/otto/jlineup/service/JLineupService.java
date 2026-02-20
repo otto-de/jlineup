@@ -139,7 +139,13 @@ public class JLineupService {
         }
 
         if (state == State.BEFORE_DONE) {
-            runStatusBuilder.withPauseTime(Instant.now());
+            runStatusBuilder
+                    .withReports(JLineupRunStatus.Reports.reportsBuilder()
+                            .withLogUrl("/reports/report-" + runId + "/jlineup.log")
+                            .withHtmlUrl("/reports/report-" + runId + "/report_before.html")
+                            .build())
+                    .withPauseTime(Instant.now())
+                    .build();
         }
 
         if (state == State.AFTER_RUNNING) {
@@ -165,7 +171,6 @@ public class JLineupService {
         runPersistenceService.persistRuns(runs);
         return newStatus;
     }
-
 
 
     public Optional<JLineupRunStatus> getRun(String id) {
