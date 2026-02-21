@@ -7,31 +7,26 @@ import de.otto.jlineup.web.JLineupRunnerFactory;
 import de.otto.jlineup.web.State;
 import de.otto.jlineup.web.configuration.JLineupWebLambdaProperties;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class JLineupServiceTest {
+class JLineupServiceTest {
 
     private JLineupService testee;
     private JLineupRunnerFactory jLineupRunnerFactory;
     private JLineupRunner jLineupRunnerBefore;
     private JLineupRunner jLineupRunnerAfter;
 
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
-
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         jLineupRunnerFactory = mock(JLineupRunnerFactory.class);
         jLineupRunnerBefore = mock(JLineupRunner.class);
         jLineupRunnerAfter = mock(JLineupRunner.class);
@@ -48,7 +43,7 @@ public class JLineupServiceTest {
     }
 
     @Test
-    public void shouldStartBeforeRun() throws Exception {
+    void shouldStartBeforeRun() throws Exception {
 
         //given
         JobConfig jobConfig = JobConfig.exampleConfig();
@@ -64,7 +59,7 @@ public class JLineupServiceTest {
     }
 
     @Test
-    public void shouldStartAfterRun() throws Exception {
+    void shouldStartAfterRun() throws Exception {
 
         //given
         JobConfig jobConfig = JobConfig.exampleConfig();
@@ -82,7 +77,7 @@ public class JLineupServiceTest {
     }
 
     @Test
-    public void shouldContainReportPathInResult() throws Exception {
+    void shouldContainReportPathInResult() throws Exception {
         //given
         JobConfig jobConfig = JobConfig.exampleConfig();
         when(jLineupRunnerBefore.run()).thenReturn(true);

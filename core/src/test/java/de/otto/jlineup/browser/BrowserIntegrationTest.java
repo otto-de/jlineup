@@ -7,16 +7,14 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.*;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.file.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,34 +24,33 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
 @ContextConfiguration(classes = FakeWebServerController.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class BrowserIntegrationTest {
+class BrowserIntegrationTest {
 
     @LocalServerPort
     private int port;
 
     private Path tempDirectory;
 
-    @Before
-    public void setup() throws IOException {
+    @BeforeEach
+    void setup() throws IOException {
         tempDirectory = Files.createTempDirectory("jlineup-browser-integration-test");
         //Utils.setLogLevelToDebug();
     }
 
-    @After
-    public void cleanup() throws IOException {
+    @AfterEach
+    void cleanup() throws IOException {
         FileUtils.deleteDirectory(tempDirectory);
     }
 
 
     @Test
-    public void shouldNotThrowAnExceptionInChromeIfItIsConfiguredToNotCheckForErrorsOnA403() throws ValidationError {
+    void shouldNotThrowAnExceptionInChromeIfItIsConfiguredToNotCheckForErrorsOnA403() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("403", Browser.Type.CHROME_HEADLESS, false);
         //when
@@ -63,7 +60,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldThrowAnExceptionInChromeIfItIsConfiguredToCheckForErrorsOnA403() throws ValidationError {
+    void shouldThrowAnExceptionInChromeIfItIsConfiguredToCheckForErrorsOnA403() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("403", Browser.Type.CHROME_HEADLESS, true);
         Exception thrown = null;
@@ -79,7 +76,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldNotThrowAnExceptionInChromeIfItIsConfiguredToNotCheckForErrorsOnA500() throws ValidationError {
+    void shouldNotThrowAnExceptionInChromeIfItIsConfiguredToNotCheckForErrorsOnA500() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, false);
         //when
@@ -89,7 +86,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldThrowAnExceptionInChromeIfItIsConfiguredToCheckForErrorsOnA500() throws ValidationError {
+    void shouldThrowAnExceptionInChromeIfItIsConfiguredToCheckForErrorsOnA500() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, true);
         Exception thrown = null;
@@ -105,7 +102,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldNotThrowAnExceptionInFirefoxIfItIsConfiguredToNotCheckForErrorsOnA500() throws ValidationError {
+    void shouldNotThrowAnExceptionInFirefoxIfItIsConfiguredToNotCheckForErrorsOnA500() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.FIREFOX_HEADLESS, false);
         //when
@@ -115,7 +112,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void willNotThrowAnExceptionInFirefoxBecauseFirefoxWithSeleniumCantHandleResponseCodes() throws ValidationError {
+    void willNotThrowAnExceptionInFirefoxBecauseFirefoxWithSeleniumCantHandleResponseCodes() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.FIREFOX_HEADLESS, true);
         //when
@@ -126,14 +123,14 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldNotAppendSlashToDomain() throws ValidationError {
+    void shouldNotAppendSlashToDomain() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder().withCookie(new Cookie("CookieName", "CookieValue")).build();
         JobConfig jobConfig = localTestConfig("params?param1=1&param2=2", Browser.Type.CHROME_HEADLESS, true, urlConfig);
         runJLineup(jobConfig, RunStep.before);
     }
 
     @Test
-    public void shouldSetCookieOnCorrectPath() throws ValidationError {
+    void shouldSetCookieOnCorrectPath() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withCookie(new Cookie("CookieName", "CookieValue"))
                 .withPaths(ImmutableList.of("/")).build();
@@ -142,7 +139,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldCheckHttpStatusCodeError() {
+    void shouldCheckHttpStatusCodeError() {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(new HttpCheckConfig(true))
                 .withPaths(ImmutableList.of("/")).build();
@@ -157,7 +154,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldCheckCustomHttpStatusCodes() throws ValidationError {
+    void shouldCheckCustomHttpStatusCodes() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(new HttpCheckConfig(true, ImmutableList.of(304)))
                 .withPaths(ImmutableList.of("/")).build();
@@ -172,7 +169,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldDetectErrorSignal() throws ValidationError {
+    void shouldDetectErrorSignal() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(HttpCheckConfig.httpCheckConfigBuilder().withEnabled(true).withErrorSignals(singletonList("Hallo!")).build())
                 .withPaths(ImmutableList.of("/")).build();
@@ -188,7 +185,7 @@ public class BrowserIntegrationTest {
 
 
     @Test
-    public void shouldNotCheckHttpStatusCodeErrorIfNotConfigured() throws ValidationError {
+    void shouldNotCheckHttpStatusCodeErrorIfNotConfigured() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(new HttpCheckConfig(false))
                 .withPaths(ImmutableList.of("/")).build();
@@ -198,7 +195,7 @@ public class BrowserIntegrationTest {
     }
 
     @Test
-    public void shouldSetAllCookies() throws ValidationError, IOException {
+    void shouldSetAllCookies() throws ValidationError, IOException {
 
         //ch.qos.logback.classic.Logger apache = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.apache.hc.client5.http");
         //apache.setLevel(Level.DEBUG);

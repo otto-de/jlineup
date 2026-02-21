@@ -7,10 +7,9 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -25,27 +24,23 @@ import static de.otto.jlineup.file.FileService.FILE_SEPARATOR;
 import static de.otto.jlineup.file.FileService.generateScreenshotFileName;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.MockitoAnnotations.initMocks;
 
-public class FileServiceTest {
+class FileServiceTest {
 
     private FileService testee;
 
     private RunStepConfig runStepConfig;
     private JobConfig jobConfig;
 
-    @Rule
-    public final TemporaryFolder tempDir = new TemporaryFolder();
+    @TempDir
+    Path tempDir;
 
     private String tempDirPath;
     private String writeScreenshotTestPath;
 
-    @Before
-    public void setup() throws IOException {
-        initMocks(this);
-
-        tempDirPath = tempDir.getRoot().getPath();
-
+    @BeforeEach
+    void setup() throws IOException {
+        tempDirPath = tempDir.toString();
         writeScreenshotTestPath = tempDirPath + "/testdirforlineupwritetest";
 
         runStepConfig = runStepConfigBuilder()
@@ -61,11 +56,10 @@ public class FileServiceTest {
         testee.createDirIfNotExists(writeScreenshotTestPath);
         testee.createDirIfNotExists(writeScreenshotTestPath + "/screenshots");
         testee.createDirIfNotExists(writeScreenshotTestPath + "/report");
-
     }
 
     @Test
-    public void shouldCreateDirectory() throws IOException {
+    void shouldCreateDirectory() throws IOException {
         //when
         testee.createDirIfNotExists(tempDirPath + "/testdirforlineuptest");
         //then
@@ -73,7 +67,7 @@ public class FileServiceTest {
     }
 
     @Test
-    public void shouldWriteScreenshot() throws IOException {
+    void shouldWriteScreenshot() throws IOException {
         BufferedImage bufferedImage = new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB);
         bufferedImage.setRGB(0, 0, 200);
 
@@ -83,7 +77,7 @@ public class FileServiceTest {
     }
 
     @Test
-    public void shouldWriteJsonReport() throws Exception {
+    void shouldWriteJsonReport() throws Exception {
 
         testee.writeJsonReport("[{\"toll\":\"mega\"}]");
 
@@ -94,33 +88,33 @@ public class FileServiceTest {
     }
 
     @Test
-    public void shouldGenerateFullPathToPngFile() {
+    void shouldGenerateFullPathToPngFile() {
         final String fullFileNameWithPath = testee.getScreenshotPath("testurl", "/", 1001, 2002, "step");
 
         assertThat(fullFileNameWithPath, is(writeScreenshotTestPath + FILE_SEPARATOR + "screenshots" + FILE_SEPARATOR + "testurl_root_bbf1812_1001_02002_step.png"));
     }
 
     @Test
-    public void shouldGenerateFilename() throws Exception {
+    void shouldGenerateFilename() {
         String outputString = generateScreenshotFileName("https://www.otto.de/", "multi-media#anchor?one=two&three=fo_ur", 1000, 2000, "after");
         assertThat(outputString, is("https_www_otto_de_multi-media_anchor_one_two_three_fo_ur_99698cd_1000_02000_after.png"));
     }
 
     @Test
-    public void shouldGenerateFilenameWithAMaxLenghtOf255Bytes() throws Exception {
+    void shouldGenerateFilenameWithAMaxLenghtOf255Bytes() {
         String outputString = generateScreenshotFileName("https://www.otto.de/", "multi-media#anchor?abcdefghijklmnopqrstuvwxyz=12345678901234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567890", 1000, 2000, "after");
         assertThat(outputString.length(), Matchers.lessThan(255));
         assertThat(outputString, is("https_www_otto_de_multi-media_anchor_abcdefghijklmnopqrstuvwxyz_12345678901234567890012345678900123456789001234567890012345678900123456789001234567890012345678900123456789001234567_559e477_1000_02000_after.png"));
     }
 
     @Test
-    public void shouldConvertRoot() throws Exception {
+    void shouldConvertRoot() {
         String outputString = generateScreenshotFileName("https://www.otto.de/", "/", 1000, 2000, "before");
         assertThat(outputString, is("https_www_otto_de_root_baa15be_1000_02000_before.png"));
     }
 
     @Test
-    public void shouldBuildRelativePathsForDifferentDirectories() {
+    void shouldBuildRelativePathsForDifferentDirectories() {
         //given
         runStepConfig = runStepConfigBuilder()
                 .withWorkingDirectory("src" + FILE_SEPARATOR + "test" + FILE_SEPARATOR + "resources")
@@ -139,7 +133,7 @@ public class FileServiceTest {
     }
 
     @Test
-    public void shouldBuildRelativePathsForSame() {
+    void shouldBuildRelativePathsForSame() {
         //given
         runStepConfig = runStepConfigBuilder()
                 .withWorkingDirectory("src/test/resources")

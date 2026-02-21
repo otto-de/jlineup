@@ -1,7 +1,7 @@
 package de.otto.jlineup.image;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -15,17 +15,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 
-public class ImageServiceTest {
+class ImageServiceTest {
 
     ImageService testee;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         testee = new ImageService();
     }
 
     @Test
-    public void shouldGenerateDifferenceImage() throws IOException {
+    void shouldGenerateDifferenceImage() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));
@@ -41,7 +41,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldNotIgnoreSlightDifferencesInColorSpaceInStrictMode() throws IOException {
+    void shouldNotIgnoreSlightDifferencesInColorSpaceInStrictMode() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_before.png"));
@@ -58,7 +58,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldIgnoreSlightDifferencesInColorSpaceInDefaultNonStrictMode() throws IOException {
+    void shouldIgnoreSlightDifferencesInColorSpaceInDefaultNonStrictMode() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_before.png"));
@@ -73,7 +73,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldIgnoreSlightDifferenceInBenefitImageThroughAntiAliasDetection() throws IOException {
+    void shouldIgnoreSlightDifferenceInBenefitImageThroughAntiAliasDetection() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/benefit_before.png"));
@@ -88,7 +88,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldIgnoreRoundedEdgeAntialiasDifference() throws IOException {
+    void shouldIgnoreRoundedEdgeAntialiasDifference() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/shoppromo_before.png"));
@@ -101,7 +101,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldIgnoreIdenticalLookingHeartIconWhenIncreasedMaxColorDistanceIsUsed() throws IOException {
+    void shouldIgnoreIdenticalLookingHeartIconWhenIncreasedMaxColorDistanceIsUsed() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_before.png"));
@@ -115,7 +115,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldIgnoreIdenticalLookingHeartIconWhenIncreasedMaxAntiAliasColorDistanceIsUsed() throws IOException {
+    void shouldIgnoreIdenticalLookingHeartIconWhenIncreasedMaxAntiAliasColorDistanceIsUsed() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_before.png"));
@@ -129,7 +129,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldNotIgnoreIdenticalLookingHeartIconWhenDefaultMaxColorDistanceIsUsed() throws IOException {
+    void shouldNotIgnoreIdenticalLookingHeartIconWhenDefaultMaxColorDistanceIsUsed() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_like_heart_before.png"));
@@ -143,7 +143,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldIgnoreSlightDifferenceInNordicStyleImagesWithAcceptedColorDistanceOf3() throws IOException {
+    void shouldIgnoreSlightDifferenceInNordicStyleImagesWithAcceptedColorDistanceOf3() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/nordic_style_image_blur_before.png"));
@@ -156,7 +156,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldIgnoreSlightDifferenceInComboImagesWithAcceptedColorDistanceOf3_6() throws IOException {
+    void shouldIgnoreSlightDifferenceInComboImagesWithAcceptedColorDistanceOf3_6() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/testAdditionalCombos_before.png"));
@@ -169,7 +169,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldIgnoreChangeInOttoLogoWhenAntiAliasingIsIgnored() throws IOException {
+    void shouldIgnoreChangeInOttoLogoWhenAntiAliasingIsIgnored() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_before.png"));
@@ -185,7 +185,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldNotIgnoreChangeInOttoLogoWhenAntiAliasingIsNotIgnored() throws IOException {
+    void shouldNotIgnoreChangeInOttoLogoWhenAntiAliasingIsNotIgnored() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/otto_logo_before.png"));
@@ -201,7 +201,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldGenerateDifferenceImageFromScreenshotsWithDifferentSizes() throws IOException {
+    void shouldGenerateDifferenceImageFromScreenshotsWithDifferentSizes() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/ideaWide.png"));
@@ -218,7 +218,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldNotCrashBecauseOfDifferentHeights() throws IOException {
+    void shouldNotCrashBecauseOfDifferentHeights() throws IOException {
         //given
         final int viewportHeight = 800;
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/less_height.png"));
@@ -232,7 +232,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldSeeIdenticalByteImageBuffersAsEqualWithQuickCompare() {
+    void shouldSeeIdenticalByteImageBuffersAsEqualWithQuickCompare() {
         final BufferedImage image1 = new BufferedImage(100, 100, BufferedImage.TYPE_BYTE_INDEXED);
         final BufferedImage image2 = new BufferedImage(100, 100, BufferedImage.TYPE_BYTE_INDEXED);
 
@@ -242,7 +242,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldSeeIdenticalIntImageBuffersAsEqualWithQuickCompare() {
+    void shouldSeeIdenticalIntImageBuffersAsEqualWithQuickCompare() {
         final BufferedImage image1 = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
         final BufferedImage image2 = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
 
@@ -252,7 +252,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void shouldSeeDifferentImageBuffersAsDifferentWithQuickCompare() {
+    void shouldSeeDifferentImageBuffersAsDifferentWithQuickCompare() {
         final BufferedImage image1 = new BufferedImage(100, 100, BufferedImage.TYPE_BYTE_INDEXED);
         final BufferedImage image2 = new BufferedImage(100, 101, BufferedImage.TYPE_BYTE_INDEXED);
 

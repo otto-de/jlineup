@@ -1,6 +1,6 @@
 package de.otto.jlineup.image;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -9,12 +9,12 @@ import java.io.IOException;
 
 import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-public class AntiAliasingIgnoringComparatorTest {
+class AntiAliasingIgnoringComparatorTest {
 
     @Test
-    public void shouldFindAntiAliasedPixel() throws IOException {
+    void shouldFindAntiAliasedPixel() throws IOException {
         //given
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_before.png"));
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_after.png"));
@@ -26,7 +26,7 @@ public class AntiAliasingIgnoringComparatorTest {
     }
 
     @Test
-    public void shouldFindAntiAliasedPixeWithZeroTolerance() throws IOException {
+    void shouldFindAntiAliasedPixeWithZeroTolerance() throws IOException {
         //given
         final BufferedImage beforeImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_before.png"));
         final BufferedImage afterImageBuffer = ImageIO.read(new File("src/test/resources/screenshots/cases/chrome_rounded_edges_after.png"));

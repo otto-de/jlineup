@@ -1,6 +1,6 @@
 package de.otto.jlineup.file;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,11 +12,10 @@ import static de.otto.jlineup.file.FileUtils.deleteDirectory;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class FileUtilsTest {
-
+class FileUtilsTest {
 
     @Test
-    public void shouldClearDirectory() throws IOException {
+    void shouldClearDirectory() throws IOException {
         //given
         final Path dirToClear = Files.createTempDirectory("jlineup-fileutils-test");
         Files.createFile(dirToClear.resolve(Paths.get("test1")));
@@ -33,7 +32,7 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void shouldDeleteDirectory() throws IOException {
+    void shouldDeleteDirectory() throws IOException {
         //given
         final Path dirToDelete = Files.createTempDirectory("jlineup-fileutils-test");
         Files.createDirectories(dirToDelete.resolve("one/two/three"));

@@ -2,7 +2,7 @@ package de.otto.jlineup.config;
 
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.browser.BrowserUtilsTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,11 +11,13 @@ import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
 import static de.otto.jlineup.config.JobConfig.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class JobConfigTest {
+class JobConfigTest {
 
     @Test
-    public void shouldReadConfig() throws IOException {
+    void shouldReadConfig() throws IOException {
         JobConfig jobConfig = JobConfig.readConfig("src/test/resources/", "lineup_test.json").insertDefaults();
         assertThatConfigContentsAreCorrect(jobConfig);
     }
@@ -26,10 +28,10 @@ public class JobConfigTest {
         assertThatConfigContentsAreCorrect(jobConfig);
     }
 
-    @Test(expected = FileNotFoundException.class)
+    @Test
     public void shouldThrowFileNotFoundExceptionWhenConfigFileIsNotFound() throws IOException {
-        JobConfig.readConfig("someWorkingDir", "nonexisting.json");
-        //assert that FileNotFoundException is thrown (see expected above)
+        //assert that following line throws FileNotFoundException
+        assertThrows(FileNotFoundException.class, () -> JobConfig.readConfig("someWorkingDir", "nonexisting.json"));
     }
 
     @Test

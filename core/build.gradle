@@ -41,14 +41,9 @@ dependencies {
     implementation "org.reflections:reflections:0.10.2"
 
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
-    testCompileOnly "junit:junit"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.hamcrest:hamcrest"
     testImplementation "org.mockito:mockito-core"
-    testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
-        exclude group: 'junit', module: 'junit-dep'
-    }
 
     testImplementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.apache.tomcat.embed:tomcat-embed-core")

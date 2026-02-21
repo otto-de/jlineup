@@ -16,10 +16,8 @@ dependencies {
     implementation("org.apache.tomcat.embed:tomcat-embed-el")
     implementation("org.apache.tomcat.embed:tomcat-embed-websocket")
 
-    testImplementation "org.junit.jupiter:junit-jupiter"
-    testCompileOnly 'junit:junit'
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation('io.rest-assured:rest-assured')
     testImplementation("org.awaitility:awaitility")

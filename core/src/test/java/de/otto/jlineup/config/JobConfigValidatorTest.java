@@ -2,7 +2,7 @@ package de.otto.jlineup.config;
 
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.exceptions.ValidationError;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
@@ -10,13 +10,13 @@ import static de.otto.jlineup.config.DeviceConfig.deviceConfigBuilder;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class JobConfigValidatorTest {
+class JobConfigValidatorTest {
 
     @Test
-    public void shouldDenyMobileEmulationWhenUsingOtherBrowserThanChrome() {
+    void shouldDenyMobileEmulationWhenUsingOtherBrowserThanChrome() {
         // given
         JobConfig jobConfig = jobConfigBuilder()
                 .addUrlConfig("someUrl", urlConfigBuilder()
@@ -29,18 +29,15 @@ public class JobConfigValidatorTest {
                 .build();
 
         // when
-        try {
-            JobConfigValidator.validateJobConfig(jobConfig);
-            fail("Expected validation error");
+        ValidationError e = assertThrows(ValidationError.class, () ->
+            JobConfigValidator.validateJobConfig(jobConfig));
 
         // then
-        } catch(ValidationError e) {
-            assertThat(e.getMessage(), containsString("Mobile emulation is only supported by Chrome"));
-        }
+        assertThat(e.getMessage(), containsString("Mobile emulation is only supported by Chrome"));
     }
 
     @Test
-    public void shouldDenyMixedWindowWidthsAndDevices() {
+    void shouldDenyMixedWindowWidthsAndDevices() {
         // given
         JobConfig jobConfig = jobConfigBuilder()
                 .addUrlConfig("someUrl", urlConfigBuilder()
@@ -53,18 +50,15 @@ public class JobConfigValidatorTest {
                 .build();
 
         // when
-        try {
-            JobConfigValidator.validateJobConfig(jobConfig);
-            fail("Expected validation error");
+        ValidationError e = assertThrows(ValidationError.class, () ->
+            JobConfigValidator.validateJobConfig(jobConfig));
 
-            // then
-        } catch(ValidationError e) {
-            assertThat(e.getMessage(), containsString("window-widths"));
-        }
+        // then
+        assertThat(e.getMessage(), containsString("window-widths"));
     }
 
     @Test
-    public void shouldDenyUserAgentWhenSpecialDeviceNameIsSpecified() {
+    void shouldDenyUserAgentWhenSpecialDeviceNameIsSpecified() {
         // given
         JobConfig jobConfig = jobConfigBuilder()
                 .addUrlConfig("someUrl", urlConfigBuilder()
@@ -78,14 +72,11 @@ public class JobConfigValidatorTest {
                 .build();
 
         // when
-        try {
-            JobConfigValidator.validateJobConfig(jobConfig);
-            fail("Expected validation error");
+        ValidationError e = assertThrows(ValidationError.class, () ->
+            JobConfigValidator.validateJobConfig(jobConfig));
 
-            // then
-        } catch(ValidationError e) {
-            assertThat(e.getMessage(), containsString("overridden"));
-        }
+        // then
+        assertThat(e.getMessage(), containsString("overridden"));
     }
 
 }

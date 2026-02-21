@@ -7,7 +7,7 @@ import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -28,12 +28,12 @@ import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BrowserUtilsTest {
 
     @Test
-    public void shouldReplaceEnvMappingsCorrectly() {
+    void shouldReplaceEnvMappingsCorrectly() {
 
         Map<String, String> envMapping = ImmutableMap.of("originalOne", "replacementOne", "originalTwo", "replacementTwo");
 
@@ -47,25 +47,25 @@ public class BrowserUtilsTest {
     }
 
     @Test
-    public void shouldBuildUrl() {
+    void shouldBuildUrl() {
         final String url = buildUrl("url", "path");
         assertThat(url, is("url/path"));
     }
 
     @Test
-    public void shouldStripUnnecessarySlashesFromUrl() {
+    void shouldStripUnnecessarySlashesFromUrl() {
         final String url = buildUrl("url/", "/path");
         assertThat(url, is("url/path"));
     }
 
     @Test
-    public void shouldNotAddSlashWhenNoneIsConfigured() {
+    void shouldNotAddSlashWhenNoneIsConfigured() {
         final String url = buildUrl("lalal?lo=1", "");
         assertThat(url, is("lalal?lo=1"));
     }
 
     @Test
-    public void shouldGenerateScreenshotsParameters() throws IOException {
+    void shouldGenerateScreenshotsParameters() throws IOException {
         //given
         JobConfig jobConfig = JobConfig.readConfig(".", "src/test/resources/lineup_test.json").insertDefaults();
 
@@ -99,7 +99,7 @@ public class BrowserUtilsTest {
     }
 
     @Test
-    public void shouldHaveTheSameContextHashForBeforeAndAfterSteps() throws IOException {
+    void shouldHaveTheSameContextHashForBeforeAndAfterSteps() throws IOException {
         //given
         JobConfig jobConfigBefore = JobConfig.readConfig(".", "src/test/resources/lineup_test_context_before.json").insertDefaults();
         JobConfig jobConfigAfter = JobConfig.readConfig(".", "src/test/resources/lineup_test_context_after.json").insertDefaults();
@@ -122,7 +122,7 @@ public class BrowserUtilsTest {
     }
 
     @Test
-    public void shouldPrepareDomain() {
+    void shouldPrepareDomain() {
         //given
         RunStepConfig runStepConfig = runStepConfigBuilder()
                 .withUrlReplacements(ImmutableMap.of(".otto.", ".bonprix."))
@@ -134,25 +134,25 @@ public class BrowserUtilsTest {
     }
 
     @Test
-    public void shouldGetFirefoxDriver() {
+    void shouldGetFirefoxDriver() {
         final JobConfig jobConfig = jobConfigBuilder().withBrowser(FIREFOX).build();
         assertSetDriverType(jobConfig, FirefoxDriver.class);
     }
 
     @Test
-    public void shouldGetChromeDriver() {
+    void shouldGetChromeDriver() {
         final JobConfig jobConfig = jobConfigBuilder().withBrowser(CHROME).build();
         assertSetDriverType(jobConfig, ChromeDriver.class);
     }
 
     @Test
-    public void shouldGetChromeDriverForHeadlessChrome() {
+    void shouldGetChromeDriverForHeadlessChrome() {
         final JobConfig jobConfig = jobConfigBuilder().withBrowser(CHROME_HEADLESS).build();
         assertSetDriverType(jobConfig, ChromeDriver.class);
     }
 
     @Test
-    public void shouldAddCookiesToTestSetupCalls() {
+    void shouldAddCookiesToTestSetupCalls() {
         final JobConfig jobConfig = jobConfigBuilder().addUrlConfig(getExpectedUrlConfigForOttoDe().url, getExpectedUrlConfigForOttoDe()).build();
         List<ScreenshotContext> screenshotContexts = BrowserUtils.buildTestSetupContexts(runStepConfigBuilder().withStep(RunStep.before).build(), jobConfig);
         assertThat(screenshotContexts.size(), is(1));
@@ -164,7 +164,7 @@ public class BrowserUtilsTest {
     }
 
     @Test
-    public void shouldAddCookiesToTestCleanupCalls() {
+    void shouldAddCookiesToTestCleanupCalls() {
         final JobConfig jobConfig = jobConfigBuilder().addUrlConfig(getExpectedUrlConfigForOttoDe().url, getExpectedUrlConfigForOttoDe()).build();
         List<ScreenshotContext> screenshotContexts = BrowserUtils.buildTestCleanupContexts(runStepConfigBuilder().withStep(RunStep.before).build(), jobConfig);
         assertThat(screenshotContexts.size(), is(1));

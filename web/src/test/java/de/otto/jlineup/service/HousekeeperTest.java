@@ -1,9 +1,9 @@
 package de.otto.jlineup.service;
 
 import de.otto.jlineup.file.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,27 +20,27 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
-public class HousekeeperTest {
+class HousekeeperTest {
 
     private Path tempJLineupDirectory;
     private Path tempDirectory;
     private Housekeeper housekeeper;
 
 
-    @Before
-    public void before() throws IOException {
+    @BeforeEach
+    void before() throws IOException {
         tempJLineupDirectory = Files.createTempDirectory("jlineup-web-test");
         tempDirectory =  new File(System.getProperty("java.io.tmpdir")).toPath();
         housekeeper = new Housekeeper(tempJLineupDirectory);
     }
 
-    @After
-    public void cleanUp() throws IOException {
+    @AfterEach
+    void cleanUp() throws IOException {
         FileUtils.deleteDirectory(tempJLineupDirectory);
     }
 
     @Test
-    public void shouldDeleteReportsOlderThanThreeWeeks() throws IOException {
+    void shouldDeleteReportsOlderThanThreeWeeks() throws IOException {
 
         //Given:
 
@@ -66,7 +66,7 @@ public class HousekeeperTest {
     }
 
     @Test
-    public void shouldDeleteSeleniumScreenshotsOlderThanOneWeek() throws IOException {
+    void shouldDeleteSeleniumScreenshotsOlderThanOneWeek() throws IOException {
 
         //Given: some screenshot files
         Path file1 = Files.createTempFile("screenshot",".png");

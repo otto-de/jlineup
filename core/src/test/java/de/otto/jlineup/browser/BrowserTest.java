@@ -7,11 +7,16 @@ import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
-import org.junit.*;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
@@ -36,10 +41,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class BrowserTest {
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+class BrowserTest {
 
     @Mock
     private TestSupportWebDriver webDriverMock;
@@ -63,8 +70,8 @@ public class BrowserTest {
 
     private Browser testee;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         when(webDriverMock.manage()).thenReturn(webDriverOptionsMock);
         when(webDriverOptionsMock.timeouts()).thenReturn(webDriverTimeoutMock);
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
@@ -78,15 +85,15 @@ public class BrowserTest {
         testee.initializeWebDriver();
     }
 
-    @After
-    public void cleanup() {
+    @AfterEach
+    void cleanup() {
         if (testee != null) {
             testee.close();
         }
     }
 
     @Test
-    public void shouldSetCookies() {
+    void shouldSetCookies() {
         //given
         ArgumentCaptor<org.openqa.selenium.Cookie> cookieCaptor = ArgumentCaptor.forClass(org.openqa.selenium.Cookie.class);
 
@@ -103,7 +110,7 @@ public class BrowserTest {
         assertEquals("someDomain", capturedCookies.get(0).getDomain());
         assertEquals("somePath", capturedCookies.get(0).getPath());
         assertEquals(new Date(10000L), capturedCookies.get(0).getExpiry());
-        Assert.assertTrue(capturedCookies.get(0).isSecure());
+        assertTrue(capturedCookies.get(0).isSecure());
 
         assertEquals("someOtherName", capturedCookies.get(1).getName());
         assertEquals("someOtherValue", capturedCookies.get(1).getValue());
@@ -114,7 +121,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldFillLocalStorage() {
+    void shouldFillLocalStorage() {
         //given
         Map<String, String> localStorage = of("key", "value");
         //when
@@ -125,7 +132,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldFillLocalStorageWithDocument() {
+    void shouldFillLocalStorageWithDocument() {
         //given
         Map<String, String> localStorage = of("key", "{'customerServiceWidgetNotificationHidden':{'value':true,'timestamp':9467812242358}}");
         //when
@@ -136,7 +143,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldFillSessionStorage() {
+    void shouldFillSessionStorage() {
         //given
         Map<String, String> sessionStorage = of("key", "value");
         //when
@@ -147,7 +154,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldScroll() throws InterruptedException {
+    void shouldScroll() throws InterruptedException {
         //when
         testee.scrollTo(1337);
         //then
@@ -155,7 +162,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldScrollWithScrollDistanceFactor() throws Exception {
+    void shouldScrollWithScrollDistanceFactor() throws Exception {
         //given
         JobConfig jobConfig = jobConfigBuilder()
                 .withUrls(of("otto", urlConfigBuilder()
@@ -189,7 +196,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldDeleteTheBrowserProfileDirectoryForChrome() throws Exception {
+    void shouldDeleteTheBrowserProfileDirectoryForChrome() throws Exception {
         //given
         JobConfig jobConfig = jobConfigBuilder()
                 .withUrls(of("otto", urlConfigBuilder()
@@ -217,7 +224,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldDeleteTheBrowserProfileDirectoryForFirefoxWithProfileParam() throws Exception {
+    void shouldDeleteTheBrowserProfileDirectoryForFirefoxWithProfileParam() throws Exception {
         //given
         JobConfig jobConfig = jobConfigBuilder()
                 .withUrls(of("otto", urlConfigBuilder()
@@ -244,7 +251,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldDeleteTheBrowserProfileDirectoryForFirefoxWithPParam() throws Exception {
+    void shouldDeleteTheBrowserProfileDirectoryForFirefoxWithPParam() throws Exception {
         //given
         JobConfig jobConfig = jobConfigBuilder()
                 .withUrls(of("otto", urlConfigBuilder()
@@ -271,7 +278,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldDoAllTheScreenshotWebdriverCalls() throws Exception {
+    void shouldDoAllTheScreenshotWebdriverCalls() throws Exception {
         //given
         final Long viewportHeight = 1000L; //Will be overridden by validateViewportHeight(), which uses the (screenshot height / device pixel ratio) (500) as 'truth', and should trigger a WARN message
         final Long pageHeight = 2000L;
@@ -342,7 +349,7 @@ public class BrowserTest {
 
 
     @Test
-    public void shouldSetCookieForDifferentDomain() throws Exception {
+    void shouldSetCookieForDifferentDomain() throws Exception {
         //given
         final Long viewportHeight = 500L;
         final Long pageHeight = 2000L;
@@ -408,7 +415,7 @@ public class BrowserTest {
 
 
     @Test
-    public void shouldSetCookieOnHttpsDomainIfOneCookieIsMarkedAsSecure() throws Exception {
+    void shouldSetCookieOnHttpsDomainIfOneCookieIsMarkedAsSecure() throws Exception {
         //given
         final Long viewportHeight = 500L;
         final Long pageHeight = 2000L;
@@ -466,7 +473,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldNotResizeWindowWhenDoingHeadlessFirefox() throws Exception {
+    void shouldNotResizeWindowWhenDoingHeadlessFirefox() throws Exception {
         //given
         final Long viewportHeight = 500L;
         final Long pageHeight = 2000L;
@@ -496,7 +503,7 @@ public class BrowserTest {
     }
 
     @Test
-    public void shouldExecuteSpecialJLineupJS() throws Exception {
+    void shouldExecuteSpecialJLineupJS() throws Exception {
         //given
         final Long viewportHeight = 2500L;
         final Long pageHeight = 2000L;
@@ -535,8 +542,8 @@ public class BrowserTest {
     }
 
     @Test
-    @Ignore
-    public void shouldGrepChromeDrivers() throws Exception {
+    @Disabled
+    void shouldGrepChromeDrivers() throws Exception {
         testee.grepChromedrivers();
     }
 

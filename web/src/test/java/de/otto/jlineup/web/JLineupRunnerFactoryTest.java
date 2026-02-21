@@ -4,8 +4,8 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,15 +14,16 @@ import java.util.Map;
 import static de.otto.jlineup.browser.Browser.Type.*;
 import static de.otto.jlineup.config.JobConfig.*;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class JLineupRunnerFactoryTest {
+class JLineupRunnerFactoryTest {
 
     private JLineupWebProperties jLineupWebProperties;
     private JLineupRunnerFactory jLineupRunnerFactory;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         jLineupWebProperties = new JLineupWebProperties();
         jLineupWebProperties.setInstalledBrowsers(Arrays.asList(CHROME, CHROME_HEADLESS));
         jLineupWebProperties.setMaxThreadsPerJob(10);
@@ -31,7 +32,7 @@ public class JLineupRunnerFactoryTest {
     }
 
     @Test
-    public void shouldSanitizeJobConfigForInstalledBrowsers() throws BrowserNotInstalledException {
+    void shouldSanitizeJobConfigForInstalledBrowsers() throws BrowserNotInstalledException {
 
         //Given
         JobConfig evilJobConfig = copyOfBuilder(exampleConfig())
@@ -52,41 +53,30 @@ public class JLineupRunnerFactoryTest {
         assertThat(sanitizedJobConfig.reportFormat, is(DEFAULT_REPORT_FORMAT));
     }
 
-    @Test(expected = BrowserNotInstalledException.class)
-    public void shouldThrowBrowserNotInstalledException() throws BrowserNotInstalledException {
-        // Given
-        JobConfig jobConfig = copyOfBuilder(exampleConfig())
-                .withBrowser(FIREFOX)
-                .build();
-
-        //When
-        jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentExceptionBecauseURLIsNotAllowed() throws IllegalArgumentException, BrowserNotInstalledException {
-        // Given
-        JobConfig jobConfig = copyOfBuilder(exampleConfig())
-                .withUrls(Map.of("Some Url", UrlConfig.copyOfBuilder(exampleConfig().urls.values().stream().findFirst().get()).withUrl("https://www.notallowed.org").build()))
-                .build();
-
-        //When
-        jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIllegalArgumentExceptionBecauseJavaScriptContainsHttpsURLThatIsNotInTheAllowedPrefixes() throws IllegalArgumentException, BrowserNotInstalledException {
-        // Given
-        JobConfig jobConfig = copyOfBuilder(exampleConfig())
-                .withUrls(Map.of("Some Url", UrlConfig.copyOfBuilder(exampleConfig().urls.values().stream().findFirst().get()).withJavaScript("fetch('https%25253A%25252F%25252Fwww.example.com');fetch('https%25253A%25252F%25252Fwww.notallowed.com');").build()))
-                .build();
-
-        //When
-        jLineupRunnerFactory.sanitizeJobConfig(jobConfig);
+    @Test
+    void shouldThrowBrowserNotInstalledException() {
+        JobConfig jobConfig = copyOfBuilder(exampleConfig()).withBrowser(FIREFOX).build();
+        assertThrows(BrowserNotInstalledException.class, () -> jLineupRunnerFactory.sanitizeJobConfig(jobConfig));
     }
 
     @Test
-    public void shouldNotThrowIllegalArgumentExceptionBecauseJavaScriptContainsAllowedURLAfterHttps() throws IllegalArgumentException, BrowserNotInstalledException {
+    void shouldThrowIllegalArgumentExceptionBecauseURLIsNotAllowed() {
+        JobConfig jobConfig = copyOfBuilder(exampleConfig())
+                .withUrls(Map.of("Some Url", UrlConfig.copyOfBuilder(exampleConfig().urls.values().stream().findFirst().get()).withUrl("https://www.notallowed.org").build()))
+                .build();
+        assertThrows(IllegalArgumentException.class, () -> jLineupRunnerFactory.sanitizeJobConfig(jobConfig));
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionBecauseJavaScriptContainsHttpsURLThatIsNotInTheAllowedPrefixes() {
+        JobConfig jobConfig = copyOfBuilder(exampleConfig())
+                .withUrls(Map.of("Some Url", UrlConfig.copyOfBuilder(exampleConfig().urls.values().stream().findFirst().get()).withJavaScript("fetch('https%25253A%25252F%25252Fwww.example.com');fetch('https%25253A%25252F%25252Fwww.notallowed.com');").build()))
+                .build();
+        assertThrows(IllegalArgumentException.class, () -> jLineupRunnerFactory.sanitizeJobConfig(jobConfig));
+    }
+
+    @Test
+    void shouldNotThrowIllegalArgumentExceptionBecauseJavaScriptContainsAllowedURLAfterHttps() throws IllegalArgumentException, BrowserNotInstalledException {
         // Given
         JobConfig jobConfig = copyOfBuilder(exampleConfig())
                 .withUrls(Map.of("Some Url", UrlConfig.copyOfBuilder(exampleConfig().urls.values().stream().findFirst().get()).withJavaScript("fetch('https%25253A%25252F%25252Fwww.example.com')").build()))
@@ -98,7 +88,7 @@ public class JLineupRunnerFactoryTest {
 
 
     @Test
-    public void shouldNotThrowIllegalArgumentExceptionWhenURLPrefixesAreNotSet() throws BrowserNotInstalledException {
+    void shouldNotThrowIllegalArgumentExceptionWhenURLPrefixesAreNotSet() throws BrowserNotInstalledException {
         // Given
         JobConfig jobConfig = copyOfBuilder(exampleConfig())
                 .withUrls(Map.of("Some Url", UrlConfig.copyOfBuilder(exampleConfig().urls.values().stream().findFirst().get()).withUrl("https://www.notallowed.org").build()))
@@ -111,7 +101,7 @@ public class JLineupRunnerFactoryTest {
     }
 
     @Test
-    public void shouldUseMaxThreadsPerJobIfNoThreadsAreConfigured() throws BrowserNotInstalledException {
+    void shouldUseMaxThreadsPerJobIfNoThreadsAreConfigured() throws BrowserNotInstalledException {
         //Given
         JobConfig jobConfig = copyOfBuilder(exampleConfig())
                 .withThreads(0)
@@ -124,7 +114,7 @@ public class JLineupRunnerFactoryTest {
     }
 
     @Test
-    public void shouldUseDefinedNumberOfThreadsIfConfiguredAndBelowMax() throws BrowserNotInstalledException {
+    void shouldUseDefinedNumberOfThreadsIfConfiguredAndBelowMax() throws BrowserNotInstalledException {
         //Given
         JobConfig jobConfig = copyOfBuilder(exampleConfig())
                 .withThreads(2)
@@ -137,7 +127,7 @@ public class JLineupRunnerFactoryTest {
     }
 
     @Test
-    public void shouldReduceNumberOfThreadsToMax() throws BrowserNotInstalledException {
+    void shouldReduceNumberOfThreadsToMax() throws BrowserNotInstalledException {
         //Given
         JobConfig jobConfig = copyOfBuilder(exampleConfig())
                 .withThreads(200)

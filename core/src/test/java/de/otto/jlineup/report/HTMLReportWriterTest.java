@@ -6,10 +6,12 @@ import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -27,9 +29,9 @@ import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
-public class HTMLReportWriterTest {
+@ExtendWith(MockitoExtension.class)
+class HTMLReportWriterTest {
 
     private HTMLReportWriter testee;
 
@@ -43,16 +45,15 @@ public class HTMLReportWriterTest {
             singletonMap("test", new UrlReport(screenshotComparisonResults, localSummary));
     private final Report report = new Report(summary, screenshotComparisonResultList, JobConfig.exampleConfig());
 
-    @Before
-    public void setup() {
-        initMocks(this);
+    @BeforeEach
+    void setup() {
         testee = new HTMLReportWriter(fileServiceMock);
         when(fileServiceMock.getRecordedContext(anyInt())).thenReturn(ScreenshotContext.of("someUrl", "somePath", DeviceConfig.deviceConfig(1337, 200), before, UrlConfig.urlConfigBuilder().build()));
         when(fileServiceMock.getBrowsers()).thenReturn(ImmutableMap.of(before, "SomeBrowser 1.2.3", after, "SomeBrowser 4.5.6"));
     }
 
     @Test
-    public void shouldRenderHTMLReport() {
+    void shouldRenderHTMLReport() {
 
         //String n = System.getProperty("line.separator");
         String n = "\n";
@@ -82,7 +83,7 @@ public class HTMLReportWriterTest {
     }
 
     @Test
-    public void shouldWriteReport() throws FileNotFoundException {
+    void shouldWriteReport() throws FileNotFoundException {
 
         testee.writeReport(report);
         Mockito.verify(fileServiceMock).writeHtmlReportLegacy(anyString());

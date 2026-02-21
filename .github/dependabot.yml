@@ -35,6 +35,5 @@ updates:
       test-dependencies:
         patterns:
           - "org.junit.*"
-          - "junit:junit:*"
           - "org.mockito.*"
           - "org.hamcrest.*"

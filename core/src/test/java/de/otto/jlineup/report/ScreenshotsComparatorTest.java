@@ -12,11 +12,11 @@ import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.image.ImageService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -32,8 +32,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ScreenshotsComparatorTest {
+@ExtendWith(MockitoExtension.class)
+class ScreenshotsComparatorTest {
 
     private static final int WINDOW_HEIGHT = 1000;
 
@@ -59,8 +59,8 @@ public class ScreenshotsComparatorTest {
     @Mock
     private ImageService imageService;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         runStepConfig = RunStepConfig.runStepConfigBuilder().withWorkingDirectory("src/test/resources").withStep(RunStep.compare).build();
         jobConfig = jobConfigBuilder()
                 .withUrls(ImmutableMap.of(
@@ -75,7 +75,7 @@ public class ScreenshotsComparatorTest {
     }
 
     @Test
-    public void shouldBuildComparisonResults() throws Exception {
+    void shouldBuildComparisonResults() throws Exception {
         //given
         ScreenshotContext screenshotContext = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig).get(0);
         ScreenshotContext screenshotContext2 = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig).get(1);

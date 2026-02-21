@@ -2,17 +2,16 @@ package de.otto.jlineup.cli;
 
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.config.RunStep;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-public class RunRunStepConfigTest {
+class RunRunStepConfigTest {
 
     @Test
-    public void shouldConvertCommandlineParameters() {
-
+    void shouldConvertCommandlineParameters() {
         JLineup commandLineParameters = new JLineup();
         String[] params = {
                 "--screenshot-dir", "someScreenshotDirectory",

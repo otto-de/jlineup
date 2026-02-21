@@ -5,15 +5,13 @@ import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.service.JLineupService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -28,15 +26,13 @@ import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = JLineupWebApplication.class)
 @WebAppConfiguration
-public class ReportControllerTest {
+class ReportControllerTest {
 
     @MockitoBean
     private JLineupService jLineupService;
@@ -46,11 +42,8 @@ public class ReportControllerTest {
 
     private MockMvc mockMvc;
 
-    @Before
-    public void setupMockMvc() {
-
-        initMocks(this);
-
+    @BeforeEach
+    void setupMockMvc() {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(wac)
                 .defaultRequest(get("/")
@@ -59,7 +52,7 @@ public class ReportControllerTest {
     }
 
     @Test
-    public void shouldGetReportsPageWithOrderedReports() throws Exception {
+    void shouldGetReportsPageWithOrderedReports() throws Exception {
 
         //given
         Instant now = Instant.now();

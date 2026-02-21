@@ -13,16 +13,14 @@ import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import org.awaitility.Awaitility;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.TimeUnit;
 
@@ -37,10 +35,9 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {JLineupWebApplication.class, JacksonConfiguration.class})
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-public class JLineupWebApplicationTests {
+class JLineupWebApplicationTests {
 
     @Value("${local.server.port}")
     private Integer port;
@@ -51,8 +48,8 @@ public class JLineupWebApplicationTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         RestAssured.port = port;
         RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
                 (cls, charset) -> objectMapper
@@ -60,11 +57,11 @@ public class JLineupWebApplicationTests {
     }
 
     @Test
-    public void contextLoads() {
+    void contextLoads() {
     }
 
     @Test
-    public void shouldMakeFullJLineupRun() {
+    void shouldMakeFullJLineupRun() {
         JobConfig jobConfig = createTestConfig();
 
         String location = startBeforeRun(jobConfig);
@@ -79,7 +76,7 @@ public class JLineupWebApplicationTests {
     }
 
     @Test
-    public void shouldMakeFullJLineupRunInParallel() {
+    void shouldMakeFullJLineupRunInParallel() {
         JobConfig jobConfig = createTestConfig();
         JobConfig jobConfig2 = createTestConfig();
 
@@ -100,7 +97,7 @@ public class JLineupWebApplicationTests {
     }
 
     @Test
-    public void shouldMakeFullJLineupRunWithMultipleThreads() {
+    void shouldMakeFullJLineupRunWithMultipleThreads() {
         JobConfig jobConfig = jobConfigBuilder().addUrlConfig("https://www.example.com",
                         UrlConfig.urlConfigBuilder()
                                 .withDevices(of(
@@ -120,13 +117,13 @@ public class JLineupWebApplicationTests {
     }
 
     @Test
-    public void shouldFailIfBrowserIsNotConfigured() {
+    void shouldFailIfBrowserIsNotConfigured() {
         JobConfig jobConfig = copyOfBuilder(createTestConfig()).withBrowser(Browser.Type.FIREFOX).build();
         expectStatusCodeForConfig(jobConfig, UNPROCESSABLE_ENTITY.value());
     }
 
     @Test
-    public void shouldFailForForbiddenUrl() {
+    void shouldFailForForbiddenUrl() {
         JobConfig jobConfig = copyOfBuilder(createTestConfig()).addUrlConfig("https://www.forbidden.com", UrlConfig.urlConfigBuilder().build()).build();
         expectStatusCodeForConfig(jobConfig, UNPROCESSABLE_ENTITY.value());
     }

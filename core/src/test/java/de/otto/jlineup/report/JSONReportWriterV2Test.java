@@ -2,11 +2,13 @@ package de.otto.jlineup.report;
 
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.file.FileService;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Collections;
@@ -14,23 +16,22 @@ import java.util.Collections;
 import static de.otto.jlineup.config.JobConfig.exampleConfig;
 import static java.lang.System.lineSeparator;
 import static java.util.Collections.singletonList;
-import static org.mockito.MockitoAnnotations.initMocks;
 
-public class JSONReportWriterV2Test {
+@ExtendWith(MockitoExtension.class)
+class JSONReportWriterV2Test {
 
     private JSONReportWriter_V2 testee;
 
     @Mock
     private FileService fileServiceMock;
 
-    @Before
-    public void setup() {
-        initMocks(this);
+    @BeforeEach
+    void setup() {
         testee = new JSONReportWriter_V2(fileServiceMock);
     }
 
     @Test
-    public void shouldWriteComparisonReportAsJson() throws Exception {
+    void shouldWriteComparisonReportAsJson() throws Exception {
 
         ScreenshotComparisonResult screenshotComparisonResult =
                 new ScreenshotComparisonResult(1887, "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, 0d, "before", "after", "differenceImageFileName", 0);

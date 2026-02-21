@@ -12,14 +12,10 @@ dependencies {
     compileOnly "org.graalvm.nativeimage:svm:${graalvmVersion}"
 
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
-    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
-    testCompileOnly "junit:junit"
-    testImplementation "org.hamcrest:hamcrest"
     testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.hamcrest:hamcrest"
     testImplementation "org.mockito:mockito-core"
-    testImplementation("com.github.stefanbirkner:system-rules:1.19.0") {
-        exclude group: 'junit', module: 'junit-dep'
-    }
+    testImplementation "com.github.stefanbirkner:system-lambda:1.2.1"
 }
 
 project.afterEvaluate {
