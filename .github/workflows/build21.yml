@@ -83,7 +83,7 @@ jobs:
           ./gradlew -DNVD_API_KEY="$NVD_API_KEY" build
       - name: Archive dependency check report
         if: ${{ github.event_name == 'REMOVE_ME_WHEN_DEPENDENCY_CHECK_WORKS_AGAINschedule' }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: dependency-check-report
           path: build/reports/dependency-check-report.html
