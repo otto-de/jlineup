@@ -16,7 +16,7 @@ dependencies {
 
     api "tools.jackson.core:jackson-core"
     api "tools.jackson.core:jackson-databind"
-    api "com.fasterxml.jackson:jackson-annotations"
+    api "com.fasterxml.jackson.core:jackson-annotations"
     api "ch.qos.logback:logback-classic"
     api "com.google.guava:guava:33.5.0-jre"
     api "com.google.code.gson:gson"
