@@ -1,8 +1,9 @@
 package de.otto.jlineup.config;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -10,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class CustomDateDeserializer extends JsonDeserializer<Date> {
+public class CustomDateDeserializer extends ValueDeserializer<Date> {
 
     private static final String COOKIE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX";
     private static final String COOKIE_TIME_FORMAT_3 = "yyyy-MM-dd'T'HH:mm:ssZ";
@@ -24,7 +25,7 @@ public class CustomDateDeserializer extends JsonDeserializer<Date> {
 
     @Override
     public Date deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
-            throws IOException {
+            throws JacksonException {
         if (paramJsonParser == null || "".equals(paramJsonParser.getText()))
             return null;
         String date = paramJsonParser.getText();
@@ -36,6 +37,6 @@ public class CustomDateDeserializer extends JsonDeserializer<Date> {
                 //This page was left blank intentionally
             }
         }
-        throw new IOException("Could not parse date '" + date + "'");
+        throw new RuntimeException("Could not parse date '" + date + "'");
     }
 }

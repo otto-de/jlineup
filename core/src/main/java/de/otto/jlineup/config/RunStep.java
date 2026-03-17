@@ -9,8 +9,10 @@ public enum RunStep {
     compare;
 
     public BrowserStep toBrowserStep() {
-        if (this == before) return BrowserStep.before;
-        else if (this == compare) return BrowserStep.compare;
-        else return BrowserStep.after;
+        return switch (this) {
+            case before -> BrowserStep.before;
+            case compare -> BrowserStep.compare;
+            case after, after_only -> BrowserStep.after;
+        };
     }
 }

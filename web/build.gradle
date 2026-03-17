@@ -3,31 +3,35 @@ apply plugin: 'org.springframework.boot'
 dependencies {
     implementation project(":jlineup-core")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-jetty")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    implementation("org.springframework.boot:spring-boot-starter-json")
     implementation("org.yaml:snakeyaml")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("de.otto.edison:edison-core:3.5.11")
+    implementation("de.otto.edison:edison-core:4.0.3.1")
     implementation("io.micrometer:micrometer-registry-prometheus")
 
     implementation("org.hibernate.validator:hibernate-validator")
     //Update commons-codec
-    implementation("commons-codec:commons-codec")
+    //implementation("commons-codec:commons-codec")
     //Update embedded tomcat
-    implementation("org.apache.tomcat.embed:tomcat-embed-core")
-    implementation("org.apache.tomcat.embed:tomcat-embed-el")
-    implementation("org.apache.tomcat.embed:tomcat-embed-websocket")
+    //implementation("org.apache.tomcat.embed:tomcat-embed-core")
+    //implementation("org.apache.tomcat.embed:tomcat-embed-el")
+    //implementation("org.apache.tomcat.embed:tomcat-embed-websocket")
 
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation('io.rest-assured:rest-assured')
+    testImplementation("org.springframework.boot:spring-boot-starter-restclient")
+    testImplementation("org.springframework.boot:spring-boot-resttestclient")
     testImplementation("org.awaitility:awaitility")
 
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }
 
-configurations.all {
-    exclude group: 'commons-logging', module: 'commons-logging'
-}
+//configurations.all {
+//    exclude group: 'commons-logging', module: 'commons-logging'
+//}
 
 application {
     mainClass.set("de.otto.jlineup.web.JLineupWebApplication")

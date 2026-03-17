@@ -1,13 +1,15 @@
 package de.otto.jlineup.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,12 +31,12 @@ public class RunPersistenceService {
     private static final String RUNS_FILENAME = "runs.json";
 
     private final JLineupWebProperties jLineupWebProperties;
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     @Autowired
-    public RunPersistenceService(JLineupWebProperties jLineupWebProperties, ObjectMapper objectMapper) {
+    public RunPersistenceService(JLineupWebProperties jLineupWebProperties, JsonMapper jsonMapper) {
         this.jLineupWebProperties = jLineupWebProperties;
-        this.objectMapper = objectMapper;
+        this.jsonMapper = jsonMapper;
     }
 
 
@@ -47,7 +49,7 @@ public class RunPersistenceService {
                     .sorted(Map.Entry.<String, JLineupRunStatus>comparingByValue(comparator).reversed())
                     .limit(jLineupWebProperties.getMaxPersistedRuns())
                     .collect(Collectors.toMap(Map.Entry<String, JLineupRunStatus>::getKey, Map.Entry<String, JLineupRunStatus>::getValue));
-            String serializedRuns = objectMapper.writeValueAsString(mapWithLatestEntries);
+            String serializedRuns = jsonMapper.writeValueAsString(mapWithLatestEntries);
             Path path = getRunsFilePath();
             Files.write(path, serializedRuns.getBytes());
         } catch (IOException e) {
@@ -60,7 +62,7 @@ public class RunPersistenceService {
             try {
                 TypeReference<Map<String, JLineupRunStatus>> typeRef = new TypeReference<Map<String, JLineupRunStatus>>() {
                 };
-                Map<String, JLineupRunStatus> loadedRuns = objectMapper.readValue(getRunsFilePath().toFile(), typeRef);
+                Map<String, JLineupRunStatus> loadedRuns = jsonMapper.readValue(getRunsFilePath().toFile(), typeRef);
                 return loadedRuns
                         .entrySet()
                         .stream()
@@ -71,7 +73,7 @@ public class RunPersistenceService {
                         })
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-            } catch (IOException e) {
+            } catch (JacksonException e) {
                 LOG.error("Could not read runs file, it seems to be broken or incompatible. If this problem reappears, delete '{}'.", getRunsFilePath().toString(), e);
             }
         }

@@ -1,11 +1,13 @@
 package de.otto.jlineup.browser;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import de.otto.jlineup.config.Cookie;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.UrlConfig;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +30,7 @@ public final class ScreenshotContext  {
     @JsonIgnore
     public final String urlKey;
 
+    @JsonCreator
     ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, List<Cookie> cookies, BrowserStep step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String urlKey) {
         this.url = url;
         this.urlSubPath = urlSubPath;
@@ -38,11 +41,6 @@ public final class ScreenshotContext  {
         this.fullPathOfReportDir = fullPathOfReportDir;
         this.dontShareBrowser = dontShareBrowser;
         this.urlKey = urlKey;
-    }
-
-    //Used by Jackson
-    private ScreenshotContext() {
-        this(screenshotContextBuilder());
     }
 
     private ScreenshotContext(Builder builder) {
@@ -130,8 +128,8 @@ public final class ScreenshotContext  {
      *
      */
 
-    public int contextHash() {
-        return Objects.hash(urlKey, urlSubPath, deviceConfig, cookies != null ? cookies.stream().filter(Cookie::isScreenshotContextGiving).collect(Collectors.toList()) : null);
+    public String contextHash() {
+        return Integer.toHexString(Objects.hash(urlKey, urlSubPath, deviceConfig, cookies != null ? cookies.stream().filter(Cookie::isScreenshotContextGiving).collect(Collectors.toList()) : null));
     }
 
     public boolean equalsIgnoreStep(ScreenshotContext that) {

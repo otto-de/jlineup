@@ -1,12 +1,10 @@
 package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.json.JsonReadFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.json.JsonMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -23,9 +21,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
-import static com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_COMMENTS;
-import static com.fasterxml.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
-import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
+import static tools.jackson.databind.MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS;
+import static tools.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfig;
 import static de.otto.jlineup.config.DeviceConfig.deviceConfigBuilder;
 import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
@@ -129,19 +126,20 @@ public final class JobConfig  {
     }
 
     public static String prettyPrintWithAllFields(JobConfig jobConfig) {
-        ObjectMapper objectMapper = JsonMapper.builder()
+        JsonMapper jsonMapper = JsonMapper.builder()
                 .configure(JsonReadFeature.ALLOW_TRAILING_COMMA, true)
                 .configure(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS, true)
                 .configure(ACCEPT_CASE_INSENSITIVE_ENUMS, true)
-                .configure(ALLOW_COMMENTS, true)
+                .configure(JsonReadFeature.ALLOW_JAVA_COMMENTS, true)
+                .configure(JsonReadFeature.ALLOW_YAML_COMMENTS, true)
                 .configure(INDENT_OUTPUT, true)
+                .propertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE)
+                .addMixIn(JobConfig.class, JobConfigMixIn.class)
+                .addMixIn(UrlConfig.class, UrlConfigMixIn.class)
                 .build();
-        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE);
-        objectMapper.addMixIn(JobConfig.class, JobConfigMixIn.class);
-        objectMapper.addMixIn(UrlConfig.class, UrlConfigMixIn.class);
         try {
-            return objectMapper.writeValueAsString(jobConfig);
-        } catch (JsonProcessingException e) {
+            return jsonMapper.writeValueAsString(jobConfig);
+        } catch (Exception e) {
             throw new RuntimeException("There is a problem while writing the " + jobConfig.getClass().getCanonicalName() + " with Jackson.", e);
         }
     }

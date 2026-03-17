@@ -7,7 +7,7 @@ import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.xray.AWSXRay;
 import com.amazonaws.xray.AWSXRayRecorderBuilder;
 import com.amazonaws.xray.strategy.sampling.NoSamplingStrategy;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -30,7 +31,7 @@ class JLineupHandlerTest {
 
     private static final Logger logger = LoggerFactory.getLogger(TestLogger.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final JsonMapper jsonMapper = new JsonMapper();
 
     public JLineupHandlerTest() {
             AWSXRayRecorderBuilder builder = AWSXRayRecorderBuilder.standard();
@@ -53,14 +54,14 @@ class JLineupHandlerTest {
         for (ScreenshotContext screenshotContext : screenshotContextsBefore) {
             LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, RunStep.before, screenshotContext.urlKey);
             ByteArrayOutputStream output = new ByteArrayOutputStream();
-            handler.handleRequest(new ByteArrayInputStream(objectMapper.writeValueAsBytes(lambdaRequestPayload)), output, context);
+            handler.handleRequest(new ByteArrayInputStream(jsonMapper.writeValueAsBytes(lambdaRequestPayload)), output, context);
             assertTrue(output.toString().contains("Ok"));
         }
 
         for (ScreenshotContext screenshotContext : screenshotContextsAfter) {
             LambdaRequestPayload lambdaRequestPayload = new LambdaRequestPayload("someId", jobConfig, screenshotContext, RunStep.after_only, screenshotContext.urlKey);
             ByteArrayOutputStream output = new ByteArrayOutputStream();
-            handler.handleRequest(new ByteArrayInputStream(objectMapper.writeValueAsBytes(lambdaRequestPayload)), output, context);
+            handler.handleRequest(new ByteArrayInputStream(jsonMapper.writeValueAsBytes(lambdaRequestPayload)), output, context);
             assertTrue(output.toString().contains("Ok"));
         }
 

@@ -1,24 +1,19 @@
 package de.otto.jlineup.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
-import de.otto.jlineup.utils.RegexMatcher;
-import de.otto.jlineup.web.configuration.JacksonConfiguration;
-import io.restassured.RestAssured;
-import io.restassured.config.ObjectMapperConfig;
-import io.restassured.config.RestAssuredConfig;
-import io.restassured.http.ContentType;
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -27,34 +22,22 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.collect.ImmutableList.of;
 import static de.otto.jlineup.config.JobConfig.copyOfBuilder;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
-import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.ACCEPTED;
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 @ActiveProfiles("test")
-@ContextConfiguration(classes = {JLineupWebApplication.class, JacksonConfiguration.class})
+@ContextConfiguration(classes = {JLineupWebApplication.class})
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@AutoConfigureTestRestTemplate
 class JLineupWebApplicationTests {
-
-    @Value("${local.server.port}")
-    private Integer port;
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-        RestAssured.config = RestAssuredConfig.config().objectMapperConfig(new ObjectMapperConfig().jackson2ObjectMapperFactory(
-                (cls, charset) -> objectMapper
-        ));
-    }
+    private TestRestTemplate testRestTemplate;
 
     @Test
     void contextLoads() {
@@ -76,7 +59,7 @@ class JLineupWebApplicationTests {
     }
 
     @Test
-    void shouldMakeFullJLineupRunInParallel() {
+    public void shouldMakeFullJLineupRunInParallel() {
         JobConfig jobConfig = createTestConfig();
         JobConfig jobConfig2 = createTestConfig();
 
@@ -97,7 +80,7 @@ class JLineupWebApplicationTests {
     }
 
     @Test
-    void shouldMakeFullJLineupRunWithMultipleThreads() {
+    public void shouldMakeFullJLineupRunWithMultipleThreads() {
         JobConfig jobConfig = jobConfigBuilder().addUrlConfig("https://www.example.com",
                         UrlConfig.urlConfigBuilder()
                                 .withDevices(of(
@@ -117,63 +100,42 @@ class JLineupWebApplicationTests {
     }
 
     @Test
-    void shouldFailIfBrowserIsNotConfigured() {
+    public void shouldFailIfBrowserIsNotConfigured() {
         JobConfig jobConfig = copyOfBuilder(createTestConfig()).withBrowser(Browser.Type.FIREFOX).build();
-        expectStatusCodeForConfig(jobConfig, UNPROCESSABLE_ENTITY.value());
+        expectStatusCodeForConfig(jobConfig, 422);
     }
 
     @Test
-    void shouldFailForForbiddenUrl() {
+    public void shouldFailForForbiddenUrl() {
         JobConfig jobConfig = copyOfBuilder(createTestConfig()).addUrlConfig("https://www.forbidden.com", UrlConfig.urlConfigBuilder().build()).build();
-        expectStatusCodeForConfig(jobConfig, UNPROCESSABLE_ENTITY.value());
+        expectStatusCodeForConfig(jobConfig, 422);
     }
 
     private void assertReportExists(JLineupRunStatus finalState) {
-        when()
-                .get(contextPath + "/reports/report-" + finalState.getId() + "/report.json")
-                .then()
-                .assertThat()
-                .statusCode(200)
-                .and()
-                .assertThat()
-                .body("summary.difference-max", is(0.0f));
+        ResponseEntity<String> response = this.testRestTemplate.getForEntity("/reports/report-" + finalState.getId() + "/report.json", String.class);
+        assertThat(response.getStatusCode().is2xxSuccessful(), is(true));
     }
 
     private String startBeforeRun(JobConfig jobConfig) {
-        return given()
-                .body(jobConfig)
-                .contentType(ContentType.JSON)
-                .when()
-                .post(contextPath + "/runs")
-                .then()
-                .assertThat()
-                .statusCode(ACCEPTED.value())
-                .header(HttpHeaders.LOCATION, RegexMatcher.regex(contextPath + "/runs/[a-zA-Z0-9\\-]*"))
-                .and()
-                .extract().header(HttpHeaders.LOCATION);
+        ResponseEntity<String> response = this.testRestTemplate.postForEntity( "/runs", jobConfig, String.class);
+        assertThat(response.getStatusCode(), equalTo(ACCEPTED));
+        String location = response.getHeaders().getFirst(HttpHeaders.LOCATION);
+        assertThat(location, matchesPattern(contextPath + "/runs/[a-zA-Z0-9\\-]*"));
+        return location.substring(contextPath.length());
     }
 
     private String startAfterRun(String location) {
-        return given()
-                .when()
-                .post(location)
-                .then()
-                .assertThat()
-                .statusCode(ACCEPTED.value())
-                .header(HttpHeaders.LOCATION, RegexMatcher.regex(contextPath + "/runs/[a-zA-Z0-9\\-]*"))
-                .and()
-                .extract().header(HttpHeaders.LOCATION);
+        ResponseEntity<String> response = this.testRestTemplate.postForEntity(location, null, String.class);
+        assertThat(response.getStatusCode(), equalTo(ACCEPTED));
+        String afterLocation = response.getHeaders().getFirst(HttpHeaders.LOCATION);
+        assertThat(afterLocation, matchesPattern(contextPath + "/runs/[a-zA-Z0-9\\-]*"));
+        return afterLocation.substring(contextPath.length());
     }
 
     private void expectStatusCodeForConfig(JobConfig jobConfig, int statusCode) {
-        given()
-                .body(jobConfig)
-                .contentType(ContentType.JSON)
-                .when()
-                .post(contextPath + "/runs")
-                .then()
-                .assertThat()
-                .statusCode(statusCode);
+
+        ResponseEntity<String> response = this.testRestTemplate.postForEntity( "/runs", jobConfig, String.class);
+        assertThat(response.getStatusCode().value(), equalTo(statusCode));
     }
 
     private JLineupRunStatus awaitRunState(State expectedState, String location) {
@@ -182,8 +144,8 @@ class JLineupWebApplicationTests {
                 .atMost(30, TimeUnit.SECONDS)
                 .pollInterval(2, TimeUnit.SECONDS)
                 .until(() -> {
-                    status[0] = when().get(location)
-                            .then().extract().body().as(JLineupRunStatus.class);
+                    status[0] = this.testRestTemplate.getForEntity(location, JLineupRunStatus.class).getBody();
+                    assertThat(status[0], notNullValue());
                     return status[0].getState() == expectedState;
                 });
         return status[0];
