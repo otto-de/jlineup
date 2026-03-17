@@ -1,6 +1,6 @@
 package de.otto.jlineup.web;
 
-import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
+import tools.jackson.databind.exc.InvalidDefinitionException;
 import com.google.common.collect.ImmutableMap;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.config.ConfigMerger;

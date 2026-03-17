@@ -3,7 +3,7 @@ package de.otto.jlineup.config;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Objects;
 
@@ -11,7 +11,6 @@ import static de.otto.jlineup.config.JobConfig.*;
 
 @JsonDeserialize(builder = DeviceConfig.Builder.class)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-//@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 public class DeviceConfig  {
 
     static final String DESKTOP_DEVICE_NAME = "DESKTOP";

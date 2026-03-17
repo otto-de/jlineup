@@ -1,6 +1,6 @@
 package de.otto.jlineup.file;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.ScreenshotContext;
 

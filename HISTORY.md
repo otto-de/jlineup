@@ -1,5 +1,13 @@
 # JLineup Release History
 
+## Release 5.0.0-SNAPSHOT - 2026-03-17
+* Breaking change: The context hashes of the screenshot contexts are no integers but hexadecimal strings now.
+                   This should not cause any problems but if you rely on the context hashes for some reason, you might need to adjust your implementation.
+* Feature: You can optionally specify an S3 prefix for the lambda function to store screenshots and reports in a specific folder in your S3 bucket. This
+           can be done by using the `JLINEUP_LAMBDA_S3_PREFIX` environment variable.
+* Update: Spring Boot 4 is used in the web version now, which includes a lot of dependency updates, including Jackson 3.
+* Update: All tests were migrated to JUnit 6
+
 ## Release 4.15.0 - 2026-02-20
 * Feature: Generate report after before step to already see the reference shots.
 * Update: Chrome 145 in lambda function, Selenium 4.41.0

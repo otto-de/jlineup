@@ -14,10 +14,8 @@ dependencies {
         exclude module: "htmlunit"
     }
 
-    api "com.fasterxml.jackson.core:jackson-core"
-    api "com.fasterxml.jackson.core:jackson-annotations"
-    api "com.fasterxml.jackson.core:jackson-databind"
-    api "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+    api "tools.jackson.core:jackson-core"
+    api "tools.jackson.core:jackson-databind"
     api "ch.qos.logback:logback-classic"
     api "com.google.guava:guava:33.5.0-jre"
     api "com.google.code.gson:gson"
@@ -46,9 +44,10 @@ dependencies {
     testImplementation "org.mockito:mockito-core"
 
     testImplementation("org.springframework.boot:spring-boot-starter-web")
-    testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
-    testImplementation("org.apache.tomcat.embed:tomcat-embed-el")
-    testImplementation("org.apache.tomcat.embed:tomcat-embed-websocket")
+    testImplementation("org.springframework.boot:spring-boot-starter-jetty")
+//    testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
+//    testImplementation("org.apache.tomcat.embed:tomcat-embed-el")
+//    testImplementation("org.apache.tomcat.embed:tomcat-embed-websocket")
     testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

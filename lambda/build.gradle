@@ -33,8 +33,14 @@ dependencies {
     runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.2"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api"
-    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testImplementation "org.mockito:mockito-core:5.8.0"
+    testImplementation "org.mockito:mockito-inline:5.2.0"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 application {
