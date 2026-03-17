@@ -54,8 +54,8 @@ public class JLineupHandler implements RequestStreamHandler {
     public void handleRequest(InputStream input, OutputStream output, Context context) {
         try {
             LambdaRequestPayload event = jsonMapper.readValue(input, LambdaRequestPayload.class);
-            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext).withStep(event.step.toBrowserStep()).withUrlKey(event.urlKey).withUrlConfig(event.jobConfig.urls.get(event.screenshotContext.urlKey)).build();
-            LambdaRunner runner = createRun(event.runId, event.step == RunStep.after ? RunStep.after_only : event.step, event.jobConfig, screenshotContext);
+            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext()).withStep(event.step().toBrowserStep()).withUrlKey(event.urlKey()).withUrlConfig(event.jobConfig().urls.get(event.screenshotContext().urlKey)).build();
+            LambdaRunner runner = createRun(event.runId(), event.step() == RunStep.after ? RunStep.after_only : event.step(), event.jobConfig(), screenshotContext);
             int retries = runner.run();
 
             AwsCredentialsProviderChain cp = AwsCredentialsProviderChain
@@ -74,7 +74,7 @@ public class JLineupHandler implements RequestStreamHandler {
             transferManager = S3TransferManager.builder().s3Client(S3AsyncClient.crtBuilder().credentialsProvider(cp).build()).build();
 
             Path logfile = Paths.get(getFullPathOfReportDir(runner.getRunStepConfig()) + "/" + LOGFILE_NAME);
-            Path workingDir = Paths.get("/tmp/jlineup/run-" + event.runId);
+            Path workingDir = Paths.get("/tmp/jlineup/run-" + event.runId());
             if (Files.exists(logfile)) {
                 Files.move(logfile, Paths.get(getFullPathOfReportDir(runner.getRunStepConfig()) + "/context_" + screenshotContext.contextHash() + "_" + LOGFILE_NAME));
             }
