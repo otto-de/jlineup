@@ -10,7 +10,7 @@ import static de.otto.jlineup.file.FileService.FILE_SEPARATOR;
 
 public class ScreenshotComparisonResult {
 
-    public final int contextHash;
+    public final String contextHash;
     @JsonProperty("url")
     public final String fullUrlWithPath;
     public final DeviceConfig deviceConfig;
@@ -22,7 +22,7 @@ public class ScreenshotComparisonResult {
     public final String differenceImageFileName;
     public final int acceptedDifferentPixels;
 
-    public ScreenshotComparisonResult(int contextHash, String fullUrlWithPath, DeviceConfig deviceConfig, int verticalScrollPosition, double difference, double maxDetectedColorDifference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName, int acceptedDifferentPixels) {
+    public ScreenshotComparisonResult(String contextHash, String fullUrlWithPath, DeviceConfig deviceConfig, int verticalScrollPosition, double difference, double maxDetectedColorDifference, String screenshotBeforeFileName, String screenshotAfterFileName, String differenceImageFileName, int acceptedDifferentPixels) {
         this.contextHash = contextHash;
         this.fullUrlWithPath = fullUrlWithPath;
         this.deviceConfig = deviceConfig;
@@ -58,11 +58,11 @@ public class ScreenshotComparisonResult {
         return fileName.replace(FILE_SEPARATOR, "/");
     }
 
-    public static ScreenshotComparisonResult noBeforeImageComparisonResult(int contextHash, String url, DeviceConfig deviceConfig, int verticalScrollPosition, String screenshotAfterFileName) {
+    public static ScreenshotComparisonResult noBeforeImageComparisonResult(String contextHash, String url, DeviceConfig deviceConfig, int verticalScrollPosition, String screenshotAfterFileName) {
         return new ScreenshotComparisonResult(contextHash, url, deviceConfig, verticalScrollPosition, 1d, 0d, null, screenshotAfterFileName, null, 0);
     }
 
-    public static ScreenshotComparisonResult noAfterImageComparisonResult(int contextHash, String url, DeviceConfig deviceConfig, int verticalScrollPosition, String screenshotBeforeFileName) {
+    public static ScreenshotComparisonResult noAfterImageComparisonResult(String contextHash, String url, DeviceConfig deviceConfig, int verticalScrollPosition, String screenshotBeforeFileName) {
         return new ScreenshotComparisonResult(contextHash, url, deviceConfig, verticalScrollPosition, 1d, 0d, screenshotBeforeFileName, null, null, 0);
     }
 
@@ -87,7 +87,7 @@ public class ScreenshotComparisonResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ScreenshotComparisonResult that = (ScreenshotComparisonResult) o;
-        return contextHash == that.contextHash && verticalScrollPosition == that.verticalScrollPosition && Double.compare(difference, that.difference) == 0 && Double.compare(maxDetectedColorDifference, that.maxDetectedColorDifference) == 0 && acceptedDifferentPixels == that.acceptedDifferentPixels && Objects.equals(fullUrlWithPath, that.fullUrlWithPath) && Objects.equals(deviceConfig, that.deviceConfig) && Objects.equals(screenshotBeforeFileName, that.screenshotBeforeFileName) && Objects.equals(screenshotAfterFileName, that.screenshotAfterFileName) && Objects.equals(differenceImageFileName, that.differenceImageFileName);
+        return Objects.equals(contextHash, that.contextHash) && verticalScrollPosition == that.verticalScrollPosition && Double.compare(difference, that.difference) == 0 && Double.compare(maxDetectedColorDifference, that.maxDetectedColorDifference) == 0 && acceptedDifferentPixels == that.acceptedDifferentPixels && Objects.equals(fullUrlWithPath, that.fullUrlWithPath) && Objects.equals(deviceConfig, that.deviceConfig) && Objects.equals(screenshotBeforeFileName, that.screenshotBeforeFileName) && Objects.equals(screenshotAfterFileName, that.screenshotAfterFileName) && Objects.equals(differenceImageFileName, that.differenceImageFileName);
     }
 
     @Override

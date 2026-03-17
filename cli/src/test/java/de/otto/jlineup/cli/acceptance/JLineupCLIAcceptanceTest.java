@@ -374,7 +374,7 @@ class JLineupCLIAcceptanceTest {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
 
         FileTracker fileTracker = JacksonWrapper.readFileTrackerFile(new File(tempDirectory.toString() + "/report/files.json"));
-        Set<Map.Entry<Integer, ScreenshotContextFileTracker>> entries = fileTracker.getContexts().entrySet();
+        Set<Map.Entry<String, ScreenshotContextFileTracker>> entries = fileTracker.getContexts().entrySet();
         String screenshotFileName = entries.stream().findFirst().get().getValue().screenshots.values().stream().findFirst().get().get(BrowserStep.before);
 
         FileTime lastModifiedTimeBeforeSecondRun = Files.getLastModifiedTime(Paths.get(tempDirectory.toString(), "report", "screenshots", screenshotFileName));

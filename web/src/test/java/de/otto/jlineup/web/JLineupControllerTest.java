@@ -1,6 +1,6 @@
 package de.otto.jlineup.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.service.BrowserNotInstalledException;
@@ -8,21 +8,16 @@ import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.service.RunNotFoundException;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
-import de.otto.jlineup.web.configuration.JacksonConfiguration;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
-import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -40,30 +35,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 @ExtendWith(MockitoExtension.class)
-@JsonTest
-@AutoConfigureJsonTesters
-@ContextConfiguration(classes = JacksonConfiguration.class)
 class JLineupControllerTest {
 
     @Mock
     private JLineupService jLineupService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
+
+    private AutoCloseable autoCloseable;
 
     private MockMvc mvc;
 
     @BeforeEach
     void setUp() {
-        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new
-                MappingJackson2HttpMessageConverter();
-        mappingJackson2HttpMessageConverter.setObjectMapper(objectMapper);
+        jsonMapper = JacksonWrapper.jsonMapper();
         JLineupController jLineupController = new JLineupController(jLineupService, new JLineupWebProperties());
-        mvc = standaloneSetup(jLineupController).setMessageConverters(mappingJackson2HttpMessageConverter).build();
+        mvc = standaloneSetup(jLineupController).setMessageConverters(new JacksonJsonHttpMessageConverter(jsonMapper)).build();
     }
 
     @Test
-    void shouldReturn404WhenRunNotFound() throws Exception {
+    public void shouldReturn404WhenRunNotFound() throws Exception {
         // given
         String someRunId = UUID.randomUUID().toString();
         when(jLineupService.getRun(someRunId)).thenReturn(Optional.empty());
@@ -79,7 +70,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldReturnRun() throws Exception {
+    public void shouldReturnRun() throws Exception {
         // given
         String someRunId = UUID.randomUUID().toString();
         when(jLineupService.getRun(someRunId)).thenReturn(Optional.of(runStatusBuilder()
@@ -99,7 +90,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldReturn404IfRunIdIsNoValidUUID() throws Exception {
+    public void shouldReturn404IfRunIdIsNoValidUUID() throws Exception {
         // when
         ResultActions result = mvc
                 .perform(get("/testContextPath/runs/someId")
@@ -111,7 +102,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldIncludeLinksWithContextPath() throws Exception {
+    public void shouldIncludeLinksWithContextPath() throws Exception {
         // given
         Instant startTime = Instant.ofEpochMilli(1000);
         String someRunId = UUID.randomUUID().toString();
@@ -141,7 +132,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldStartNewRun() throws Exception {
+    public void shouldStartNewRun() throws Exception {
 
         // given
         JobConfig jobConfig = exampleConfig();
@@ -165,7 +156,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldParseConfigWithCookie() throws Exception {
+    public void shouldParseConfigWithCookie() throws Exception {
 
         String realWorldConfig = "{\n" +
                 "  \"name\": \"promo-shoppromo\",\n" +
@@ -231,7 +222,7 @@ class JLineupControllerTest {
                 "}\n";
 
         // given
-        JLineupRunStatus run = runStatusBuilder().withId("someNewId").withJobConfig(objectMapper.readValue(realWorldConfig, JobConfig.class)).withState(State.BEFORE_RUNNING).build();
+        JLineupRunStatus run = runStatusBuilder().withId("someNewId").withJobConfig(jsonMapper.readValue(realWorldConfig, JobConfig.class)).withState(State.BEFORE_RUNNING).build();
         when(jLineupService.startBeforeRun(any())).thenReturn(run);
 
         // when
@@ -252,7 +243,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldReturn400WhenConfigIsMissing() throws Exception {
+    public void shouldReturn400WhenConfigIsMissing() throws Exception {
 
         // when
         ResultActions result = mvc
@@ -266,7 +257,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldStartAfterRun() throws Exception {
+    public void shouldStartAfterRun() throws Exception {
 
         // given
         String someRunId = UUID.randomUUID().toString();
@@ -286,7 +277,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldReturn404ForAfterStepWhenRunIsUnknown() throws Exception {
+    public void shouldReturn404ForAfterStepWhenRunIsUnknown() throws Exception {
 
         // given
         String unknownRunId = UUID.randomUUID().toString();
@@ -304,7 +295,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldReturn404ForAfterStepWhenRunIdIsInvalid() throws Exception {
+    public void shouldReturn404ForAfterStepWhenRunIdIsInvalid() throws Exception {
 
         // given
         String runId = "noValidUUID";
@@ -321,7 +312,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldReturn412ForAfterStepWhenRunIsNotReadyForAfterStep() throws Exception {
+    public void shouldReturn412ForAfterStepWhenRunIsNotReadyForAfterStep() throws Exception {
 
         // given
         String runInInvalidStateId = UUID.randomUUID().toString();
@@ -341,7 +332,7 @@ class JLineupControllerTest {
     }
 
     @Test
-    void shouldReturn422ForUnsupportedBrowser() throws Exception {
+    public void shouldReturn422ForUnsupportedBrowser() throws Exception {
 
         // given
         JobConfig jobConfig = exampleConfig();
@@ -355,12 +346,12 @@ class JLineupControllerTest {
 
         // then
         result
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isUnprocessableContent())
                 .andExpect(content().string(containsString(jobConfig.browser.name())));
     }
 
     @Test
-    void shouldReturn422IfConfigValidationFails() throws Exception {
+    public void shouldReturn422IfConfigValidationFails() throws Exception {
 
         // given
         JobConfig jobConfig = JobConfig.copyOfBuilder(exampleConfig()).withUrls(null).build();
@@ -374,7 +365,7 @@ class JLineupControllerTest {
 
         // then
         result
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isUnprocessableContent())
                 .andExpect(content().string(containsString("Validation message")));
     }
 

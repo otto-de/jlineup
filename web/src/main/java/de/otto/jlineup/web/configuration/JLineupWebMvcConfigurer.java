@@ -1,14 +1,16 @@
 package de.otto.jlineup.web.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import de.otto.jlineup.JacksonWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,24 +20,16 @@ import java.util.List;
 import static java.lang.invoke.MethodHandles.lookup;
 
 @Configuration
-public class JLineupWebMvcConfigurationSupport extends WebMvcConfigurationSupport {
+public class JLineupWebMvcConfigurer implements WebMvcConfigurer {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
     private final JLineupWebProperties properties;
 
     @Autowired
-    public JLineupWebMvcConfigurationSupport(ObjectMapper objectMapper, JLineupWebProperties properties) {
-        super();
-        this.objectMapper = objectMapper;
+    public JLineupWebMvcConfigurer(JLineupWebProperties properties) {
+        this.jsonMapper = JacksonWrapper.jsonMapper();
         this.properties = properties;
-    }
-
-    @Override
-    public void configureMessageConverters(final List<HttpMessageConverter<?>> converters) {
-        converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
-        addDefaultHttpMessageConverters(converters);
-        super.configureMessageConverters(converters);
     }
 
     @Override
@@ -52,4 +46,8 @@ public class JLineupWebMvcConfigurationSupport extends WebMvcConfigurationSuppor
                 .setCachePeriod(0);
     }
 
+    @Override
+    public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
+        builder.withJsonConverter(new JacksonJsonHttpMessageConverter(jsonMapper));
+    }
 }

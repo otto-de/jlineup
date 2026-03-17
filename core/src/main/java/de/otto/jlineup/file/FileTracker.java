@@ -1,5 +1,6 @@
 package de.otto.jlineup.file;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.otto.jlineup.browser.BrowserStep;
@@ -15,17 +16,11 @@ public class FileTracker {
 
     public final JobConfig jobConfig;
     @JsonMerge
-    public final ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts;
+    public final ConcurrentHashMap<String, ScreenshotContextFileTracker> contexts;
     public final ConcurrentHashMap<BrowserStep, String> browsers;
 
-    //Used by Jackson
-    private FileTracker() {
-        jobConfig = null;
-        contexts = null;
-        browsers = null;
-    }
-
-    public FileTracker(JobConfig jobConfig, ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts, ConcurrentHashMap<BrowserStep, String> browsers) {
+    @JsonCreator
+    public FileTracker(JobConfig jobConfig, ConcurrentHashMap<String, ScreenshotContextFileTracker> contexts, ConcurrentHashMap<BrowserStep, String> browsers) {
         this.jobConfig = jobConfig;
         this.contexts = contexts;
         this.browsers = browsers;
@@ -66,7 +61,7 @@ public class FileTracker {
         return jobConfig;
     }
 
-    public ConcurrentHashMap<Integer, ScreenshotContextFileTracker> getContexts() {
+    public ConcurrentHashMap<String, ScreenshotContextFileTracker> getContexts() {
         return contexts;
     }
 
@@ -90,12 +85,12 @@ public class FileTracker {
         return new FileTracker(jobConfig, new ConcurrentHashMap<>(), new ConcurrentHashMap<>());
     }
 
-    public ScreenshotContextFileTracker getScreenshotContextFileTracker(int hash) {
+    public ScreenshotContextFileTracker getScreenshotContextFileTracker(String hash) {
         assert contexts != null;
         return contexts.get(hash);
     }
 
-    public Map<Integer, Map<BrowserStep, String>> getScreenshotsForContext(int hash) throws IOException {
+    public Map<Integer, Map<BrowserStep, String>> getScreenshotsForContext(String hash) throws IOException {
         assert contexts != null;
         ScreenshotContextFileTracker screenshotContextFileTracker = contexts.get(hash);
         if (screenshotContextFileTracker == null) {
@@ -139,7 +134,7 @@ public class FileTracker {
 
     public static final class Builder {
         private JobConfig jobConfig;
-        private ConcurrentHashMap<Integer, ScreenshotContextFileTracker> contexts;
+        private ConcurrentHashMap<String, ScreenshotContextFileTracker> contexts;
         private ConcurrentHashMap<BrowserStep, String> browsers;
 
         private Builder() {
@@ -150,7 +145,7 @@ public class FileTracker {
             return this;
         }
 
-        public Builder withContexts(ConcurrentHashMap<Integer, ScreenshotContextFileTracker> val) {
+        public Builder withContexts(ConcurrentHashMap<String, ScreenshotContextFileTracker> val) {
             contexts = val;
             return this;
         }

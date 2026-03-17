@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 
 public class ContextReport {
 
-    public final int contextHash;
+    public final String contextHash;
     public final Summary summary;
     public final List<ScreenshotComparisonResult> results;
     public final ScreenshotContext screenshotContext;
 
-    public ContextReport(int contextHash, ScreenshotContext screenshotContext, Summary summary, List<ScreenshotComparisonResult> results) {
+    public ContextReport(String contextHash, ScreenshotContext screenshotContext, Summary summary, List<ScreenshotComparisonResult> results) {
         this.contextHash = contextHash;
         this.screenshotContext = screenshotContext;
         this.summary = summary;
@@ -42,7 +42,7 @@ public class ContextReport {
     }
 
     @UsedInTemplate
-    public int getContextHash() {
+    public String getContextHash() {
         return contextHash;
     }
 
@@ -123,7 +123,7 @@ public class ContextReport {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ContextReport that = (ContextReport) o;
-        return contextHash == that.contextHash && Objects.equals(summary, that.summary) && Objects.equals(results, that.results) && Objects.equals(screenshotContext, that.screenshotContext);
+        return Objects.equals(contextHash, that.contextHash) && Objects.equals(summary, that.summary) && Objects.equals(results, that.results) && Objects.equals(screenshotContext, that.screenshotContext);
     }
 
     @Override

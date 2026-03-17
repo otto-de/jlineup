@@ -1,6 +1,7 @@
 package de.otto.jlineup.report;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.PropertyNamingStrategy;
 import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.file.FileService;
 
@@ -8,7 +9,7 @@ import java.io.FileNotFoundException;
 
 public class JSONReportWriter_V2 implements JSONReportWriter {
 
-    private final static PropertyNamingStrategy NAMING_STRATEGY = PropertyNamingStrategy.KEBAB_CASE;
+    private final static PropertyNamingStrategy NAMING_STRATEGY = PropertyNamingStrategies.KEBAB_CASE;
 
     private final FileService fileService;
 

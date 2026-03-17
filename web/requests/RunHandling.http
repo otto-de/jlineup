@@ -1,0 +1,71 @@
+### Start exampleRun
+GET http://localhost:8080/exampleRun
+
+> {%
+    client.log(`Example run response: ${response.body}`)
+%}
+
+### Start run with given configuration
+POST http://localhost:8080/runs
+Content-Type: application/json
+
+{
+  "name": "example",
+  "urls": {
+    "EXAMPLE_COM": {
+      "url": "https://www.example.com",
+      "paths": [
+        "/"
+      ]
+    }
+  },
+  "merge-config": {
+    "urls": {
+      ".*": {
+        "max-diff": 0.0,
+        "ignore-anti-aliasing": true,
+        "cookies": [
+        ],
+        "window-widths": [
+          320,
+          992
+        ],
+        "http-check": {
+          "enabled": true,
+          "allowed-codes": [
+            200
+          ]
+        }
+      }
+    }
+  },
+  "browser": "chrome-headless",
+  "check-for-errors-in-log":false,
+  "wait-after-page-load": 5.0,
+  "page-load-timeout": 120,
+  "window-height": 1000,
+  "timeout": 600
+}
+
+> {%
+    client.global.set("run_id", response.body.id);
+    client.log(`Run ID: ${client.global.get("run_id")}`);
+%}
+
+### Get run status
+< {%
+    request.variables.set("run_id", client.global.get("run_id"));
+%}
+GET http://localhost:8080/runs/{{run_id}}
+
+### Get run status for explicit run id
+GET http://localhost:8080/runs/924eacd6-7604-4d13-a21c-3d35e0d84d8d
+
+### Start after run
+< {%
+    request.variables.set("run_id", client.global.get("run_id"));
+%}
+POST http://localhost:8080/runs/{{run_id}}
+
+### Start after run for explicit run id
+POST http://localhost:8080/runs/8bbc397b-9528-4568-818e-f7018a2addc5

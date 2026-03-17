@@ -31,13 +31,14 @@ class JSONReportWriterV1Test {
     void shouldWriteComparisonReportAsJson() throws Exception {
 
         ScreenshotComparisonResult screenshotComparisonResult =
-                new ScreenshotComparisonResult(1887, "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, 0d, "before", "after", "differenceImageFileName", 0);
+                new ScreenshotComparisonResult("1887", "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, 0d, "before", "after", "differenceImageFileName", 0);
         final Summary localSummary = new Summary(false, 0d, 0d, 0);
         final Summary globalSummary = new Summary(false, 0d, 0d, 0);
         Report report = new Report(globalSummary, singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), JobConfig.exampleConfig());
 
         String expectedString = "[ {" + lineSeparator() +
-                "  \"contextHash\" : 1887," + lineSeparator() +
+                "  \"contextHash\" : \"1887\"," + lineSeparator() +
+                "  \"url\" : \"url\"," + lineSeparator() +
                 "  \"deviceConfig\" : {" + lineSeparator() +
                 "    \"width\" : 1337," + lineSeparator() +
                 "    \"height\" : 1887," + lineSeparator() +
@@ -51,8 +52,7 @@ class JSONReportWriterV1Test {
                 "  \"screenshotBeforeFileName\" : \"before\"," + lineSeparator() +
                 "  \"screenshotAfterFileName\" : \"after\"," + lineSeparator() +
                 "  \"differenceImageFileName\" : \"differenceImageFileName\"," + lineSeparator() +
-                "  \"acceptedDifferentPixels\" : 0," + lineSeparator() +
-                "  \"url\" : \"url\"" + lineSeparator() +
+                "  \"acceptedDifferentPixels\" : 0" + lineSeparator() +
                 "} ]";
 
         testee.writeComparisonReportAsJson(report);

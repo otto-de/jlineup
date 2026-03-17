@@ -78,11 +78,11 @@ public class HTMLReportWriter {
         Map<String, Object> variables = new HashMap<>();
         List<ScreenshotComparisonResultContext> screenshotComparisonResultContexts = new LinkedList<>();
 
-        int lastContextKey = 0;
+        String lastContextKey = "0";
         ScreenshotComparisonResultContext currentContext = null;
         for (ScreenshotComparisonResult screenshotComparisonResult : screenshotComparisonResults) {
-            int context = getContextHash(screenshotComparisonResult);
-            if (context != lastContextKey) {
+            String context = getContextHash(screenshotComparisonResult);
+            if (!lastContextKey.equals(context)) {
                 lastContextKey = context;
                 currentContext = new ScreenshotComparisonResultContext(screenshotComparisonResult.contextHash);
                 screenshotComparisonResultContexts.add(currentContext);
@@ -107,7 +107,7 @@ public class HTMLReportWriter {
         variables.put("legend_different_size_rgb", "#" + Integer.toHexString(ImageService.DIFFERENT_SIZE_COLOR).substring(2));
     }
 
-    private int getContextHash(final ScreenshotComparisonResult screenshotComparisonResult) {
+    private String getContextHash(final ScreenshotComparisonResult screenshotComparisonResult) {
         return screenshotComparisonResult.contextHash;
     }
 
@@ -120,10 +120,10 @@ public class HTMLReportWriter {
 
         private final List<ScreenshotComparisonResult> results;
         private final ScreenshotContext screenshotContext;
-        private final int contextHash;
+        private final String contextHash;
         private final Map<BrowserStep, String> browsers;
 
-        ScreenshotComparisonResultContext(final int contextHash) {
+        ScreenshotComparisonResultContext(final String contextHash) {
             this.results = new LinkedList<>();
             this.screenshotContext = fileService.getRecordedContext(contextHash);
             this.contextHash = contextHash;
@@ -135,7 +135,7 @@ public class HTMLReportWriter {
         }
 
         @UsedInTemplate
-        public int getContextHash() {
+        public String getContextHash() {
             return contextHash;
         }
 
