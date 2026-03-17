@@ -1,5 +1,6 @@
 package de.otto.jlineup.lambda;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
@@ -16,21 +17,13 @@ public class LambdaRequestPayload {
     //Also step is not in ScreenshotContext because of to JsonIgnore
     public final RunStep step;
 
-
+    @JsonCreator
     public LambdaRequestPayload(String runId, JobConfig jobConfig, ScreenshotContext screenshotContext, RunStep step, String urlKey) {
         this.runId = runId;
         this.jobConfig = jobConfig;
         this.screenshotContext = screenshotContext;
         this.urlKey = urlKey;
         this.step = step;
-    }
-
-    public LambdaRequestPayload() {
-        runId = null;
-        jobConfig = null;
-        screenshotContext = null;
-        urlKey = null;
-        step = null;
     }
 
 }
