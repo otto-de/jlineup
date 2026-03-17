@@ -26,7 +26,7 @@ plugins {
 //\
 ///\
 ////\
-def jlineup_version = "5.0.0"
+def jlineup_version = "5.0.1-SNAPSHOT"
 /////
 ////
 ///
@@ -73,6 +73,9 @@ jreleaser {
                     active = 'ALWAYS'
                     url = 'https://central.sonatype.com/api/v1/publisher'
                     stagingRepository('build/staging-deploy')
+
+                    connectTimeout = 100
+                    readTimeout = 300
 
                     // Time to wait between state transition checks, in seconds.
                     // Defaults to `10`.
@@ -245,6 +248,5 @@ static String runCommand(command) {
     if (errorlevel != 0) {
         throw new RuntimeException("exec failed on command: '${command}' with errorlevel ${errorlevel}".toString())
     }
-    //System.err.println("Git Hash: " + out.toString().trim())
     out.toString().trim()
 }
