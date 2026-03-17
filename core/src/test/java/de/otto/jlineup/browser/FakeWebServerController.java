@@ -20,7 +20,7 @@ public class FakeWebServerController {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
-    @GetMapping({"/200", "/200/ "})
+    @GetMapping({"/200", "/200/"})
     public ResponseEntity<String> get200() {
         return new ResponseEntity<>("This is 200!", HttpStatus.OK);
     }

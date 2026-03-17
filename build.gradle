@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '3.5.11'
+        springBootVersion = '4.0.3'
         seleniumVersion = '4.41.0'
         graalvmVersion = '25.0.2'
         picoCliVersion = '4.7.7'
@@ -19,14 +19,14 @@ buildscript {
 
 plugins {
     id "com.github.johnrengelman.shadow" version "8.1.1"
-    id 'org.jreleaser' version '1.22.0'
+    id 'org.jreleaser' version '1.23.0'
 }
 
 //
 //\
 ///\
 ////\
-def jlineup_version = "4.15.1-SNAPSHOT"
+def jlineup_version = "5.0.0-SNAPSHOT"
 /////
 ////
 ///
@@ -105,6 +105,15 @@ subprojects {
     repositories {
         mavenLocal()
         mavenCentral()
+        maven {
+            name = "otto-de-packages"
+            url = uri("https://maven.pkg.github.com/otto-de/edison-microservice")
+            credentials {
+                username = findProperty("github_username")  ?: System.getenv("FKT_GITHUB_USER") ?: System.getenv("GITHUB_USERNAME")
+                password = findProperty("github_token") ?: System.getenv("FKT_GITHUB_TOKEN") ?: System.getenv("GITHUB_TOKEN")
+            }
+
+        }
     }
 
     task allDeps(type: DependencyReportTask) {}

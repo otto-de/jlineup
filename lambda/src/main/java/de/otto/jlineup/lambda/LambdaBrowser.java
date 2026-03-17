@@ -1,10 +1,11 @@
 package de.otto.jlineup.lambda;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import org.jspecify.annotations.NonNull;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.google.common.base.Strings;
 import de.otto.jlineup.GlobalOption;
 import de.otto.jlineup.GlobalOptions;
@@ -44,7 +45,7 @@ public class LambdaBrowser implements CloudBrowser {
     private final RunStepConfig runStepConfig;
     private final ExecutorService executor = Executors.newCachedThreadPool(Utils.createThreadFactory("LambdaBrowserSupervisorThread"));
 
-    private final ObjectMapper objectMapper = JsonMapper.builder()
+    private final JsonMapper jsonMapper = JsonMapper.builder()
             .configure(MapperFeature.USE_ANNOTATIONS, false)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .build();
@@ -65,7 +66,8 @@ public class LambdaBrowser implements CloudBrowser {
 
         LOG.info("Starting {} lambda calls for run '{}'...", screenshotContexts.size(), runId);
         final String s3Bucket;
-        DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.create();
+        final String s3Prefix;
+        DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
         try (LambdaClient lambdaClient = LambdaClient.builder()
                 .credentialsProvider(credentialsProvider)
                 .region(Region.EU_CENTRAL_1)
@@ -81,7 +83,14 @@ public class LambdaBrowser implements CloudBrowser {
                     .environment()
                     .variables()
                     .get(GlobalOption.JLINEUP_LAMBDA_S3_BUCKET.name());
-            LOG.info("Using S3 bucket: {}", s3Bucket);
+            s3Prefix = lambdaClient.getFunction(GetFunctionRequest.builder()
+                            .functionName(GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME))
+                            .build())
+                    .configuration()
+                    .environment()
+                    .variables()
+                    .get(GlobalOption.JLINEUP_LAMBDA_S3_PREFIX.name());
+            LOG.info("Using S3 prefix: {}", s3Prefix);
             for (ScreenshotContext screenshotContext : screenshotContexts) {
                 Future<InvokeResponse> invokeResponseFuture = invokeLambdaAndGetInvokeResponseFuture(screenshotContext, runId, lambdaClient);
                 lambdaCalls.put(screenshotContext, invokeResponseFuture);
@@ -133,35 +142,36 @@ public class LambdaBrowser implements CloudBrowser {
             throw new RuntimeException(e);
         }
 
-        LOG.info("All lambda calls finished, starting download from S3 with transfer manager...");
-        CompletableFuture<CompletedDirectoryDownload> download;
-        Path localFolderOfS3Content = Paths.get(this.runStepConfig.getWorkingDirectory(), this.runStepConfig.getReportDirectory(), "lambda-s3");
-        try (S3TransferManager transferManager = S3TransferManager.builder().s3Client(S3AsyncClient.crtBuilder().credentialsProvider(credentialsProvider).build()).build()) {
-            download = transferManager.downloadDirectory(d -> d.bucket(s3Bucket).listObjectsV2RequestTransformer(l -> l.prefix("jlineup-" + runId)).destination(localFolderOfS3Content)).completionFuture();
-        }
-        LOG.info("Waiting for download to finish...");
-        try {
-            download.get();
-        } catch (Exception e) {
-            LOG.error("S3 Download failed", e);
-            throw new RuntimeException(e);
-        }
-        LOG.info("Download finished, merging context file trackers into file tracker...");
+        Path localFolderOfS3Content = downloadFilesFromS3(credentialsProvider, s3Bucket, s3Prefix, runId);
+        mergeLambdaContextsIntoLocalFileStructure(localFolderOfS3Content);
 
+
+        LOG.info("Cleaning up temporary downloaded files...");
+        fileService.deleteRecursively(localFolderOfS3Content);
+        LOG.info("All done. :D");
+
+        executor.shutdownNow();
+    }
+
+    private void mergeLambdaContextsIntoLocalFileStructure(Path localFolderOfS3Content) throws IOException {
+        LOG.info("Merging context file trackers into file tracker...");
         fileService.mergeContextFileTrackersIntoFileTracker(localFolderOfS3Content, (d, name) -> name.startsWith("files_") && name.endsWith(".json"));
         Arrays.stream(Objects.requireNonNull(localFolderOfS3Content.toFile().listFiles()))
                 .forEach(f -> {
                     try {
                         if (f.isDirectory()) {
-                            Arrays.stream(f.listFiles()).toList().forEach(ff -> {
+                            Arrays.stream(Objects.requireNonNull(f.listFiles())).toList().forEach(ff -> {
                                 try {
                                     Files.createDirectories(Paths.get(this.runStepConfig.getWorkingDirectory(), this.runStepConfig.getScreenshotsDirectory(), f.getName()));
                                     Files.move(ff.toPath(), Paths.get(this.runStepConfig.getWorkingDirectory(), this.runStepConfig.getScreenshotsDirectory(), f.getName(), ff.getName()), StandardCopyOption.REPLACE_EXISTING);
                                 } catch (IOException e) {
+                                    LOG.error(e.getMessage(), e);
                                     throw new RuntimeException(e);
                                 }
                             });
-                            f.delete();
+                            if (!f.delete()) {
+                                LOG.warn("Could not delete temporary folder {}", f.getAbsolutePath());
+                            }
                         } else if (f.getName().endsWith(".log")) {
                             Path lambdaLogPath = Paths.get(this.runStepConfig.getWorkingDirectory(), this.runStepConfig.getReportDirectory(),
                                     "lambda.log");
@@ -174,23 +184,52 @@ public class LambdaBrowser implements CloudBrowser {
                                 Files.write(lambdaLogPath, "\n---\n\n".getBytes(), StandardOpenOption.APPEND);
                             }
                             Files.write(lambdaLogPath, Files.readAllBytes(f.toPath()), StandardOpenOption.APPEND);
-                            f.delete();
+                            if (!f.delete()) {
+                                LOG.warn("Could not delete temporary file {}", f.getAbsolutePath());
+                            }
                         } else {
                             Files.move(f.toPath(), Paths.get(this.runStepConfig.getWorkingDirectory(), this.runStepConfig.getScreenshotsDirectory(),
                                     f.getName()), StandardCopyOption.REPLACE_EXISTING);
                         }
                     } catch (IOException e) {
+                        LOG.error(e.getMessage(), e);
                         throw new RuntimeException(e);
                     }
                 });
 
-        LOG.info("Merging finished, cleaning up...");
+        LOG.info("Merging finished.");
+    }
 
-        Files.delete(localFolderOfS3Content);
+    private Path downloadFilesFromS3(DefaultCredentialsProvider credentialsProvider, String s3Bucket, String s3Prefix, String runId) {
+        LOG.info("All lambda calls finished, starting download from S3 with transfer manager...");
+        CompletableFuture<CompletedDirectoryDownload> download;
+        Path localFolderOfS3Content = Paths.get(this.runStepConfig.getWorkingDirectory(), this.runStepConfig.getReportDirectory(), "lambda-s3");
 
-        LOG.info("All done. :D");
+        final String prefix = buildS3Prefix(s3Prefix, runId);
 
-        executor.shutdownNow();
+        try (S3TransferManager transferManager = S3TransferManager.builder().s3Client(S3AsyncClient.crtBuilder().credentialsProvider(credentialsProvider).build()).build()) {
+            download = transferManager.downloadDirectory(d -> d.bucket(s3Bucket).listObjectsV2RequestTransformer(l -> l.prefix(prefix)).destination(localFolderOfS3Content)).completionFuture();
+        }
+        LOG.info("Waiting for download to finish...");
+        try {
+            download.get();
+        } catch (Exception e) {
+            LOG.error("S3 Download failed", e);
+            throw new RuntimeException(e);
+        }
+        LOG.info("Download finished.");
+        return localFolderOfS3Content;
+    }
+
+    private static @NonNull String buildS3Prefix(String s3Prefix, String runId) {
+        String prefix = s3Prefix;
+        if (prefix != null) {
+            prefix = prefix.endsWith("/") ? prefix : prefix + "/";
+            prefix = prefix + "jlineup-" + runId;
+        } else {
+            prefix = "jlineup-" + runId;
+        }
+        return prefix;
     }
 
     private Future<InvokeResponse> invokeLambdaAndGetInvokeResponseFuture(ScreenshotContext screenshotContext, String runId, LambdaClient lambdaClient) {
@@ -198,10 +237,10 @@ public class LambdaBrowser implements CloudBrowser {
         try {
             invokeRequest = InvokeRequest.builder()
                     .functionName(GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME))
-                    .payload(SdkBytes.fromUtf8String(objectMapper.writeValueAsString(
+                    .payload(SdkBytes.fromUtf8String(jsonMapper.writeValueAsString(
                             new LambdaRequestPayload(runId, jobConfig, screenshotContext, runStepConfig.getStep(), screenshotContext.urlKey))))
                     .build();
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
         return executor.submit(() -> lambdaClient.invoke(invokeRequest));

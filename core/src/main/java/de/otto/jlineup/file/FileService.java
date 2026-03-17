@@ -51,7 +51,7 @@ public class FileService {
         return fileTracker;
     }
 
-    public ScreenshotContext getRecordedContext(int hash) {
+    public ScreenshotContext getRecordedContext(String hash) {
         return fileTracker.getScreenshotContextFileTracker(hash).screenshotContext;
     }
 
@@ -277,6 +277,10 @@ public class FileService {
             fileTracker.browsers.putAll(part.browsers);
         }
         writeFileTrackerData();
+    }
+
+    public void deleteRecursively(Path path) throws IOException {
+        Files.delete(path);
     }
 }
 

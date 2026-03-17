@@ -32,8 +32,11 @@ spring:
     name: JLineup
   banner:
     location: classpath:banner.txt
+  web:
+    error:
+      whitelabel:
+        enabled: false
 
 server:
-  error:
-    whitelabel:
-      enabled: false
+  servlet:
+    context-path: /jlineup-context-path

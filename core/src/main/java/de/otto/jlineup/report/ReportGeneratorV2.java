@@ -22,9 +22,9 @@ public class ReportGeneratorV2 {
         for (Map.Entry<String, List<ScreenshotComparisonResult>> resultForUrl : screenshotComparisonResultLists.entrySet()) {
             Summary urlSummary = getSummary(resultForUrl.getValue());
 
-            Map<Integer, List<ScreenshotComparisonResult>> resultsPerContextHash = resultForUrl.getValue().stream().collect(Collectors.groupingBy(res -> res.contextHash, Collectors.mapping(res -> res, Collectors.toList())));
+            Map<String, List<ScreenshotComparisonResult>> resultsPerContextHash = resultForUrl.getValue().stream().collect(Collectors.groupingBy(res -> res.contextHash, Collectors.mapping(res -> res, Collectors.toList())));
             ArrayList<ContextReport> contextReports = new ArrayList<>();
-            for (Map.Entry<Integer, List<ScreenshotComparisonResult>> resultPerHash : resultsPerContextHash.entrySet()) {
+            for (Map.Entry<String, List<ScreenshotComparisonResult>> resultPerHash : resultsPerContextHash.entrySet()) {
                 Summary contextSummary = getSummary(resultPerHash.getValue());
                 ContextReport contextReport = new ContextReport(resultPerHash.getKey(), fileService.getRecordedContext(resultPerHash.getKey()), contextSummary, resultPerHash.getValue());
                 contextReports.add(contextReport);

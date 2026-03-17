@@ -2,10 +2,10 @@ package de.otto.jlineup.lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.MapperFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.GlobalOptions;
 import de.otto.jlineup.RunStepConfig;
@@ -32,8 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 
-import static de.otto.jlineup.GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE;
-import static de.otto.jlineup.GlobalOption.JLINEUP_LAMBDA_S3_BUCKET;
+import static de.otto.jlineup.GlobalOption.*;
 import static de.otto.jlineup.JLineupRunner.LOGFILE_NAME;
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
 
@@ -41,7 +40,7 @@ public class JLineupHandler implements RequestStreamHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(JLineupHandler.class);
 
-    private final ObjectMapper objectMapper = JsonMapper.builder()
+    private final JsonMapper jsonMapper = JsonMapper.builder()
             .configure(MapperFeature.USE_ANNOTATIONS, false)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .build();
@@ -55,7 +54,7 @@ public class JLineupHandler implements RequestStreamHandler {
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
         try {
-            LambdaRequestPayload event = objectMapper.readValue(input, LambdaRequestPayload.class);
+            LambdaRequestPayload event = jsonMapper.readValue(input, LambdaRequestPayload.class);
             ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext).withStep(event.step.toBrowserStep()).withUrlKey(event.urlKey).withUrlConfig(event.jobConfig.urls.get(event.screenshotContext.urlKey)).build();
             LambdaRunner runner = createRun(event.runId, event.step == RunStep.after ? RunStep.after_only : event.step, event.jobConfig, screenshotContext);
             int retries = runner.run();
@@ -84,7 +83,8 @@ public class JLineupHandler implements RequestStreamHandler {
             if (bucketName == null) {
                 throw new RuntimeException("Environment variable JLINEUP_LAMBDA_S3_BUCKET not set! Please create a bucket and set the environment variable to contain it's name.");
             }
-            CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket(bucketName).source(workingDir)).completionFuture();
+            String s3Prefix = GlobalOptions.getOption(JLINEUP_LAMBDA_S3_PREFIX);
+            CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket(bucketName).source(workingDir).s3Prefix(s3Prefix)).completionFuture();
 
             //Block until upload is completed
             CompletedDirectoryUpload completedDirectoryUpload = uploadStatus.get();

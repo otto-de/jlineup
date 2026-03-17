@@ -209,7 +209,7 @@ class BrowserIntegrationTest {
                 .withPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("cookies", Browser.Type.FIREFOX_HEADLESS, false, urlConfig);
         runJLineup(jobConfig, RunStep.before);
-        RunStepConfig runStepConfig = runJLineup(jobConfig, RunStep.after);
+        runJLineup(jobConfig, RunStep.after);
         //no exception
     }
 

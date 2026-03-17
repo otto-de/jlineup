@@ -30,6 +30,8 @@ import static de.otto.jlineup.config.JobConfig.*;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -81,24 +83,7 @@ class ScreenshotsComparatorTest {
         ScreenshotContext screenshotContext2 = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig).get(1);
         DeviceConfig givenDeviceConfig = DeviceConfig.deviceConfig(100, WINDOW_HEIGHT);
 
-        final ImmutableMap<String, ImmutableList<ScreenshotComparisonResult>> expectedResults = ImmutableMap.of("http://url", ImmutableList.of(
-                new ScreenshotComparisonResult(
-                        screenshotContext.contextHash(),
-                        "http://url/",
-                        givenDeviceConfig,
-                        2002,
-                        0.1337,
-                        0d, "screenshots/http_url_root_ff3c40c_1001_02002_before.png",
-                        "screenshots/http_url_root_ff3c40c_1001_02002_after.png",
-                        "screenshots/http_url_root_ff3c40c_1001_02002_compare.png",
-                        10),
-                ScreenshotComparisonResult.noBeforeImageComparisonResult(
-                        screenshotContext.contextHash(),
-                        "http://url/",
-                        givenDeviceConfig,
-                        3003,
-                        "screenshots/http_url_root_ff3c40c_1001_03003_after.png")
-        ),"http://url2", ImmutableList.of(
+        final ImmutableMap<String, ImmutableList<ScreenshotComparisonResult>> expectedResults = ImmutableMap.of("http://url2", ImmutableList.of(
                 new ScreenshotComparisonResult(
                         screenshotContext2.contextHash(),
                         "http://url2/",
@@ -115,6 +100,23 @@ class ScreenshotsComparatorTest {
                         givenDeviceConfig,
                         3003,
                         "screenshots/http_url2_root_ff3c40c_1001_03003_after.png")
+        ), "http://url", ImmutableList.of(
+                new ScreenshotComparisonResult(
+                        screenshotContext.contextHash(),
+                        "http://url/",
+                        givenDeviceConfig,
+                        2002,
+                        0.1337,
+                        0d, "screenshots/http_url_root_ff3c40c_1001_02002_before.png",
+                        "screenshots/http_url_root_ff3c40c_1001_02002_after.png",
+                        "screenshots/http_url_root_ff3c40c_1001_02002_compare.png",
+                        10),
+                ScreenshotComparisonResult.noBeforeImageComparisonResult(
+                        screenshotContext.contextHash(),
+                        "http://url/",
+                        givenDeviceConfig,
+                        3003,
+                        "screenshots/http_url_root_ff3c40c_1001_03003_after.png")
         ));
 
         when(fileService.getFileTracker()).thenReturn(fileTracker);
@@ -122,11 +124,11 @@ class ScreenshotsComparatorTest {
 
         when(fileTracker.getScreenshotsForContext(screenshotContext.contextHash())).thenReturn(
                 ImmutableMap.of(2002, ImmutableMap.of(before, "http_url_root_ff3c40c_1001_02002_before.png",
-                        after, "http_url_root_ff3c40c_1001_02002_after.png"),
+                                after, "http_url_root_ff3c40c_1001_02002_after.png"),
                         3003, ImmutableMap.of(after, "http_url_root_ff3c40c_1001_03003_after.png")));
         when(fileTracker.getScreenshotsForContext(screenshotContext2.contextHash())).thenReturn(
                 ImmutableMap.of(2002, ImmutableMap.of(before, "http_url2_root_ff3c40c_1001_02002_before.png",
-                        after, "http_url2_root_ff3c40c_1001_02002_after.png"),
+                                after, "http_url2_root_ff3c40c_1001_02002_after.png"),
                         3003, ImmutableMap.of(after, "http_url2_root_ff3c40c_1001_03003_after.png")));
 
         BufferedImage beforeBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_before.png"));

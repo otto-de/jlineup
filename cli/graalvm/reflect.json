@@ -187,7 +187,7 @@
     ]
   },
   {
-    "name": "com.fasterxml.jackson.databind.ext.Java7HandlersImpl",
+    "name": "tools.jackson.databind.ext.Java7HandlersImpl",
     "methods": [
       {
         "name": "<init>",
@@ -196,7 +196,7 @@
     ]
   },
   {
-    "name": "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+    "name": "tools.jackson.databind.ext.Java7SupportImpl",
     "methods": [
       {
         "name": "<init>",
@@ -1250,11 +1250,11 @@
     "methods":[{"name":"valueOf","parameterTypes":["java.lang.String"] }]
   },
   {
-    "name":"com.fasterxml.jackson.databind.ext.Java7HandlersImpl",
+    "name":"tools.jackson.databind.ext.Java7HandlersImpl",
     "methods":[{"name":"<init>","parameterTypes":[] }]
   },
   {
-    "name":"com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+    "name":"tools.jackson.databind.ext.Java7SupportImpl",
     "methods":[{"name":"<init>","parameterTypes":[] }]
   },
   {

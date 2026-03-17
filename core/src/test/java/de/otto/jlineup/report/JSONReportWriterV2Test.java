@@ -34,7 +34,7 @@ class JSONReportWriterV2Test {
     void shouldWriteComparisonReportAsJson() throws Exception {
 
         ScreenshotComparisonResult screenshotComparisonResult =
-                new ScreenshotComparisonResult(1887, "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, 0d, "before", "after", "differenceImageFileName", 0);
+                new ScreenshotComparisonResult("1887", "url", DeviceConfig.deviceConfig(1337, 1887), 1979, 0d, 0d, "before", "after", "differenceImageFileName", 0);
         final Summary globalSummary = new Summary(false, 0d, 0d, 0);
         final Summary localSummary = new Summary(false, 0d, 0d, 0);
         Report report = new Report(globalSummary, Collections.singletonMap("test", new UrlReport(singletonList(screenshotComparisonResult), localSummary)), exampleConfig());
@@ -50,7 +50,7 @@ class JSONReportWriterV2Test {
                         "  \"screenshot-comparisons-for-url\" : {" + lineSeparator() +
                         "    \"test\" : {" + lineSeparator() +
                         "      \"comparison-results\" : [ {" + lineSeparator() +
-                        "        \"context-hash\" : 1887," + lineSeparator() +
+                        "        \"context-hash\" : \"1887\"," + lineSeparator() +
                         "        \"url\" : \"url\"," + lineSeparator() +
                         "        \"device-config\" : {" + lineSeparator() +
                         "          \"width\" : 1337," + lineSeparator() +
@@ -112,7 +112,7 @@ class JSONReportWriterV2Test {
                         "    \"timeout\" : 1800" + lineSeparator() +
                         "  }," + lineSeparator() +
                         "  \"flat-result-list\" : [ {" + lineSeparator() +
-                        "    \"context-hash\" : 1887," + lineSeparator() +
+                        "    \"context-hash\" : \"1887\"," + lineSeparator() +
                         "    \"url\" : \"url\"," + lineSeparator() +
                         "    \"device-config\" : {" + lineSeparator() +
                         "      \"width\" : 1337," + lineSeparator() +
