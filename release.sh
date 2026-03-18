@@ -45,7 +45,13 @@ else
 fi
 
 "${SCRIPT_DIR}"/gradlew clean jreleaserConfig check
-#"${SCRIPT_DIR}"/gradlew jreleaserConfig check
 "${SCRIPT_DIR}"/gradlew build installBootDist publish
+
+#
+# Some debug options for JReleaser:
+# "${SCRIPT_DIR}"/gradlew -Djreleaser.disableSslValidation=true jreleaserFullRelease
+# "${SCRIPT_DIR}"/gradlew -Djreleaser.feign.logger.level=FULL jreleaserFullRelease
+#
+
 "${SCRIPT_DIR}"/gradlew jreleaserFullRelease
 
