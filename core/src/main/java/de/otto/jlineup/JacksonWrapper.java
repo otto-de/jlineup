@@ -4,6 +4,7 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileTracker;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.databind.DeserializationFeature;
 import tools.jackson.databind.MapperFeature;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.PropertyNamingStrategy;
@@ -29,6 +30,14 @@ public class JacksonWrapper {
 
     public static JsonMapper jsonMapper() {
         return jsonMapper;
+    }
+
+    private static final JsonMapper jsonMapperForLambdaHandler = JsonMapper.builder()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .build();
+
+    public static JsonMapper jsonMapperForLambdaHandler() {
+        return jsonMapperForLambdaHandler;
     }
 
     public static String serializeObject(Object object) {

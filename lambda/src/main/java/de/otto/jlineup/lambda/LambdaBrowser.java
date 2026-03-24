@@ -1,20 +1,12 @@
 package de.otto.jlineup.lambda;
 
-import org.jspecify.annotations.NonNull;
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.DeserializationFeature;
-import tools.jackson.databind.MapperFeature;
-import tools.jackson.databind.ObjectMapper;
-import tools.jackson.databind.json.JsonMapper;
 import com.google.common.base.Strings;
-import de.otto.jlineup.GlobalOption;
-import de.otto.jlineup.GlobalOptions;
-import de.otto.jlineup.RunStepConfig;
-import de.otto.jlineup.Utils;
+import de.otto.jlineup.*;
 import de.otto.jlineup.browser.CloudBrowser;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -29,6 +21,8 @@ import software.amazon.awssdk.services.lambda.model.ServiceException;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryDownload;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -45,10 +39,7 @@ public class LambdaBrowser implements CloudBrowser {
     private final RunStepConfig runStepConfig;
     private final ExecutorService executor = Executors.newCachedThreadPool(Utils.createThreadFactory("LambdaBrowserSupervisorThread"));
 
-    private final JsonMapper jsonMapper = JsonMapper.builder()
-            .configure(MapperFeature.USE_ANNOTATIONS, false)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .build();
+    private final JsonMapper jsonMapper = JacksonWrapper.jsonMapperForLambdaHandler();
 
     private final FileService fileService;
 

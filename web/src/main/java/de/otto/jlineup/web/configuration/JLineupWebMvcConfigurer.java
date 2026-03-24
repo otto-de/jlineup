@@ -4,8 +4,9 @@ import de.otto.jlineup.JacksonWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -15,7 +16,6 @@ import tools.jackson.databind.json.JsonMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 import static java.lang.invoke.MethodHandles.lookup;
 
@@ -26,9 +26,14 @@ public class JLineupWebMvcConfigurer implements WebMvcConfigurer {
     private final JsonMapper jsonMapper;
     private final JLineupWebProperties properties;
 
+    @Bean
+    public JsonMapper jsonMapper() {
+        return JacksonWrapper.jsonMapper();
+    }
+
     @Autowired
-    public JLineupWebMvcConfigurer(JLineupWebProperties properties) {
-        this.jsonMapper = JacksonWrapper.jsonMapper();
+    public JLineupWebMvcConfigurer(JLineupWebProperties properties, @Lazy JsonMapper jsonMapper) {
+        this.jsonMapper = jsonMapper;
         this.properties = properties;
     }
 

@@ -37,6 +37,15 @@ dependencies {
     testImplementation "org.mockito:mockito-inline:5.2.0"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+
+    // Java CDK + CloudFormation client for Lambda acceptance tests
+    testImplementation("software.amazon.awssdk:cloudformation:${awsSdkVersion}")
+    testImplementation("software.amazon.awscdk:aws-cdk-lib:2.170.0") {
+        exclude group: "com.fasterxml.jackson.core"
+        exclude group: "com.fasterxml.jackson.datatype"
+        exclude group: "com.fasterxml.jackson.dataformat"
+    }
+    testImplementation "software.constructs:constructs:10.4.2"
 }
 
 test {

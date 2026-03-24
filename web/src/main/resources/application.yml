@@ -39,4 +39,4 @@ spring:
 
 server:
   servlet:
-    context-path: /jlineup-context-path
+    context-path: /

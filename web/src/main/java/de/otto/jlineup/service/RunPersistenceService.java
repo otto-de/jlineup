@@ -1,14 +1,14 @@
 package de.otto.jlineup.service;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.core.type.TypeReference;
-import tools.jackson.databind.ObjectMapper;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class RunPersistenceService {
     private final JsonMapper jsonMapper;
 
     @Autowired
-    public RunPersistenceService(JLineupWebProperties jLineupWebProperties, JsonMapper jsonMapper) {
+    public RunPersistenceService(JLineupWebProperties jLineupWebProperties, @Lazy JsonMapper jsonMapper) {
         this.jLineupWebProperties = jLineupWebProperties;
         this.jsonMapper = jsonMapper;
     }

@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.GlobalOptions;
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.Utils;
 import de.otto.jlineup.browser.ScreenshotContext;
@@ -19,8 +20,6 @@ import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryUpload;
-import tools.jackson.databind.DeserializationFeature;
-import tools.jackson.databind.MapperFeature;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.InputStream;
@@ -39,10 +38,7 @@ public class JLineupHandler implements RequestStreamHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(JLineupHandler.class);
 
-    private final JsonMapper jsonMapper = JsonMapper.builder()
-            .configure(MapperFeature.USE_ANNOTATIONS, false)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .build();
+    private final JsonMapper jsonMapper = JacksonWrapper.jsonMapperForLambdaHandler();
 
     private S3TransferManager transferManager;
 
@@ -54,7 +50,7 @@ public class JLineupHandler implements RequestStreamHandler {
     public void handleRequest(InputStream input, OutputStream output, Context context) {
         try {
             LambdaRequestPayload event = jsonMapper.readValue(input, LambdaRequestPayload.class);
-            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext()).withStep(event.step().toBrowserStep()).withUrlKey(event.urlKey()).withUrlConfig(event.jobConfig().urls.get(event.screenshotContext().urlKey)).build();
+            ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext()).withStep(event.step().toBrowserStep()).withUrlKey(event.urlKey()).withUrlConfig(event.jobConfig().urls.get(event.urlKey())).build();
             LambdaRunner runner = createRun(event.runId(), event.step() == RunStep.after ? RunStep.after_only : event.step(), event.jobConfig(), screenshotContext);
             int retries = runner.run();
 
