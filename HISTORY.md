@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 5.0.1 - 2026-03-24
+* Bugfix: The lambda payload was not correctly deserialized in some cases, which lead to a NullPointerException.
+
 ## Release 5.0.0 - 2026-03-17
 * Breaking change: The context hashes of the screenshot contexts are no integers but hexadecimal strings now.
                    This should not cause any problems but if you rely on the context hashes for some reason, you might need to adjust your implementation.

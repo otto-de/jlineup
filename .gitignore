@@ -12,6 +12,7 @@ classes
 /report
 /report/**
 /cli/report
+/cli-lambda/report
 .vscode
 .project
 .classpath
