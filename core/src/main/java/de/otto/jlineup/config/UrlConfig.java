@@ -61,40 +61,6 @@ public class UrlConfig {
     public final boolean strictColorComparison;
     public final double maxColorDistance;
 
-    /* For Jackson */
-    private UrlConfig() {
-        this.url = null;
-        this.paths = null;
-        this.setupPaths = null;
-        this.cleanupPaths = null;
-        this.maxDiff = DEFAULT_MAX_DIFF;
-        this.cookies = null;
-        this.alternatingCookies = null;
-        this.envMapping = null;
-        this.localStorage = null;
-        this.sessionStorage = null;
-        this.windowWidths = null;
-        this.devices = null;
-        this.maxScrollHeight = DEFAULT_MAX_SCROLL_HEIGHT;
-        this.waitAfterPageLoad = DEFAULT_WAIT_AFTER_PAGE_LOAD;
-        this.waitAfterScroll = DEFAULT_WAIT_AFTER_SCROLL;
-        this.waitForNoAnimationAfterScroll = DEFAULT_WAIT_FOR_NO_ANIMATION_AFTER_SCROLL;
-        this.scrollDistanceFactor = DEFAULT_SCROLL_DISTANCE_FACTOR;
-        this.warmupBrowserCacheTime = DEFAULT_WARMUP_BROWSER_CACHE_TIME;
-        this.waitForFontsTime = DEFAULT_WAIT_FOR_FONTS_TIME;
-        this.javaScript = null;
-        this.httpCheck = DEFAULT_HTTP_CHECK_CONFIG;
-        this.hideImages = false;
-        this.removeSelectors = null;
-        this.waitForSelectors = null;
-        this.waitForSelectorsTimeout = DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT;
-        this.failIfSelectorsNotFound = false;
-        this.ignoreAntiAliasing = false;
-        this.maxAntiAliasColorDistance = DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE;
-        this.strictColorComparison = false;
-        this.maxColorDistance = DEFAULT_MAX_COLOR_DISTANCE;
-    }
-
     private UrlConfig(Builder builder) {
         url = builder.url;
         paths = builder.paths;

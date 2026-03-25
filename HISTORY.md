@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 5.0.2 - 2026-03-25
+* Bugfix: The lambda function did not work in some cases when the configuration included alternating cookies.
+
 ## Release 5.0.1 - 2026-03-24
 * Bugfix: The lambda payload was not correctly deserialized in some cases, which lead to a NullPointerException.
 

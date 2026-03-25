@@ -1,7 +1,7 @@
 package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Date;
@@ -23,10 +23,10 @@ public class Cookie {
 
     public final Boolean showInReport;
 
-    @JsonIgnore
-    public final boolean screenshotContextGiving;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    public final Boolean screenshotContextGiving;
 
-    public Cookie(String name, String value, String domain, String path, Date expiry, boolean secure, Boolean showInReport, boolean screenshotContextGiving) {
+    public Cookie(String name, String value, String domain, String path, Date expiry, boolean secure, Boolean showInReport, Boolean screenshotContextGiving) {
         this.name = name;
         this.value = value;
         this.domain = domain;
@@ -34,7 +34,7 @@ public class Cookie {
         this.expiry = expiry;
         this.secure = secure;
         this.showInReport = showInReport;
-        this.screenshotContextGiving = screenshotContextGiving;
+        this.screenshotContextGiving = screenshotContextGiving == null || !screenshotContextGiving ? null : true;
     }
 
     public Cookie(String name, String value) {
@@ -45,7 +45,7 @@ public class Cookie {
         this.expiry = null;
         this.secure = false;
         this.showInReport = null;
-        this.screenshotContextGiving = false;
+        this.screenshotContextGiving = null;
     }
 
     private Cookie(Builder builder) {
@@ -57,18 +57,6 @@ public class Cookie {
         secure = builder.secure;
         showInReport = builder.showInReport;
         screenshotContextGiving = builder.screenshotContextGiving;
-    }
-
-    /* For Jackson */
-    private Cookie() {
-        this.name = null;
-        this.value = null;
-        this.domain = null;
-        this.path = null;
-        this.expiry = null;
-        this.secure = false;
-        this.showInReport = null;
-        this.screenshotContextGiving = false;
     }
 
     public static Builder cookieBuilder() {
@@ -129,7 +117,7 @@ public class Cookie {
     }
 
     public boolean isScreenshotContextGiving() {
-        return screenshotContextGiving;
+        return Objects.requireNonNullElse(screenshotContextGiving, false);
     }
 
     /*
@@ -183,7 +171,7 @@ public class Cookie {
         private Date expiry;
         private boolean secure;
         public Boolean showInReport;
-        public boolean screenshotContextGiving;
+        public Boolean screenshotContextGiving;
 
         private Builder() {
         }
@@ -225,7 +213,7 @@ public class Cookie {
             return this;
         }
 
-        public Builder withScreenshotContextGiving(boolean val){
+        public Builder withScreenshotContextGiving(Boolean val){
             screenshotContextGiving = val;
             return this;
         }
