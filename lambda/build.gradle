@@ -40,7 +40,7 @@ dependencies {
 
     // Java CDK + CloudFormation client for Lambda acceptance tests
     testImplementation("software.amazon.awssdk:cloudformation:${awsSdkVersion}")
-    testImplementation("software.amazon.awscdk:aws-cdk-lib:2.170.0") {
+    testImplementation("software.amazon.awscdk:aws-cdk-lib:2.244.0") {
         exclude group: "com.fasterxml.jackson.core"
         exclude group: "com.fasterxml.jackson.datatype"
         exclude group: "com.fasterxml.jackson.dataformat"
