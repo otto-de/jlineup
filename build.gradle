@@ -26,7 +26,7 @@ plugins {
 //\
 ///\
 ////\
-def jlineup_version = "5.0.2"
+def jlineup_version = "5.0.3-SNAPSHOT"
 /////
 ////
 ///
@@ -62,7 +62,7 @@ jreleaser {
             github {
                 app {
                     snapshotSupported = true
-                    active = 'ALWAYS'
+                    active = 'NEVER'
                     url = "https://maven.pkg.github.com/otto-de/jlineup"
                     stagingRepository('build/staging-deploy')
                 }
