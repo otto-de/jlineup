@@ -1,0 +1,60 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: AWS Lambda Acceptance Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      git-ref:
+        description: Git Ref (Optional)
+        required: false
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**/README.md'
+      - '**/HISTORY.md'
+      - 'docs/**'
+  pull_request:
+    branches: [ main ]
+  merge_group:
+    branches: [ main ]
+  schedule:
+    - cron: '0 9 * * *'
+
+env:
+  CHROME_VERSION: 146.0.7680.165
+
+permissions:  # added using https://github.com/step-security/secure-repo
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@fa2e9d605c4eeb9fcad4c99c224cee0c6c7f3594 # v2.16.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up JDK
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: gradle
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with gradle
+        run: |
+          export JLINEUP_LAMBDA_ACCEPTANCE_TEST_ENABLED=true
+          export JLINEUP_LAMBDA_ACCEPTANCE_FORCE_DEPLOY=true
+          export AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+          export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY }}
+          export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+          ./gradlew publishToMavenLocal
+          ./gradlew build assemble -x test
+
+          ./gradlew :jlineup-lambda:test --tests '*LambdaAcceptanceTest.shouldInvoke*'
