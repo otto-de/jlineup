@@ -1,0 +1,52 @@
+{
+  "urls": {
+    "https://www.example.com": {
+      "paths": [
+        "/"
+      ],
+      "cookies": [
+        {
+          "name": "trackingDisabled",
+          "value": "true",
+          "domain": "www.example.com",
+          "path": "/"
+        }
+      ],
+      "alternating-cookies": [
+        [
+          {
+            "name": "theme",
+            "value": "dark",
+            "domain": "www.example.com",
+            "path": "/",
+            "show-in-report": true
+          }
+        ],
+        [
+          {
+            "name": "theme",
+            "value": "light",
+            "domain": "www.example.com",
+            "path": "/",
+            "show-in-report": true
+          }
+        ]
+      ],
+      "devices": [
+        {
+          "width": 1280,
+          "height": 800
+        },
+        {
+          "device-name": "iPhone SE"
+        }
+      ],
+      "wait-after-page-load": 1.0,
+      "max-diff": 0.0
+    }
+  },
+  "browser": "chrome-headless",
+  "screenshot-retries": 2,
+  "timeout": 300,
+  "report-format": 2
+}

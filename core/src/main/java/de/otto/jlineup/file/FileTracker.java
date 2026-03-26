@@ -97,7 +97,13 @@ public class FileTracker {
             throw new IOException("""
                     The files in the working directory don't fit the given config.
                     Are you trying to run the 'compare' step for files made with a different config?
-                    Please run JLineup before and after with the current config before trying again.""");
+                    Please run JLineup before and after with the current config before trying again.
+                    
+                    If you see this error after or during the 'before' step, there seems to be
+                    a bug within the JSON config handling. Please report this via GitHub issue on
+                    https://github.com/otto-de/jlineup/issues - Please include the config you are
+                    using.
+                    """);
         }
         return screenshotContextFileTracker.screenshots;
     }

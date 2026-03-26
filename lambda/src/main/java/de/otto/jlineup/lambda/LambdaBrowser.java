@@ -74,6 +74,7 @@ public class LambdaBrowser implements CloudBrowser {
                     .environment()
                     .variables()
                     .get(GlobalOption.JLINEUP_LAMBDA_S3_BUCKET.name());
+            LOG.info("Using S3 bucket: {}", s3Bucket);
             s3Prefix = lambdaClient.getFunction(GetFunctionRequest.builder()
                             .functionName(GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME))
                             .build())

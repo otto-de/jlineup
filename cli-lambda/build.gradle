@@ -15,6 +15,37 @@ dependencies {
             classifier = "plain"
         }
     }
+
+    // Test dependencies for CLI-Lambda acceptance tests
+    testImplementation(project(":jlineup-core"))
+    testImplementation(project(":jlineup-cli")) {
+        artifact {
+            name = "jlineup-cli"
+            type = "jar"
+            classifier = "plain"
+        }
+    }
+    testImplementation(project(":jlineup-lambda")) {
+        artifact {
+            name = "jlineup-lambda"
+            type = "jar"
+            classifier = "plain"
+        }
+    }
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.hamcrest:hamcrest"
+    testImplementation "com.github.stefanbirkner:system-lambda:1.2.1"
+    testImplementation "com.google.code.gson:gson"
+    testImplementation("software.amazon.awssdk:cloudformation:${awsSdkVersion}")
+    testImplementation("software.amazon.awscdk:aws-cdk-lib:2.244.0") {
+        exclude group: "com.fasterxml.jackson.core"
+        exclude group: "com.fasterxml.jackson.datatype"
+        exclude group: "com.fasterxml.jackson.dataformat"
+    }
+    testImplementation "software.constructs:constructs:10.6.0"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 tasks.bootDistZip {
