@@ -126,6 +126,16 @@ public class ReportController {
             return state.getHumanReadableName();
         }
 
+        public String getStateCssClass() {
+            return switch (state) {
+                case FINISHED_WITHOUT_DIFFERENCES -> "table-success";
+                case FINISHED_WITH_DIFFERENCES -> "table-warning";
+                case ERROR, DEAD -> "table-danger";
+                case BEFORE_RUNNING, AFTER_RUNNING -> "table-info";
+                default -> "table-secondary";
+            };
+        }
+
         public void setState(State state) {
             this.state = state;
         }

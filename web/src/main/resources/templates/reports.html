@@ -27,7 +27,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="report : ${reportList}">
+                <tr th:each="report : ${reportList}" th:classappend="${report.stateCssClass}">
                     <td><div th:text="${report.id}">42</div></td>
                     <td><div th:if="${report.name != null}" th:text="${report.name}">Some application name</div></td>
                     <td><pre style="white-space: pre-line;" th:utext="${#strings.listJoin(report.urls, '<br/>')}">https://www.verylongurl.com/some/cool/path<br />https://www.anotherurl.com/bla/blub/bluuub/loooooooooooooooooong/loooooooooooooooooonger</pre></td>
