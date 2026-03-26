@@ -1,0 +1,24 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <Target>System.out</Target>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -- %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Suppress verbose AWS SDK debug output -->
+    <logger name="software.amazon.awssdk" level="WARN"/>
+    <logger name="software.amazon.awscdk" level="WARN"/>
+    <logger name="io.netty" level="WARN"/>
+    <logger name="org.apache.http" level="WARN"/>
+
+    <!-- Keep JLineup test output at INFO -->
+    <logger name="de.otto.jlineup" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
+
