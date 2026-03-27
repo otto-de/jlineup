@@ -1,8 +1,10 @@
 package de.otto.jlineup.web;
 
+import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,31 +22,46 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
-public class ReportController {
+public class ReportsAndRunWebController {
 
     private final JLineupService jLineupService;
     private final JLineupWebProperties jLineupWebProperties;
 
+    private final String managementBasePath;
+
     private static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd kk:mm").withZone(ZoneId.systemDefault());
 
     @Autowired
-    public ReportController(JLineupService jLineupService, JLineupWebProperties jLineupWebProperties) {
+    public ReportsAndRunWebController(JLineupService jLineupService, JLineupWebProperties jLineupWebProperties,
+                                      @Value("${edison.application.management.base-path:/internal}") String managementBasePath) {
         this.jLineupService = jLineupService;
         this.jLineupWebProperties = jLineupWebProperties;
+        this.managementBasePath = managementBasePath;
     }
 
     @RequestMapping(
             value = "${edison.application.management.base-path:/internal}/reports",
             produces = "text/html",
             method = GET)
-    public ModelAndView getReports() {
+    public ModelAndView getReportsPage() {
         return new ModelAndView("reports") {{
 
             addObject("reportList", jLineupService.getRunStatus().stream()
                     .sorted(Comparator.comparing(JLineupRunStatus::getStartTime).reversed())
-                    .map(Report::new)
+                    .map(s -> new Report(s, managementBasePath))
                     .limit(jLineupWebProperties.getMaxPersistedRuns())
                     .collect(toList()));
+        }};
+    }
+
+    @RequestMapping(
+            value = "${edison.application.management.base-path:/internal}/run",
+            produces = "text/html",
+            method = GET)
+    public ModelAndView getRunPage() {
+        return new ModelAndView("run") {{
+            addObject("exampleConfig", JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig()));
+            addObject("reportsUrl", managementBasePath + "/reports");
         }};
     }
 
@@ -84,8 +101,9 @@ public class ReportController {
         private String startTime;
         private List<String> urls;
         private State state;
+        private String afterRunUrl;
 
-        public Report(JLineupRunStatus lineupRunStatus) {
+        public Report(JLineupRunStatus lineupRunStatus, String managementBasePath) {
             this.id = lineupRunStatus.getId();
             this.name = lineupRunStatus.getJobConfig().name;
             this.urls = lineupRunStatus.getUrls();
@@ -96,6 +114,9 @@ public class ReportController {
             this.duration = getDurationAsString(lineupRunStatus);
             this.startTime = formatTime(lineupRunStatus.getStartTime());
             this.state = lineupRunStatus.getState();
+            if (lineupRunStatus.getState() == State.BEFORE_DONE) {
+                this.afterRunUrl = "/runs/" + lineupRunStatus.getId();
+            }
         }
 
         public String getId() {
@@ -136,6 +157,10 @@ public class ReportController {
             };
         }
 
+        public String getLogButtonCssClass() {
+            return (state == State.ERROR || state == State.DEAD) ? "btn-danger" : "btn-light";
+        }
+
         public void setState(State state) {
             this.state = state;
         }
@@ -164,6 +189,10 @@ public class ReportController {
             this.urls = urls;
         }
 
+        public String getAfterRunUrl() {
+            return afterRunUrl;
+        }
+
         @Override
         public String toString() {
             return "Report{" +
@@ -175,6 +204,7 @@ public class ReportController {
                     ", startTime='" + startTime + '\'' +
                     ", urls=" + urls +
                     ", state=" + state +
+                    ", afterRunUrl='" + afterRunUrl + '\'' +
                     '}';
         }
 
@@ -190,13 +220,13 @@ public class ReportController {
                     Objects.equals(duration, report.duration) &&
                     Objects.equals(startTime, report.startTime) &&
                     Objects.equals(urls, report.urls) &&
+                    Objects.equals(afterRunUrl, report.afterRunUrl) &&
                     state == report.state;
         }
 
         @Override
         public int hashCode() {
-
-            return Objects.hash(id, name, reportUrl, logUrl, duration, startTime, urls, state);
+            return Objects.hash(id, name, reportUrl, logUrl, duration, startTime, urls, state, afterRunUrl);
         }
 
         public String getName() {

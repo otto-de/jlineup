@@ -1,0 +1,221 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head}">
+    <style>
+        .cm-editor {
+            font-size: 13px;
+            border: 1px solid var(--bs-border-color);
+            border-radius: 0.375rem;
+            min-height: 420px;
+            max-height: 70vh;
+            overflow: auto;
+        }
+        .cm-editor.cm-focused {
+            outline: none;
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        #error-alert {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+</head>
+
+<body>
+
+<div th:replace="~{fragments/navigation :: navigation}" />
+
+<div class="container-fluid">
+    <div class="panel panel-default m-2">
+        <div class="panel-heading">
+            <h3 class="panel-title">Start a New Run</h3>
+        </div>
+        <div class="panel-body mt-3">
+
+            <div id="error-alert" class="alert alert-danger d-none" role="alert"></div>
+            <div id="success-alert" class="alert alert-success d-none" role="alert"></div>
+
+            <label for="codemirror-host" class="form-label fw-semibold">JLineup Configuration (JSON)</label>
+            <div id="codemirror-host"></div>
+
+            <div class="mt-3 d-flex gap-2">
+                <button id="start-btn" class="btn btn-primary" type="button">
+                    <span id="start-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    Start Before Run
+                </button>
+                <button id="format-btn" class="btn btn-outline-secondary" type="button">Format JSON</button>
+                <button id="reset-btn" class="btn btn-outline-secondary" type="button">Reset to Example</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<span th:replace="~{fragments/footer :: footer}" />
+
+<!-- Server-side values exposed to JS module via window globals -->
+<script th:inline="javascript">
+    window._jlineup = {
+        exampleConfig: /*[[${exampleConfig}]]*/  '{}',
+        reportsUrl:    /*[[${reportsUrl}]]*/ '/internal/reports'
+    };
+</script>
+
+<!-- CodeMirror 6 via CDN (ESM bundle) -->
+<script type="module">
+    import { EditorState } from 'https://esm.sh/@codemirror/state@6';
+    import { EditorView, keymap, lineNumbers, highlightActiveLineGutter, highlightActiveLine } from 'https://esm.sh/@codemirror/view@6';
+    import { defaultKeymap, indentWithTab } from 'https://esm.sh/@codemirror/commands@6';
+    import { json } from 'https://esm.sh/@codemirror/lang-json@6';
+    import { oneDark } from 'https://esm.sh/@codemirror/theme-one-dark@6';
+    import { githubLight } from 'https://esm.sh/@uiw/codemirror-theme-github@4';
+    import { lintGutter, linter } from 'https://esm.sh/@codemirror/lint@6';
+    import { jsonParseLinter } from 'https://esm.sh/@codemirror/lang-json@6';
+    import { indentOnInput, bracketMatching, foldGutter, foldKeymap } from 'https://esm.sh/@codemirror/language@6';
+    import { closeBrackets, closeBracketsKeymap } from 'https://esm.sh/@codemirror/autocomplete@6';
+    import { highlightSelectionMatches } from 'https://esm.sh/@codemirror/search@6';
+
+    const EXAMPLE_CONFIG  = window._jlineup.exampleConfig;
+    const REPORTS_URL     = window._jlineup.reportsUrl;
+    const RUNS_URL        = '/runs';
+    const STORAGE_KEY     = 'jlineup.run.editorContent';
+
+    function loadSaved() {
+        try { return localStorage.getItem(STORAGE_KEY) || EXAMPLE_CONFIG; }
+        catch (e) { return EXAMPLE_CONFIG; }
+    }
+
+    function saveContent(content) {
+        try { localStorage.setItem(STORAGE_KEY, content); } catch (e) { /* quota exceeded etc. */ }
+    }
+
+    function clearSaved() {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* ignore */ }
+    }
+
+    function isDark() {
+        return document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    }
+
+    function buildExtensions(dark) {
+        const base = [
+            lineNumbers(),
+            highlightActiveLineGutter(),
+            highlightActiveLine(),
+            foldGutter(),
+            lintGutter(),
+            bracketMatching(),
+            closeBrackets(),
+            indentOnInput(),
+            highlightSelectionMatches(),
+            json(),
+            linter(jsonParseLinter()),
+            keymap.of([...defaultKeymap, ...closeBracketsKeymap, ...foldKeymap, indentWithTab]),
+            EditorView.lineWrapping,
+            EditorView.updateListener.of(update => {
+                if (update.docChanged) saveContent(update.state.doc.toString());
+            }),
+        ];
+        base.push(dark ? oneDark : githubLight);
+        return base;
+    }
+
+    let view = new EditorView({
+        state: EditorState.create({
+            doc: loadSaved(),
+            extensions: buildExtensions(isDark()),
+        }),
+        parent: document.getElementById('codemirror-host'),
+    });
+
+    // Re-create editor when dark mode is toggled so the theme refreshes
+    const observer = new MutationObserver(() => {
+        const doc = view.state.doc.toString();
+        view.destroy();
+        view = new EditorView({
+            state: EditorState.create({
+                doc,
+                extensions: buildExtensions(isDark()),
+            }),
+            parent: document.getElementById('codemirror-host'),
+        });
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+
+    // Format JSON
+    document.getElementById('format-btn').addEventListener('click', () => {
+        const raw = view.state.doc.toString();
+        try {
+            const pretty = JSON.stringify(JSON.parse(raw), null, 2);
+            view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: pretty } });
+        } catch (e) {
+            showError('Cannot format: invalid JSON — ' + e.message);
+        }
+    });
+
+    // Reset to example
+    document.getElementById('reset-btn').addEventListener('click', () => {
+        clearSaved();
+        view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: EXAMPLE_CONFIG } });
+        hideAlerts();
+    });
+
+    // Start run
+    document.getElementById('start-btn').addEventListener('click', async () => {
+        hideAlerts();
+        const raw = view.state.doc.toString();
+        let parsed;
+        try {
+            parsed = JSON.parse(raw);
+        } catch (e) {
+            showError('Invalid JSON: ' + e.message);
+            return;
+        }
+
+        setBusy(true);
+        try {
+            const resp = await fetch(RUNS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(parsed),
+            });
+            if (resp.status === 202) {
+                const data = await resp.json();
+                showSuccess('Run started successfully (ID: ' + data.id + '). Redirecting to reports…');
+                setTimeout(() => { window.location.href = REPORTS_URL; }, 1500);
+            } else {
+                const text = await resp.text();
+                showError('Server returned ' + resp.status + ':\n' + text);
+            }
+        } catch (e) {
+            showError('Network error: ' + e.message);
+        } finally {
+            setBusy(false);
+        }
+    });
+
+    function setBusy(busy) {
+        document.getElementById('start-btn').disabled = busy;
+        document.getElementById('start-spinner').classList.toggle('d-none', !busy);
+    }
+
+    function showError(msg) {
+        const el = document.getElementById('error-alert');
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
+
+    function showSuccess(msg) {
+        const el = document.getElementById('success-alert');
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
+
+    function hideAlerts() {
+        document.getElementById('error-alert').classList.add('d-none');
+        document.getElementById('success-alert').classList.add('d-none');
+    }
+</script>
+
+</body>
+</html>

@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @SpringBootTest(classes = JLineupWebApplication.class)
 @WebAppConfiguration
-class ReportControllerTest {
+class ReportsAndRunWebControllerTest {
 
     @MockitoBean
     private JLineupService jLineupService;
@@ -52,7 +52,7 @@ class ReportControllerTest {
     }
 
     @Test
-    void shouldGetReportsPageWithOrderedReports() throws Exception {
+    void shouldGetReportsPageWithOrderedReportsPage() throws Exception {
 
         //given
         Instant now = Instant.now();
@@ -118,7 +118,7 @@ class ReportControllerTest {
                 .andReturn().getModelAndView();
 
         @SuppressWarnings("unchecked")
-        List<ReportController.Report> reportList = (List<ReportController.Report>) modelAndView.getModelMap().get("reportList");
+        List<ReportsAndRunWebController.Report> reportList = (List<ReportsAndRunWebController.Report>) modelAndView.getModelMap().get("reportList");
 
         assertThat(reportList.get(0).getId(), is("someId"));
         assertThat(reportList.get(0).getName(), is("someName"));

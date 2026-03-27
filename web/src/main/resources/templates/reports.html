@@ -1,11 +1,36 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{fragments/head  :: head}" />
+<head th:replace="~{fragments/head :: head}" />
 
 <body>
 
-<div th:replace="~{fragments/navigation  :: navigation}" />
+<div th:replace="~{fragments/navigation :: navigation}" />
 
+<!-- Confirmation modal for starting the after run -->
+<div class="modal fade" id="afterRunModal" tabindex="-1" aria-labelledby="afterRunModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="afterRunModalLabel">Start After Run?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    You are about to manually trigger the '<strong>after</strong>' step for run
+                    <code id="modal-run-id"></code><span id="modal-run-name-wrap"> (<span id="modal-run-name"></span>)</span>.
+                </p>
+                <p class="text-muted small">
+                    Normally the after step is started via the REST API (via pipeline/CI/etc...).
+                    Are you sure you want to start it manually?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" id="modal-confirm-btn">Yes, start 'after' run</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container-fluid">
     <div class="panel panel-default m-2">
@@ -13,6 +38,7 @@
             <h3 class="panel-title">Reports Overview</h3>
         </div>
         <div class="panel-body">
+            <div id="after-run-alert" class="alert d-none mt-2" role="alert"></div>
             <table class="table table-light table-striped">
                 <thead>
                 <tr>
@@ -24,20 +50,31 @@
                     <th>Duration</th>
                     <th></th>
                     <th></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="report : ${reportList}" th:classappend="${report.stateCssClass}">
                     <td><div th:text="${report.id}">42</div></td>
                     <td><div th:if="${report.name != null}" th:text="${report.name}">Some application name</div></td>
-                    <td><pre style="white-space: pre-line;" th:utext="${#strings.listJoin(report.urls, '<br/>')}">https://www.verylongurl.com/some/cool/path<br />https://www.anotherurl.com/bla/blub/bluuub/loooooooooooooooooong/loooooooooooooooooonger</pre></td>
+                    <td><pre style="white-space: pre-line;" th:utext="${#strings.listJoin(report.urls, '<br/>')}">https://www.verylongurl.com/some/cool/path</pre></td>
                     <td th:text="${report.state}">OK</td>
                     <td th:text="${report.startTime}">2018-09-09T20:00:00.000Z</td>
                     <td th:text="${report.duration}">10:20:30</td>
                     <td><a th:if="${report.reportUrl != null}" th:href="${report.reportUrl}" target="_blank" class="btn" th:classappend="${report.reportUrl.contains('before') ? 'btn-secondary' : 'btn-primary'}" role="button">Report</a></td>
-                    <td><a th:if="${report.logUrl != null}" th:href="${report.logUrl}" target="_blank"class="btn btn-light" role="button">Log</a></td>
+                    <td><a th:if="${report.logUrl != null}" th:href="${report.logUrl}" target="_blank" class="btn" th:classappend="${report.logButtonCssClass}" role="button">Log</a></td>
+                    <td>
+                        <button th:if="${report.afterRunUrl != null}"
+                                type="button"
+                                class="btn btn-warning start-after-btn"
+                                th:data-run-id="${report.id}"
+                                th:data-run-name="${report.name}"
+                                th:data-after-url="${report.afterRunUrl}">
+                            Start 'After' run
+                        </button>
+                    </td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(reportList)}"><td colspan="7">No runs since start.</td></tr>
+                <tr th:if="${#lists.isEmpty(reportList)}"><td colspan="9">No runs since start.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -45,6 +82,64 @@
 </div>
 
 <span th:replace="~{fragments/footer :: footer}" />
+
+<script>
+    (function () {
+        var pendingAfterUrl = null;
+
+        // Wire up all "Start After Run" buttons to open the modal
+        document.querySelectorAll('.start-after-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var runId   = btn.getAttribute('data-run-id');
+                var runName = btn.getAttribute('data-run-name');
+                pendingAfterUrl = btn.getAttribute('data-after-url');
+                document.getElementById('modal-run-id').textContent = runId;
+                var nameWrap = document.getElementById('modal-run-name-wrap');
+                if (runName) {
+                    document.getElementById('modal-run-name').textContent = runName;
+                    nameWrap.style.display = '';
+                } else {
+                    nameWrap.style.display = 'none';
+                }
+                var modal = new bootstrap.Modal(document.getElementById('afterRunModal'));
+                modal.show();
+            });
+        });
+
+        // Confirm button inside modal fires the POST
+        document.getElementById('modal-confirm-btn').addEventListener('click', function () {
+            if (!pendingAfterUrl) return;
+
+            var modalEl = document.getElementById('afterRunModal');
+            bootstrap.Modal.getInstance(modalEl).hide();
+
+            fetch(pendingAfterUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+                .then(function (resp) {
+                    var alertEl = document.getElementById('after-run-alert');
+                    if (resp.status === 202) {
+                        alertEl.className = 'alert alert-success mt-2';
+                        alertEl.textContent = 'After run started successfully. The page will refresh shortly.';
+                        alertEl.classList.remove('d-none');
+                        setTimeout(function () { window.location.reload(); }, 2000);
+                    } else {
+                        resp.text().then(function (body) {
+                            alertEl.className = 'alert alert-danger mt-2';
+                            alertEl.textContent = 'Failed to start after run: ' + body;
+                            alertEl.classList.remove('d-none');
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    var alertEl = document.getElementById('after-run-alert');
+                    alertEl.className = 'alert alert-danger mt-2';
+                    alertEl.textContent = 'Network error: ' + err.message;
+                    alertEl.classList.remove('d-none');
+                });
+
+            pendingAfterUrl = null;
+        });
+    })();
+</script>
 
 </body>
 </html>

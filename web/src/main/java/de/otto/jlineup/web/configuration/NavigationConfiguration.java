@@ -19,7 +19,9 @@ public class NavigationConfiguration {
         mainNavBar.register(navBarItem(0, "Status", String.format("%s/status", properties.getManagement().getBasePath())));
         mainNavBar.register(navBarItem(1, "Reports", String.format("%s/reports", properties.getManagement().getBasePath())));
 
+        rightNavBar.register(navBarItem(bottom(), "Manual run", String.format("%s/run", properties.getManagement().getBasePath())));
         rightNavBar.register(navBarItem(bottom(), "Example run", "/exampleRun"));
+
     }
 }
 
