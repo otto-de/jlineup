@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -111,6 +112,11 @@ public class JLineupController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(request.getContextPath() + "/runs/" + sanitizedRunId));
         return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/runs")
+    public ResponseEntity<List<JLineupRunStatus>> getRuns() {
+        return ResponseEntity.ok(jLineupService.getRunStatus());
     }
 
     @GetMapping("/runs/{runId}")

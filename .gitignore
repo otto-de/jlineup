@@ -17,6 +17,7 @@ classes
 .project
 .classpath
 .settings
+.factorypath
 bin
 /lambda/dockerstuff.sh
 /lambda/src/main/resources/settings.properties
