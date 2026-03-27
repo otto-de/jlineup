@@ -1,5 +1,12 @@
 # JLineup Release History
 
+## Release 5.1.0 - 2026-03-27
+* Breaking change: The legacy V1 JSON report format and legacy HTML report have been removed. Only the V2 report format is now supported.
+                   The `reportFormat` field in `JobConfig` is no longer available.
+* Feature: Row color in the web UI reports list now reflects the run state.
+* Update: GSON dependency removed; affected classes converted to records.
+* Update: End-to-end acceptance test added for the CLI Lambda to catch JSON serialization errors during lambda handling.
+
 ## Release 5.0.2 - 2026-03-25
 * Bugfix: The lambda function did not work in some cases when the configuration included alternating cookies.
 
