@@ -40,7 +40,6 @@ class JLineupRunnerFactoryTest {
                 .withThreads(Integer.MAX_VALUE)
                 .withDebug(true)
                 .withLogToFile(true)
-                .withReportFormat(1)
                 .build();
 
         //When
@@ -50,7 +49,6 @@ class JLineupRunnerFactoryTest {
         assertThat(sanitizedJobConfig.threads, is(jLineupWebProperties.getMaxThreadsPerJob()));
         assertThat(sanitizedJobConfig.debug, is(false));
         assertThat(sanitizedJobConfig.logToFile, is(false));
-        assertThat(sanitizedJobConfig.reportFormat, is(DEFAULT_REPORT_FORMAT));
     }
 
     @Test

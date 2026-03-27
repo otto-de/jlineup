@@ -38,7 +38,6 @@ public class FileService {
     public static final String DEFAULT_FILETRACKER_FILENAME = "files.json";
     public static final String REPORT_HTML_FILENAME = "report.html";
     public static final String REPORT_BEFORE_HTML_FILENAME = "report_before.html";
-    public static final String LEGACY_REPORT_HTML_FILENAME = "report_legacy.html";
     public static final String REPORT_JSON_FILENAME = "report.json";
 
     private final RunStepConfig runStepConfig;
@@ -220,10 +219,6 @@ public class FileService {
         try (PrintStream out = new PrintStream(new FileOutputStream(getReportDirectory() + FILE_SEPARATOR + REPORT_JSON_FILENAME))) {
             out.print(reportJson);
         }
-    }
-
-    public void writeHtmlReportLegacy(String htmlReport) throws FileNotFoundException {
-        writeHtmlReport(htmlReport, LEGACY_REPORT_HTML_FILENAME);
     }
 
     public void writeHtmlReport(String htmlReport, String filename) throws FileNotFoundException {

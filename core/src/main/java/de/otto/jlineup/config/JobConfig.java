@@ -36,8 +36,6 @@ public final class JobConfig  {
     static final String EXAMPLE_URL = "https://www.example.com";
 
     public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
-    public static final int DEFAULT_REPORT_FORMAT = 2;
-
     static final Browser.Type DEFAULT_BROWSER = Browser.Type.CHROME_HEADLESS;
     static final float DEFAULT_MAX_DIFF = 0;
     public static final int DEFAULT_WINDOW_WIDTH = 800;
@@ -79,8 +77,6 @@ public final class JobConfig  {
     public final Float globalWaitAfterPageLoad;
     public final int pageLoadTimeout;
     public final Integer windowHeight;
-    @JsonInclude(value = Include.CUSTOM, valueFilter = ReportFormatFilter.class)
-    public final Integer reportFormat;
     @JsonInclude(Include.NON_DEFAULT)
     public final int screenshotRetries;
     @JsonInclude(Include.NON_DEFAULT)
@@ -112,7 +108,6 @@ public final class JobConfig  {
         windowHeight = builder.windowHeight;
         threads = builder.threads;
         screenshotRetries = builder.screenshotRetries;
-        reportFormat = builder.reportFormat;
         globalTimeout = builder.globalTimeout;
         debug = builder.debug;
         logToFile = builder.logToFile;
@@ -193,10 +188,6 @@ public final class JobConfig  {
         return windowHeight;
     }
 
-    public Integer getReportFormat() {
-        return reportFormat;
-    }
-
     public int getScreenshotRetries() {
         return screenshotRetries;
     }
@@ -254,7 +245,6 @@ public final class JobConfig  {
                 .withWindowHeight(jobConfig.windowHeight)
                 .withThreads(jobConfig.threads)
                 .withScreenshotRetries(jobConfig.screenshotRetries)
-                .withReportFormat(jobConfig.reportFormat)
                 .withGlobalTimeout(jobConfig.globalTimeout)
                 .withDebug(jobConfig.debug)
                 .withLogToFile(jobConfig.logToFile)
@@ -267,12 +257,12 @@ public final class JobConfig  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JobConfig jobConfig = (JobConfig) o;
-        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(name, jobConfig.name) && Objects.equals(message, jobConfig.message) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(reportFormat, jobConfig.reportFormat) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
+        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(name, jobConfig.name) && Objects.equals(message, jobConfig.message) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(urls, browser, name, message, approvalLink, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, reportFormat, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
+        return Objects.hash(urls, browser, name, message, approvalLink, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
     }
 
     @Override
@@ -286,7 +276,6 @@ public final class JobConfig  {
                 ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
                 ", pageLoadTimeout=" + pageLoadTimeout +
                 ", windowHeight=" + windowHeight +
-                ", reportFormat=" + reportFormat +
                 ", screenshotRetries=" + screenshotRetries +
                 ", threads=" + threads +
                 ", globalTimeout=" + globalTimeout +
@@ -420,7 +409,6 @@ public final class JobConfig  {
         private float globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         private int pageLoadTimeout = DEFAULT_PAGELOAD_TIMEOUT;
         private Integer windowHeight = null;
-        private int reportFormat = DEFAULT_REPORT_FORMAT;
         private int screenshotRetries = DEFAULT_SCREENSHOT_RETRIES;
         private int threads = DEFAULT_THREADS;
         private int globalTimeout = DEFAULT_GLOBAL_TIMEOUT;
@@ -472,12 +460,6 @@ public final class JobConfig  {
 
         public Builder withWindowHeight(Integer val) {
             windowHeight = val;
-            return this;
-        }
-
-        @JsonInclude(value = Include.CUSTOM, valueFilter = ReportFormatFilter.class)
-        public Builder withReportFormat(int val) {
-            reportFormat = val;
             return this;
         }
 

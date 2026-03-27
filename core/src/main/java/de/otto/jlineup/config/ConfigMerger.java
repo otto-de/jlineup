@@ -105,7 +105,6 @@ public class ConfigMerger {
         mergedJobConfigBuilder.withGlobalWaitAfterPageLoad(originalConfig.globalWaitAfterPageLoad != DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD ? originalConfig.globalWaitAfterPageLoad : mergeConfig.globalWaitAfterPageLoad);
         mergedJobConfigBuilder.withPageLoadTimeout(originalConfig.pageLoadTimeout != DEFAULT_PAGELOAD_TIMEOUT ? originalConfig.pageLoadTimeout : mergeConfig.pageLoadTimeout);
         mergedJobConfigBuilder.withWindowHeight(originalConfig.windowHeight != null ? originalConfig.windowHeight : mergeConfig.windowHeight);
-        mergedJobConfigBuilder.withReportFormat(originalConfig.reportFormat != DEFAULT_REPORT_FORMAT ? originalConfig.reportFormat : mergeConfig.reportFormat);
         mergedJobConfigBuilder.withScreenshotRetries(originalConfig.screenshotRetries != DEFAULT_SCREENSHOT_RETRIES ? originalConfig.screenshotRetries : mergeConfig.screenshotRetries);
         mergedJobConfigBuilder.withThreads(originalConfig.threads != DEFAULT_THREADS ? originalConfig.threads : mergeConfig.threads);
         mergedJobConfigBuilder.withGlobalTimeout(originalConfig.globalTimeout != DEFAULT_GLOBAL_TIMEOUT ? originalConfig.globalTimeout : mergeConfig.globalTimeout);

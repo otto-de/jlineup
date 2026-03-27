@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.browser.BrowserUtils.RANDOM_FOLDER_PLACEHOLDER;
-import static de.otto.jlineup.config.JobConfig.DEFAULT_REPORT_FORMAT;
 
 @Component
 public class JLineupRunnerFactory {
@@ -109,7 +108,6 @@ public class JLineupRunnerFactory {
                 .withThreads(calculateNumberOfThreads(jobConfig))
                 .withDebug(false)
                 .withLogToFile(false)
-                .withReportFormat(DEFAULT_REPORT_FORMAT)
                 .build();
     }
 

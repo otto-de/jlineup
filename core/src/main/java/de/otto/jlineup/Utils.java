@@ -6,7 +6,6 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.FileAppender;
-import de.otto.jlineup.config.JobConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,10 +111,6 @@ public class Utils {
         if (appender != null) {
             appender.stop();
         }
-    }
-
-    public static boolean shouldUseLegacyReportFormat(JobConfig jobConfig) {
-        return (jobConfig.reportFormat != null && jobConfig.reportFormat == 1) || (jobConfig.reportFormat == null && JobConfig.DEFAULT_REPORT_FORMAT == 1);
     }
 
     public static String getVersion() {

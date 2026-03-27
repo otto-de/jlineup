@@ -8,7 +8,6 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.file.ScreenshotContextFileTracker;
 import de.otto.jlineup.report.Report;
-import de.otto.jlineup.report.ScreenshotComparisonResult;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -302,26 +301,6 @@ class JLineupCLIAcceptanceTest {
 
         final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
         assertThat(report.summary().differenceSum(), is(0.0d));
-
-        final String htmlReportText = Files.readString(reportHtml);
-        assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
-    }
-
-    @Test
-    void shouldRunJLineupWithTestPageThatDoesntChange_LegacyReportFormat() throws Exception {
-        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_legacy.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
-        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_legacy.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
-
-        final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
-        assertThat("Report JSON exists", Files.exists(reportJson));
-        final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
-        assertThat("Report HTML exists", Files.exists(reportHtml));
-
-        final ScreenshotComparisonResult[] report = JacksonWrapper.jsonMapper().rebuild()
-                .propertyNamingStrategy(tools.jackson.databind.PropertyNamingStrategies.LOWER_CAMEL_CASE)
-                .build()
-                .readValue(reportJson.toFile(), ScreenshotComparisonResult[].class);
-        assertThat(report[0].difference(), is(0.0d));
 
         final String htmlReportText = Files.readString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));

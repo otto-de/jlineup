@@ -16,7 +16,6 @@ import org.slf4j.MDC;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathToLogFile;
 import static java.lang.invoke.MethodHandles.lookup;
@@ -70,7 +69,7 @@ public class JLineupRunner {
                 ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
                 try {
                     Map<String, List<ScreenshotComparisonResult>> onlyBeforeScreenshotsInThisComparisonResult = screenshotsComparator.compare();
-                    final ReportV2 reportAfterBeforeStep = new ReportGeneratorV2(fileService).generateReport(onlyBeforeScreenshotsInThisComparisonResult, jobConfig);
+                    final Report reportAfterBeforeStep = new ReportGenerator(fileService).generateReport(onlyBeforeScreenshotsInThisComparisonResult, jobConfig);
                     htmlReportWriter.writeReportAfterBeforeStep(reportAfterBeforeStep);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -83,37 +82,25 @@ public class JLineupRunner {
                 ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
                 final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
 
-                final ReportGenerator reportGenerator = new ReportGenerator();
-                final ReportGeneratorV2 reportGeneratorV2 = new ReportGeneratorV2(fileService);
+                final ReportGenerator reportGenerator = new ReportGenerator(fileService);
                 final Report report = reportGenerator.generateReport(comparisonResults, jobConfig);
-                final ReportV2 reportV2 = reportGeneratorV2.generateReport(comparisonResults, jobConfig);
 
-                JSONReportWriter jsonReportWriter;
-                if (Utils.shouldUseLegacyReportFormat(jobConfig)) {
-                    jsonReportWriter = new JSONReportWriter_V1(fileService);
-                } else {
-                    jsonReportWriter = new JSONReportWriter_V2(fileService);
-                }
-                jsonReportWriter.writeComparisonReportAsJson(report);
+                new JSONReportWriter(fileService).writeComparisonReportAsJson(report);
                 htmlReportWriter.writeReport(report);
-                htmlReportWriter.writeReportV2(reportV2);
 
-                final Set<Map.Entry<String, UrlReport>> urlReports = report.screenshotComparisonsForUrl().entrySet();
-                for (Map.Entry<String, UrlReport> urlReport : urlReports) {
-                    LOG.info("Sum of screenshot differences for {}: {} ({} %)", urlReport.getKey(), urlReport.getValue().summary().differenceSum(), Math.round(urlReport.getValue().summary().differenceSum() * 100d));
-                    LOG.info("Max difference of a single screenshot for {}: {} ({} %)", urlReport.getKey(), urlReport.getValue().summary().differenceMax(), Math.round(urlReport.getValue().summary().differenceMax() * 100d));
-                    LOG.info("Accepted different pixels for {}: {}", urlReport.getKey(), urlReport.getValue().summary().acceptedDifferentPixels());
+                for (UrlReport urlReport : report.urlReports()) {
+                    LOG.info("Sum of screenshot differences for {}: {} ({} %)", urlReport.urlKey(), urlReport.summary().differenceSum(), Math.round(urlReport.summary().differenceSum() * 100d));
+                    LOG.info("Max difference of a single screenshot for {}: {} ({} %)", urlReport.urlKey(), urlReport.summary().differenceMax(), Math.round(urlReport.summary().differenceMax() * 100d));
+                    LOG.info("Accepted different pixels for {}: {}", urlReport.urlKey(), urlReport.summary().acceptedDifferentPixels());
                 }
 
                 LOG.info("Sum of overall screenshot differences: {} ({} %)", report.summary().differenceSum(), Math.round(report.summary().differenceSum() * 100d));
                 LOG.info("Max difference of a single screenshot: {} ({} %)", report.summary().differenceMax(), Math.round(report.summary().differenceMax() * 100d));
 
-                if (!Utils.shouldUseLegacyReportFormat(jobConfig)) {
-                    //Exit with exit code 1 if at least one url report has a bigger difference than configured
-                    if (isDetectedDifferenceGreaterThanMaxDifference(urlReports, jobConfig)) {
-                        LOG.info("JLineup finished. There was a difference between before and after. Return code is 1.");
-                        return false;
-                    }
+                //Exit with exit code 1 if at least one url report has a bigger difference than configured
+                if (isDetectedDifferenceGreaterThanMaxDifference(report, jobConfig)) {
+                    LOG.info("JLineup finished. There was a difference between before and after. Return code is 1.");
+                    return false;
                 }
             }
         } catch (IOException e) {
@@ -125,9 +112,9 @@ public class JLineupRunner {
         return true;
     }
 
-    static boolean isDetectedDifferenceGreaterThanMaxDifference(Set<Map.Entry<String, UrlReport>> urlReports, JobConfig jobConfig) {
-        for (Map.Entry<String, UrlReport> urlReport : urlReports) {
-            if (jobConfig.urls != null && urlReport.getValue().summary().differenceMax() > jobConfig.urls.get(urlReport.getKey()).maxDiff) {
+    static boolean isDetectedDifferenceGreaterThanMaxDifference(Report report, JobConfig jobConfig) {
+        for (UrlReport urlReport : report.urlReports()) {
+            if (jobConfig.urls != null && urlReport.summary().differenceMax() > jobConfig.urls.get(urlReport.urlKey()).maxDiff) {
                 return true;
             }
         }
