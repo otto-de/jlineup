@@ -4,6 +4,9 @@
 * Breaking change: The legacy V1 JSON report format and legacy HTML report have been removed. Only the V2 report format is now supported.
                    The `reportFormat` field in `JobConfig` is no longer available.
 * Feature: Row color in the web UI reports list now reflects the run state.
+* Feature: The reports list is now manually updated in the background.
+* Feature: You can now manually trigger the 'after' run for a specific report in the web UI, which is useful for test runs etc.
+* Feature: The web UI offers a new admin endpoint to create a manual run with a custom configuration.
 * Update: GSON dependency removed; affected classes converted to records.
 * Update: End-to-end acceptance test added for the CLI Lambda to catch JSON serialization errors during lambda handling.
 
