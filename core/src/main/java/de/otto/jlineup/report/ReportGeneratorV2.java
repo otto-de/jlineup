@@ -22,7 +22,7 @@ public class ReportGeneratorV2 {
         for (Map.Entry<String, List<ScreenshotComparisonResult>> resultForUrl : screenshotComparisonResultLists.entrySet()) {
             Summary urlSummary = getSummary(resultForUrl.getValue());
 
-            Map<String, List<ScreenshotComparisonResult>> resultsPerContextHash = resultForUrl.getValue().stream().collect(Collectors.groupingBy(res -> res.contextHash, Collectors.mapping(res -> res, Collectors.toList())));
+            Map<String, List<ScreenshotComparisonResult>> resultsPerContextHash = resultForUrl.getValue().stream().collect(Collectors.groupingBy(res -> res.contextHash(), Collectors.mapping(res -> res, Collectors.toList())));
             ArrayList<ContextReport> contextReports = new ArrayList<>();
             for (Map.Entry<String, List<ScreenshotComparisonResult>> resultPerHash : resultsPerContextHash.entrySet()) {
                 Summary contextSummary = getSummary(resultPerHash.getValue());
@@ -40,9 +40,9 @@ public class ReportGeneratorV2 {
     }
 
     private Summary getSummary(List<ScreenshotComparisonResult> resultList) {
-        final double differenceSum = resultList.stream().mapToDouble(scr -> scr.difference).sum();
-        final OptionalDouble differenceMax = resultList.stream().mapToDouble(scr -> scr.difference).max();
-        final int acceptedDifferentPixelsSum = resultList.stream().mapToInt(scr -> scr.acceptedDifferentPixels).sum();
+        final double differenceSum = resultList.stream().mapToDouble(scr -> scr.difference()).sum();
+        final OptionalDouble differenceMax = resultList.stream().mapToDouble(scr -> scr.difference()).max();
+        final int acceptedDifferentPixelsSum = resultList.stream().mapToInt(scr -> scr.acceptedDifferentPixels()).sum();
         return new Summary(differenceSum > 0, differenceSum, differenceMax.orElseGet(() -> 0), acceptedDifferentPixelsSum);
     }
 

@@ -123,11 +123,11 @@ public class ScreenshotsComparator {
                 }
             }
             screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>
-                    comparing(r -> r.fullUrlWithPath)
-                    .thenComparing(r -> r.deviceConfig.width)
-                    .thenComparing(r -> r.deviceConfig.height)
-                    .thenComparing(r -> r.deviceConfig.pixelRatio)
-                    .thenComparing(r -> r.verticalScrollPosition));
+                    comparing(r -> r.fullUrlWithPath())
+                    .thenComparing(r -> r.deviceConfig().width)
+                    .thenComparing(r -> r.deviceConfig().height)
+                    .thenComparing(r -> r.deviceConfig().pixelRatio)
+                    .thenComparing(r -> r.verticalScrollPosition()));
             results.put(urlConfigEntry.getKey(), screenshotComparisonResults);
         }
         return results;

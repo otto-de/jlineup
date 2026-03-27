@@ -36,7 +36,6 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation "org.hamcrest:hamcrest"
     testImplementation "com.github.stefanbirkner:system-lambda:1.2.1"
-    testImplementation "com.google.code.gson:gson"
     testImplementation("software.amazon.awssdk:cloudformation:${awsSdkVersion}")
     testImplementation("software.amazon.awscdk:aws-cdk-lib:2.244.0") {
         exclude group: "com.fasterxml.jackson.core"

@@ -98,15 +98,15 @@ public class JLineupRunner {
                 htmlReportWriter.writeReport(report);
                 htmlReportWriter.writeReportV2(reportV2);
 
-                final Set<Map.Entry<String, UrlReport>> urlReports = report.screenshotComparisonsForUrl.entrySet();
+                final Set<Map.Entry<String, UrlReport>> urlReports = report.screenshotComparisonsForUrl().entrySet();
                 for (Map.Entry<String, UrlReport> urlReport : urlReports) {
-                    LOG.info("Sum of screenshot differences for {}: {} ({} %)", urlReport.getKey(), urlReport.getValue().summary.differenceSum, Math.round(urlReport.getValue().summary.differenceSum * 100d));
-                    LOG.info("Max difference of a single screenshot for {}: {} ({} %)", urlReport.getKey(), urlReport.getValue().summary.differenceMax, Math.round(urlReport.getValue().summary.differenceMax * 100d));
-                    LOG.info("Accepted different pixels for {}: {}", urlReport.getKey(), urlReport.getValue().summary.acceptedDifferentPixels);
+                    LOG.info("Sum of screenshot differences for {}: {} ({} %)", urlReport.getKey(), urlReport.getValue().summary().differenceSum(), Math.round(urlReport.getValue().summary().differenceSum() * 100d));
+                    LOG.info("Max difference of a single screenshot for {}: {} ({} %)", urlReport.getKey(), urlReport.getValue().summary().differenceMax(), Math.round(urlReport.getValue().summary().differenceMax() * 100d));
+                    LOG.info("Accepted different pixels for {}: {}", urlReport.getKey(), urlReport.getValue().summary().acceptedDifferentPixels());
                 }
 
-                LOG.info("Sum of overall screenshot differences: {} ({} %)", report.summary.differenceSum, Math.round(report.summary.differenceSum * 100d));
-                LOG.info("Max difference of a single screenshot: {} ({} %)", report.summary.differenceMax, Math.round(report.summary.differenceMax * 100d));
+                LOG.info("Sum of overall screenshot differences: {} ({} %)", report.summary().differenceSum(), Math.round(report.summary().differenceSum() * 100d));
+                LOG.info("Max difference of a single screenshot: {} ({} %)", report.summary().differenceMax(), Math.round(report.summary().differenceMax() * 100d));
 
                 if (!Utils.shouldUseLegacyReportFormat(jobConfig)) {
                     //Exit with exit code 1 if at least one url report has a bigger difference than configured
@@ -127,7 +127,7 @@ public class JLineupRunner {
 
     static boolean isDetectedDifferenceGreaterThanMaxDifference(Set<Map.Entry<String, UrlReport>> urlReports, JobConfig jobConfig) {
         for (Map.Entry<String, UrlReport> urlReport : urlReports) {
-            if (jobConfig.urls != null && urlReport.getValue().summary.differenceMax > jobConfig.urls.get(urlReport.getKey()).maxDiff) {
+            if (jobConfig.urls != null && urlReport.getValue().summary().differenceMax() > jobConfig.urls.get(urlReport.getKey()).maxDiff) {
                 return true;
             }
         }

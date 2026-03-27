@@ -1,6 +1,5 @@
 package de.otto.jlineup.cli.acceptance;
 
-import com.google.gson.Gson;
 import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.cli.Main;
@@ -9,6 +8,7 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.file.ScreenshotContextFileTracker;
 import de.otto.jlineup.report.Report;
+import de.otto.jlineup.report.ScreenshotComparisonResult;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
@@ -45,8 +44,6 @@ class JLineupCLIAcceptanceTest {
     private final PrintStream stderr = System.err;
 
     private Path tempDirectory;
-
-    private final Gson gson = new Gson();
 
     @BeforeEach
     void setUpStreams() {
@@ -140,11 +137,10 @@ class JLineupCLIAcceptanceTest {
         final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
+        assertThat(report.summary().differenceSum(), is(0.0d));
 
-        final String htmlReportText = getTextFileContentAsString(reportHtml);
+        final String htmlReportText = Files.readString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
@@ -211,11 +207,10 @@ class JLineupCLIAcceptanceTest {
         final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
+        assertThat(report.summary().differenceSum(), is(0.0d));
 
-        final String htmlReportText = getTextFileContentAsString(reportHtml);
+        final String htmlReportText = Files.readString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
@@ -227,9 +222,8 @@ class JLineupCLIAcceptanceTest {
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
 
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
+        assertThat(report.summary().differenceSum(), is(0.0d));
     }
 
     @Test
@@ -240,9 +234,8 @@ class JLineupCLIAcceptanceTest {
         final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
         assertThat("Report JSON exists", Files.exists(reportJson));
 
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
+        assertThat(report.summary().differenceSum(), is(0.0d));
     }
 
     @Test
@@ -273,11 +266,10 @@ class JLineupCLIAcceptanceTest {
         final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
+        assertThat(report.summary().differenceSum(), is(0.0d));
 
-        final String htmlReportText = getTextFileContentAsString(reportHtml);
+        final String htmlReportText = Files.readString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
@@ -291,11 +283,10 @@ class JLineupCLIAcceptanceTest {
         final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
+        assertThat(report.summary().differenceSum(), is(0.0d));
 
-        final String htmlReportText = getTextFileContentAsString(reportHtml);
+        final String htmlReportText = Files.readString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
@@ -309,11 +300,10 @@ class JLineupCLIAcceptanceTest {
         final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
+        assertThat(report.summary().differenceSum(), is(0.0d));
 
-        final String htmlReportText = getTextFileContentAsString(reportHtml);
+        final String htmlReportText = Files.readString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
@@ -327,11 +317,13 @@ class JLineupCLIAcceptanceTest {
         final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        @SuppressWarnings("unchecked") final ArrayList<Map> report = gson.fromJson(jsonReportText, ArrayList.class);
-        assertThat(report.get(0).get("difference"), is(0.0d));
+        final ScreenshotComparisonResult[] report = JacksonWrapper.jsonMapper().rebuild()
+                .propertyNamingStrategy(tools.jackson.databind.PropertyNamingStrategies.LOWER_CAMEL_CASE)
+                .build()
+                .readValue(reportJson.toFile(), ScreenshotComparisonResult[].class);
+        assertThat(report[0].difference(), is(0.0d));
 
-        final String htmlReportText = getTextFileContentAsString(reportHtml);
+        final String htmlReportText = Files.readString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
     }
 
@@ -345,11 +337,10 @@ class JLineupCLIAcceptanceTest {
         final Path reportHtml = Paths.get(tempDirectory.toString(), "report", "report.html");
         assertThat("Report HTML exists", Files.exists(reportHtml));
 
-        final String jsonReportText = getTextFileContentAsString(reportJson);
-        final Report report = gson.fromJson(jsonReportText, Report.class);
-        assertThat(report.summary.differenceSum, is(0.0d));
+        final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
+        assertThat(report.summary().differenceSum(), is(0.0d));
 
-        final String htmlReportText = getTextFileContentAsString(reportHtml);
+        final String htmlReportText = Files.readString(reportHtml);
         assertThat(htmlReportText, containsString("<a href=\"screenshots/"));
 
         assertThat(systemOutCaptor.toString(), containsString("Sum of screenshot differences for file://###CWD###/src/test/resources/acceptance/webpage/: 0.0 (0 %)"));
@@ -405,11 +396,6 @@ class JLineupCLIAcceptanceTest {
             Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--print-example"}));
         assertEquals(0, status);
         assertThat(systemOutCaptor.toString(), containsString(JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig())));
-    }
-
-    private String getTextFileContentAsString(Path reportJson) throws IOException {
-        final List<String> reportJsonLines = Files.readAllLines(reportJson);
-        return reportJsonLines.stream().collect(Collectors.joining());
     }
 
     private void deleteDir(Path path) throws Exception {

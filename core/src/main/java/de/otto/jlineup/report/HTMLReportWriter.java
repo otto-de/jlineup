@@ -34,7 +34,7 @@ public class HTMLReportWriter {
     }
 
     public void writeReport(Report report) throws FileNotFoundException {
-        fileService.writeHtmlReportLegacy(renderReport("report_legacy", report.config, report.getFlatResultList()));
+        fileService.writeHtmlReportLegacy(renderReport("report_legacy", report.config(), report.getFlatResultList()));
     }
 
     public void writeReportV2(ReportV2 report) throws FileNotFoundException {
@@ -84,7 +84,7 @@ public class HTMLReportWriter {
             String context = getContextHash(screenshotComparisonResult);
             if (!lastContextKey.equals(context)) {
                 lastContextKey = context;
-                currentContext = new ScreenshotComparisonResultContext(screenshotComparisonResult.contextHash);
+                currentContext = new ScreenshotComparisonResultContext(screenshotComparisonResult.contextHash());
                 screenshotComparisonResultContexts.add(currentContext);
             }
             currentContext.addResult(screenshotComparisonResult);
@@ -108,7 +108,7 @@ public class HTMLReportWriter {
     }
 
     private String getContextHash(final ScreenshotComparisonResult screenshotComparisonResult) {
-        return screenshotComparisonResult.contextHash;
+        return screenshotComparisonResult.contextHash();
     }
 
     public void writeReportAfterBeforeStep(ReportV2 reportBefore) throws FileNotFoundException {
@@ -202,7 +202,7 @@ public class HTMLReportWriter {
         @UsedInTemplate
         public boolean isSuccess() {
             for (ScreenshotComparisonResult result : results) {
-                if (result.difference > 0)
+                if (result.difference() > 0)
                     return false;
             }
 

@@ -1,9 +1,8 @@
 package de.otto.jlineup.clilambda.acceptance;
 
-import com.google.gson.Gson;
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.cli.Main;
 import de.otto.jlineup.file.FileTracker;
-import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.report.Report;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,7 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -103,8 +101,6 @@ class CliLambdaAcceptanceTest {
     private ByteArrayOutputStream systemErrCaptor;
     private final PrintStream stdout = System.out;
     private final PrintStream stderr = System.err;
-
-    private final Gson gson = new Gson();
 
     // -------------------------------------------------------------------------
     // Lifecycle
@@ -288,13 +284,12 @@ class CliLambdaAcceptanceTest {
         assertTrue(Files.exists(reportHtml), "report.html should exist after after step");
 
         // --- Assert zero pixel difference ---
-        String jsonReportText = Files.readAllLines(reportJson).stream().collect(Collectors.joining());
-        Report report = gson.fromJson(jsonReportText, Report.class);
+        Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
         assertThat("Expected zero pixel difference across all screenshot contexts",
-                report.summary.differenceSum, is(0.0d));
+                report.summary().differenceSum(), is(0.0d));
 
         // --- Assert HTML report contains screenshot links ---
-        String htmlReportText = Files.readAllLines(reportHtml).stream().collect(Collectors.joining());
+        String htmlReportText = Files.readString(reportHtml);
         assertTrue(htmlReportText.contains("<a href=\"screenshots/"),
                 "HTML report should contain links to screenshots");
 
@@ -307,7 +302,7 @@ class CliLambdaAcceptanceTest {
                 fileTracker.contexts.size(), is(4));
 
         LOG.info("All assertions passed. differenceSum={}, contexts={}",
-                report.summary.differenceSum, fileTracker.contexts.size());
+                report.summary().differenceSum(), fileTracker.contexts.size());
     }
 
     // -------------------------------------------------------------------------

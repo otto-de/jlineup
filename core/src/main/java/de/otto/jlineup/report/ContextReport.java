@@ -13,19 +13,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class ContextReport {
-
-    public final String contextHash;
-    public final Summary summary;
-    public final List<ScreenshotComparisonResult> results;
-    public final ScreenshotContext screenshotContext;
-
-    public ContextReport(String contextHash, ScreenshotContext screenshotContext, Summary summary, List<ScreenshotComparisonResult> results) {
-        this.contextHash = contextHash;
-        this.screenshotContext = screenshotContext;
-        this.summary = summary;
-        this.results = results;
-    }
+public record ContextReport(String contextHash, ScreenshotContext screenshotContext, Summary summary,
+                            List<ScreenshotComparisonResult> results) {
 
     @UsedInTemplate
     public String getUrl() {
@@ -41,8 +30,9 @@ public class ContextReport {
         return shortenedUrl;
     }
 
+    @Override
     @UsedInTemplate
-    public String getContextHash() {
+    public String contextHash() {
         return contextHash;
     }
 
@@ -103,41 +93,19 @@ public class ContextReport {
         return sb.toString();
     }
 
+    @Override
     @UsedInTemplate
-    public List<ScreenshotComparisonResult> getResults() {
+    public List<ScreenshotComparisonResult> results() {
         return results;
     }
 
     @UsedInTemplate
     public boolean isSuccess() {
         for (ScreenshotComparisonResult result : results) {
-            if (result.difference > 0)
+            if (result.difference() > 0)
                 return false;
         }
 
         return true;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ContextReport that = (ContextReport) o;
-        return Objects.equals(contextHash, that.contextHash) && Objects.equals(summary, that.summary) && Objects.equals(results, that.results) && Objects.equals(screenshotContext, that.screenshotContext);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(contextHash, summary, results, screenshotContext);
-    }
-
-    @Override
-    public String toString() {
-        return "ContextReport{" +
-                "contextHash=" + contextHash +
-                ", summary=" + summary +
-                ", results=" + results +
-                ", screenshotContext=" + screenshotContext +
-                '}';
     }
 }
