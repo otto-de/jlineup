@@ -102,6 +102,7 @@ class ReportsAndRunWebControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("reports"))
                 .andExpect(model().attributeExists("reportList"))
+                .andExpect(model().attributeExists("runsUrl"))
                 .andExpect(model().attribute("reportList", hasSize(3)))
 //                .andExpect(model().attribute("reportList", is(
 //                        ImmutableList.of(
@@ -129,6 +130,7 @@ class ReportsAndRunWebControllerTest {
         assertThat(reportList.get(1).getDuration(), is("00:32:00"));
         assertThat(reportList.get(2).getId(), is("someOldId"));
         assertThat(reportList.get(2).getDuration(), is("02:00:00"));
+        assertThat(modelAndView.getModelMap().get("runsUrl"), is("/jlineup-ctxpath/runs"));
 
     }
 

@@ -57,7 +57,8 @@
 <script th:inline="javascript">
     window._jlineup = {
         exampleConfig: /*[[${exampleConfig}]]*/  '{}',
-        reportsUrl:    /*[[${reportsUrl}]]*/ '/internal/reports'
+        reportsUrl:    /*[[${reportsUrl}]]*/ '/internal/reports',
+        runsUrl:       /*[[${runsUrl}]]*/ '/runs'
     };
 </script>
 
@@ -77,7 +78,7 @@
 
     const EXAMPLE_CONFIG  = window._jlineup.exampleConfig;
     const REPORTS_URL     = window._jlineup.reportsUrl;
-    const RUNS_URL        = '/runs';
+    const RUNS_URL        = window._jlineup.runsUrl;
     const STORAGE_KEY     = 'jlineup.run.editorContent';
 
     function loadSaved() {

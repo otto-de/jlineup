@@ -85,6 +85,10 @@
 
 <span th:replace="~{fragments/footer :: footer}" />
 
+<script th:inline="javascript">
+    window._jlineup = { runsUrl: /*[[${runsUrl}]]*/ '/runs' };
+</script>
+
 <script>
     (function () {
         var pendingAfterUrl = null;
@@ -165,7 +169,7 @@
         }
 
         function afterRunUrl(run) {
-            return run.state === 'BEFORE_DONE' ? '/runs/' + run.id : null;
+            return run.state === 'BEFORE_DONE' ? window._jlineup.runsUrl + '/' + run.id : null;
         }
 
         function runName(run) {
@@ -383,7 +387,7 @@
         }
 
         function poll() {
-            fetch('/runs')
+            fetch(window._jlineup.runsUrl)
                 .then(function(resp) { return resp.json(); })
                 .then(function(runs) {
                     var tbody      = document.getElementById('runs-tbody');

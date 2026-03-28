@@ -3,6 +3,7 @@ package de.otto.jlineup.web;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,14 +44,15 @@ public class ReportsAndRunWebController {
             value = "${edison.application.management.base-path:/internal}/reports",
             produces = "text/html",
             method = GET)
-    public ModelAndView getReportsPage() {
+    public ModelAndView getReportsPage(HttpServletRequest request) {
+        String contextPath = request.getContextPath();
         return new ModelAndView("reports") {{
-
             addObject("reportList", jLineupService.getRunStatus().stream()
                     .sorted(Comparator.comparing(JLineupRunStatus::getStartTime).reversed())
-                    .map(s -> new Report(s, managementBasePath))
+                    .map(s -> new Report(s, managementBasePath, contextPath))
                     .limit(jLineupWebProperties.getMaxPersistedRuns())
                     .collect(toList()));
+            addObject("runsUrl", contextPath + "/runs");
         }};
     }
 
@@ -58,10 +60,12 @@ public class ReportsAndRunWebController {
             value = "${edison.application.management.base-path:/internal}/run",
             produces = "text/html",
             method = GET)
-    public ModelAndView getRunPage() {
+    public ModelAndView getRunPage(HttpServletRequest request) {
+        String contextPath = request.getContextPath();
         return new ModelAndView("run") {{
             addObject("exampleConfig", JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig()));
-            addObject("reportsUrl", managementBasePath + "/reports");
+            addObject("reportsUrl", contextPath + managementBasePath + "/reports");
+            addObject("runsUrl", contextPath + "/runs");
         }};
     }
 
@@ -103,7 +107,7 @@ public class ReportsAndRunWebController {
         private State state;
         private String afterRunUrl;
 
-        public Report(JLineupRunStatus lineupRunStatus, String managementBasePath) {
+        public Report(JLineupRunStatus lineupRunStatus, String managementBasePath, String contextPath) {
             this.id = lineupRunStatus.getId();
             this.name = lineupRunStatus.getJobConfig().name;
             this.urls = lineupRunStatus.getUrls();
@@ -115,7 +119,7 @@ public class ReportsAndRunWebController {
             this.startTime = formatTime(lineupRunStatus.getStartTime());
             this.state = lineupRunStatus.getState();
             if (lineupRunStatus.getState() == State.BEFORE_DONE) {
-                this.afterRunUrl = "/runs/" + lineupRunStatus.getId();
+                this.afterRunUrl = contextPath + "/runs/" + lineupRunStatus.getId();
             }
         }
 
