@@ -56,7 +56,8 @@
                 <tbody id="runs-tbody">
                 <tr th:each="report : ${reportList}"
                     th:id="'run-row-' + ${report.id}"
-                    th:classappend="${report.stateCssClass}">
+                    th:classappend="${report.stateCssClass}"
+                    th:data-start-time="${report.startTimeEpochMs}">
                     <td><div th:text="${report.id}">42</div></td>
                     <td><div th:if="${report.name != null}" th:text="${report.name}">Some application name</div></td>
                     <td><pre style="white-space: pre-line;" th:utext="${#strings.listJoin(report.urls, '<br/>')}">https://www.verylongurl.com/some/cool/path</pre></td>
@@ -210,6 +211,7 @@
             var tr  = document.createElement('tr');
             tr.id   = 'run-row-' + run.id;
             tr.className = rowClass(run.state);
+            tr.setAttribute('data-start-time', run.startTime ? new Date(run.startTime).getTime() : 0);
 
             var reportUrl = getReportUrl(run);
             var logUrl    = getLogUrl(run);
@@ -401,10 +403,17 @@
                         if (tr) {
                             patchRow(tr, run);
                         } else {
-                            // Brand-new run — insert at top of tbody
+                            // Brand-new run — insert in startTime-descending order
                             var newRow = buildRow(run);
                             newRow.querySelectorAll('.start-after-btn').forEach(wireAfterBtn);
-                            tbody.insertBefore(newRow, tbody.firstChild);
+                            var newTs = parseInt(newRow.getAttribute('data-start-time'), 10) || 0;
+                            var rows  = Array.from(tbody.querySelectorAll('tr[data-start-time]'));
+                            var insertBefore = null;
+                            for (var i = 0; i < rows.length; i++) {
+                                var rowTs = parseInt(rows[i].getAttribute('data-start-time'), 10) || 0;
+                                if (newTs > rowTs) { insertBefore = rows[i]; break; }
+                            }
+                            tbody.insertBefore(newRow, insertBefore);  // insertBefore(x, null) == appendChild
                             if (noRunsRow) noRunsRow.style.display = 'none';
                         }
                     });

@@ -103,6 +103,7 @@ public class ReportsAndRunWebController {
         private String logUrl;
         private String duration;
         private String startTime;
+        private long startTimeEpochMs;
         private List<String> urls;
         private State state;
         private String afterRunUrl;
@@ -117,6 +118,7 @@ public class ReportsAndRunWebController {
                     lineupRunStatus.getReports().getLogUrlFromCurrentContext() : null;
             this.duration = getDurationAsString(lineupRunStatus);
             this.startTime = formatTime(lineupRunStatus.getStartTime());
+            this.startTimeEpochMs = lineupRunStatus.getStartTime().toEpochMilli();
             this.state = lineupRunStatus.getState();
             if (lineupRunStatus.getState() == State.BEFORE_DONE) {
                 this.afterRunUrl = contextPath + "/runs/" + lineupRunStatus.getId();
@@ -183,6 +185,10 @@ public class ReportsAndRunWebController {
 
         public void setStartTime(String startTime) {
             this.startTime = startTime;
+        }
+
+        public long getStartTimeEpochMs() {
+            return startTimeEpochMs;
         }
 
         public List<String> getUrls() {
