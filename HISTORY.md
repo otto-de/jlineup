@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 5.1.1 - 2026-03-28
+
+* Bugfix: Context path of the Spring Boot service is now correctly taken into account for all API calls in the web UI.
+
 ## Release 5.1.0 - 2026-03-27
 * Breaking change: The legacy V1 JSON report format and legacy HTML report have been removed. Only the V2 report format is now supported.
                    The `reportFormat` field in `JobConfig` is no longer available.

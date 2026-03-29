@@ -27,7 +27,7 @@ plugins {
 //\
 ///\
 ////\
-def jlineup_version = "5.1.1-SNAPSHOT"
+def jlineup_version = "5.1.1"
 /////
 ////
 ///
