@@ -23,7 +23,7 @@ on:
     - cron: '0 9 * * *'
 
 env:
-  CHROME_VERSION: 141.0.7390.122
+  CHROME_VERSION: 146.0.7680.165
 
 permissions:  # added using https://github.com/step-security/secure-repo
   contents: read
