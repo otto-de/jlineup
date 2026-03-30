@@ -23,13 +23,6 @@ permissions: # added using https://github.com/step-security/secure-repo
 
 jobs:
   build:
-    # Don't even start this workflow's job unless AWS creds are available.
-    if: >-
-      ${{
-        secrets.AWS_ACCOUNT_ID != '' &&
-        secrets.AWS_ACCESS_KEY != '' &&
-        secrets.AWS_SECRET_ACCESS_KEY != ''
-      }}
     runs-on: ubuntu-24.04
     steps:
       - name: Harden the runner (Audit all outbound calls)
