@@ -37,7 +37,7 @@ dependencies {
     testImplementation "org.hamcrest:hamcrest"
     testImplementation "com.github.stefanbirkner:system-lambda:1.2.1"
     testImplementation("software.amazon.awssdk:cloudformation:${awsSdkVersion}")
-    testImplementation("software.amazon.awscdk:aws-cdk-lib:2.244.0") {
+    testImplementation("software.amazon.awscdk:aws-cdk-lib:${awsCdkVersion}") {
         exclude group: "com.fasterxml.jackson.core"
         exclude group: "com.fasterxml.jackson.datatype"
         exclude group: "com.fasterxml.jackson.dataformat"
