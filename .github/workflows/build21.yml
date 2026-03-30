@@ -15,10 +15,6 @@ on:
       - '**/README.md'
       - '**/HISTORY.md'
       - 'docs/**'
-  pull_request:
-    branches: [ main ]
-  merge_group:
-    branches: [ main ]
   schedule:
     - cron: '0 9 * * *'
 
