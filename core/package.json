@@ -6,7 +6,7 @@
     "test": "jest"
   },
   "devDependencies": {
-    "jest": "^29.7.0",
+    "jest": "^30.3.0",
     "jest-environment-jsdom": "^29.7.0"
   },
   "jest": {
