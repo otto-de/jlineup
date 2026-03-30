@@ -23,6 +23,13 @@ permissions: # added using https://github.com/step-security/secure-repo
 
 jobs:
   build:
+    # Don't even start this workflow's job unless AWS creds are available.
+    if: >-
+      ${{
+        secrets.AWS_ACCOUNT_ID != '' &&
+        secrets.AWS_ACCESS_KEY != '' &&
+        secrets.AWS_SECRET_ACCESS_KEY != ''
+      }}
     runs-on: ubuntu-24.04
     steps:
       - name: Harden the runner (Audit all outbound calls)
@@ -41,7 +48,7 @@ jobs:
         run: chmod +x gradlew
       - name: Install AWS CDK
         run: npm install -g aws-cdk
-      - name: Build with gradle
+      - name: AWS Lambda acceptance tests
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
