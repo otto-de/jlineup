@@ -25,3 +25,8 @@ bin
 /web/unknown
 unknown
 /web-lambda/unknown
+
+# npm
+node_modules/
+npm-debug.log*
+.npm
