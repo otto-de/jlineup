@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 5.1.2 - 2026-03-30
+
+* Bugfix: Correct ordering of jobs on the reports page.
+* Update: Dependency updates
+* Update: Frontend tests are now part of the CI build.
+
 ## Release 5.1.1 - 2026-03-28
 
 * Bugfix: Context path of the Spring Boot service is now correctly taken into account for all API calls in the web UI.
