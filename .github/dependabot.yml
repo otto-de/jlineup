@@ -41,3 +41,9 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    groups:
+      jest:
+        patterns:
+          - "jest"
+          - "jest-*"
+          - "@jest/*"
