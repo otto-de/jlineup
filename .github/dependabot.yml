@@ -37,3 +37,11 @@ updates:
           - "org.junit.*"
           - "org.mockito.*"
           - "org.hamcrest.*"
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/core"
+    schedule:
+      interval: "daily"
