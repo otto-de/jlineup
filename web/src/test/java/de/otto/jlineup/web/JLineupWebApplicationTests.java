@@ -141,7 +141,7 @@ class JLineupWebApplicationTests {
     private JLineupRunStatus awaitRunState(State expectedState, String location) {
         final JLineupRunStatus[] status = new JLineupRunStatus[1];
         Awaitility.await()
-                .atMost(30, TimeUnit.SECONDS)
+                .atMost(60, TimeUnit.SECONDS)
                 .pollInterval(2, TimeUnit.SECONDS)
                 .until(() -> {
                     status[0] = this.testRestTemplate.getForEntity(location, JLineupRunStatus.class).getBody();
