@@ -64,7 +64,7 @@ jreleaser {
             github {
                 app {
                     snapshotSupported = true
-                    active = 'NEVER'
+                    active = 'SNAPSHOT'
                     url = "https://maven.pkg.github.com/otto-de/jlineup"
                     stagingRepository('build/staging-deploy')
                 }
