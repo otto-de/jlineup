@@ -1,7 +1,7 @@
 <div align="center"><img src="docs/jlineup-repository-image.png" width="640" /></div>
 
 ## Status
-[![Build](https://github.com/otto-de/jlineup/workflows/build.yml/badge.svg)](https://github.com/otto-de/jlineup/actions?query=workflow%3ABuild)
+[![Build](https://github.com/otto-de/jlineup/actions/workflows/build.yml/badge.svg)](https://github.com/otto-de/jlineup/actions?query=workflow%3ABuild)
 [![Maven Central](https://img.shields.io/maven-central/v/de.otto/jlineup-cli?label=maven-central&nbsp;cli)](https://search.maven.org/search?q=g:de.otto%20a:jlineup-cli%20v:RELEASE%20p:jar)
 [![Maven Central](https://img.shields.io/maven-central/v/de.otto/jlineup-web?label=maven-central&nbsp;web)](https://search.maven.org/search?q=g:de.otto%20a:jlineup-web%20v:RELEASE%20p:jar)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/otto-de/jlineup?label=GitHub&nbsp;Release)](https://github.com/otto-de/jlineup/releases)
