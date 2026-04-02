@@ -148,6 +148,13 @@ public class JLineup implements Callable<Integer> {
                             GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE, value);
                         })
                         .build());
+                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("-R", "--" + GlobalOption.JLINEUP_LAMBDA_AWS_REGION.kebabCaseNameWithoutJLineupPrefix())
+                        .order(230).description("The AWS region where the lambda function is deployed (default: eu-central-1)")
+                        .parameterConsumer((stack, argSpec, commandSpec1) -> {
+                            String value = stack.pop();
+                            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_AWS_REGION, value);
+                        })
+                        .build());
             } catch (ClassNotFoundException e) {
                 LOG.debug("No LambdaBrowser reachable.", e);
             }

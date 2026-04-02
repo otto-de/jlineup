@@ -73,6 +73,8 @@ public class LambdaBrowserTest {
                 .thenReturn("test-lambda-function");
         mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_S3_BUCKET))
                 .thenReturn("test-s3-bucket");
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_AWS_REGION))
+                .thenReturn("eu-central-1");
 
         lambdaBrowser = new LambdaBrowser(runStepConfig, jobConfig, fileService);
     }

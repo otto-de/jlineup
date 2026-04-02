@@ -61,7 +61,7 @@ public class LambdaBrowser implements CloudBrowser {
         DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
         try (LambdaClient lambdaClient = LambdaClient.builder()
                 .credentialsProvider(credentialsProvider)
-                .region(Region.EU_CENTRAL_1)
+                .region(Region.of(GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_AWS_REGION)))
                 .httpClientBuilder(ApacheHttpClient.builder()
                         .maxConnections(screenshotContexts.size() + 10)
                         .socketTimeout(Duration.ofSeconds(jobConfig.globalTimeout))

@@ -93,12 +93,13 @@ Download the CLI Lambda variant, which bundles both the CLI and the Lambda clien
 
 `wget https://repo1.maven.org/maven2/de/otto/jlineup-cli-lambda/5.1.2/jlineup-cli-lambda-5.1.2.jar -O jlineup.jar`
 
-The CLI Lambda variant works exactly like the regular CLI, with two additional flags:
+The CLI Lambda variant works exactly like the regular CLI, with these additional flags:
 
 | Flag | Short | Default | Description |
 |---|---|---|---|
 | `--lambda-function-name` | `-F` | `jlineup-lambda` | Name or ARN of the Lambda function to invoke |
 | `--lambda-aws-profile` | `-P` | `default` | AWS credentials profile |
+| `--lambda-aws-region` | `-R` | `eu-central-1` | AWS region where the Lambda function is deployed |
 
 ### Example
 
@@ -129,6 +130,7 @@ Instead of CLI flags you can also use environment variables:
 |---|---|
 | `JLINEUP_LAMBDA_FUNCTION_NAME` | Name or ARN of the Lambda function |
 | `JLINEUP_AWS_PROFILE` | AWS credentials profile |
+| `JLINEUP_LAMBDA_AWS_REGION` | AWS region (default: `eu-central-1`) |
 
 ## Using Lambda with the web server
 
@@ -152,11 +154,13 @@ variable. All jobs submitted via the REST API will then delegate screenshot taki
 jlineup:
   lambda:
     function-name: my-jlineup-lambda
+    aws-region: us-east-1  # optional, defaults to eu-central-1
 ```
 
 **Or via environment variable:**
 ```bash
 export JLINEUP_LAMBDA_FUNCTION_NAME=my-jlineup-lambda
+export JLINEUP_LAMBDA_AWS_REGION=us-east-1  # optional
 java -jar jlineup-web.jar
 ```
 

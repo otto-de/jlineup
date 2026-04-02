@@ -12,6 +12,7 @@ public class GlobalOptions {
 
     private final static String DEFAULT_LAMBDA_FUNCTION_NAME = "jlineup-lambda";
     private final static String DEFAULT_LAMBDA_AWS_PROFILE = "default";
+    private final static String DEFAULT_LAMBDA_AWS_REGION = "eu-central-1";
     private final static String DEFAULT_LAMBDA_S3_BUCKET = "jlineup-lambda";
     private final static String DEFAULT_LAMBDA_S3_PREFIX = null;
 
@@ -31,6 +32,7 @@ public class GlobalOptions {
 
         loadOption(appProps, "JLINEUP_LAMBDA_FUNCTION_NAME", "jlineup.lambda.function-name", DEFAULT_LAMBDA_FUNCTION_NAME, JLINEUP_LAMBDA_FUNCTION_NAME);
         loadOption(appProps, "JLINEUP_AWS_PROFILE", "jlineup.lambda.aws-profile", DEFAULT_LAMBDA_AWS_PROFILE, JLINEUP_LAMBDA_AWS_PROFILE);
+        loadOption(appProps, "JLINEUP_LAMBDA_AWS_REGION", "jlineup.lambda.aws-region", DEFAULT_LAMBDA_AWS_REGION, JLINEUP_LAMBDA_AWS_REGION);
         loadOption(appProps, "JLINEUP_LAMBDA_S3_BUCKET", "jlineup.lambda.s3-bucket", DEFAULT_LAMBDA_S3_BUCKET, JLINEUP_LAMBDA_S3_BUCKET);
         loadOption(appProps, "JLINEUP_LAMBDA_S3_PREFIX", "jlineup.lambda.s3-prefix", DEFAULT_LAMBDA_S3_PREFIX, JLINEUP_LAMBDA_S3_PREFIX);
         loadOption(appProps, "JLINEUP_CROP_LAST_SCREENSHOT", "jlineup.crop-last-screenshot", DEFAULT_CROP_LAST_SCREENSHOT, JLINEUP_CROP_LAST_SCREENSHOT);
