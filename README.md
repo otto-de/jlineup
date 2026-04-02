@@ -104,6 +104,8 @@ the configured browser is downloaded automatically by
 
 [JLineup as web server](docs/WEB.md)
 
+[JLineup with AWS Lambda](docs/LAMBDA.md)
+
 [JLineup Job Configuration](docs/CONFIGURATION.md)
 
 ## Third Party Libraries
