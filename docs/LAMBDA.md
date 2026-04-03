@@ -65,24 +65,24 @@ docker push <account-id>.dkr.ecr.eu-central-1.amazonaws.com/jlineup-lambda:lates
 
 Create a Lambda function from the ECR image with the following recommended settings:
 
-| Setting | Recommended value |
-|---|---|
-| Runtime | Container image |
-| Handler | `de.otto.jlineup.lambda.JLineupHandler::handleRequest` |
-| Memory | 3008 MB |
-| Ephemeral storage (`/tmp`) | 1024 MB |
-| Timeout | 300 seconds |
-| Architecture | x86_64 |
+| Setting                    | Recommended value                                      |
+|----------------------------|--------------------------------------------------------|
+| Runtime                    | Container image                                        |
+| Handler                    | `de.otto.jlineup.lambda.JLineupHandler::handleRequest` |
+| Memory                     | 2048 MB                                                |
+| Ephemeral storage (`/tmp`) | 1024 MB                                                |
+| Timeout                    | 300 seconds                                            |
+| Architecture               | x86_64                                                 |
 
 The Lambda function needs an IAM role with:
 - `s3:PutObject`, `s3:GetObject`, `s3:DeleteObject`, `s3:ListBucket` on your S3 bucket
 
 ### Configure environment variables on the Lambda function
 
-| Variable | Required | Description |
-|---|---|---|
-| `JLINEUP_LAMBDA_S3_BUCKET` | **Yes** | Name of the S3 bucket where screenshots are stored |
-| `JLINEUP_LAMBDA_S3_PREFIX` | No | Optional key prefix within the bucket (e.g. `jlineup/`) |
+| Variable                   | Required | Description                                             |
+|----------------------------|----------|---------------------------------------------------------|
+| `JLINEUP_LAMBDA_S3_BUCKET` | **Yes**  | Name of the S3 bucket where screenshots are stored      |
+| `JLINEUP_LAMBDA_S3_PREFIX` | No       | Optional key prefix within the bucket (e.g. `jlineup/`) |
 
 The caller discovers these values automatically at runtime by reading the Lambda function's
 own configuration via the AWS API — you do not need to set them on the CLI or web server.
@@ -95,11 +95,11 @@ Download the CLI Lambda variant, which bundles both the CLI and the Lambda clien
 
 The CLI Lambda variant works exactly like the regular CLI, with these additional flags:
 
-| Flag | Short | Default | Description |
-|---|---|---|---|
-| `--lambda-function-name` | `-F` | `jlineup-lambda` | Name or ARN of the Lambda function to invoke |
-| `--lambda-aws-profile` | `-P` | `default` | AWS credentials profile |
-| `--lambda-aws-region` | `-R` | `eu-central-1` | AWS region where the Lambda function is deployed |
+| Flag                     | Short | Default          | Description                                      |
+|--------------------------|-------|------------------|--------------------------------------------------|
+| `--lambda-function-name` | `-F`  | `jlineup-lambda` | Name or ARN of the Lambda function to invoke     |
+| `--lambda-aws-profile`   | `-P`  | `default`        | AWS credentials profile                          |
+| `--lambda-aws-region`    | `-R`  | `eu-central-1`   | AWS region where the Lambda function is deployed |
 
 ### Example
 
@@ -126,11 +126,11 @@ have been downloaded from S3. The output structure is identical to a local run.
 
 Instead of CLI flags you can also use environment variables:
 
-| Variable | Description |
-|---|---|
-| `JLINEUP_LAMBDA_FUNCTION_NAME` | Name or ARN of the Lambda function |
-| `JLINEUP_AWS_PROFILE` | AWS credentials profile |
-| `JLINEUP_LAMBDA_AWS_REGION` | AWS region (default: `eu-central-1`) |
+| Variable                       | Description                          |
+|--------------------------------|--------------------------------------|
+| `JLINEUP_LAMBDA_FUNCTION_NAME` | Name or ARN of the Lambda function   |
+| `JLINEUP_AWS_PROFILE`          | AWS credentials profile              |
+| `JLINEUP_LAMBDA_AWS_REGION`    | AWS region (default: `eu-central-1`) |
 
 ## Using Lambda with the web server
 
