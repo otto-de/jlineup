@@ -8,13 +8,13 @@ Site specific settings always have precedence over global settings with the same
 
 ### Format
 
-A JLineup job config is a JSON document. Additionally to JSON standard, JLineup can work with line or multiline comments in it's config. `// comment` or `/* comment */` are ok. Also ok are [trailing commas](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Trailing_commas).
+A JLineup job config can be written in **YAML** (recommended) or **JSON**. Additionally to JSON standard, JLineup can work with line or multiline comments in it's config. `// comment` or `/* comment */` are ok. Also ok are [trailing commas](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Trailing_commas).
 
-For JLineup CLI, the default name of the config file is ___lineup.json___.
-It's searched in the current working directory. A different path can be specified with the
+For JLineup CLI, the default config file search order is: `lineup.yaml`, `lineup.yml`, `lineup.json`.
+The format is detected automatically from the file extension. A different path can be specified with the
 `--config` option.
 
-If using the web server variant, you have to POST the config via REST API.
+If using the web server variant, you have to POST the config via REST API (using `Content-Type: application/json` or `Content-Type: application/yaml`).
 
 ### Basic config
 
@@ -81,7 +81,7 @@ This basic example shows the concept of global and url settings:
 }
 ```
     
-As you can see, _paths_, _window-widths_ and _max-scroll-height_ are configured on url level, the _browser_ and the _wait-after-page-load_
+As you can see, _paths_, _devices_ and _max-scroll-height_ are configured on url level, the _browser_ and the _wait-after-page-load_
 options are global for all sites in this job.
 
 ### Full configuration
@@ -214,11 +214,11 @@ What are all those options about? Here are all the details.
 
 ---
 
-### `window-widths`
+### `window-widths` *(deprecated)*
   
- Every path in the site config will be screenshotted in these given window-widths of the browser
- 
- Since JLineup 4.0.0, there is a newer devices option which replaces window-widths, see `devices`
+ **Deprecated since JLineup 4.0.0.** Use [`devices`](#devices) instead, which replaces both `window-widths` and `window-height`.
+  
+ Every path in the site config will be screenshotted in these given window-widths of the browser.
  
 * Scope: Site
 * Type: List of integers
@@ -735,10 +735,11 @@ Since: 4.2.0
  
 --- 
  
-### `window-height`
+### `window-height` *(deprecated)*
+
+ **Deprecated since JLineup 4.0.0.** Use [`devices`](#devices) instead, which replaces both `window-widths` and `window-height`.
 
  This is the height of the browser window which JLineup uses.
- Since JLineup 4.0.0, there is a newer devices option which replaces window-widths, see `devices`
  
  * Scope: Global
  * Type: Integer
@@ -766,7 +767,7 @@ Since: 4.2.0
  __This option should be used with care. Better don't use it at all. It *may* help in a flaky environment, but it's better
  to fix the flakiness then to use this option.__
  
- JLineup makes screenshots for every permutation of `url` + `path` + `window-width` + `alternating-cookies`. Internally, this combination is 
+ JLineup makes screenshots for every permutation of `url` + `path` + `device` + `alternating-cookies`. Internally, this combination is 
  called a **screenshot context**. If you specify retries and there is any error during screenshotting one of those
  contexts, this context is retried until a maximum of specified retries is reached. 
    
@@ -779,7 +780,7 @@ Since: 4.2.0
 
 ### `threads`
 
- If you specify multiple urls, paths or window widths in your config, JLineup can run multiple browser instances in 
+ If you specify multiple urls, paths or devices in your config, JLineup can run multiple browser instances in 
  parallel to speed up the job. Keep in mind, that memory and CPU requirements increase when multiple browsers are opened
  at the same time.
  

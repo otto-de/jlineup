@@ -82,15 +82,17 @@ urls:
     paths:
     - ""
     max-diff: 0.0
-    window-widths:
-    - 800
-    - 1000
-    - 1200
+    devices:
+    - width: 800
+      height: 800
+    - width: 1000
+      height: 800
+    - width: 1200
+      height: 800
     max-scroll-height: 100000
     wait-after-page-load: 5
     wait-after-scroll: 0
 browser: Firefox
-window-height: 800
 ```
 
 Copy the config and save it as file with name `lineup.yaml`.
@@ -105,16 +107,17 @@ The equivalent JSON config also works:
           ""
         ],
         "max-diff": 0.0,
-        "window-widths": [
-          800,1000,1200
+        "devices": [
+          { "width": 800, "height": 800 },
+          { "width": 1000, "height": 800 },
+          { "width": 1200, "height": 800 }
         ],
         "max-scroll-height": 100000,
         "wait-after-page-load": 5,
         "wait-after-scroll": 0
       }
     },
-    "browser": "Firefox",
-    "window-height": 800
+    "browser": "Firefox"
   }
 ```
 

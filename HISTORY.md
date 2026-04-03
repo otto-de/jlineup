@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 5.2.0-SNAPSHOT - 2026-04-03
+* Feature: Add support for YAML configuration files.
+
 ## Release 5.1.2 - 2026-03-30
 
 * Bugfix: Correct ordering of jobs on the reports page.
