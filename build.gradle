@@ -4,7 +4,7 @@ buildscript {
         seleniumVersion = '4.41.0'
         graalvmVersion = '25.0.2'
         picoCliVersion = '4.7.7'
-        awsSdkVersion = '2.42.21'
+        awsSdkVersion = '2.42.22'
         awsCdkVersion = '2.246.0'
     }
 
