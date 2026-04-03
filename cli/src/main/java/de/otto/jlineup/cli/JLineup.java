@@ -148,7 +148,7 @@ public class JLineup implements Callable<Integer> {
                             GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE, value);
                         })
                         .build());
-                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("-R", "--" + GlobalOption.JLINEUP_LAMBDA_AWS_REGION.kebabCaseNameWithoutJLineupPrefix())
+                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("-L", "--" + GlobalOption.JLINEUP_LAMBDA_AWS_REGION.kebabCaseNameWithoutJLineupPrefix())
                         .order(230).description("The AWS region where the lambda function is deployed (default: eu-central-1)")
                         .parameterConsumer((stack, argSpec, commandSpec1) -> {
                             String value = stack.pop();

@@ -99,7 +99,7 @@ The CLI Lambda variant works exactly like the regular CLI, with these additional
 |--------------------------|-------|------------------|--------------------------------------------------|
 | `--lambda-function-name` | `-F`  | `jlineup-lambda` | Name or ARN of the Lambda function to invoke     |
 | `--lambda-aws-profile`   | `-P`  | `default`        | AWS credentials profile                          |
-| `--lambda-aws-region`    | `-R`  | `eu-central-1`   | AWS region where the Lambda function is deployed |
+| `--lambda-aws-region`    | `-L`  | `eu-central-1`   | AWS region where the Lambda function is deployed |
 
 ### Example
 
