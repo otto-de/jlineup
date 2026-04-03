@@ -28,38 +28,32 @@ browser is not installed, it will be downloaded automatically by JLineup.
 
 Let's take this little example [config](docs/CONFIGURATION.md) for a check of otto.de during a deployment:
 
-```json
-{
-  "urls": {
-    "https://www.otto.de": {
-      "paths": [ 
-	    "/"
-      ],
-      "devices" : [ {
-        "width" : 850,
-        "height" : 600,
-        "pixel-ratio" : 1.0,
-        "device-name" : "DESKTOP",
-        "touch" : false
-      }, {
-        "width" : 1000,
-        "height" : 850,
-        "pixel-ratio" : 1.0,
-        "device-name" : "DESKTOP",
-        "touch" : false
-      }, {
-        "width" : 1200,
-        "height" : 1000,
-        "pixel-ratio" : 1.0,
-        "device-name" : "DESKTOP",
-        "touch" : false
-      } ]
-    }
-  },
-  "wait-after-page-load" : 0.5,
-  "browser" : "chrome-headless"
-}
+```yaml
+urls:
+  https://www.otto.de:
+    paths:
+    - /
+    devices:
+    - width: 850
+      height: 600
+      pixel-ratio: 1.0
+      device-name: DESKTOP
+      touch: false
+    - width: 1000
+      height: 850
+      pixel-ratio: 1.0
+      device-name: DESKTOP
+      touch: false
+    - width: 1200
+      height: 1000
+      pixel-ratio: 1.0
+      device-name: DESKTOP
+      touch: false
+wait-after-page-load: 0.5
+browser: chrome-headless
 ```
+
+Save this as `lineup.yaml` (JSON is also supported — just use a `.json` file extension).
 
 JLineup runs before and after the deployment and generates a report like this:
 

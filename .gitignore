@@ -9,6 +9,7 @@ out
 build
 classes
 /lineup*.json
+/lineup*.yaml
 /report
 /report/**
 /cli/report

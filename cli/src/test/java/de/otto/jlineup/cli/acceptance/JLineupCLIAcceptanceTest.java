@@ -374,7 +374,7 @@ class JLineupCLIAcceptanceTest {
         int status = catchSystemExit(() ->
             Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--print-example"}));
         assertEquals(0, status);
-        assertThat(systemOutCaptor.toString(), containsString(JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig())));
+        assertThat(systemOutCaptor.toString(), containsString(JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig(), JacksonWrapper.ConfigFormat.YAML)));
     }
 
     private void deleteDir(Path path) throws Exception {

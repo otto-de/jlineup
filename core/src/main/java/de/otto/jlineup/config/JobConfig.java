@@ -33,6 +33,7 @@ import static de.otto.jlineup.config.UrlConfig.urlConfigBuilder;
 public final class JobConfig  {
 
     static final String LINEUP_CONFIG_DEFAULT_PATH = "./lineup.json";
+    static final List<String> LINEUP_CONFIG_DEFAULT_PATHS = List.of("./lineup.yaml", "./lineup.yml", "./lineup.json");
     static final String EXAMPLE_URL = "https://www.example.com";
 
     public static final int DEFAULT_WARMUP_BROWSER_CACHE_TIME = 0;
@@ -120,19 +121,34 @@ public final class JobConfig  {
         return JacksonWrapper.serializeObject(jobConfig);
     }
 
+    public static String prettyPrint(JobConfig jobConfig, JacksonWrapper.ConfigFormat format) {
+        return JacksonWrapper.serializeObject(jobConfig, format);
+    }
+
     public static String prettyPrintWithAllFields(JobConfig jobConfig) {
-        JsonMapper jsonMapper = JsonMapper.builder()
-                .configure(JsonReadFeature.ALLOW_TRAILING_COMMA, true)
-                .configure(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS, true)
-                .configure(ACCEPT_CASE_INSENSITIVE_ENUMS, true)
-                .configure(JsonReadFeature.ALLOW_JAVA_COMMENTS, true)
-                .configure(JsonReadFeature.ALLOW_YAML_COMMENTS, true)
-                .configure(INDENT_OUTPUT, true)
-                .propertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE)
-                .addMixIn(JobConfig.class, JobConfigMixIn.class)
-                .addMixIn(UrlConfig.class, UrlConfigMixIn.class)
-                .build();
+        return prettyPrintWithAllFields(jobConfig, JacksonWrapper.ConfigFormat.JSON);
+    }
+
+    public static String prettyPrintWithAllFields(JobConfig jobConfig, JacksonWrapper.ConfigFormat format) {
         try {
+            if (format == JacksonWrapper.ConfigFormat.YAML) {
+                tools.jackson.dataformat.yaml.YAMLMapper yamlMapper = JacksonWrapper.yamlMapper().rebuild()
+                        .addMixIn(JobConfig.class, JobConfigMixIn.class)
+                        .addMixIn(UrlConfig.class, UrlConfigMixIn.class)
+                        .build();
+                return yamlMapper.writeValueAsString(jobConfig);
+            }
+            JsonMapper jsonMapper = JsonMapper.builder()
+                    .configure(JsonReadFeature.ALLOW_TRAILING_COMMA, true)
+                    .configure(JsonReadFeature.ALLOW_UNESCAPED_CONTROL_CHARS, true)
+                    .configure(ACCEPT_CASE_INSENSITIVE_ENUMS, true)
+                    .configure(JsonReadFeature.ALLOW_JAVA_COMMENTS, true)
+                    .configure(JsonReadFeature.ALLOW_YAML_COMMENTS, true)
+                    .configure(INDENT_OUTPUT, true)
+                    .propertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE)
+                    .addMixIn(JobConfig.class, JobConfigMixIn.class)
+                    .addMixIn(UrlConfig.class, UrlConfigMixIn.class)
+                    .build();
             return jsonMapper.writeValueAsString(jobConfig);
         } catch (Exception e) {
             throw new RuntimeException("There is a problem while writing the " + jobConfig.getClass().getCanonicalName() + " with Jackson.", e);
@@ -337,16 +353,25 @@ public final class JobConfig  {
             configFilePath = Paths.get(configFileName);
             searchPaths.add(configFilePath.toString());
             if (!Files.exists(configFilePath)) {
-                configFilePath = Paths.get(LINEUP_CONFIG_DEFAULT_PATH);
-                searchPaths.add(configFilePath.toString());
-                if (!Files.exists(configFilePath)) {
+                // Search default paths: lineup.yaml > lineup.yml > lineup.json
+                configFilePath = null;
+                for (String defaultPath : LINEUP_CONFIG_DEFAULT_PATHS) {
+                    Path candidate = Paths.get(defaultPath);
+                    searchPaths.add(candidate.toString());
+                    if (Files.exists(candidate)) {
+                        configFilePath = candidate;
+                        break;
+                    }
+                }
+                if (configFilePath == null) {
                     String cwd = Paths.get(".").toAbsolutePath().normalize().toString();
                     throw new FileNotFoundException("JobConfig file not found. Search locations were: " + Arrays.toString(searchPaths.toArray()) + " - working dir: " + cwd);
                 }
             }
         }
+        JacksonWrapper.ConfigFormat format = JacksonWrapper.ConfigFormat.fromFilename(configFilePath.toString());
         BufferedReader br = new BufferedReader(new FileReader(configFilePath.toString()));
-        return JacksonWrapper.deserializeConfig(br);
+        return JacksonWrapper.deserializeConfig(br, format);
     }
 
     /**

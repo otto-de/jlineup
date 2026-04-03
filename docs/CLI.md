@@ -66,10 +66,36 @@ If the 'before' and the 'after' run of a job show no differences, the
 differences, it exits with `1`.
 
 For 'real' usage, you shouldn't use the --url parameter, but you should
-write a lineup.json job [configuration](CONFIGURATION.md) which defines which page(s) with which
+write a job [configuration](CONFIGURATION.md) which defines which page(s) with which
 settings should be compared.
 
-Here's a small example config:
+JLineup supports both **YAML** and **JSON** configuration files. YAML is
+the recommended format and the default. When no `--config` parameter is given,
+JLineup searches for config files in this order: `lineup.yaml`, `lineup.yml`,
+`lineup.json`.
+
+Here's a small example config in YAML:
+
+```yaml
+urls:
+  https://time.gov/:
+    paths:
+    - ""
+    max-diff: 0.0
+    window-widths:
+    - 800
+    - 1000
+    - 1200
+    max-scroll-height: 100000
+    wait-after-page-load: 5
+    wait-after-scroll: 0
+browser: Firefox
+window-height: 800
+```
+
+Copy the config and save it as file with name `lineup.yaml`.
+
+The equivalent JSON config also works:
 
 ```json
   {
@@ -92,21 +118,20 @@ Here's a small example config:
   }
 ```
 
-Copy the config and save it as file with name `lineup.json`.
-
-If lineup.json is in the current working directory when you run JLineup,
-it's used automatically. You can also specify a different config name
-with the --config parameter.
+If `lineup.yaml` (or `lineup.yml` or `lineup.json`) is in the current
+working directory when you run JLineup, it's used automatically. You can
+also specify a different config name with the --config parameter. The
+format is detected automatically from the file extension.
 
 Now you're ready to run JLineup again. A "real" Firefox window should
 open and you can watch JLineup at work. If you want Chrome, change
 browser to Chrome in the config above.
 
-`java -jar jlineup.jar --config lineup.json --step before`
+`java -jar jlineup.jar --config lineup.yaml --step before`
 
 Wait a bit and run 'after'
 
-`java -jar jlineup.jar --config lineup.json --step after`
+`java -jar jlineup.jar --config lineup.yaml --step after`
 
 A new report was written, it now should have the time.gov page
 in three widths, as defined in the configuration. There should be
@@ -124,8 +149,10 @@ the [configuration](CONFIGURATION.md) options for bigger setups.
 
 ### `--config, -c`
 
-JobConfig file
-* Default: `lineup.json`
+JobConfig file. Both YAML and JSON formats are supported; the format is
+auto-detected from the file extension (`.yaml`/`.yml` for YAML, `.json` for JSON).
+* Default: When no file is specified, JLineup searches for `lineup.yaml`, `lineup.yml`,
+  `lineup.json` (in that order)
 
 ---
 
@@ -162,15 +189,23 @@ directory.
 
 ### `--print-config`
 
-Prints the current (if existing) or a default config file to standard
-out.
+Prints the current (if existing) or a default config to standard out.
+The output format is controlled by `--format` (default: YAML).
 
 ---
 
 ### `--print-example`
 
 Prints a default example config file to standard out. Useful as quick
-start.
+start. The output format is controlled by `--format` (default: YAML).
+
+---
+
+### `--format`
+
+Output format for `--print-config` and `--print-example`.
+* Possible Values: `yaml`, `json`
+* Default: `yaml`
 
 ---
 

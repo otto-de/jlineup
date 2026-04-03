@@ -58,18 +58,22 @@ JLineup has a small set of methods, which live in one context:
     * Post your [JLineup config](CONFIGURATION.md) to this endpoint to start a 'before' run.
     * If your config is valid, JLineup sends an `202 Accepted` return code.
     * The created *runId* is returned in the location header.
-    * The content type is application/json
+    * The content type is `application/json` or `application/yaml`
 
 * ***POST*** `/runs/{runId}`
     * Starts an 'after' run for the given *runId*.
-    * The content type is application/json
+    * The content type is `application/json` or `application/yaml`
 
 *Hint*: You can always see a human readable representation of your jobs
 on http://localhost:8080/internal/reports
 
 ### Example
 
-Use a REST client of your choice ans post the example config to your server:
+Use a REST client of your choice and post the example config to your server.
+
+Both JSON and YAML are accepted; set the `Content-Type` header accordingly.
+
+**JSON example:**
 
 POST `http://localhost/runs/`
 
@@ -86,6 +90,21 @@ Body:
 ```
 
 Content-Type: application/json
+
+**YAML example:**
+
+POST `http://localhost/runs/`
+
+Body:
+
+```yaml
+name: Example
+urls:
+  https://www.example.com: {}
+browser: chrome-headless
+```
+
+Content-Type: application/yaml
 
 You should get an 202 as answer. Then just post the same config again to
 create a second run.

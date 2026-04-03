@@ -3,6 +3,7 @@ package de.otto.jlineup.cli;
 import de.otto.jlineup.GlobalOption;
 import de.otto.jlineup.GlobalOptions;
 import de.otto.jlineup.JLineupRunner;
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
@@ -47,8 +48,8 @@ public class JLineup implements Callable<Integer> {
     @Option(names = {"-s", "--step"}, description = "JLineup step - 'before' just takes screenshots, 'after' takes screenshots and compares them with the 'before'-screenshots in the screenshots directory. 'compare' just compares existing screenshots, it's also included in 'after'.", order = 20)
     private RunStep step = RunStep.before;
 
-    @Option(names = {"-c", "--config"}, description = "The job config file which contains the url(s) and the settings for the JLineup run. See https://github.com/otto-de/jlineup/blob/main/docs/CONFIGURATION.md for all configuration options.", order = 30)
-    private String configFile = "lineup.json";
+    @Option(names = {"-c", "--config"}, description = "The job config file which contains the url(s) and the settings for the JLineup run. Supports .json, .yaml and .yml files. See https://github.com/otto-de/jlineup/blob/main/docs/CONFIGURATION.md for all configuration options.", order = 30)
+    private String configFile = "lineup.yaml";
 
     @Option(names = {"-m", "--merge-config"}, description = "(Preview Feature) Additional config that will be merged with the given config file. Identical local values have precedence. URL keys are interpreted as regex matchers.", order = 40)
     private String mergeConfigFile = null;
@@ -67,6 +68,9 @@ public class JLineup implements Callable<Integer> {
 
     @Option(names = {"--print-example"}, description = "Prints an example default config file to standard out. Useful as quick start.", order = 90)
     private boolean printExample = false;
+
+    @Option(names = {"--format"}, description = "Output format for --print-config and --print-example (json or yaml, default: yaml).", order = 95)
+    private JacksonWrapper.ConfigFormat format = JacksonWrapper.ConfigFormat.YAML;
 
     @Option(names = {"--debug"}, description = "Sets the log level to DEBUG, produces verbose information about the current task.", order = 100)
     private boolean debug = false;
@@ -271,12 +275,12 @@ public class JLineup implements Callable<Integer> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JLineup jLineup = (JLineup) o;
-        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && cleanupProfile == jLineup.cleanupProfile && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(mergeConfigFile, jLineup.mergeConfigFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl) && Objects.equals(browserOverride, jLineup.browserOverride);
+        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && cleanupProfile == jLineup.cleanupProfile && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(mergeConfigFile, jLineup.mergeConfigFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl) && Objects.equals(browserOverride, jLineup.browserOverride) && format == jLineup.format;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(help, url, step, configFile, mergeConfigFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl, browserOverride, cleanupProfile);
+        return Objects.hash(help, url, step, configFile, mergeConfigFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl, browserOverride, cleanupProfile, format);
     }
 
     @Override
@@ -303,6 +307,7 @@ public class JLineup implements Callable<Integer> {
                 ", refreshUrl='" + refreshUrl + '\'' +
                 ", browserOverride='" + browserOverride + '\'' +
                 ", cleanupProfile=" + cleanupProfile +
+                ", format=" + format +
                 '}';
     }
 
@@ -325,7 +330,7 @@ public class JLineup implements Callable<Integer> {
         }
 
         if (printExample) {
-            System.out.println(JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig()));
+            System.out.println(JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig(), format));
             return 0;
         }
 
@@ -364,7 +369,7 @@ public class JLineup implements Callable<Integer> {
         }
 
         if (printConfig) {
-            System.out.println(JobConfig.prettyPrint(jobConfig));
+            System.out.println(JobConfig.prettyPrint(jobConfig, format));
             return 0;
         }
 
@@ -412,7 +417,7 @@ public class JLineup implements Callable<Integer> {
             if (!parameters.isPrintConfig()) {
                 LOG.info("You specified an explicit URL parameter ({}), any given jobConfig file is ignored! This should only be done for testing purposes.", url);
                 LOG.info("Using generated jobConfig:\n\n{}", JobConfig.prettyPrint(jobConfig));
-                LOG.info("\nYou can take this generated jobConfig as base and save it as a text file named 'lineup.json'.");
+                LOG.info("\nYou can take this generated jobConfig as base and save it as a text file named 'lineup.yaml' (or 'lineup.json').");
                 LOG.info("Just add --print-config parameter to let JLineup print a more detailed example jobConfig");
             }
         } else {

@@ -1,0 +1,3 @@
+# JLineup minimal test config (YAML equivalent of lineup_minimal_test.json)
+urls:
+  https://www.otto.de: {}

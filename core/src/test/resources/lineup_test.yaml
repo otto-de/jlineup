@@ -1,0 +1,50 @@
+# JLineup test config (YAML equivalent of lineup_test.json)
+urls:
+  https://www.otto.de:
+    paths:
+      - /
+      - multimedia
+    setup-paths:
+      - setup
+    cleanup-paths:
+      - cleanup
+    max-diff: 0.05
+    cookies:
+      - name: testcookie1
+        value: "true"
+      - name: testcookie2
+        value: "1"
+    local-storage:
+      teststorage: "{'testkey':{'value':true,'timestamp':9467812242358}}"
+    session-storage:
+      testsession: "{'testkey':{'value':true,'timestamp':9467812242358}}"
+    env-mapping:
+      live: www
+    resolutions:
+      - 600
+      - 800
+      - 1200
+    wait-after-page-load: 2
+    wait-after-scroll: 1
+    max-scroll-height: 50000
+    warmup-browser-cache-time: 3
+    javascript: "console.log('Moin!');"
+  http://www.google.de:
+    paths:
+      - /
+    max-diff: 0.05
+    resolutions:
+      - 1200
+    cookies:
+      - name: classic
+        value: "true"
+    alternating-cookies:
+      - - name: alternating
+          value: case1
+      - - name: alternating
+          value: case2
+browser: firefox-headless
+wait-after-page-load: 1
+threads: 12
+page-load-timeout: 60
+screenshot-retries: 2

@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.converter.HttpMessageConverters;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import org.springframework.http.converter.yaml.JacksonYamlHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.dataformat.yaml.YAMLMapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,6 +26,7 @@ public class JLineupWebMvcConfigurer implements WebMvcConfigurer {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
     private final JsonMapper jsonMapper;
+    private final YAMLMapper yamlMapper;
     private final JLineupWebProperties properties;
 
     @Bean
@@ -31,9 +34,15 @@ public class JLineupWebMvcConfigurer implements WebMvcConfigurer {
         return JacksonWrapper.jsonMapper();
     }
 
+    @Bean
+    public YAMLMapper yamlMapper() {
+        return JacksonWrapper.yamlMapper();
+    }
+
     @Autowired
-    public JLineupWebMvcConfigurer(JLineupWebProperties properties, @Lazy JsonMapper jsonMapper) {
+    public JLineupWebMvcConfigurer(JLineupWebProperties properties, @Lazy JsonMapper jsonMapper, @Lazy YAMLMapper yamlMapper) {
         this.jsonMapper = jsonMapper;
+        this.yamlMapper = yamlMapper;
         this.properties = properties;
     }
 
@@ -54,5 +63,6 @@ public class JLineupWebMvcConfigurer implements WebMvcConfigurer {
     @Override
     public void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
         builder.withJsonConverter(new JacksonJsonHttpMessageConverter(jsonMapper));
+        builder.withYamlConverter(new JacksonYamlHttpMessageConverter(yamlMapper));
     }
 }
