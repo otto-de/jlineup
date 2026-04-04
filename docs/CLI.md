@@ -11,7 +11,7 @@ support. It should also work under Windows, but we don't test this.
 You can simply download the CLI version by getting the jlineup-cli.jar
 from Maven Central in a terminal window:
 
-`wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/5.1.2/jlineup-cli-5.1.2.jar -O jlineup.jar`
+`wget https://repo1.maven.org/maven2/de/otto/jlineup-cli/5.2.0/jlineup-cli-5.2.0.jar -O jlineup.jar`
 
 Now you have a `jlineup.jar` in your current directory.
 

@@ -1,7 +1,14 @@
 # JLineup Release History
 
-## Release 5.2.0-SNAPSHOT - 2026-04-03
-* Feature: Add support for YAML configuration files.
+## Release 5.2.0 - 2026-04-04
+* Feature: Add support for YAML configuration files (alongside existing JSON support).
+  Default config search order is `lineup.yaml` > `lineup.yml` > `lineup.json`.
+  The `--format yaml|json` CLI option controls the output format for `--print-config` and `--print-example`.
+  The web module accepts YAML via `Content-Type: application/x-yaml`.
+* Feature: New `style` config option to inject custom CSS via a `<style>` element before taking screenshots.
+  This is useful for hiding dynamic content like animations or ads.
+* Feature: AWS Lambda region is now configurable via the `JLINEUP_LAMBDA_AWS_REGION` environment variable
+  or the `--lambda-aws-region` CLI flag (default: `eu-central-1`).
 
 ## Release 5.1.2 - 2026-03-30
 

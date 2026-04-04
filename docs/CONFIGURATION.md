@@ -464,6 +464,8 @@ If you want to see the different cookies in the HTML report, you can specify `sh
      animation: none !important;
    }
  ```
+
+ Since 5.2.0
  
 ---
 
