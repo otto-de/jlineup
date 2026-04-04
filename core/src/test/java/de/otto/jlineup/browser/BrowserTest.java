@@ -292,6 +292,7 @@ class BrowserTest {
                 .withWarmupBrowserCacheTime(3)
                 .withWaitForFontsTime(5)
                 .withJavaScript("testJS();")
+                .withStyle("body { background: red; }")
                 .withHideImages(true)
                 .withWindowWidths(singletonList(600))
                 .build();
@@ -324,6 +325,7 @@ class BrowserTest {
         verify(webDriverWindowMock, times(1)).setSize(new Dimension(800, 100));
         verify(webDriverMock, times(2)).executeScript(JS_SCROLL_TO_TOP_CALL);
         verify(webDriverMock, times(2)).executeScript("testJS();");
+        verify(webDriverMock, times(2)).executeScript(JS_INJECT_STYLE_CALL, "body { background: red; }");
         verify(webDriverMock, times(2)).executeScript(String.format(JS_HIDE_IMAGES_CALL, 500));
         verify(webDriverMock, times(10)).executeScript(JS_DOCUMENT_HEIGHT_CALL);
         //Two times the cookie -> goes to url

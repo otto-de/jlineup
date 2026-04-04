@@ -135,6 +135,7 @@ This is a full configuration with example values:
       "warmup-browser-cache-time": 0.0,
       "wait-for-fonts-time": 0.0,
       "javascript": "console.log(\u0027This is JavaScript!\u0027)",
+      "style": ".some-selector { display: none !important; }",
       "hide-images": false,
       "http-check": {
         "enabled": false
@@ -435,6 +436,34 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Type: String
  * Default: `null`
  * Example: `"javascript": "console.log('This is JavaScript!')"`
+ 
+---
+
+### `style`
+
+ You can inject a custom CSS stylesheet into the page before screenshots are taken. The CSS is added as a `<style>`
+ element in the document's `<head>`. This is useful for hiding dynamic content, disabling animations, or overriding
+ styles that would cause false positives in visual regression tests.
+
+ The style is injected after the custom `javascript` is executed but before `hide-images` and `remove-selectors`
+ are processed.
+
+ * Scope: Site
+ * Type: String (CSS)
+ * Default: `null`
+ * Example: `"style": ".ad-banner { display: none !important; } * { transition: none !important; animation: none !important; }"`
+ 
+ In YAML, multiline CSS is easy to write:
+ 
+ ```yaml
+ style: |
+   .ad-banner { display: none !important; }
+   .dynamic-content { visibility: hidden !important; }
+   * {
+     transition: none !important;
+     animation: none !important;
+   }
+ ```
  
 ---
 

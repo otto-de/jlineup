@@ -193,6 +193,7 @@ public class BrowserUtilsTest {
                 .withWaitAfterScroll(1)
                 .withWarmupBrowserCacheTime(3)
                 .withJavaScript("console.log('Moin!');")
+                .withStyle(".ad-banner { display: none !important; }")
                 .build();
     }
 

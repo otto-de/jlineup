@@ -109,7 +109,8 @@ class JobConfigTest {
         assertThat(yaml, containsString("urls:"));
         assertThat(yaml, containsString("https://www.example.com:"));
         assertThat(yaml, containsString("browser:"));
-        assertThat(yaml, not(containsString("{")));
+        assertThat("YAML output should not start with '{' (would indicate JSON format)",
+                yaml, not(startsWith("{")));
     }
 
     @Test

@@ -336,6 +336,7 @@ public final class JobConfig  {
                                 .withSessionStorage(ImmutableMap.of("exampleSessionStorageKey", "value"))
                                 .withDevices(ImmutableList.of(deviceConfig(850,600), deviceConfig(1000, 850), deviceConfig(1200, 1000)))
                                 .withJavaScript("console.log('This is JavaScript!')")
+                                .withStyle(".some-selector { display: none !important; }")
                                 .withHttpCheck(new HttpCheckConfig(true))
                                 .withStrictColorComparison(false)
                                 .withRemoveSelectors(ImmutableSet.of("#removeNodeWithThisId", ".removeNodesWithThisClass"))

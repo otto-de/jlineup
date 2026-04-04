@@ -125,6 +125,7 @@ public class Browser implements AutoCloseable {
 
     static final String JS_REMOVE_FROM_DOM_CALL = "document.querySelectorAll('%s').forEach(el => el.remove());";
     static final String JS_CHECK_FOR_ELEMENT_CALL = "return document.querySelector('%s') !== null;";
+    static final String JS_INJECT_STYLE_CALL = "var jlineupStyle = document.createElement('style'); jlineupStyle.textContent = arguments[0]; document.head.appendChild(jlineupStyle);";
 
     static final String JS_GET_DEVICE_PIXEL_RATIO_CALL = "return window.devicePixelRatio;";
     static final String JS_GET_BODY_COLOR_CALL = "return window.getComputedStyle(document.body).getPropertyValue('background-color').match(/\\d+/g);";
@@ -426,6 +427,9 @@ public class Browser implements AutoCloseable {
         //Execute custom javascript if existing
         executeJavaScript(screenshotContext.urlConfig.javaScript);
 
+        //Inject custom style if existing
+        injectStyle(screenshotContext.urlConfig.style);
+
         if (screenshotContext.urlConfig.hideImages) {
             executeJavaScript(JS_HIDE_IMAGES_CALL);
         }
@@ -676,6 +680,15 @@ public class Browser implements AutoCloseable {
         JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
         jse.executeScript(javaScript);
         Thread.sleep(50);
+    }
+
+    private void injectStyle(String style) {
+        if (style == null || style.isEmpty()) {
+            return;
+        }
+        LOG.debug("Injecting custom style.");
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
+        jse.executeScript(JS_INJECT_STYLE_CALL, style);
     }
 
     private void executeJavaScriptWithJlineupAdditions(String javaScript) throws InterruptedException {
