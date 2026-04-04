@@ -3,8 +3,8 @@
 JLineup started as a small command line only tool, and we're striving
 to keep the CLI version small, fast and feature complete.
 
-Currently, the CLI version is running on Linux, which is the platform we
-support. It may also work under MacOS or Windows, but we don't test this.
+Currently, the CLI version is running on Linux and MacOS, which are the platforms we
+support. It should also work under Windows, but we don't test this.
 
 ## Installation
 
@@ -15,10 +15,10 @@ from Maven Central in a terminal window:
 
 Now you have a `jlineup.jar` in your current directory.
 
-For best results, you need a "real" web browser installed on your system.
-JLineup supports Google Chrome (Chromium also works) or Firefox at the
-moment. As JLineup is written in Java, you need a Java Runtime
-Environment in version 8 or higher. OpenJDK is fine!
+As JLineup is written in Java, you need a Java Runtime
+Environment in version 17 or higher. OpenJDK is fine! If you don't
+have a Chrome or Firefox installed, JLineup will (try to) download
+it for you, so you don't need to worry about that.
 
 If those prerequisites are fulfilled, you can make a test run:
 
