@@ -50,6 +50,7 @@ public class JacksonWrapper {
                 .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, false)
                 .configure(YAMLWriteFeature.MINIMIZE_QUOTES, true)
                 .configure(YAMLWriteFeature.WRITE_DOC_START_MARKER, false)
+                .configure(YAMLWriteFeature.INDENT_ARRAYS_WITH_INDICATOR, true)
                 .propertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE)
                 .build();
 

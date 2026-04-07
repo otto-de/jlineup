@@ -36,7 +36,13 @@
             <div id="error-alert" class="alert alert-danger d-none" role="alert"></div>
             <div id="success-alert" class="alert alert-success d-none" role="alert"></div>
 
-            <label for="codemirror-host" class="form-label fw-semibold">JLineup Configuration (YAML)</label>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <label for="codemirror-host" class="form-label fw-semibold mb-0">JLineup Configuration</label>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Config format">
+                    <button id="fmt-yaml-btn" class="btn btn-outline-primary active" type="button">YAML</button>
+                    <button id="fmt-json-btn" class="btn btn-outline-primary" type="button">JSON</button>
+                </div>
+            </div>
             <div id="codemirror-host"></div>
 
             <div class="mt-3 d-flex gap-2">
@@ -44,7 +50,8 @@
                     <span id="start-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     Start Before Run
                 </button>
-                <button id="format-btn" class="btn btn-outline-secondary" type="button">Format YAML</button>
+                <button id="format-btn" class="btn btn-outline-secondary" type="button">Format</button>
+                <button id="copy-btn" class="btn btn-outline-secondary" type="button">Copy</button>
                 <button id="reset-btn" class="btn btn-outline-secondary" type="button">Reset to Example</button>
             </div>
         </div>
@@ -67,7 +74,8 @@
     import { EditorState } from 'https://esm.sh/@codemirror/state@6';
     import { EditorView, keymap, lineNumbers, highlightActiveLineGutter, highlightActiveLine } from 'https://esm.sh/@codemirror/view@6';
     import { defaultKeymap, indentWithTab } from 'https://esm.sh/@codemirror/commands@6';
-    import { yaml } from 'https://esm.sh/@codemirror/lang-yaml@6';
+    import { yaml as yamlLang } from 'https://esm.sh/@codemirror/lang-yaml@6';
+    import { json as jsonLang, jsonParseLinter } from 'https://esm.sh/@codemirror/lang-json@6';
     import { oneDark } from 'https://esm.sh/@codemirror/theme-one-dark@6';
     import { githubLight } from 'https://esm.sh/@uiw/codemirror-theme-github@4';
     import { lintGutter, linter } from 'https://esm.sh/@codemirror/lint@6';
@@ -76,23 +84,86 @@
     import { highlightSelectionMatches } from 'https://esm.sh/@codemirror/search@6';
     import jsyaml from 'https://esm.sh/js-yaml@4';
 
-    const EXAMPLE_CONFIG  = window._jlineup.exampleConfig;
+    const EXAMPLE_YAML    = window._jlineup.exampleConfig;
     const REPORTS_URL     = window._jlineup.reportsUrl;
     const RUNS_URL        = window._jlineup.runsUrl;
     const STORAGE_KEY     = 'jlineup.run.editorContent';
+    const FORMAT_KEY      = 'jlineup.run.format';
+
+    /**
+     * Custom js-yaml types that preserve the original text representation of
+     * YAML floats and timestamps through parse/dump roundtrips.
+     *
+     * Without these, 0.0 becomes 0 (JS has no int/float distinction) and
+     * 1970-01-01T00:00:01Z becomes 1970-01-01T00:00:01.000Z (JS Date adds millis).
+     */
+    class YamlFloat {
+        constructor(value, repr) { this.value = value; this.repr = repr; }
+        valueOf() { return this.value; }
+    }
+    const FloatType = new jsyaml.Type('tag:yaml.org,2002:float', {
+        kind: 'scalar',
+        resolve(data) {
+            if (data === null) return false;
+            return /^[-+]?(?:\d[\d_]*)\.(?:[\d_]*)(?:[eE][-+]?\d+)?$/.test(data)
+                || /^[-+]?\.(?:\d[\d_]*)(?:[eE][-+]?\d+)?$/.test(data)
+                || /^[-+]?(?:0|[1-9][\d_]*)(?:[eE][-+]?\d+)$/.test(data);
+        },
+        construct(data) { return new YamlFloat(parseFloat(data.replace(/_/g, '')), data); },
+        instanceOf: YamlFloat,
+        represent(obj) { return obj.repr; },
+    });
+
+    class YamlTimestamp {
+        constructor(date, repr) { this.date = date; this.repr = repr; }
+        valueOf() { return this.date; }
+    }
+    const TIMESTAMP_RE = /^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})(?:(?:[Tt]|[ \t]+)([0-9]{1,2}):([0-9]{2}):([0-9]{2})(?:\.([0-9]*))?(?:[ \t]*(Z|([-+])([0-9]{1,2})(?::([0-9]{2}))?))?)?$/;
+    const TimestampType = new jsyaml.Type('tag:yaml.org,2002:timestamp', {
+        kind: 'scalar',
+        resolve(data) { return data !== null && TIMESTAMP_RE.test(data); },
+        construct(data) { return new YamlTimestamp(new Date(data), data); },
+        instanceOf: YamlTimestamp,
+        represent(obj) { return obj.repr; },
+    });
+
+    const YAML_SCHEMA = jsyaml.DEFAULT_SCHEMA.extend({ implicit: [FloatType, TimestampType] });
+
+    const YAML_DUMP_OPTS  = { indent: 2, lineWidth: -1, noRefs: true, quotingType: '"', schema: YAML_SCHEMA };
+
+    let activeFormat = loadFormat();
+
+    function loadFormat() {
+        try { return localStorage.getItem(FORMAT_KEY) === 'json' ? 'json' : 'yaml'; }
+        catch (e) { return 'yaml'; }
+    }
+
+    function saveFormat(fmt) {
+        try { localStorage.setItem(FORMAT_KEY, fmt); } catch (e) { /* ignore */ }
+    }
+
+    function exampleFor(fmt) {
+        if (fmt === 'yaml') return EXAMPLE_YAML;
+        // Convert server-provided YAML example to JSON
+        try {
+            const parsed = jsyaml.load(EXAMPLE_YAML, { schema: YAML_SCHEMA });
+            return JSON.stringify(parsed, null, 2);
+        } catch (e) { return EXAMPLE_YAML; }
+    }
 
     function loadSaved() {
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
-            if (!saved) return EXAMPLE_CONFIG;
-            // Discard stale JSON content left over from the previous JSON editor
+            if (!saved) return exampleFor(activeFormat);
             const trimmed = saved.trimStart();
-            if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-                localStorage.removeItem(STORAGE_KEY);
-                return EXAMPLE_CONFIG;
-            }
-            return saved;
-        } catch (e) { return EXAMPLE_CONFIG; }
+            const savedIsJson = trimmed.startsWith('{') || trimmed.startsWith('[');
+            // Return saved content if it matches the active format
+            if (activeFormat === 'json' && savedIsJson) return saved;
+            if (activeFormat === 'yaml' && !savedIsJson) return saved;
+            // Mismatch — discard stale content
+            localStorage.removeItem(STORAGE_KEY);
+            return exampleFor(activeFormat);
+        } catch (e) { return exampleFor(activeFormat); }
     }
 
     function saveContent(content) {
@@ -107,12 +178,108 @@
         return document.documentElement.getAttribute('data-bs-theme') === 'dark';
     }
 
-    /** Simple YAML lint source for CodeMirror */
+    /** Parse the editor content regardless of current format */
+    function parseContent(text) {
+        const trimmed = text.trimStart();
+        if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+            return JSON.parse(text);
+        }
+        return jsyaml.load(text, { schema: YAML_SCHEMA });
+    }
+
+    /** Unwrap YamlFloat/YamlTimestamp instances to plain values (needed for JSON serialization) */
+    function unwrapCustomTypes(obj) {
+        if (obj instanceof YamlFloat) return obj.value;
+        if (obj instanceof YamlTimestamp) return obj.repr;
+        if (Array.isArray(obj)) return obj.map(unwrapCustomTypes);
+        if (obj !== null && typeof obj === 'object') {
+            const keys = Object.keys(obj);
+            // Unwrap serialised YamlFloat shape: {value: <number>, repr: <string>}
+            if (keys.length === 2 && typeof obj.value === 'number' && typeof obj.repr === 'string'
+                && keys.includes('value') && keys.includes('repr')
+                && /^[-+]?[\d._]+(?:[eE][-+]?\d+)?$/.test(obj.repr)) {
+                return obj.value;
+            }
+            // Unwrap serialised YamlTimestamp shape: {date: <string>, repr: <string>}
+            if (keys.length === 2 && typeof obj.date === 'string' && typeof obj.repr === 'string'
+                && keys.includes('date') && keys.includes('repr')
+                && TIMESTAMP_RE.test(obj.repr)) {
+                return obj.repr;
+            }
+            const result = {};
+            for (const [k, v] of Object.entries(obj)) result[k] = unwrapCustomTypes(v);
+            return result;
+        }
+        return obj;
+    }
+
+    /**
+     * Re-wrap plain JS values produced by JSON.parse() back into YamlFloat /
+     * YamlTimestamp so that js-yaml can dump them with the custom schema.
+     *
+     * Recognises two shapes:
+     *   - {value: <number>, repr: <string>}  → YamlFloat  (if repr looks numeric)
+     *   - {date: <string>,  repr: <string>}  → YamlTimestamp (if repr looks like a timestamp)
+     * Also wraps plain floating-point numbers (those containing a dot in their
+     * string representation) so that e.g. 2.3 round-trips as "2.3" not "2.3".
+     */
+    function rewrapCustomTypes(obj) {
+        if (obj === null || obj === undefined) return obj;
+        if (typeof obj === 'number') {
+            const s = String(obj);
+            if (s.includes('.') || s.includes('e') || s.includes('E')) {
+                return new YamlFloat(obj, s);
+            }
+            return obj;
+        }
+        if (Array.isArray(obj)) return obj.map(rewrapCustomTypes);
+        if (typeof obj === 'object') {
+            const keys = Object.keys(obj);
+            // Detect serialised YamlFloat: {value: <number>, repr: <string>}
+            if (keys.length === 2 && typeof obj.value === 'number' && typeof obj.repr === 'string'
+                && keys.includes('value') && keys.includes('repr')
+                && /^[-+]?[\d._]+(?:[eE][-+]?\d+)?$/.test(obj.repr)) {
+                return new YamlFloat(obj.value, obj.repr);
+            }
+            // Detect serialised YamlTimestamp: {date: <string>, repr: <string>}
+            if (keys.length === 2 && typeof obj.date === 'string' && typeof obj.repr === 'string'
+                && keys.includes('date') && keys.includes('repr')
+                && TIMESTAMP_RE.test(obj.repr)) {
+                return new YamlTimestamp(new Date(obj.date), obj.repr);
+            }
+            const result = {};
+            for (const [k, v] of Object.entries(obj)) result[k] = rewrapCustomTypes(v);
+            return result;
+        }
+        return obj;
+    }
+
+    /**
+     * Post-process YAML output to quote unquoted string values that contain
+     * YAML flow indicator characters (, { } [ ]), matching Jackson's
+     * MINIMIZE_QUOTES behavior.
+     */
+    function quoteSpecialValues(yamlText) {
+        return yamlText.replace(/^([ ]*(?:- )?[\w][\w .\/-]*: )(?!"|')(.+[,{}\[\]].*)$/gm, (match, prefix, value) => {
+            // Don't quote empty flow sequences/mappings — they are valid unquoted YAML
+            if (value === '[]' || value === '{}') return match;
+            const escaped = value.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+            return prefix + '"' + escaped + '"';
+        });
+    }
+
+    /** Serialize an object to the given format */
+    function serialize(obj, fmt) {
+        if (fmt === 'json') return JSON.stringify(unwrapCustomTypes(obj), null, 2);
+        return quoteSpecialValues(jsyaml.dump(rewrapCustomTypes(obj), YAML_DUMP_OPTS));
+    }
+
+    /** YAML lint source for CodeMirror */
     function yamlLinter() {
         return (view) => {
             const doc = view.state.doc.toString();
             try {
-                jsyaml.load(doc);
+                jsyaml.load(doc, { schema: YAML_SCHEMA });
                 return [];
             } catch (e) {
                 if (e.mark) {
@@ -124,7 +291,9 @@
         };
     }
 
-    function buildExtensions(dark) {
+    function buildExtensions(dark, fmt) {
+        const lang = fmt === 'json' ? jsonLang() : yamlLang();
+        const lint = fmt === 'json' ? linter(jsonParseLinter()) : linter(yamlLinter());
         const base = [
             lineNumbers(),
             highlightActiveLineGutter(),
@@ -135,8 +304,8 @@
             closeBrackets(),
             indentOnInput(),
             highlightSelectionMatches(),
-            yaml(),
-            linter(yamlLinter()),
+            lang,
+            lint,
             keymap.of([...defaultKeymap, ...closeBracketsKeymap, ...foldKeymap, indentWithTab]),
             EditorView.lineWrapping,
             EditorView.updateListener.of(update => {
@@ -147,44 +316,89 @@
         return base;
     }
 
-    let view = new EditorView({
-        state: EditorState.create({
-            doc: loadSaved(),
-            extensions: buildExtensions(isDark()),
-        }),
-        parent: document.getElementById('codemirror-host'),
-    });
-
-    // Re-create editor when dark mode is toggled so the theme refreshes
-    const observer = new MutationObserver(() => {
-        const doc = view.state.doc.toString();
-        view.destroy();
-        view = new EditorView({
+    function createEditor(doc, fmt) {
+        return new EditorView({
             state: EditorState.create({
                 doc,
-                extensions: buildExtensions(isDark()),
+                extensions: buildExtensions(isDark(), fmt),
             }),
             parent: document.getElementById('codemirror-host'),
         });
+    }
+
+    function recreateEditor(doc, fmt) {
+        view.destroy();
+        view = createEditor(doc, fmt);
+    }
+
+    function updateToggleButtons() {
+        const yamlBtn = document.getElementById('fmt-yaml-btn');
+        const jsonBtn = document.getElementById('fmt-json-btn');
+        yamlBtn.classList.toggle('active', activeFormat === 'yaml');
+        jsonBtn.classList.toggle('active', activeFormat === 'json');
+    }
+
+    let view = createEditor(loadSaved(), activeFormat);
+    updateToggleButtons();
+
+    // Re-create editor when dark mode is toggled so the theme refreshes
+    const observer = new MutationObserver(() => {
+        recreateEditor(view.state.doc.toString(), activeFormat);
     });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
 
-    // Format YAML — parse and re-dump with consistent indentation
+    /** Switch format: convert content and rebuild editor */
+    function switchFormat(newFormat) {
+        if (newFormat === activeFormat) return;
+        const raw = view.state.doc.toString();
+        let converted;
+        try {
+            const parsed = parseContent(raw);
+            converted = serialize(parsed, newFormat);
+        } catch (e) {
+            showError('Cannot convert to ' + newFormat.toUpperCase() + ': ' + e.message);
+            return;
+        }
+        activeFormat = newFormat;
+        saveFormat(newFormat);
+        recreateEditor(converted, newFormat);
+        saveContent(converted);
+        updateToggleButtons();
+        hideAlerts();
+    }
+
+    document.getElementById('fmt-yaml-btn').addEventListener('click', () => switchFormat('yaml'));
+    document.getElementById('fmt-json-btn').addEventListener('click', () => switchFormat('json'));
+
+    // Format — parse and re-serialize with consistent indentation
     document.getElementById('format-btn').addEventListener('click', () => {
         const raw = view.state.doc.toString();
         try {
-            const parsed = jsyaml.load(raw);
-            const formatted = jsyaml.dump(parsed, { indent: 2, lineWidth: -1, noRefs: true, quotingType: '"' });
+            const parsed = parseContent(raw);
+            const formatted = serialize(parsed, activeFormat);
             view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: formatted } });
         } catch (e) {
-            showError('Cannot format: invalid YAML — ' + e.message);
+            showError('Cannot format: invalid ' + activeFormat.toUpperCase() + ' — ' + e.message);
+        }
+    });
+
+    // Copy to clipboard
+    document.getElementById('copy-btn').addEventListener('click', async () => {
+        const text = view.state.doc.toString();
+        const btn = document.getElementById('copy-btn');
+        try {
+            await navigator.clipboard.writeText(text);
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+        } catch (e) {
+            showError('Copy failed: ' + e.message);
         }
     });
 
     // Reset to example
     document.getElementById('reset-btn').addEventListener('click', () => {
         clearSaved();
-        view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: EXAMPLE_CONFIG } });
+        view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: exampleFor(activeFormat) } });
         hideAlerts();
     });
 
@@ -193,17 +407,19 @@
         hideAlerts();
         const raw = view.state.doc.toString();
         try {
-            jsyaml.load(raw);
+            parseContent(raw);
         } catch (e) {
-            showError('Invalid YAML: ' + e.message);
+            showError('Invalid ' + activeFormat.toUpperCase() + ': ' + e.message);
             return;
         }
+
+        const contentType = activeFormat === 'json' ? 'application/json' : 'application/yaml';
 
         setBusy(true);
         try {
             const resp = await fetch(RUNS_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/yaml' },
+                headers: { 'Content-Type': contentType },
                 body: raw,
             });
             if (resp.status === 202) {
