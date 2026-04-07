@@ -1,5 +1,6 @@
 package de.otto.jlineup.web;
 
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.web.configuration.JLineupWebProperties;
@@ -63,7 +64,7 @@ public class ReportsAndRunWebController {
     public ModelAndView getRunPage(HttpServletRequest request) {
         String contextPath = request.getContextPath();
         return new ModelAndView("run") {{
-            addObject("exampleConfig", JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig()));
+            addObject("exampleConfig", JobConfig.prettyPrintWithAllFields(JobConfig.exampleConfig(), JacksonWrapper.ConfigFormat.YAML));
             addObject("reportsUrl", contextPath + managementBasePath + "/reports");
             addObject("runsUrl", contextPath + "/runs");
         }};

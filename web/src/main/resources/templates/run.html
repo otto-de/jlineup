@@ -36,7 +36,7 @@
             <div id="error-alert" class="alert alert-danger d-none" role="alert"></div>
             <div id="success-alert" class="alert alert-success d-none" role="alert"></div>
 
-            <label for="codemirror-host" class="form-label fw-semibold">JLineup Configuration (JSON)</label>
+            <label for="codemirror-host" class="form-label fw-semibold">JLineup Configuration (YAML)</label>
             <div id="codemirror-host"></div>
 
             <div class="mt-3 d-flex gap-2">
@@ -44,7 +44,7 @@
                     <span id="start-spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                     Start Before Run
                 </button>
-                <button id="format-btn" class="btn btn-outline-secondary" type="button">Format JSON</button>
+                <button id="format-btn" class="btn btn-outline-secondary" type="button">Format YAML</button>
                 <button id="reset-btn" class="btn btn-outline-secondary" type="button">Reset to Example</button>
             </div>
         </div>
@@ -56,7 +56,7 @@
 <!-- Server-side values exposed to JS module via window globals -->
 <script th:inline="javascript">
     window._jlineup = {
-        exampleConfig: /*[[${exampleConfig}]]*/  '{}',
+        exampleConfig: /*[[${exampleConfig}]]*/  '',
         reportsUrl:    /*[[${reportsUrl}]]*/ '/internal/reports',
         runsUrl:       /*[[${runsUrl}]]*/ '/runs'
     };
@@ -67,14 +67,14 @@
     import { EditorState } from 'https://esm.sh/@codemirror/state@6';
     import { EditorView, keymap, lineNumbers, highlightActiveLineGutter, highlightActiveLine } from 'https://esm.sh/@codemirror/view@6';
     import { defaultKeymap, indentWithTab } from 'https://esm.sh/@codemirror/commands@6';
-    import { json } from 'https://esm.sh/@codemirror/lang-json@6';
+    import { yaml } from 'https://esm.sh/@codemirror/lang-yaml@6';
     import { oneDark } from 'https://esm.sh/@codemirror/theme-one-dark@6';
     import { githubLight } from 'https://esm.sh/@uiw/codemirror-theme-github@4';
     import { lintGutter, linter } from 'https://esm.sh/@codemirror/lint@6';
-    import { jsonParseLinter } from 'https://esm.sh/@codemirror/lang-json@6';
     import { indentOnInput, bracketMatching, foldGutter, foldKeymap } from 'https://esm.sh/@codemirror/language@6';
     import { closeBrackets, closeBracketsKeymap } from 'https://esm.sh/@codemirror/autocomplete@6';
     import { highlightSelectionMatches } from 'https://esm.sh/@codemirror/search@6';
+    import jsyaml from 'https://esm.sh/js-yaml@4';
 
     const EXAMPLE_CONFIG  = window._jlineup.exampleConfig;
     const REPORTS_URL     = window._jlineup.reportsUrl;
@@ -82,8 +82,17 @@
     const STORAGE_KEY     = 'jlineup.run.editorContent';
 
     function loadSaved() {
-        try { return localStorage.getItem(STORAGE_KEY) || EXAMPLE_CONFIG; }
-        catch (e) { return EXAMPLE_CONFIG; }
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return EXAMPLE_CONFIG;
+            // Discard stale JSON content left over from the previous JSON editor
+            const trimmed = saved.trimStart();
+            if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+                localStorage.removeItem(STORAGE_KEY);
+                return EXAMPLE_CONFIG;
+            }
+            return saved;
+        } catch (e) { return EXAMPLE_CONFIG; }
     }
 
     function saveContent(content) {
@@ -98,6 +107,23 @@
         return document.documentElement.getAttribute('data-bs-theme') === 'dark';
     }
 
+    /** Simple YAML lint source for CodeMirror */
+    function yamlLinter() {
+        return (view) => {
+            const doc = view.state.doc.toString();
+            try {
+                jsyaml.load(doc);
+                return [];
+            } catch (e) {
+                if (e.mark) {
+                    const pos = view.state.doc.line(e.mark.line + 1).from + e.mark.column;
+                    return [{ from: pos, to: pos + 1, severity: 'error', message: e.reason }];
+                }
+                return [{ from: 0, to: 0, severity: 'error', message: e.message }];
+            }
+        };
+    }
+
     function buildExtensions(dark) {
         const base = [
             lineNumbers(),
@@ -109,8 +135,8 @@
             closeBrackets(),
             indentOnInput(),
             highlightSelectionMatches(),
-            json(),
-            linter(jsonParseLinter()),
+            yaml(),
+            linter(yamlLinter()),
             keymap.of([...defaultKeymap, ...closeBracketsKeymap, ...foldKeymap, indentWithTab]),
             EditorView.lineWrapping,
             EditorView.updateListener.of(update => {
@@ -143,14 +169,15 @@
     });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
 
-    // Format JSON
+    // Format YAML — parse and re-dump with consistent indentation
     document.getElementById('format-btn').addEventListener('click', () => {
         const raw = view.state.doc.toString();
         try {
-            const pretty = JSON.stringify(JSON.parse(raw), null, 2);
-            view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: pretty } });
+            const parsed = jsyaml.load(raw);
+            const formatted = jsyaml.dump(parsed, { indent: 2, lineWidth: -1, noRefs: true, quotingType: '"' });
+            view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: formatted } });
         } catch (e) {
-            showError('Cannot format: invalid JSON — ' + e.message);
+            showError('Cannot format: invalid YAML — ' + e.message);
         }
     });
 
@@ -165,11 +192,10 @@
     document.getElementById('start-btn').addEventListener('click', async () => {
         hideAlerts();
         const raw = view.state.doc.toString();
-        let parsed;
         try {
-            parsed = JSON.parse(raw);
+            jsyaml.load(raw);
         } catch (e) {
-            showError('Invalid JSON: ' + e.message);
+            showError('Invalid YAML: ' + e.message);
             return;
         }
 
@@ -177,8 +203,8 @@
         try {
             const resp = await fetch(RUNS_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(parsed),
+                headers: { 'Content-Type': 'application/yaml' },
+                body: raw,
             });
             if (resp.status === 202) {
                 const data = await resp.json();
