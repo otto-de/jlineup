@@ -23,4 +23,19 @@ public record Report(Summary summary, JobConfig config, List<UrlReport> urlRepor
         return browsers.get(BrowserStep.valueOf(step));
     }
 
+    /**
+     * Returns true if differences were detected but every failing context was flaky-accepted,
+     * meaning the run passes despite having non-zero differences.
+     */
+    @UsedInTemplate
+    public boolean isOnlyFlakyDifferences() {
+        if (!summary.error()) {
+            return false;
+        }
+        return urlReports.stream()
+                .flatMap(ur -> ur.contextReports().stream())
+                .filter(cr -> cr.summary().differenceSum() > 0)
+                .allMatch(ContextReport::isFlakyAccepted);
+    }
+
 }

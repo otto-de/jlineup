@@ -611,7 +611,7 @@
     <h1 th:if="${report.config.name}" th:text="${report.config.name}"></h1>
     <div style="background-color: #eeeeee; border-radius: 5px; padding: 5px;">
         <h5 style="margin: 5px;">Results</h5>
-        <p style="margin: 5px; border-radius: 5px;" th:styleappend="${report.summary.error ? 'background-color: red;' : 'background-color: green;'}">Run status: <strong>[[${report.summary.error ? 'Difference detected!' : 'Success'}]]</strong></p>
+        <p style="margin: 5px; border-radius: 5px;" th:styleappend="${!report.summary.error ? 'background-color: green;' : (report.onlyFlakyDifferences ? 'background-color: #cc8800;' : 'background-color: red;')}">Run status: <strong>[[${!report.summary.error ? 'Success' : (report.onlyFlakyDifferences ? 'Difference detected, accepted as flaky' : 'Difference detected!')}]]</strong></p>
         <p style="margin: 5px; border-radius: 5px; background-color: #c3c3c3">Total difference: <strong>[[${#numbers.formatDecimal(report.summary.differenceSum*100,1,2)}]]%</strong> - Maximum difference of a single screenshot: <strong>[[${#numbers.formatDecimal(report.summary.differenceMax*100,1,2)}]]%</strong></p>
         <!--<p>Accepted different pixels: [[${report.summary.acceptedDifferentPixels}]]</p>-->
         <p th:if="${report.config.sanitizedMessage}" style="margin: 5px; background-color: #dedede; border-radius: 5px; white-space: pre;" th:utext="${report.config.sanitizedMessage}">Some Message</p>
