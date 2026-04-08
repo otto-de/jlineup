@@ -14,7 +14,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public record ContextReport(String contextHash, ScreenshotContext screenshotContext, Summary summary,
-                            List<ScreenshotComparisonResult> results) {
+                            List<ScreenshotComparisonResult> results, boolean flakyAccepted) {
+
+    /**
+     * Convenience constructor for backwards compatibility — defaults flakyAccepted to false.
+     */
+    public ContextReport(String contextHash, ScreenshotContext screenshotContext, Summary summary,
+                         List<ScreenshotComparisonResult> results) {
+        this(contextHash, screenshotContext, summary, results, false);
+    }
 
     @UsedInTemplate
     public String getUrl() {
@@ -101,11 +109,19 @@ public record ContextReport(String contextHash, ScreenshotContext screenshotCont
 
     @UsedInTemplate
     public boolean isSuccess() {
+        if (flakyAccepted) {
+            return true;
+        }
         for (ScreenshotComparisonResult result : results) {
             if (result.difference() > 0)
                 return false;
         }
 
         return true;
+    }
+
+    @UsedInTemplate
+    public boolean isFlakyAccepted() {
+        return flakyAccepted;
     }
 }

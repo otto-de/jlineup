@@ -172,6 +172,7 @@ class JSONReportWriterTest {
                       } ],
                       "device-info" : "800x800",
                       "success" : true,
+                      "flaky-accepted" : false,
                       "shown-cookies" : null,
                       "shortened-url" : "url",
                       "shown-cookies-string" : null,

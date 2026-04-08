@@ -149,7 +149,8 @@ This is a full configuration with example values:
       "fail-if-selectors-not-found": false,
       "remove-selectors": [
         "#remove-id"
-      ]
+      ],
+      "flaky-tolerance": 0
     }
   },
   "browser": "Chrome",
@@ -157,6 +158,7 @@ This is a full configuration with example values:
   "page-load-timeout": 120,
   "report-format": 2,
   "screenshot-retries": 0,
+  "flaky-tolerance": 0,
   "threads": 0,
   "timeout": 600,
   "debug": false,
@@ -802,11 +804,54 @@ Since: 4.2.0
  called a **screenshot context**. If you specify retries and there is any error during screenshotting one of those
  contexts, this context is retried until a maximum of specified retries is reached. 
    
- * Scope: Global
+  * Scope: Global
+  * Type: Integer
+  * Default: `0`
+  * Example: `"screenshot-retries": 2`
+  
+--- 
+
+### `flaky-tolerance`
+
+ Some pages render slightly differently at certain device resolutions due to timing, lazy loading, or other
+ non-deterministic behavior. Instead of failing the whole run, `flaky-tolerance` lets you auto-accept a failing
+ screenshot context if enough other device resolutions for the **same page** pass with zero difference.
+
+ Two screenshot contexts are considered "siblings" if they share the same **URL sub-path** and the same set of
+ **screenshot-context-giving cookies** — only the device configuration (width, height, device-name) differs between
+ them.
+
+ The value specifies the **minimum number of passing sibling contexts** required to auto-accept a failing one.
+ For example, with `flaky-tolerance: 2`, a context that shows a difference will still be accepted if at least
+ 2 other device resolutions of the same page passed with zero difference.
+
+ When a context is auto-accepted, the run **passes**, but the HTML report highlights it with an amber
+ `[flaky - accepted]` label so you can investigate.
+
+ This option can be set globally and overridden per URL. A per-URL value takes precedence over the global value
+ when it is non-default (non-zero).
+
+ *Advice:* Use this as a safety net for known-flaky device resolutions, not as a substitute for fixing the root
+ cause. A value of `0` (default) disables flaky tolerance entirely — this is the recommended setting for most
+ projects.
+
+ * Scope: Site or Global
  * Type: Integer
  * Default: `0`
- * Example: `"screenshot-retries": 2`
- 
+ * Example: `"flaky-tolerance": 2`
+ * Example (YAML):
+   ```yaml
+   # Global setting
+   flaky-tolerance: 2
+
+   # Per-URL override
+   urls:
+     https://www.example.com:
+       flaky-tolerance: 3
+   ```
+
+ Since: 5.3.0
+
 --- 
 
 ### `threads`

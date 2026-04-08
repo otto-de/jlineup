@@ -220,6 +220,10 @@
             color: red;
         }
 
+        .flaky-accepted {
+            color: #cc8800;
+        }
+
         .zoom-lens {
             position: absolute;
             border: 1px solid #c3c3c3;
@@ -624,8 +628,10 @@
                     [[${#strings.substringAfter(contextReport.url,urlReport.url)}]]
                     <span class="inline-size">([[${#strings.replace(contextReport.deviceInfo,'\n',', ')}]])</span>
                     <span th:if="${#strings.isEmpty(contextReport.shownCookiesString) == false}" class="inline-size">([[${contextReport.shownCookiesString}]])</span>
-                    <span th:if="${contextReport.isSuccess()}"
+                    <span th:if="${contextReport.isSuccess() && !contextReport.isFlakyAccepted()}"
                           th:classappend="${contextReport.isSuccess()} ? success : failure">[matching]</span>
+                    <span th:if="${contextReport.isFlakyAccepted()}"
+                          class="flaky-accepted">[flaky - accepted]</span>
                     <span th:if="${contextReport.isSuccess() == false}"
                           th:classappend="${contextReport.isSuccess()} ? success : failure">[different]</span>
                 </h4>

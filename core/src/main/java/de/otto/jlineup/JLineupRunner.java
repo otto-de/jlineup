@@ -114,8 +114,17 @@ public class JLineupRunner {
 
     static boolean isDetectedDifferenceGreaterThanMaxDifference(Report report, JobConfig jobConfig) {
         for (UrlReport urlReport : report.urlReports()) {
-            if (jobConfig.urls != null && urlReport.summary().differenceMax() > jobConfig.urls.get(urlReport.urlKey()).maxDiff) {
-                return true;
+            if (jobConfig.urls == null) continue;
+            double maxDiff = jobConfig.urls.get(urlReport.urlKey()).maxDiff;
+
+            // Check each context report — skip flaky-accepted contexts
+            for (ContextReport contextReport : urlReport.contextReports()) {
+                if (contextReport.flakyAccepted()) {
+                    continue;
+                }
+                if (contextReport.summary().differenceMax() > maxDiff) {
+                    return true;
+                }
             }
         }
         return false;

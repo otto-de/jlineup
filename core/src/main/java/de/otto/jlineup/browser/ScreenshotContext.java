@@ -132,6 +132,15 @@ public final class ScreenshotContext  {
         return Integer.toHexString(Objects.hash(urlKey, urlSubPath, deviceConfig, cookies != null ? cookies.stream().filter(Cookie::isScreenshotContextGiving).collect(Collectors.toList()) : null));
     }
 
+    /**
+     * Returns a key that identifies the "sibling group" for flaky-tolerance matching.
+     * Two contexts are siblings if they share the same urlKey, urlSubPath, and set of
+     * screenshot-context-giving cookies — but may differ in device config.
+     */
+    public String flakySiblingKey() {
+        return Integer.toHexString(Objects.hash(urlKey, urlSubPath, cookies != null ? cookies.stream().filter(Cookie::isScreenshotContextGiving).collect(Collectors.toList()) : null));
+    }
+
     public boolean equalsIgnoreStep(ScreenshotContext that) {
         if (this == that) return true;
         if (that == null) return false;

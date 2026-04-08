@@ -58,6 +58,7 @@ public final class JobConfig  {
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
     static final int DEFAULT_GLOBAL_TIMEOUT = 1800;
     public static final float DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT = 10.0f;
+    public static final int DEFAULT_FLAKY_TOLERANCE = 0;
 
     public static final HttpCheckConfig DEFAULT_HTTP_CHECK_CONFIG = new HttpCheckConfig();
 
@@ -92,6 +93,9 @@ public final class JobConfig  {
     public final HttpCheckConfig httpCheck;
 
     @JsonInclude(Include.NON_DEFAULT)
+    public final int flakyTolerance;
+
+    @JsonInclude(Include.NON_DEFAULT)
     public final JobConfig mergeConfig;
 
     public JobConfig() {
@@ -114,6 +118,7 @@ public final class JobConfig  {
         logToFile = builder.logToFile;
         checkForErrorsInLog = builder.checkForErrorsInLog;
         httpCheck = builder.httpCheck;
+        flakyTolerance = builder.flakyTolerance;
         mergeConfig = builder.mergeConfig;
     }
 
@@ -232,6 +237,10 @@ public final class JobConfig  {
         return httpCheck;
     }
 
+    public int getFlakyTolerance() {
+        return flakyTolerance;
+    }
+
     public JobConfig getMergeConfig() {
         return mergeConfig;
     }
@@ -265,7 +274,8 @@ public final class JobConfig  {
                 .withDebug(jobConfig.debug)
                 .withLogToFile(jobConfig.logToFile)
                 .withMergeConfig(jobConfig.mergeConfig)
-                .withCheckForErrorsInLog(jobConfig.checkForErrorsInLog);
+                .withCheckForErrorsInLog(jobConfig.checkForErrorsInLog)
+                .withFlakyTolerance(jobConfig.flakyTolerance);
     }
 
     @Override
@@ -273,12 +283,12 @@ public final class JobConfig  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JobConfig jobConfig = (JobConfig) o;
-        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(name, jobConfig.name) && Objects.equals(message, jobConfig.message) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
+        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && flakyTolerance == jobConfig.flakyTolerance && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(name, jobConfig.name) && Objects.equals(message, jobConfig.message) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(urls, browser, name, message, approvalLink, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, screenshotRetries, threads, globalTimeout, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
+        return Objects.hash(urls, browser, name, message, approvalLink, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, screenshotRetries, threads, globalTimeout, flakyTolerance, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
     }
 
     @Override
@@ -299,6 +309,7 @@ public final class JobConfig  {
                 ", logToFile=" + logToFile +
                 ", checkForErrorsInLog=" + checkForErrorsInLog +
                 ", httpCheck=" + httpCheck +
+                ", flakyTolerance=" + flakyTolerance +
                 ", mergeConfig=" + mergeConfig +
                 '}';
     }
@@ -442,6 +453,7 @@ public final class JobConfig  {
         private boolean logToFile = false;
         private boolean checkForErrorsInLog = false;
         private HttpCheckConfig httpCheck = DEFAULT_HTTP_CHECK_CONFIG;
+        private int flakyTolerance = DEFAULT_FLAKY_TOLERANCE;
         public JobConfig mergeConfig;
 
         private Builder() {
@@ -523,6 +535,11 @@ public final class JobConfig  {
         @JsonInclude(value = Include.CUSTOM, valueFilter = HttpCheckFilter.class)
         public Builder withHttpCheck(HttpCheckConfig val) {
             httpCheck = val;
+            return this;
+        }
+
+        public Builder withFlakyTolerance(int val) {
+            flakyTolerance = val;
             return this;
         }
 

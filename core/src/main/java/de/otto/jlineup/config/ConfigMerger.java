@@ -65,7 +65,8 @@ public class ConfigMerger {
                     .withWaitForSelectorsTimeout(mainUrlConfig.waitForSelectorsTimeout != DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT ? mainUrlConfig.waitForSelectorsTimeout : mergeUrlConfig.waitForSelectorsTimeout)
                     .withWarmupBrowserCacheTime(mainUrlConfig.warmupBrowserCacheTime != DEFAULT_WARMUP_BROWSER_CACHE_TIME ? mainUrlConfig.warmupBrowserCacheTime : mergeUrlConfig.warmupBrowserCacheTime)
                     .withStyle(mainUrlConfig.style != null ? mainUrlConfig.style : mergeUrlConfig.style)
-                    .withWindowWidths(mergeAndOnlyKeepDistinct(mainUrlConfig.windowWidths, mergeUrlConfig.windowWidths));
+                    .withWindowWidths(mergeAndOnlyKeepDistinct(mainUrlConfig.windowWidths, mergeUrlConfig.windowWidths))
+                    .withFlakyTolerance(mainUrlConfig.flakyTolerance != DEFAULT_FLAKY_TOLERANCE ? mainUrlConfig.flakyTolerance : mergeUrlConfig.flakyTolerance);
 
                     mainUrlConfig = urlConfigBuilder.build();
                 }
@@ -113,6 +114,7 @@ public class ConfigMerger {
         mergedJobConfigBuilder.withLogToFile(originalConfig.logToFile || mergeConfig.logToFile);
         mergedJobConfigBuilder.withCheckForErrorsInLog(originalConfig.checkForErrorsInLog || mergeConfig.checkForErrorsInLog);
         mergedJobConfigBuilder.withHttpCheck(!originalConfig.httpCheck.equals(DEFAULT_HTTP_CHECK_CONFIG) ? originalConfig.httpCheck : mergeConfig.httpCheck);
+        mergedJobConfigBuilder.withFlakyTolerance(originalConfig.flakyTolerance != DEFAULT_FLAKY_TOLERANCE ? originalConfig.flakyTolerance : mergeConfig.flakyTolerance);
     }
 
 }
