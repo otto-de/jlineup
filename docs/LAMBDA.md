@@ -91,7 +91,7 @@ own configuration via the AWS API — you do not need to set them on the CLI or 
 
 Download the CLI Lambda variant, which bundles both the CLI and the Lambda client:
 
-`wget https://repo1.maven.org/maven2/de/otto/jlineup-cli-lambda/5.2.0/jlineup-cli-lambda-5.2.0.jar -O jlineup.jar`
+`wget https://repo1.maven.org/maven2/de/otto/jlineup-cli-lambda/5.2.1/jlineup-cli-lambda-5.2.1.jar -O jlineup.jar`
 
 The CLI Lambda variant works exactly like the regular CLI, with these additional flags:
 
@@ -136,7 +136,7 @@ Instead of CLI flags you can also use environment variables:
 
 Download the web Lambda variant, which bundles both the web server and the Lambda client:
 
-`wget https://repo1.maven.org/maven2/de/otto/jlineup-web-lambda/5.2.0/jlineup-web-lambda-5.2.0.jar -O jlineup-web.jar`
+`wget https://repo1.maven.org/maven2/de/otto/jlineup-web-lambda/5.2.1/jlineup-web-lambda-5.2.1.jar -O jlineup-web.jar`
 
 Start it the same way as the regular web server:
 

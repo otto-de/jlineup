@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 5.2.1 - 2026-04-08
+* Feature: The manual run page in the web module now uses YAML as its default editor format.
+* Feature: The manual run editor supports switching between YAML and JSON formats with a toggle button,
+  including live conversion between formats.
+* Feature: Added a copy-to-clipboard button to the manual run editor.
+
 ## Release 5.2.0 - 2026-04-04
 * Feature: Add support for YAML configuration files (alongside existing JSON support).
   Default config search order is `lineup.yaml` > `lineup.yml` > `lineup.json`.
