@@ -242,7 +242,7 @@
                 btn.setAttribute('data-run-id',    run.id);
                 btn.setAttribute('data-run-name',  runName(run) || '');
                 btn.setAttribute('data-after-url', aUrl);
-                btn.textContent = "Start 'After' run";
+                btn.textContent = "Start 'after' run";
                 wireAfterBtn(btn);
                 afterCell.appendChild(btn);
             } else if (!aUrl && existing) {
