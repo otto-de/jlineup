@@ -818,7 +818,7 @@ Since: 4.2.0
  screenshot context if enough other device resolutions for the **same page** pass with zero difference.
 
  Two screenshot contexts are considered "siblings" if they share the same **URL sub-path** and the same set of
- **screenshot-context-giving cookies** — only the device configuration (width, height, device-name) differs between
+ **cookies** — only the device configuration (width, height, device-name) differs between
  them.
 
  The value specifies the **minimum number of passing sibling contexts** required to auto-accept a failing one.
