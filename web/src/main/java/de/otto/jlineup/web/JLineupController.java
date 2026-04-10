@@ -46,7 +46,7 @@ public class JLineupController {
         return String.format("<p>JLineup is great! Do you want to go to my <a href=\"%s/internal/status\">status page</a>?</p>", request.getContextPath());
     }
 
-    @PostMapping(value = "/runs", consumes = {"application/json", "application/x-yaml", "application/yaml"})
+    @PostMapping(value = "/runs", consumes = {"application/json", "application/yaml"})
     public ResponseEntity<RunBeforeResponse> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) throws Exception {
 
         if (jobConfig.mergeConfig != null) {

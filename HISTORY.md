@@ -10,7 +10,7 @@
 * Feature: Add support for YAML configuration files (alongside existing JSON support).
   Default config search order is `lineup.yaml` > `lineup.yml` > `lineup.json`.
   The `--format yaml|json` CLI option controls the output format for `--print-config` and `--print-example`.
-  The web module accepts YAML via `Content-Type: application/x-yaml`.
+  The web module accepts YAML via `Content-Type: application/yaml`.
 * Feature: New `style` config option to inject custom CSS via a `<style>` element before taking screenshots.
   This is useful for hiding dynamic content like animations or ads.
 * Feature: AWS Lambda region is now configurable via the `JLINEUP_LAMBDA_AWS_REGION` environment variable
