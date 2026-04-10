@@ -5,7 +5,7 @@ GET http://localhost:8080/exampleRun
     client.log(`Example run response: ${response.body}`)
 %}
 
-### Start run with given configuration
+### Start run with given configuration (JSON)
 POST http://localhost:8080/runs
 Content-Type: application/json
 
@@ -46,6 +46,41 @@ Content-Type: application/json
   "window-height": 1000,
   "timeout": 600
 }
+
+> {%
+    client.global.set("run_id", response.body.id);
+    client.log(`Run ID: ${client.global.get("run_id")}`);
+%}
+
+### Start run with given configuration (YAML)
+POST http://localhost:8080/runs
+Content-Type: application/x-yaml
+
+name: example
+urls:
+  EXAMPLE_COM:
+    url: https://www.example.com
+    paths:
+    - /
+merge-config:
+  urls:
+    .*:
+      max-diff: 0.0
+      ignore-anti-aliasing: true
+      cookies: []
+      window-widths:
+      - 320
+      - 992
+      http-check:
+        enabled: true
+        allowed-codes:
+        - 200
+browser: chrome-headless
+check-for-errors-in-log: false
+wait-after-page-load: 5.0
+page-load-timeout: 120
+window-height: 1000
+timeout: 600
 
 > {%
     client.global.set("run_id", response.body.id);
