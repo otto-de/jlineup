@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -174,11 +175,31 @@ public class JLineupService {
 
 
     public Optional<JLineupRunStatus> getRun(String id) {
-        return Optional.ofNullable(runs.get(id));
+        JLineupRunStatus status = runs.get(id);
+        if (status == null) {
+            // Run might have been created by another instance sharing the same filesystem.
+            // Reload from disk and try again.
+            reloadRunsFromDisk();
+            status = runs.get(id);
+        }
+        return Optional.ofNullable(status);
     }
 
     public List<JLineupRunStatus> getRunStatus() {
+        reloadRunsFromDisk();
         return ImmutableList.copyOf(this.runs.values());
+    }
+
+    /**
+     * Re-reads runs.json from disk and merges any runs not yet known to this instance
+     * into the in-memory map. This covers the deployment overlap case where another
+     * instance wrote new runs to the shared file.
+     * Existing in-memory entries are NOT overwritten, because this instance may hold
+     * more recent state (e.g. a running future) that the file doesn't reflect.
+     */
+    private void reloadRunsFromDisk() {
+        Map<String, JLineupRunStatus> diskRuns = runPersistenceService.readRuns();
+        diskRuns.forEach(runs::putIfAbsent);
     }
 
 }

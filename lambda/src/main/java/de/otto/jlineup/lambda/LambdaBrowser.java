@@ -88,7 +88,7 @@ public class LambdaBrowser implements CloudBrowser {
                 lambdaCalls.put(screenshotContext, invokeResponseFuture);
             }
 
-            LOG.info("All lambda calls started, waiting for results...");
+            LOG.info("All {} lambda calls started, waiting for results...", screenshotContexts.size());
 
             int i = 0;
             int digits = String.valueOf(screenshotContexts.size()).length();
