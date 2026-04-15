@@ -39,8 +39,12 @@ jobs:
           cache: gradle
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Install AWS CDK
-        run: npm install -g aws-cdk
+      - name: Install pnpm
+        uses: pnpm/action-setup@08c4be7e2e672a47d11bd04269e27e5f3e8529cb # v6.0.0
+      - name: Install dependencies (incl. AWS CDK)
+        run: pnpm install
+      - name: Add node_modules/.bin to PATH
+        run: echo "$GITHUB_WORKSPACE/node_modules/.bin" >> $GITHUB_PATH
       - name: AWS Lambda acceptance tests
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
