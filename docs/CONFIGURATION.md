@@ -20,6 +20,14 @@ If using the web server variant, you have to POST the config via REST API (using
 
 A basic configuration with default settings can look like this:
 
+```yaml
+urls:
+  https://www.otto.de: {}
+```
+
+<details>
+<summary>JSON version</summary>
+
 ```json
 {
   "urls": {
@@ -28,10 +36,21 @@ A basic configuration with default settings can look like this:
   }
 }
 ```
+</details>
  
 This config leads JLineup to https://www.otto.de. All other settings like window size, timeouts etc. stay default.
 
 What about those __global__ and __site__ settings?
+
+```yaml
+urls:
+  https://www.otto.de:
+    ->: SITE SETTINGS GO HERE
+->: GLOBAL SETTINGS GO HERE
+```
+
+<details>
+<summary>JSON version</summary>
 
 ```json
 {
@@ -43,10 +62,37 @@ What about those __global__ and __site__ settings?
   "->": "GLOBAL SETTINGS GO HERE"
 }
 ```
+</details>
     
 ### Example
 
 This basic example shows the concept of global and url settings:
+
+```yaml
+urls:
+  http://www.otto.de:
+    paths:
+    - /
+    devices:
+    - width: 800
+      height: 600
+    max-scroll-height: 50000
+  https://www.example.com:
+    paths:
+    - /
+    - somepath
+    devices:
+    - width: 800
+      height: 600
+    - width: 1000
+      height: 800
+    max-scroll-height: 10000
+browser: chrome
+wait-after-page-load: 1
+```
+
+<details>
+<summary>JSON version</summary>
 
 ```json
 {
@@ -80,6 +126,7 @@ This basic example shows the concept of global and url settings:
   "wait-after-page-load": 1
 }
 ```
+</details>
     
 As you can see, _paths_, _devices_ and _max-scroll-height_ are configured on url level, the _browser_ and the _wait-after-page-load_
 options are global for all sites in this job.
@@ -87,6 +134,75 @@ options are global for all sites in this job.
 ### Full configuration
 
 This is a full configuration with example values:
+
+```yaml
+urls:
+  https://www.example.com:
+    setup-paths:
+    - /internal/do/some/setup
+    cleanup-paths:
+    - /internal/do/some/cleanup
+    paths:
+    - /
+    - someOtherPath
+    max-diff: 0.0
+    cookies:
+    - name: exampleCookieName
+      value: exampleValue
+      domain: https://www.example.com
+      path: /
+      expiry: "1970-01-01T01:00:01+0100"
+      secure: true
+    env-mapping:
+      live: www
+    local-storage:
+      exampleLocalStorageKey: value
+    session-storage:
+      exampleSessionStorageKey: value
+    devices:
+    - width: 800
+      height: 600
+    - width: 1000
+      height: 800
+    - width: 1200
+      height: 1000
+    max-scroll-height: 100000
+    wait-after-page-load: 0.0
+    wait-after-scroll: 0.0
+    wait-for-no-animation-after-scroll: 0.0
+    warmup-browser-cache-time: 0.0
+    wait-for-fonts-time: 0.0
+    javascript: "console.log('This is JavaScript!')"
+    style: ".some-selector { display: none !important; }"
+    hide-images: false
+    http-check:
+      enabled: false
+    ignore-anti-aliasing: false
+    strict-color-comparison: false
+    wait-for-selectors:
+    - .wait-for-class
+    wait-for-selectors-timeout: 20.0
+    fail-if-selectors-not-found: false
+    remove-selectors:
+    - "#remove-id"
+    flaky-tolerance: 0
+browser: Chrome
+wait-after-page-load: 0.0
+page-load-timeout: 120
+report-format: 2
+screenshot-retries: 0
+flaky-tolerance: 0
+threads: 0
+timeout: 600
+debug: false
+log-to-file: false
+check-for-errors-in-log: true
+http-check:
+  enabled: false
+```
+
+<details>
+<summary>JSON version</summary>
 
 ```json
 {
@@ -169,6 +285,7 @@ This is a full configuration with example values:
   }
 }
 ```
+</details>
 
 ---
 
@@ -188,20 +305,35 @@ What are all those options about? Here are all the details.
  * Type: String
  * Possible Values: `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`
  * Default: `"Chrome-Headless"`
- * Example: `"browser": "Chrome-Headless"`
+ * Example:
+   ```yaml
+   browser: Chrome-Headless
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"browser": "Chrome-Headless"`
+   </details>
 
 ---
 
 ### `urls`
 
- JLineup job settings for one or multiple sites have to be configured as JSON subdocument here
+ JLineup job settings for one or multiple sites have to be configured as subdocument here
  
  * Scope: Global
- * Type: JSON Document
+ * Type: Document
  * Default: None - ***urls*** is a mandatory config option
- * Example: `"urls": {
-                   "https://www.otto.de": {}
-            }`
+ * Example:
+   ```yaml
+   urls:
+     https://www.otto.de: {}
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"urls": { "https://www.otto.de": {} }`
+   </details>
             
 ---
 
@@ -212,7 +344,17 @@ What are all those options about? Here are all the details.
  * Scope: Site
  * Type: List of Strings
  * Default: `[ "" ]`
- * Example: `"paths": [ "/", "someOtherPath" ]`
+ * Example:
+   ```yaml
+   paths:
+   - /
+   - someOtherPath
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"paths": [ "/", "someOtherPath" ]`
+   </details>
 
 
 ---
@@ -227,11 +369,24 @@ What are all those options about? Here are all the details.
 * Type: List of integers
 * Unit: Pixels
 * Default: `[ 800 ]`
-* Example: `"window-widths": [
-        600,
-        800,
-        1000
-      ]`
+* Example:
+  ```yaml
+  window-widths:
+  - 600
+  - 800
+  - 1000
+  ```
+  <details>
+  <summary>JSON</summary>
+
+  ```json
+  "window-widths": [
+      600,
+      800,
+      1000
+    ]
+  ```
+  </details>
       
 ---
  
@@ -253,7 +408,15 @@ What are all those options about? Here are all the details.
  * Default: `0.0`
  * Min: `0.0`
  * Max: `1.0`
- * Example: `"max-diff": 0.01`     
+ * Example:
+   ```yaml
+   max-diff: 0.01
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"max-diff": 0.01`
+   </details>
  
 ---
                  
@@ -266,22 +429,38 @@ What are all those options about? Here are all the details.
  * Scope: Site
  * Type: List of cookie documents
  * Default: `{}`
- * Example: `
-            "cookies": [
-               {
-                 "name": "exampleCookieName",
-                 "value": "exampleValue",
-                 "domain": "https://www.example.com",
-                 "path": "/",
-                 "expiry": "1970-01-01T01:00:01+0100",
-                 "secure": true
-               },
-               {
-                 "name": "anotherCookie",
-                 "value": "anotherValue"
-               }
-            ]
-            `
+ * Example:
+   ```yaml
+   cookies:
+   - name: exampleCookieName
+     value: exampleValue
+     domain: https://www.example.com
+     path: /
+     expiry: "1970-01-01T01:00:01+0100"
+     secure: true
+   - name: anotherCookie
+     value: anotherValue
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   ```json
+   "cookies": [
+      {
+        "name": "exampleCookieName",
+        "value": "exampleValue",
+        "domain": "https://www.example.com",
+        "path": "/",
+        "expiry": "1970-01-01T01:00:01+0100",
+        "secure": true
+      },
+      {
+        "name": "anotherCookie",
+        "value": "anotherValue"
+      }
+   ]
+   ```
+   </details>
 ---
 
 ### `alternating-cookies`
@@ -295,25 +474,45 @@ If you want to see the different cookies in the HTML report, you can specify `sh
 * Scope: Site
 * Type: List of lists of alternating cookie documents
 * Default: `{}`
-* Example: `
+* Example:
+  ```yaml
+  alternating-cookies:
+  - - name: cookieA1
+      value: A1
+      show-in-report: true
+    - name: cookieA2
+      value: A2
+      show-in-report: true
+  - - name: cookieB1
+      value: B1
+      show-in-report: true
+    - name: cookieB2
+      value: B2
+      show-in-report: true
+  ```
+  <details>
+  <summary>JSON</summary>
+
+  ```json
   "alternating-cookies": [[{
-  "name": "cookieA1",
-  "value": "A1",
-  "show-in-report": true
+    "name": "cookieA1",
+    "value": "A1",
+    "show-in-report": true
   },{
-  "name": "cookieA2",
-  "value": "A2",
-  "show-in-report": true
+    "name": "cookieA2",
+    "value": "A2",
+    "show-in-report": true
   }],[{
-  "name": "cookieB1",
-  "value": "B1",
-  "show-in-report": true
+    "name": "cookieB1",
+    "value": "B1",
+    "show-in-report": true
   },{
-  "name": "cookieB2",
-  "value": "B2",
-  "show-in-report": true
+    "name": "cookieB2",
+    "value": "B2",
+    "show-in-report": true
   }]]
-  `
+  ```
+  </details>
 ---
 
 ### `local-storage`
@@ -322,9 +521,16 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Scope: Site
  * Type: Map
  * Default: Empty
- * Example: `"local-storage": {
-        "exampleLocalStorageKey": "exampleLocalStorageValue"
-      }`
+ * Example:
+   ```yaml
+   local-storage:
+     exampleLocalStorageKey: exampleLocalStorageValue
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"local-storage": { "exampleLocalStorageKey": "exampleLocalStorageValue" }`
+   </details>
       
 ---
       
@@ -334,9 +540,16 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Scope: Site
  * Type: Map
  * Default: Empty
- * Example: "session-storage": {
-        "exampleSessionStorageKey": "exampleSessionStorageValue"
-      }`
+ * Example:
+   ```yaml
+   session-storage:
+     exampleSessionStorageKey: exampleSessionStorageValue
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"session-storage": { "exampleSessionStorageKey": "exampleSessionStorageValue" }`
+   </details>
       
 ---      
       
@@ -350,7 +563,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Type: Integer
  * Unit: Pixels
  * Default: `50000`
- * Example: `"max-scroll-height": 100000`
+ * Example:
+   ```yaml
+   max-scroll-height: 100000
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"max-scroll-height": 100000`
+   </details>
  
 --- 
  
@@ -369,7 +590,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Type: Float
  * Unit: Seconds
  * Default: `0`
- * Example: `"wait-after-page-load": 3.5`
+ * Example:
+   ```yaml
+   wait-after-page-load: 3.5
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"wait-after-page-load": 3.5`
+   </details>
  
  ---
  
@@ -383,7 +612,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Type: Float
  * Unit: Seconds
  * Default: `0`
- * Example: `"wait-after-scroll": 1.1`
+ * Example:
+   ```yaml
+   wait-after-scroll: 1.1
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"wait-after-scroll": 1.1`
+   </details>
  
 ---
 
@@ -402,7 +639,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Scope: Site
  * Type: Float
  * Default: `1.0`
- * Example: `"scroll-distance-factor": 0.5`
+ * Example:
+   ```yaml
+   scroll-distance-factor: 0.5
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"scroll-distance-factor": 0.5`
+   </details>
  
  Since: 4.14.2
 
@@ -418,7 +663,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Type: Float
  * Unit: Seconds
  * Default: `0`
- * Example: `"warmup-browser-cache-time": 5`
+ * Example:
+   ```yaml
+   warmup-browser-cache-time: 5
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"warmup-browser-cache-time": 5`
+   </details>
  
 --- 
  
@@ -437,7 +690,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Scope: Site
  * Type: String
  * Default: `null`
- * Example: `"javascript": "console.log('This is JavaScript!')"`
+ * Example:
+   ```yaml
+   javascript: "console.log('This is JavaScript!')"
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"javascript": "console.log('This is JavaScript!')"`
+   </details>
  
 ---
 
@@ -453,19 +714,27 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Scope: Site
  * Type: String (CSS)
  * Default: `null`
- * Example: `"style": ".ad-banner { display: none !important; } * { transition: none !important; animation: none !important; }"`
- 
- In YAML, multiline CSS is easy to write:
- 
- ```yaml
- style: |
-   .ad-banner { display: none !important; }
-   .dynamic-content { visibility: hidden !important; }
-   * {
-     transition: none !important;
-     animation: none !important;
-   }
- ```
+ * Example:
+   ```yaml
+   style: ".ad-banner { display: none !important; } * { transition: none !important; animation: none !important; }"
+   ```
+
+   In YAML, multiline CSS is easy to write:
+
+   ```yaml
+   style: |
+     .ad-banner { display: none !important; }
+     .dynamic-content { visibility: hidden !important; }
+     * {
+       transition: none !important;
+       animation: none !important;
+     }
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"style": ".ad-banner { display: none !important; } * { transition: none !important; animation: none !important; }"`
+   </details>
 
  Since 5.2.0
  
@@ -490,21 +759,39 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  but isn't in the desired state (It was introduced to check for a "sorry"-page that did return a HTTP 200). 
  
  * Scope: Site or Global
- * Type: JSON Document
+ * Type: Document
  * Default: `{ "enabled": false, "allowed-codes": [ 200,202,204,205,206,301,302,303,304,307,308 ], "error-signals":[] }`
- * Example: `
-              "http-check": {
-                "enabled": true,
-                "allowed-codes": [
-                  200,
-                  202,
-                  204,
-                  205,
-                  206
-                ],
-                "error-signals":["error1","error2"]
-              }
-            `
+ * Example:
+   ```yaml
+   http-check:
+     enabled: true
+     allowed-codes:
+     - 200
+     - 202
+     - 204
+     - 205
+     - 206
+     error-signals:
+     - error1
+     - error2
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   ```json
+   "http-check": {
+     "enabled": true,
+     "allowed-codes": [
+       200,
+       202,
+       204,
+       205,
+       206
+     ],
+     "error-signals":["error1","error2"]
+   }
+   ```
+   </details>
             
 ---
     
@@ -513,18 +800,23 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  This is a convenience option that can replace parts of the domain that are specified in the config before making
  screenshots.
  
- This can be nice if you want to replace environments that are generated into your lineup.json that don't match the 
+ This can be nice if you want to replace environments that are generated into your lineup config that don't match the 
  real site url. One Example: At OTTO, the generated live step would result in a generated url like https://live.otto.de,
  which is in reality reachable under https://www.otto.de.   
                   
  * Scope: Site
  * Type: Map
  * Default: `{}`
- * Example: `
-            "env-mapping": {
-                "live": "www"
-            }
-            `  
+ * Example:
+   ```yaml
+   env-mapping:
+     live: www
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"env-mapping": { "live": "www" }`
+   </details>
 ---
 
 ### `hide-images`
@@ -535,7 +827,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Scope: Site
  * Type: Boolean
  * Default: `false`
- * Example: `"hide-images": true`
+ * Example:
+   ```yaml
+   hide-images: true
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"hide-images": true`
+   </details>
  
 ---
 
@@ -547,7 +847,17 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Scope: Site
  * Type: Set of Strings
  * Default: `null`
- * Example: `"wait-for-selectors": [ ".wait-for-class", "#wait-for-id" ]`
+ * Example:
+   ```yaml
+   wait-for-selectors:
+   - .wait-for-class
+   - "#wait-for-id"
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"wait-for-selectors": [ ".wait-for-class", "#wait-for-id" ]`
+   </details>
  
   Since: 4.1.0
 
@@ -563,7 +873,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Type: Float
  * Unit: Seconds
  * Default: 15
- * Example: `"wait-for-selectors-timeout": 20.0`
+ * Example:
+   ```yaml
+   wait-for-selectors-timeout: 20.0
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"wait-for-selectors-timeout": 20.0`
+   </details>
  
   Since: 4.1.0
 
@@ -576,7 +894,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
   * Scope: Site
   * Type: Boolean
   * Default: false
-  * Example: `"fail-if-selectors-not-found": true`
+  * Example:
+    ```yaml
+    fail-if-selectors-not-found: true
+    ```
+    <details>
+    <summary>JSON</summary>
+
+    `"fail-if-selectors-not-found": true`
+    </details>
 
  Since: 4.1.0
 
@@ -595,7 +921,17 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Scope: Site
  * Type: Set of Strings
  * Default: `null`
- * Example: `"remove-selectors": [ "#remove-id", ".remove-class" ]`
+ * Example:
+   ```yaml
+   remove-selectors:
+   - "#remove-id"
+   - .remove-class
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"remove-selectors": [ "#remove-id", ".remove-class" ]`
+   </details>
  
  Since: 4.1.0
 
@@ -613,7 +949,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Type: Float
  * Unit: Seconds
  * Default: 0
- * Example: `"wait-for-fonts-time": 3`
+ * Example:
+   ```yaml
+   wait-for-fonts-time: 3
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"wait-for-fonts-time": 3`
+   </details>
  
 ---            
             
@@ -627,7 +971,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Scope: Site
  * Type: Boolean
  * Default: `false`
- * Example: `"ignore-anti-aliasing": true`
+ * Example:
+   ```yaml
+   ignore-anti-aliasing: true
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"ignore-anti-aliasing": true`
+   </details>
  
  Since: 4.0.0
  
@@ -644,7 +996,15 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Scope: Site
  * Type: Boolean
  * Default: `false`
- * Example: `"strict-color-comparison": true`
+ * Example:
+   ```yaml
+   strict-color-comparison: true
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"strict-color-comparison": true`
+   </details>
  
  Since: 4.0.0
 
@@ -667,27 +1027,57 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  Other browsers ignore this feature and just use window size and user agent.
 
  * Scope: Site
- * Type: Map
- * Default: 
-    `"devices":[
-        { 
-            "device-name": "DESKTOP",
-            "width": 800,
-            "height": 800
-        }
-    ]
-    `
+ * Type: List
+ * Default:
+   ```yaml
+   devices:
+   - device-name: DESKTOP
+     width: 800
+     height: 800
+   ```
  * Examples:
    
-   `
+   ```yaml
+   devices:
+   - device-name: iPhone X
+   ```
+
+   ```yaml
+   devices:
+   - device-name: MOBILE
+     width: 600
+     height: 1200
+     pixel-ratio: 2.0
+     user-agent: My special mobile
+   - device-name: DESKTOP
+     width: 600
+     height: 1200
+     user-agent: My special user agent string
+     touch: true
+   ```
+
+   <details>
+   <summary>JSON</summary>
+
+   ```json
    "devices":[
-        {
-            "device-name": "iPhone X"
-        }
+       { 
+           "device-name": "DESKTOP",
+           "width": 800,
+           "height": 800
+       }
    ]
-   `
-   
-   `
+   ```
+
+   ```json
+   "devices":[
+       {
+           "device-name": "iPhone X"
+       }
+   ]
+   ```
+
+   ```json
    "devices":[
        { 
            "device-name": "MOBILE",
@@ -699,11 +1089,12 @@ If you want to see the different cookies in the HTML report, you can specify `sh
            "device-name": "DESKTOP",
            "width": 600,
            "height": 1200,
-           "user-agent": "My special user agent string"
+           "user-agent": "My special user agent string",
            "touch": true 
        }
    ]
-   `
+   ```
+   </details>
 
 Since: 4.0.0
 
@@ -718,7 +1109,17 @@ Since: 4.0.0
  * Scope: Site
  * Type: List of Strings
  * Default: `null`
- * Example: `"setup-paths": [ "/some/setup/path", "/some/other/setup/path" ]`
+ * Example:
+   ```yaml
+   setup-paths:
+   - /some/setup/path
+   - /some/other/setup/path
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"setup-paths": [ "/some/setup/path", "/some/other/setup/path" ]`
+   </details>
  
 Since: 4.2.0
 
@@ -733,7 +1134,17 @@ Since: 4.2.0
  * Scope: Site
  * Type: List of Strings
  * Default: `null`
- * Example: `"cleanup-paths": [ "/some/cleanup/path", "/some/other/cleanup/path" ]`
+ * Example:
+   ```yaml
+   cleanup-paths:
+   - /some/cleanup/path
+   - /some/other/cleanup/path
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"cleanup-paths": [ "/some/cleanup/path", "/some/other/cleanup/path" ]`
+   </details>
  
 Since: 4.2.0
 
@@ -752,7 +1163,15 @@ Since: 4.2.0
  * Type: Integer
  * Unit: Seconds
  * Default: `120`
- * Example: `"page-load-timeout": 180`
+ * Example:
+   ```yaml
+   page-load-timeout: 180
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"page-load-timeout": 180`
+   </details>
   
 --- 
 
@@ -764,7 +1183,15 @@ Since: 4.2.0
  * Scope: Global
  * Type: String
  * Default: `null`
- * Example: `"name": "Cool name for my JLineup Job"`
+ * Example:
+   ```yaml
+   name: Cool name for my JLineup Job
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"name": "Cool name for my JLineup Job"`
+   </details>
  
 --- 
  
@@ -778,7 +1205,15 @@ Since: 4.2.0
  * Type: Integer
  * Unit: Pixels
  * Default: `800`
- * Example: `"window-height": 1000`
+ * Example:
+   ```yaml
+   window-height: 1000
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"window-height": 1000`
+   </details>
  
 ---
  
@@ -791,7 +1226,15 @@ Since: 4.2.0
  * Type: Integer
  * Range: `1` or `2`
  * Default: `2`
- * Example: `"report-format": 2`
+ * Example:
+   ```yaml
+   report-format: 2
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"report-format": 2`
+   </details>
  
 ---
 
@@ -807,7 +1250,15 @@ Since: 4.2.0
   * Scope: Global
   * Type: Integer
   * Default: `0`
-  * Example: `"screenshot-retries": 2`
+  * Example:
+    ```yaml
+    screenshot-retries: 2
+    ```
+    <details>
+    <summary>JSON</summary>
+
+    `"screenshot-retries": 2`
+    </details>
   
 --- 
 
@@ -838,8 +1289,7 @@ Since: 4.2.0
  * Scope: Site or Global
  * Type: Integer
  * Default: `0`
- * Example: `"flaky-tolerance": 2`
- * Example (YAML):
+ * Example:
    ```yaml
    # Global setting
    flaky-tolerance: 2
@@ -849,6 +1299,11 @@ Since: 4.2.0
      https://www.example.com:
        flaky-tolerance: 3
    ```
+   <details>
+   <summary>JSON</summary>
+
+   `"flaky-tolerance": 2`
+   </details>
 
  Since: 5.3.0
 
@@ -872,7 +1327,15 @@ Since: 4.2.0
  * Scope: Global
  * Type: Integer
  * Default: `0`
- * Example: `"threads": 2`
+ * Example:
+   ```yaml
+   threads: 2
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"threads": 2`
+   </details>
  
 --- 
  
@@ -887,7 +1350,15 @@ Since: 4.2.0
  * Type: Integer
  * Unit: Seconds
  * Default: `600`
- * Example: `"timeout": 300`
+ * Example:
+   ```yaml
+   timeout: 300
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"timeout": 300`
+   </details>
  
 --- 
  
@@ -899,7 +1370,15 @@ Since: 4.2.0
  * Scope: Global
  * Type: Boolean
  * Default: `false`
- * Example: `"debug": true`
+ * Example:
+   ```yaml
+   debug: true
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"debug": true`
+   </details>
  
 --- 
 
@@ -911,7 +1390,15 @@ Since: 4.2.0
  * Scope: Global
  * Type: Boolean
  * Default: `false`
- * Example: `"log-to-file": true`
+ * Example:
+   ```yaml
+   log-to-file: true
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"log-to-file": true`
+   </details>
  
 --- 
  
@@ -923,7 +1410,15 @@ Since: 4.2.0
  * Scope: Global
  * Type: Boolean
  * Default: `false`
- * Example: `"check-for-errors-in-log": false`
+ * Example:
+   ```yaml
+   check-for-errors-in-log: false
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"check-for-errors-in-log": false`
+   </details>
  
  ---
 
