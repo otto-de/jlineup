@@ -19,7 +19,7 @@ dependencies {
     api "tools.jackson.dataformat:jackson-dataformat-yaml"
     api "com.fasterxml.jackson.core:jackson-annotations"
     api "ch.qos.logback:logback-classic"
-    api "com.google.guava:guava:33.5.0-jre"
+    api "com.google.guava:guava:33.6.0-jre"
 
     //Update netty (selenium has older version)
     implementation "io.netty:netty-codec"
