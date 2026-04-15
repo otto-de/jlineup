@@ -18,11 +18,10 @@ If using the web server variant, you have to POST the config via REST API (using
 
 ### Basic config
 
-A basic configuration with default settings can look like this:
+A basic configuration with default settings can look as simple as this:
 
 ```yaml
-urls:
-  https://www.otto.de: {}
+urls: https://www.otto.de
 ```
 
 <details>

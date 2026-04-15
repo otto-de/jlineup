@@ -474,6 +474,12 @@ public final class JobConfig  {
             return this;
         }
 
+        //Additional withUrls builder to allow a very basic config looking like this: "urls: https://www.otto.de"
+        public Builder withUrls(String val) {
+            urls = Map.of(val, urlConfigBuilder().build());
+            return this;
+        }
+
         public Builder withUrls(Map<String, UrlConfig> val) {
             urls = val;
             return this;
