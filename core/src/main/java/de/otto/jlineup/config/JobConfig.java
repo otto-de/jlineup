@@ -1,9 +1,14 @@
 package de.otto.jlineup.config;
 
 import com.fasterxml.jackson.annotation.*;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
 import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.PropertyNamingStrategies;
 import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.deser.std.StdDeserializer;
 import tools.jackson.databind.json.JsonMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -474,12 +479,9 @@ public final class JobConfig  {
             return this;
         }
 
-        //Additional withUrls builder to allow a very basic config looking like this: "urls: https://www.otto.de"
-        public Builder withUrls(String val) {
-            urls = Map.of(val, urlConfigBuilder().build());
-            return this;
-        }
-
+        //Use custom deserializer to allow a very basic config looking like this: "urls: https://www.otto.de"
+        @JsonProperty("urls")
+        @JsonDeserialize(using = UrlsDeserializer.class)
         public Builder withUrls(Map<String, UrlConfig> val) {
             urls = val;
             return this;
@@ -577,5 +579,22 @@ public final class JobConfig  {
         return JobConfig.copyOfBuilder(this)
                 .withUrls(this.urls.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> entry.getValue().sanitize())))
                 .build();
+    }
+
+    public static class UrlsDeserializer extends StdDeserializer<Map<String, UrlConfig>> {
+
+        public UrlsDeserializer() {
+            super(Map.class);
+        }
+
+        @Override
+        public Map<String, UrlConfig> deserialize(JsonParser p, DeserializationContext ctxt) {
+            if (p.currentToken() == JsonToken.VALUE_STRING) {
+                // "urls: https://www.otto.de" variant
+                return Map.of(p.getText(), urlConfigBuilder().build());
+            }
+            // normal object variant
+            return ctxt.readValue(p, new TypeReference<Map<String, UrlConfig>>() {});
+        }
     }
 }
