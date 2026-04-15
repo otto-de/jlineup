@@ -1,5 +1,14 @@
 # JLineup Release History
 
+## Release 5.3.0 - 2026-04-15
+* Feature: New `flaky-tolerance` config option to accept a flaky screenshot context if enough similar
+           successful contexts exist in the run.
+* Feature: Simple file locking for `runs.json` to reduce race conditions when multiple web instances
+  share the same network file system.
+* Bugfix: Corrected `application/x-yaml` to `application/yaml` as the supported YAML content type
+  in the web module's POST endpoint.
+* Update: Dependency updates (Chrome 147 in Lambda, Selenium 4.43.0, AWS SDK, AWS CDK)
+
 ## Release 5.2.1 - 2026-04-08
 * Feature: The manual run page in the web module now uses YAML as its default editor format.
 * Feature: The manual run editor supports switching between YAML and JSON formats with a toggle button,
