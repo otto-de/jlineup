@@ -44,6 +44,8 @@ else
   echo "INFO: This is a SNAPSHOT release. Packages will be released to GitHub packages only."
 fi
 
+export JLINEUP_LAMBDA_ACCEPTANCE_TEST_ENABLED=false
+
 "${SCRIPT_DIR}"/gradlew clean jreleaserConfig check
 "${SCRIPT_DIR}"/gradlew build installBootDist publish
 
