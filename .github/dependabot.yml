@@ -1,42 +1,46 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-
 version: 2
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      # Check for updates to GitHub Actions every week
       interval: "weekly"
-  - package-ecosystem: "gradle" # See documentation for possible values
-    directory: "/" # Location of package manifests
+
+  - package-ecosystem: "gradle"
+    directory: "/"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 25
     ignore:
       - dependency-name: "org.apache.tomcat.embed:*"
         update-types: [ "version-update:semver-major" ]
-    cooldown:
-      semver-major-days: 7
-      semver-minor-days: 7
-      semver-patch-days: 7
-      include:
-        - "com.amazonaws:*"
-        - "software.amazon.awssdk:*"
-        - "software.amazon.awssdk.crt:*"
+      - dependency-name: "com.amazonaws:*"
+      - dependency-name: "software.amazon.awssdk:*"
+      - dependency-name: "software.amazon.awssdk.crt:*"
+      - dependency-name: "software.amazon.awscdk:*"
+    groups:
+      test-dependencies:
+        patterns:
+          - "org.junit.*"
+          - "org.mockito.*"
+          - "org.hamcrest.*"
+
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-name: "com.amazonaws:*"
+      - dependency-name: "software.amazon.awssdk:*"
+      - dependency-name: "software.amazon.awssdk.crt:*"
+      - dependency-name: "software.amazon.awscdk:*"
     groups:
       aws-dependencies:
         patterns:
           - "com.amazonaws:*"
           - "software.amazon.awssdk:*"
           - "software.amazon.awssdk.crt:*"
-      test-dependencies:
-        patterns:
-          - "org.junit.*"
-          - "org.mockito.*"
-          - "org.hamcrest.*"
+          - "software.amazon.awscdk:*"
+
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
