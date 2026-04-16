@@ -25,7 +25,7 @@ urls: https://www.otto.de
 ```
 
 <details>
-<summary>JSON version</summary>
+<summary>JSON</summary>
 
 ```json
 {
@@ -49,7 +49,7 @@ urls:
 ```
 
 <details>
-<summary>JSON version</summary>
+<summary>JSON</summary>
 
 ```json
 {
@@ -91,7 +91,7 @@ wait-after-page-load: 1
 ```
 
 <details>
-<summary>JSON version</summary>
+<summary>JSON</summary>
 
 ```json
 {
@@ -201,7 +201,7 @@ http-check:
 ```
 
 <details>
-<summary>JSON version</summary>
+<summary>JSON</summary>
 
 ```json
 {
