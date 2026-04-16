@@ -1,9 +1,3 @@
-buildscript {
-    ext {
-        amazonAwsJavaSdkVersion = '1.12.797'
-    }
-}
-
 plugins {
     id 'java-library'
 }
