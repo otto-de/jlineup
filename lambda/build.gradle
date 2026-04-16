@@ -23,12 +23,6 @@ dependencies {
     implementation("software.amazon.awssdk.crt:aws-crt:0.44.0")
     implementation("com.amazonaws:aws-lambda-java-core:1.4.0")
     implementation("com.amazonaws:aws-lambda-java-events:3.16.1")
-    implementation("com.amazonaws:aws-java-sdk-core:${amazonAwsJavaSdkVersion}")
-    testImplementation platform("com.amazonaws:aws-xray-recorder-sdk-bom:2.21.0")
-    testImplementation("com.amazonaws:aws-xray-recorder-sdk-core")
-    testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk")
-    testImplementation("com.amazonaws:aws-xray-recorder-sdk-aws-sdk-instrumentor")
-    testImplementation("com.amazonaws:aws-java-sdk-xray:${amazonAwsJavaSdkVersion}")
     runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.2"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api"
