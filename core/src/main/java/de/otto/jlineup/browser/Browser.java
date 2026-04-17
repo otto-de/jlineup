@@ -74,7 +74,11 @@ public class Browser implements AutoCloseable {
         @JsonProperty(value = "Chromium-Headless")
         CHROMIUM_HEADLESS,
         @JsonProperty(value = "Safari")
-        SAFARI;
+        SAFARI,
+        @JsonProperty(value = "WebKit")
+        WEBKIT,
+        @JsonProperty(value = "WebKit-Headless")
+        WEBKIT_HEADLESS;
 
         public boolean isFirefox() {
             return this == FIREFOX || this == FIREFOX_HEADLESS;
@@ -90,6 +94,10 @@ public class Browser implements AutoCloseable {
 
         public boolean isSafari() {
             return this == SAFARI;
+        }
+
+        public boolean isWebkit() {
+            return this == WEBKIT || this == WEBKIT_HEADLESS;
         }
 
         public boolean isHeadlessRealBrowser() {
@@ -368,6 +376,11 @@ public class Browser implements AutoCloseable {
             resizeViewport(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
             //Since chrome 128 we have to do it twice, because the first resize does not work sometimes (At least on MacOS)
             //TODO: Investigate if this will be fixed
+            resizeViewport(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
+        }
+
+        // WebKit on Xvfb has window decorations — resize to match the viewport, not the outer window
+        if (jobConfig.browser.isWebkit()) {
             resizeViewport(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
 

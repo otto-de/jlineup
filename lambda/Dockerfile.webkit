@@ -1,0 +1,70 @@
+# WebKit Lambda Dockerfile
+#
+# Uses Fedora as the base image because Amazon Linux 2023 does not provide WebKitGTK
+# packages, and its glibc (2.34) is too old for the Flatpak GNOME Platform runtime.
+# Fedora ships webkitgtk6.0 natively, which includes WebKitWebDriver.
+#
+# The AWS Lambda Runtime Interface Client (RIC) and Runtime Interface Emulator (RIE)
+# are copied from the official Lambda base image via multi-stage build.
+
+# --- Stage 1: Grab Lambda runtime from official base image ---
+FROM public.ecr.aws/lambda/java:21-x86_64 AS lambda-runtime
+
+# --- Stage 2: Fedora with WebKitGTK + Lambda runtime ---
+FROM fedora:41
+
+# Install JDK 21, WebKitGTK + WebKitWebDriver, and MiniBrowser (in -devel package).
+# webkitgtk6.0       — WebKit engine and WebKitWebDriver binary
+# webkitgtk6.0-devel — MiniBrowser (required by WebKitWebDriver as the automation target)
+# Xvfb               — WebKit has no native headless mode; needs a virtual X display
+RUN dnf install -y \
+    java-21-openjdk-headless \
+    webkitgtk6.0 \
+    webkitgtk6.0-devel \
+    xorg-x11-server-Xvfb \
+    dbus-daemon \
+    dbus-x11 \
+    liberation-fonts \
+    google-noto-sans-fonts \
+    procps-ng \
+    util-linux \
+    && dnf clean all \
+    && mkdir -p /run/dbus
+
+# Verify WebKitWebDriver and MiniBrowser are available
+RUN ls /usr/bin/WebKitWebDriver /usr/libexec/webkitgtk-6.0/MiniBrowser
+
+# Copy the Lambda runtime (RIC bootstrap + jars)
+COPY --from=lambda-runtime /var/runtime /var/runtime
+COPY --from=lambda-runtime /var/lang /var/lang
+COPY --from=lambda-runtime /lambda-entrypoint.sh /lambda-entrypoint.sh
+COPY --from=lambda-runtime /usr/local/bin/aws-lambda-rie /usr/local/bin/aws-lambda-rie
+
+# Set Lambda environment variables (same as the official base image)
+ENV LAMBDA_TASK_ROOT=/var/task
+ENV LAMBDA_RUNTIME_DIR=/var/runtime
+ENV LD_LIBRARY_PATH=/var/lang/lib:/lib64:/usr/lib64:/var/runtime:/var/runtime/lib:/var/task:/var/task/lib:/opt/lib
+ENV LANG=en_US.UTF-8
+ENV TZ=:/etc/localtime
+ENV PATH=/var/lang/bin:/usr/local/bin:/usr/bin:/bin:/opt/bin
+
+RUN mkdir -p ${LAMBDA_TASK_ROOT}
+
+WORKDIR ${LAMBDA_TASK_ROOT}
+
+# Use Fedora's JDK instead of the Lambda image's /var/lang JDK.
+# The bootstrap binary hardcodes /var/lang/bin/java, so symlink it.
+# Also remove the CDS shared archive since it was built for AL2023's JDK and
+# causes a fatal "invalid archive" error with Fedora's JDK.
+RUN ln -sf /usr/lib/jvm/jre-21-openjdk/bin/java /var/lang/bin/java && \
+    rm -f /var/lang/lib/server/classes.jsa /var/lang/lib/server/runtime.jsa && \
+    /usr/lib/jvm/jre-21-openjdk/bin/java -Xshare:dump -XX:SharedArchiveFile=/var/lang/lib/server/runtime.jsa
+
+ENV HOME=/tmp/uusseerr
+
+# Copy function code and runtime dependencies from Gradle layout
+COPY build/classes/java/main ${LAMBDA_TASK_ROOT}
+COPY build/output/lib/* ${LAMBDA_TASK_ROOT}/lib/
+
+ENTRYPOINT [ "/lambda-entrypoint.sh" ]
+CMD [ "de.otto.jlineup.lambda.JLineupHandler::handleRequest" ]

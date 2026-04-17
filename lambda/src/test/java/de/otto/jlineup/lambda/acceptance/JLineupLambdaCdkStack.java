@@ -15,14 +15,21 @@ import software.constructs.Construct;
 import java.util.Map;
 
 /**
- * CDK stack that deploys the JLineup Docker Lambda from the {@code lambda/Dockerfile}
- * together with a dedicated S3 bucket for screenshot upload/download.
+ * CDK stack that deploys the JLineup Docker Lambdas together with a dedicated
+ * S3 bucket for screenshot upload/download.
+ * <p>
+ * Two Lambda functions are created:
+ * <ul>
+ *   <li><strong>Default</strong> – built from {@code lambda/Dockerfile} (Chrome + Firefox on Amazon Linux 2023)</li>
+ *   <li><strong>WebKit</strong> – built from {@code lambda/Dockerfile.webkit} (WebKit on Fedora)</li>
+ * </ul>
  * Used exclusively by {@link LambdaAcceptanceTest}.
  */
 public class JLineupLambdaCdkStack extends Stack {
 
-    public static final String OUTPUT_FUNCTION_NAME = "FunctionName";
-    public static final String OUTPUT_BUCKET_NAME   = "BucketName";
+    public static final String OUTPUT_FUNCTION_NAME        = "FunctionName";
+    public static final String OUTPUT_WEBKIT_FUNCTION_NAME = "WebKitFunctionName";
+    public static final String OUTPUT_BUCKET_NAME          = "BucketName";
 
     public JLineupLambdaCdkStack(Construct scope,
                                  String   id,
@@ -42,27 +49,46 @@ public class JLineupLambdaCdkStack extends Stack {
                 .autoDeleteObjects(true)
                 .build();
 
-        // --- Docker Image Lambda built from lambda/Dockerfile ---
-        DockerImageFunction function = DockerImageFunction.Builder.create(this, "JLineupDockerLambda")
+        Map<String, String> lambdaEnv = Map.of(
+                "JLINEUP_LAMBDA_S3_BUCKET", resultsBucket.getBucketName(),
+                "JLINEUP_LAMBDA_S3_PREFIX", "lamba-screenshots-prefix"
+        );
+
+        // --- Default Lambda (Chrome + Firefox) from lambda/Dockerfile ---
+        DockerImageFunction defaultFunction = DockerImageFunction.Builder.create(this, "JLineupDockerLambda")
                 .functionName(id + "-fn")
-                // Docker build context = lambda/ module dir (contains Dockerfile + build/classes + build/output/lib)
                 .code(DockerImageCode.fromImageAsset(dockerContextPath))
                 .memorySize(3008)
-                // Lambda's /tmp is used for working dir and Chrome profile – 1 GB avoids "no space left" errors
                 .ephemeralStorageSize(Size.mebibytes(1024))
                 .timeout(Duration.seconds(300))
-                .environment(Map.of(
-                        "JLINEUP_LAMBDA_S3_BUCKET", resultsBucket.getBucketName(),
-                        "JLINEUP_LAMBDA_S3_PREFIX", "lamba-screenshots-prefix"
-                ))
+                .environment(lambdaEnv)
                 .build();
 
-        resultsBucket.grantReadWrite(function);
+        resultsBucket.grantReadWrite(defaultFunction);
+
+        // --- WebKit Lambda from lambda/Dockerfile.webkit (Fedora-based) ---
+        DockerImageFunction webkitFunction = DockerImageFunction.Builder.create(this, "JLineupWebKitLambda")
+                .functionName(id + "-webkit-fn")
+                .code(DockerImageCode.fromImageAsset(dockerContextPath, software.amazon.awscdk.services.lambda.AssetImageCodeProps.builder()
+                        .file("Dockerfile.webkit")
+                        .build()))
+                .memorySize(3008)
+                .ephemeralStorageSize(Size.mebibytes(1024))
+                .timeout(Duration.seconds(300))
+                .environment(lambdaEnv)
+                .build();
+
+        resultsBucket.grantReadWrite(webkitFunction);
 
         // --- Stack outputs consumed by the acceptance test ---
         CfnOutput.Builder.create(this, OUTPUT_FUNCTION_NAME)
-                .value(function.getFunctionName())
+                .value(defaultFunction.getFunctionName())
                 .exportName(id + "-" + OUTPUT_FUNCTION_NAME)
+                .build();
+
+        CfnOutput.Builder.create(this, OUTPUT_WEBKIT_FUNCTION_NAME)
+                .value(webkitFunction.getFunctionName())
+                .exportName(id + "-" + OUTPUT_WEBKIT_FUNCTION_NAME)
                 .build();
 
         CfnOutput.Builder.create(this, OUTPUT_BUCKET_NAME)

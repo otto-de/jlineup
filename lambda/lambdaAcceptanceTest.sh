@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+export AWS_REGION=eu-central-1
+
 # Only login if credentials are expired or missing
 if ! aws sts get-caller-identity --profile jlineup &>/dev/null; then
   echo "AWS credentials expired or missing – logging in..."
@@ -23,4 +25,4 @@ unset AWS_PROFILE
 # Example run with real configuration (make sure to have the correct function name and config file path):
 #./gradlew :jlineup-cli-lambda:run --args='-F jlineup-lambda-acc-test-fn -s before -c ../lineup.json'
 
-./gradlew :jlineup-lambda:test --tests '*LambdaAcceptanceTest.shouldInvoke*'
+./gradlew :jlineup-lambda:test --tests '*LambdaAcceptanceTest*'

@@ -111,6 +111,7 @@ class LambdaAcceptanceTest {
     static final String STACK_NAME = "jlineup-lambda-acc-test";
 
     private String functionName;
+    private String webkitFunctionName;
     private String awsRegion;
 
     private final JsonMapper jsonMapper = JacksonWrapper.jsonMapperForLambdaHandler();
@@ -127,8 +128,8 @@ class LambdaAcceptanceTest {
         boolean forceDeploy = "true".equalsIgnoreCase(System.getenv("JLINEUP_LAMBDA_ACCEPTANCE_FORCE_DEPLOY"));
 
         if (stackExists && !forceDeploy) {
-            LOG.info("✔ Reusing existing stack '{}' (Lambda: '{}'). Skipping deploy.",
-                    STACK_NAME, functionName);
+            LOG.info("✔ Reusing existing stack '{}' (default: '{}', webkit: '{}'). Skipping deploy.",
+                    STACK_NAME, functionName, webkitFunctionName);
             return;
         }
 
@@ -174,6 +175,16 @@ class LambdaAcceptanceTest {
                     .orElseThrow(() -> new IllegalStateException(
                             "Stack exists but output '" + JLineupLambdaCdkStack.OUTPUT_FUNCTION_NAME
                             + "' is missing"));
+            webkitFunctionName = stack.outputs().stream()
+                    .filter(o -> JLineupLambdaCdkStack.OUTPUT_WEBKIT_FUNCTION_NAME.equals(o.outputKey()))
+                    .findFirst()
+                    .map(Output::outputValue)
+                    .orElse(null);
+            if (webkitFunctionName == null) {
+                LOG.warn("Stack '{}' has no '{}' output – WebKit test will be skipped. " +
+                        "Set JLINEUP_LAMBDA_ACCEPTANCE_FORCE_DEPLOY=true to redeploy with WebKit support.",
+                        STACK_NAME, JLineupLambdaCdkStack.OUTPUT_WEBKIT_FUNCTION_NAME);
+            }
             return true;
 
         } catch (CloudFormationException e) {
@@ -205,7 +216,8 @@ class LambdaAcceptanceTest {
         String outputsJson = Files.readString(cdkOutputsFile);
         LOG.info("CDK stack outputs: {}", outputsJson);
         functionName = parseJsonValue(outputsJson, JLineupLambdaCdkStack.OUTPUT_FUNCTION_NAME);
-        LOG.info("Deployed Lambda function: '{}'", functionName);
+        webkitFunctionName = parseJsonValue(outputsJson, JLineupLambdaCdkStack.OUTPUT_WEBKIT_FUNCTION_NAME);
+        LOG.info("Deployed Lambda functions: default='{}', webkit='{}'", functionName, webkitFunctionName);
     }
 
     // -------------------------------------------------------------------------
@@ -285,7 +297,7 @@ class LambdaAcceptanceTest {
 
             LOG.info("=== BEFORE STEP – {} context(s) ===", beforeContexts.size());
             for (ScreenshotContext ctx : beforeContexts) {
-                String response = invokeLambda(lambdaClient, jobConfig, ctx, RunStep.before, runId);
+                String response = invokeLambda(lambdaClient, functionName, jobConfig, ctx, RunStep.before, runId);
                 LOG.info("Before response [{}]: {}", ctx.url, response);
                 assertFalse(response.contains("errorMessage"),
                         "Lambda before step failed for '" + ctx.url + "': " + response);
@@ -296,7 +308,7 @@ class LambdaAcceptanceTest {
 
             LOG.info("=== AFTER STEP – {} context(s) ===", afterContexts.size());
             for (ScreenshotContext ctx : afterContexts) {
-                String response = invokeLambda(lambdaClient, jobConfig, ctx, RunStep.after_only, runId);
+                String response = invokeLambda(lambdaClient, functionName, jobConfig, ctx, RunStep.after_only, runId);
                 LOG.info("After response [{}]: {}", ctx.url, response);
                 assertFalse(response.contains("errorMessage"),
                         "Lambda after step failed for '" + ctx.url + "': " + response);
@@ -307,11 +319,71 @@ class LambdaAcceptanceTest {
         }
     }
 
+    /**
+     * Same as the default test but invokes the WebKit Lambda with
+     * {@link Browser.Type#WEBKIT_HEADLESS}.
+     */
+    @Test
+    void shouldInvokeWebKitLambdaForBeforeAndAfterStepAndReturnOk() throws Exception {
+        org.junit.jupiter.api.Assumptions.assumeTrue(webkitFunctionName != null,
+                "WebKit Lambda not deployed – skipping. Redeploy with JLINEUP_LAMBDA_ACCEPTANCE_FORCE_DEPLOY=true.");
+
+        JobConfig jobConfig = JobConfig.jobConfigBuilder()
+                .withUrls(Map.of(
+                        "https://www.example.com",
+                        UrlConfig.urlConfigBuilder()
+                                .withPaths(List.of("/"))
+                                .build()))
+                .withBrowser(Browser.Type.WEBKIT_HEADLESS)
+                .withGlobalTimeout(120)
+                .build().insertDefaults();
+
+        RunStepConfig beforeCfg = RunStepConfig.runStepConfigBuilder().withStep(RunStep.before).build();
+        RunStepConfig afterCfg  = RunStepConfig.runStepConfigBuilder().withStep(RunStep.after_only).build();
+
+        List<ScreenshotContext> beforeContexts =
+                BrowserUtils.buildScreenshotContextListFromConfigAndState(beforeCfg, jobConfig);
+        List<ScreenshotContext> afterContexts =
+                BrowserUtils.buildScreenshotContextListFromConfigAndState(afterCfg, jobConfig);
+
+        String runId = UUID.randomUUID().toString();
+
+        try (LambdaClient lambdaClient = LambdaClient.builder()
+                .region(Region.of(awsRegion))
+                .httpClientBuilder(ApacheHttpClient.builder()
+                        .socketTimeout(Duration.ofSeconds(330))
+                        .connectionTimeout(Duration.ofSeconds(30)))
+                .build()) {
+
+            LOG.info("=== WEBKIT BEFORE STEP – {} context(s) ===", beforeContexts.size());
+            for (ScreenshotContext ctx : beforeContexts) {
+                String response = invokeLambda(lambdaClient, webkitFunctionName, jobConfig, ctx, RunStep.before, runId);
+                LOG.info("WebKit before response [{}]: {}", ctx.url, response);
+                assertFalse(response.contains("errorMessage"),
+                        "WebKit Lambda before step failed for '" + ctx.url + "': " + response);
+                assertTrue(response.startsWith("OK"),
+                        "Expected 'OK' prefix in WebKit Lambda before response for '"
+                                + ctx.url + "', got: " + response);
+            }
+
+            LOG.info("=== WEBKIT AFTER STEP – {} context(s) ===", afterContexts.size());
+            for (ScreenshotContext ctx : afterContexts) {
+                String response = invokeLambda(lambdaClient, webkitFunctionName, jobConfig, ctx, RunStep.after_only, runId);
+                LOG.info("WebKit after response [{}]: {}", ctx.url, response);
+                assertFalse(response.contains("errorMessage"),
+                        "WebKit Lambda after step failed for '" + ctx.url + "': " + response);
+                assertTrue(response.startsWith("OK"),
+                        "Expected 'OK' prefix in WebKit Lambda after response for '"
+                                + ctx.url + "', got: " + response);
+            }
+        }
+    }
+
     // -------------------------------------------------------------------------
-    // Helpers
     // -------------------------------------------------------------------------
 
     private String invokeLambda(LambdaClient lambdaClient,
+                                String targetFunctionName,
                                 JobConfig jobConfig,
                                 ScreenshotContext ctx,
                                 RunStep step,
@@ -321,7 +393,7 @@ class LambdaAcceptanceTest {
         String payloadJson = jsonMapper.writeValueAsString(payload);
 
         InvokeResponse response = lambdaClient.invoke(InvokeRequest.builder()
-                .functionName(functionName)
+                .functionName(targetFunctionName)
                 .payload(SdkBytes.fromUtf8String(payloadJson))
                 .build());
 

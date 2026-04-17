@@ -156,9 +156,12 @@ public class BrowserUtils {
             driver = new ChromeDriver();
         } else if (jobConfig.browser.isSafari()) {
             driver = new SafariDriver();
+        } else if (jobConfig.browser.isWebkit()) {
+            LOG.debug("Creating WebKit driver via WebKitWebDriver + Xvfb");
+            driver = WebKitDriverManager.createWebKitDriver();
         } else {
-            LOG.error("You need either Firefox or Chrome / Chromium to make JLineup work. Install one of them and try again.");
-            throw new RuntimeException("You need either Firefox or Chrome / Chromium to make JLineup work. Install one of them and try again.");
+            LOG.error("You need Firefox, Chrome, Chromium or WebKit to make JLineup work. Install one of them and try again.");
+            throw new RuntimeException("You need Firefox, Chrome, Chromium or WebKit to make JLineup work. Install one of them and try again.");
         }
 
         if (driver.manage() == null) {

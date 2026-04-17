@@ -9,6 +9,7 @@ import java.util.Objects;
 
 import static de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS;
 import static de.otto.jlineup.browser.Browser.Type.FIREFOX_HEADLESS;
+import static de.otto.jlineup.browser.Browser.Type.WEBKIT_HEADLESS;
 import static java.util.Collections.emptyList;
 
 @ConfigurationProperties(prefix = "jlineup")
@@ -29,7 +30,8 @@ public class JLineupWebProperties {
     private List<String> firefoxLaunchParameters = emptyList();
     private List<Browser.Type> installedBrowsers = Arrays.asList(
             CHROME_HEADLESS,
-            FIREFOX_HEADLESS);
+            FIREFOX_HEADLESS,
+            WEBKIT_HEADLESS);
 
     @Override
     public String toString() {
