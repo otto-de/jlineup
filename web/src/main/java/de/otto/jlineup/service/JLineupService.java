@@ -54,6 +54,18 @@ public class JLineupService {
         this.runs.putAll(runPersistenceService.readRuns());
 
         GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME, jLineupWebProperties.getLambda().getFunctionName());
+        if (jLineupWebProperties.getLambda().getFunctionNameBase() != null) {
+            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_BASE, jLineupWebProperties.getLambda().getFunctionNameBase());
+        }
+        if (jLineupWebProperties.getLambda().getFunctionNameChromeHeadless() != null) {
+            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS, jLineupWebProperties.getLambda().getFunctionNameChromeHeadless());
+        }
+        if (jLineupWebProperties.getLambda().getFunctionNameFirefoxHeadless() != null) {
+            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_FIREFOX_HEADLESS, jLineupWebProperties.getLambda().getFunctionNameFirefoxHeadless());
+        }
+        if (jLineupWebProperties.getLambda().getFunctionNameWebkitHeadless() != null) {
+            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_WEBKIT_HEADLESS, jLineupWebProperties.getLambda().getFunctionNameWebkitHeadless());
+        }
     }
 
     public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) throws Exception {

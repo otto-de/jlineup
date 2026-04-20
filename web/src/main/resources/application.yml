@@ -7,6 +7,10 @@ jlineup:
   cleanupProfile: true
   lambda:
     functionName: jlineup-lambda
+    # functionNameBase: jlineup-lambda  # if set, derives per-browser names as {base}-chrome-headless, {base}-firefox-headless, etc.
+    # functionNameChromeHeadless:       # explicit override for chrome-headless Lambda
+    # functionNameFirefoxHeadless:      # explicit override for firefox-headless Lambda
+    # functionNameWebkitHeadless:       # explicit override for webkit-headless Lambda
 
 edison:
   application:

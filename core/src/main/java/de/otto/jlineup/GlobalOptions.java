@@ -31,6 +31,10 @@ public class GlobalOptions {
         }
 
         loadOption(appProps, "JLINEUP_LAMBDA_FUNCTION_NAME", "jlineup.lambda.function-name", DEFAULT_LAMBDA_FUNCTION_NAME, JLINEUP_LAMBDA_FUNCTION_NAME);
+        loadOption(appProps, "JLINEUP_LAMBDA_FUNCTION_NAME_BASE", "jlineup.lambda.function-name-base", null, JLINEUP_LAMBDA_FUNCTION_NAME_BASE);
+        loadOption(appProps, "JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS", "jlineup.lambda.function-name-chrome-headless", null, JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS);
+        loadOption(appProps, "JLINEUP_LAMBDA_FUNCTION_NAME_FIREFOX_HEADLESS", "jlineup.lambda.function-name-firefox-headless", null, JLINEUP_LAMBDA_FUNCTION_NAME_FIREFOX_HEADLESS);
+        loadOption(appProps, "JLINEUP_LAMBDA_FUNCTION_NAME_WEBKIT_HEADLESS", "jlineup.lambda.function-name-webkit-headless", null, JLINEUP_LAMBDA_FUNCTION_NAME_WEBKIT_HEADLESS);
         loadOption(appProps, "JLINEUP_AWS_PROFILE", "jlineup.lambda.aws-profile", DEFAULT_LAMBDA_AWS_PROFILE, JLINEUP_LAMBDA_AWS_PROFILE);
         loadOption(appProps, "JLINEUP_LAMBDA_AWS_REGION", "jlineup.lambda.aws-region", DEFAULT_LAMBDA_AWS_REGION, JLINEUP_LAMBDA_AWS_REGION);
         loadOption(appProps, "JLINEUP_LAMBDA_S3_BUCKET", "jlineup.lambda.s3-bucket", DEFAULT_LAMBDA_S3_BUCKET, JLINEUP_LAMBDA_S3_BUCKET);
