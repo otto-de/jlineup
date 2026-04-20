@@ -336,6 +336,10 @@ public class Browser implements AutoCloseable {
 
     private final AtomicBoolean printVersion = new AtomicBoolean(true);
 
+    private Browser.Type getEffectiveBrowserType(ScreenshotContext screenshotContext) {
+        return screenshotContext.browserType != null ? screenshotContext.browserType : jobConfig.browser;
+    }
+
     private void takeScreenshotsForContext(final ScreenshotContext screenshotContext) throws Exception {
 
         if (screenshotContext.urlConfig.httpCheck.isEnabled() || jobConfig.httpCheck.isEnabled()) {
@@ -343,12 +347,13 @@ public class Browser implements AutoCloseable {
             jLineupHttpClient.checkPageAccessibility(screenshotContext, jobConfig);
         }
 
-        boolean headlessRealBrowserOrMobileEmulation = jobConfig.browser.isHeadlessRealBrowser() || screenshotContext.dontShareBrowser;
+        Browser.Type effectiveBrowserType = getEffectiveBrowserType(screenshotContext);
+        boolean headlessRealBrowserOrMobileEmulation = effectiveBrowserType.isHeadlessRealBrowser() || screenshotContext.dontShareBrowser;
         final WebDriver localDriver;
         if (headlessRealBrowserOrMobileEmulation) {
-            localDriver = initializeWebDriver(screenshotContext.deviceConfig);
+            localDriver = initializeWebDriver(screenshotContext.deviceConfig, effectiveBrowserType);
         } else {
-            localDriver = initializeWebDriver();
+            localDriver = initializeWebDriver(effectiveBrowserType);
         }
 
         if (printVersion.getAndSet(false)) {
@@ -357,7 +362,7 @@ public class Browser implements AutoCloseable {
         }
 
         //No need to move the mouse out of the way for headless browsers, but this avoids hovering links in other browsers
-        if (!jobConfig.browser.isHeadless() &&
+        if (!effectiveBrowserType.isHeadless() &&
                 !ImageInfo.inImageCode() //we need to check if we're in native-image, because AWT does not work there, so no mouse movement
         ) {
             moveMouseToZeroZero();
@@ -372,7 +377,7 @@ public class Browser implements AutoCloseable {
         // viewport. To stay backwards compatible with old screenshot sizes, we resize the window to match the viewport
         // size to the desired device size.
         // If you use chrome with a specific device name, it sizes the viewport to match that device automatically.
-        if ((jobConfig.browser.isChrome() || jobConfig.browser.isChromium()) && jobConfig.browser.isHeadless() && !screenshotContext.deviceConfig.isMobile()) {
+        if ((effectiveBrowserType.isChrome() || effectiveBrowserType.isChromium()) && effectiveBrowserType.isHeadless() && !screenshotContext.deviceConfig.isMobile()) {
             resizeViewport(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
             //Since chrome 128 we have to do it twice, because the first resize does not work sometimes (At least on MacOS)
             //TODO: Investigate if this will be fixed
@@ -380,7 +385,7 @@ public class Browser implements AutoCloseable {
         }
 
         // WebKit on Xvfb has window decorations — resize to match the viewport, not the outer window
-        if (jobConfig.browser.isWebkit()) {
+        if (effectiveBrowserType.isWebkit()) {
             resizeViewport(localDriver, screenshotContext.deviceConfig.width, screenshotContext.deviceConfig.height);
         }
 
@@ -841,7 +846,7 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    WebDriver initializeWebDriver(DeviceConfig device) {
+    WebDriver initializeWebDriver(DeviceConfig device, Browser.Type browserType) {
         if (shutdownCalled.get()) return null;
         synchronized (webDrivers) {
             String currentThreadName = Thread.currentThread().getName();
@@ -859,13 +864,13 @@ public class Browser implements AutoCloseable {
                     LOG.debug("Exception while quitting webdriver: " + e.getMessage(), e);
                 }
             }
-            WebDriver driver = createDriverWithEmulatedDevice(device);
+            WebDriver driver = createDriverWithEmulatedDevice(device, browserType);
             webDrivers.put(currentThreadName, driver);
             return driver;
         }
     }
 
-    WebDriver initializeWebDriver() {
+    WebDriver initializeWebDriver(Browser.Type browserType) {
         if (shutdownCalled.get()) return null;
         synchronized (webDrivers) {
             if (shutdownCalled.get()) return null;
@@ -875,23 +880,23 @@ public class Browser implements AutoCloseable {
             if (webDrivers.containsKey(currentThreadName)) {
                 driver = webDrivers.get(currentThreadName);
             } else {
-                driver = createDriver();
+                driver = createDriver(browserType);
                 webDrivers.put(currentThreadName, driver);
             }
             return driver;
         }
     }
 
-    private WebDriver createDriver() {
+    private WebDriver createDriver(Browser.Type browserType) {
         shutdownCalled.get();
-        final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, runStepConfig);
+        final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, runStepConfig, new DeviceConfig(), browserType);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
         LOG.debug("Adding webdriver for thread {} ({})", Thread.currentThread().getName(), driver.getClass().getCanonicalName());
         return driver;
     }
 
-    private WebDriver createDriverWithEmulatedDevice(DeviceConfig device) {
-        final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, runStepConfig, device);
+    private WebDriver createDriverWithEmulatedDevice(DeviceConfig device, Browser.Type browserType) {
+        final WebDriver driver = browserUtils.getWebDriverByConfig(jobConfig, runStepConfig, device, browserType);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
         LOG.debug("Adding webdriver for thread {} with emulated device {} ({})", Thread.currentThread().getName(), device, driver.getClass().getCanonicalName());
         return driver;

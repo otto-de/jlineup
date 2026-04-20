@@ -296,13 +296,17 @@ What are all those options about? Here are all the details.
             
 ### `browser`
 
- Defines, which browser is used for the JLineup job. The chosen browser has to be installed on the used system.
+ Defines which browser is used for the JLineup job. The chosen browser has to be installed on the used system.
  
  JLineup downloads a webdriver, but it doesn't install a real browser during runtime! 
+
+ If you need to test with **multiple browsers** in a single run, use [`browsers`](#browsers) (plural) instead.
+ The singular `browser` option is still supported for backwards compatibility and is equivalent to
+ `browsers: [<value>]`. If both `browser` and `browsers` are set, `browsers` takes precedence.
  
  * Scope: Global
  * Type: String
- * Possible Values: `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`
+ * Possible Values: `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`, `Webkit-Headless`
  * Default: `"Chrome-Headless"`
  * Example:
    ```yaml
@@ -313,6 +317,88 @@ What are all those options about? Here are all the details.
 
    `"browser": "Chrome-Headless"`
    </details>
+
+---
+
+### `browsers`
+
+ Defines one or more browsers to use for the JLineup job. Each URL/path/device combination will be
+ screenshotted with every browser in the list, producing separate screenshot contexts per browser.
+ 
+ The `browsers` option supports a **three-level cascade**: it can be set at the global level, overridden
+ per URL (site level), and further overridden per device. The most specific level always wins — there is
+ no merging between levels.
+
+ **Mobile emulation override:** If a device uses mobile emulation (`device-name` is not `DESKTOP` or
+ `MOBILE`), the browser is forced to `Chrome-Headless` regardless of the `browsers` list, because only
+ Chrome supports mobile device emulation.
+
+ * Scope: Global, Site, or Device
+ * Type: List of Strings
+ * Possible Values: `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`, `Webkit-Headless`
+ * Default: Not set (falls back to singular `browser` option, which defaults to `Chrome-Headless`)
+ * Examples:
+
+   **Global — test with two browsers:**
+   ```yaml
+   browsers:
+   - chrome-headless
+   - firefox-headless
+   urls:
+     https://www.example.com:
+       paths:
+       - /
+   ```
+
+   **Per-URL override:**
+   ```yaml
+   browsers:
+   - chrome-headless
+   - firefox-headless
+   urls:
+     https://www.example.com:
+       paths:
+       - /
+       # This URL is tested with WebKit instead of the global list
+       browsers:
+       - webkit-headless
+   ```
+
+   **Per-device override:**
+   ```yaml
+   browsers:
+   - chrome-headless
+   - firefox-headless
+   urls:
+     https://www.example.com:
+       paths:
+       - /
+       devices:
+       - width: 1280
+         height: 1024
+       # This device is only tested with WebKit
+       - width: 800
+         height: 600
+         browsers:
+         - webkit-headless
+   ```
+
+   <details>
+   <summary>JSON</summary>
+
+   ```json
+   {
+     "browsers": ["chrome-headless", "firefox-headless"],
+     "urls": {
+       "https://www.example.com": {
+         "paths": ["/"]
+       }
+     }
+   }
+   ```
+   </details>
+
+ Since: 5.4.0
 
 ---
 
@@ -1242,7 +1328,7 @@ Since: 4.2.0
  __This option should be used with care. Better don't use it at all. It *may* help in a flaky environment, but it's better
  to fix the flakiness then to use this option.__
  
- JLineup makes screenshots for every permutation of `url` + `path` + `device` + `alternating-cookies`. Internally, this combination is 
+ JLineup makes screenshots for every permutation of `url` + `path` + `device` + `browser` + `alternating-cookies`. Internally, this combination is 
  called a **screenshot context**. If you specify retries and there is any error during screenshotting one of those
  contexts, this context is retried until a maximum of specified retries is reached. 
    

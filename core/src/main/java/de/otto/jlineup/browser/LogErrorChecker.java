@@ -20,6 +20,11 @@ public class LogErrorChecker {
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
     void checkForErrors(WebDriver driver, JobConfig jobConfig) {
+        checkForErrors(driver, jobConfig, null);
+    }
+
+    void checkForErrors(WebDriver driver, JobConfig jobConfig, Browser.Type browserType) {
+        Browser.Type effectiveBrowserType = browserType != null ? browserType : jobConfig.browser;
         if (jobConfig.checkForErrorsInLog) {
             LOG.debug("Checking for errors.");
             LogEntries logEntries;
@@ -33,7 +38,7 @@ public class LogErrorChecker {
                 throw new WebDriverException(logEntries.getAll().get(0).getMessage());
             }
 
-            if (jobConfig.browser.isChrome()) {
+            if (effectiveBrowserType.isChrome()) {
                 driver.manage().timeouts().implicitlyWait(Duration.ZERO);
                 try {
                     WebElement element = driver.findElement(By.className("error-code"));

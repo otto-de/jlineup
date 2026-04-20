@@ -10,6 +10,8 @@ import com.google.common.collect.ImmutableList;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import de.otto.jlineup.browser.Browser;
+
 import static de.otto.jlineup.config.JobConfig.*;
 
 @JsonDeserialize(builder = UrlConfig.Builder.class)
@@ -65,6 +67,9 @@ public class UrlConfig {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public final int flakyTolerance;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public final List<Browser.Type> browsers;
+
     private UrlConfig(Builder builder) {
         url = builder.url;
         paths = builder.paths;
@@ -98,6 +103,7 @@ public class UrlConfig {
         waitForSelectorsTimeout = builder.waitForSelectorsTimeout;
         failIfSelectorsNotFound = builder.failIfSelectorsNotFound;
         flakyTolerance = builder.flakyTolerance;
+        browsers = builder.browsers;
     }
 
     /*
@@ -240,6 +246,10 @@ public class UrlConfig {
         return flakyTolerance;
     }
 
+    public List<Browser.Type> getBrowsers() {
+        return browsers;
+    }
+
     /*
      *
      *
@@ -290,6 +300,7 @@ public class UrlConfig {
         builder.waitForSelectorsTimeout = copy.waitForSelectorsTimeout;
         builder.failIfSelectorsNotFound = copy.failIfSelectorsNotFound;
         builder.flakyTolerance = copy.flakyTolerance;
+        builder.browsers = copy.browsers;
 
         return builder;
     }
@@ -341,6 +352,7 @@ public class UrlConfig {
         private float waitForSelectorsTimeout = DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT;
         private boolean failIfSelectorsNotFound;
         private int flakyTolerance = DEFAULT_FLAKY_TOLERANCE;
+        private List<Browser.Type> browsers = null;
 
         private Builder() {
         }
@@ -521,6 +533,11 @@ public class UrlConfig {
             return this;
         }
 
+        public Builder withBrowsers(List<Browser.Type> val) {
+            browsers = val;
+            return this;
+        }
+
         public Builder withPath(String val) {
             paths = ImmutableList.of(val);
             return this;
@@ -566,6 +583,7 @@ public class UrlConfig {
                 ", strictColorComparison=" + strictColorComparison +
                 ", maxColorDistance=" + maxColorDistance +
                 ", flakyTolerance=" + flakyTolerance +
+                ", browsers=" + browsers +
                 '}';
     }
 
@@ -573,12 +591,12 @@ public class UrlConfig {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UrlConfig urlConfig = (UrlConfig) o;
-        return Double.compare(maxDiff, urlConfig.maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(waitAfterPageLoad, urlConfig.waitAfterPageLoad) == 0 && Float.compare(waitAfterScroll, urlConfig.waitAfterScroll) == 0 && Float.compare(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) == 0 && Float.compare(scrollDistanceFactor, urlConfig.scrollDistanceFactor) == 0 && Float.compare(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime) == 0 && Float.compare(waitForFontsTime, urlConfig.waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(waitForSelectorsTimeout, urlConfig.waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && Double.compare(maxAntiAliasColorDistance, urlConfig.maxAntiAliasColorDistance) == 0 && strictColorComparison == urlConfig.strictColorComparison && Double.compare(maxColorDistance, urlConfig.maxColorDistance) == 0 && flakyTolerance == urlConfig.flakyTolerance && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(style, urlConfig.style) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors);
+        return Double.compare(maxDiff, urlConfig.maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(waitAfterPageLoad, urlConfig.waitAfterPageLoad) == 0 && Float.compare(waitAfterScroll, urlConfig.waitAfterScroll) == 0 && Float.compare(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) == 0 && Float.compare(scrollDistanceFactor, urlConfig.scrollDistanceFactor) == 0 && Float.compare(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime) == 0 && Float.compare(waitForFontsTime, urlConfig.waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(waitForSelectorsTimeout, urlConfig.waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && Double.compare(maxAntiAliasColorDistance, urlConfig.maxAntiAliasColorDistance) == 0 && strictColorComparison == urlConfig.strictColorComparison && Double.compare(maxColorDistance, urlConfig.maxColorDistance) == 0 && flakyTolerance == urlConfig.flakyTolerance && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(style, urlConfig.style) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors) && Objects.equals(browsers, urlConfig.browsers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, scrollDistanceFactor, warmupBrowserCacheTime, waitForFontsTime, javaScript, style, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, maxAntiAliasColorDistance, strictColorComparison, maxColorDistance, flakyTolerance);
+        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, scrollDistanceFactor, warmupBrowserCacheTime, waitForFontsTime, javaScript, style, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, maxAntiAliasColorDistance, strictColorComparison, maxColorDistance, flakyTolerance, browsers);
     }
 
 }

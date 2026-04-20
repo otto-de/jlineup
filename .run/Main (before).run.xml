@@ -2,7 +2,7 @@
   <configuration default="false" name="Main (before)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="de.otto.jlineup.cli.Main" />
     <module name="jlineup.jlineup-cli.main" />
-    <option name="PROGRAM_PARAMETERS" value="--crop-last-screenshot --chrome-parameter=&quot;--hide-scrollbars&quot; -c lineup.yaml" />
+    <option name="PROGRAM_PARAMETERS" value="--crop-last-screenshot --chrome-parameter=&quot;--hide-scrollbars&quot; -c lineup.json" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

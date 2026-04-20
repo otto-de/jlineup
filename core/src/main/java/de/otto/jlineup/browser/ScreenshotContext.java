@@ -29,9 +29,10 @@ public final class ScreenshotContext  {
     final boolean dontShareBrowser;
     @JsonIgnore
     public final String urlKey;
+    public final Browser.Type browserType;
 
     @JsonCreator
-    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, List<Cookie> cookies, BrowserStep step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String urlKey) {
+    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, List<Cookie> cookies, BrowserStep step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String urlKey, Browser.Type browserType) {
         this.url = url;
         this.urlSubPath = urlSubPath;
         this.deviceConfig = deviceConfig;
@@ -41,6 +42,7 @@ public final class ScreenshotContext  {
         this.fullPathOfReportDir = fullPathOfReportDir;
         this.dontShareBrowser = dontShareBrowser;
         this.urlKey = urlKey;
+        this.browserType = browserType;
     }
 
     private ScreenshotContext(Builder builder) {
@@ -53,21 +55,37 @@ public final class ScreenshotContext  {
         fullPathOfReportDir = builder.fullPathOfReportDir;
         dontShareBrowser = builder.dontShareBrowser;
         urlKey = builder.urlKey;
+        browserType = builder.browserType;
     }
 
     //Used in Tests only
     public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, BrowserStep step, UrlConfig urlConfig, List<Cookie> cookies, String urlKey) {
-        return new ScreenshotContext(url, path, deviceConfig, cookies, step, urlConfig, null, false, urlKey);
+        return new ScreenshotContext(url, path, deviceConfig, cookies, step, urlConfig, null, false, urlKey, null);
+    }
+
+    //Used in Tests only
+    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, BrowserStep step, UrlConfig urlConfig, List<Cookie> cookies, String urlKey, Browser.Type browserType) {
+        return new ScreenshotContext(url, path, deviceConfig, cookies, step, urlConfig, null, false, urlKey, browserType);
     }
 
     //Used in Tests only
     public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, BrowserStep step, UrlConfig urlConfig, List<Cookie> cookies) {
-        return new ScreenshotContext(url, path, deviceConfig, cookies, step, urlConfig, null, false, url);
+        return new ScreenshotContext(url, path, deviceConfig, cookies, step, urlConfig, null, false, url, null);
+    }
+
+    //Used in Tests only
+    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, BrowserStep step, UrlConfig urlConfig, List<Cookie> cookies, Browser.Type browserType) {
+        return new ScreenshotContext(url, path, deviceConfig, cookies, step, urlConfig, null, false, url, browserType);
     }
 
     //Used in Tests only
     public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, BrowserStep step, UrlConfig urlConfig) {
-        return new ScreenshotContext(url, path, deviceConfig, urlConfig.cookies, step, urlConfig, null, false, url);
+        return new ScreenshotContext(url, path, deviceConfig, urlConfig.cookies, step, urlConfig, null, false, url, null);
+    }
+
+    //Used in Tests only
+    public static ScreenshotContext of(String url, String path, DeviceConfig deviceConfig, BrowserStep step, UrlConfig urlConfig, Browser.Type browserType) {
+        return new ScreenshotContext(url, path, deviceConfig, urlConfig.cookies, step, urlConfig, null, false, url, browserType);
     }
 
     public static Builder screenshotContextBuilder() {
@@ -85,6 +103,7 @@ public final class ScreenshotContext  {
         builder.fullPathOfReportDir = copy.fullPathOfReportDir;
         builder.dontShareBrowser = copy.dontShareBrowser;
         builder.urlKey = copy.urlKey;
+        builder.browserType = copy.browserType;
         return builder;
     }
 
@@ -116,6 +135,10 @@ public final class ScreenshotContext  {
         return cookies;
     }
 
+    public Browser.Type getBrowserType() {
+        return browserType;
+    }
+
     /*
      *
      *
@@ -129,7 +152,7 @@ public final class ScreenshotContext  {
      */
 
     public String contextHash() {
-        return Integer.toHexString(Objects.hash(urlKey, urlSubPath, deviceConfig, cookies != null ? cookies.stream().filter(Cookie::isScreenshotContextGiving).collect(Collectors.toList()) : null));
+        return Integer.toHexString(Objects.hash(urlKey, urlSubPath, deviceConfig, cookies != null ? cookies.stream().filter(Cookie::isScreenshotContextGiving).collect(Collectors.toList()) : null, browserType != null ? browserType.name() : null));
     }
 
     /**
@@ -149,7 +172,8 @@ public final class ScreenshotContext  {
                 Objects.equals(deviceConfig, that.deviceConfig) &&
                 Objects.equals(urlConfig, that.urlConfig) &&
                 Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir) &&
-                Objects.equals(urlKey, that.urlKey);
+                Objects.equals(urlKey, that.urlKey) &&
+                browserType == that.browserType;
     }
 
     @Override
@@ -157,12 +181,12 @@ public final class ScreenshotContext  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ScreenshotContext that = (ScreenshotContext) o;
-        return dontShareBrowser == that.dontShareBrowser && Objects.equals(url, that.url) && Objects.equals(urlSubPath, that.urlSubPath) && Objects.equals(deviceConfig, that.deviceConfig) && Objects.equals(cookies, that.cookies) && step == that.step && Objects.equals(urlConfig, that.urlConfig) && Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir) && Objects.equals(urlKey, that.urlKey);
+        return dontShareBrowser == that.dontShareBrowser && Objects.equals(url, that.url) && Objects.equals(urlSubPath, that.urlSubPath) && Objects.equals(deviceConfig, that.deviceConfig) && Objects.equals(cookies, that.cookies) && step == that.step && Objects.equals(urlConfig, that.urlConfig) && Objects.equals(fullPathOfReportDir, that.fullPathOfReportDir) && Objects.equals(urlKey, that.urlKey) && browserType == that.browserType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, urlSubPath, deviceConfig, cookies, step, urlConfig, fullPathOfReportDir, dontShareBrowser, urlKey);
+        return Objects.hash(url, urlSubPath, deviceConfig, cookies, step, urlConfig, fullPathOfReportDir, dontShareBrowser, urlKey, browserType);
     }
 
     @Override
@@ -177,6 +201,7 @@ public final class ScreenshotContext  {
                 ", fullPathOfReportDir='" + fullPathOfReportDir + '\'' +
                 ", dontShareBrowser=" + dontShareBrowser +
                 ", urlKey='" + urlKey + '\'' +
+                ", browserType=" + browserType +
                 '}';
     }
 
@@ -199,6 +224,7 @@ public final class ScreenshotContext  {
         private String fullPathOfReportDir;
         private boolean dontShareBrowser;
         private String urlKey;
+        private Browser.Type browserType;
 
         private Builder() {
         }
@@ -245,6 +271,11 @@ public final class ScreenshotContext  {
 
         public Builder withUrlKey(String val) {
             urlKey = val;
+            return this;
+        }
+
+        public Builder withBrowserType(Browser.Type val) {
+            browserType = val;
             return this;
         }
 

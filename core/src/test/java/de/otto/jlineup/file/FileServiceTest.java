@@ -1,6 +1,8 @@
 package de.otto.jlineup.file;
 
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.RunStepConfig;
+import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
@@ -23,6 +25,7 @@ import static de.otto.jlineup.browser.BrowserStep.before;
 import static de.otto.jlineup.file.FileService.FILE_SEPARATOR;
 import static de.otto.jlineup.file.FileService.generateScreenshotFileName;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class FileServiceTest {
@@ -149,5 +152,34 @@ class FileServiceTest {
         //then
         assertThat(relativePathFromReportDirToScreenshotsDir, is(""));
 
+    }
+
+    @Test
+    void shouldSerializeAndDeserializeBrowserTypeInFileTracker() throws Exception {
+        // Create a ScreenshotContext with browserType set
+        ScreenshotContext context = ScreenshotContext.of("https://example.com", "/", DeviceConfig.deviceConfig(1000, 1001), before, UrlConfig.urlConfigBuilder().build(), Browser.Type.CHROME_HEADLESS);
+
+        // Add a screenshot to the file tracker
+        BufferedImage bufferedImage = new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB);
+        testee.writeScreenshot(context, bufferedImage, 0);
+
+        // Write the file tracker data
+        testee.writeFileTrackerData();
+
+        // Read it back
+        Path filesJsonPath = Paths.get(writeScreenshotTestPath, "report", "files.json");
+        String json = Files.readString(filesJsonPath);
+
+        // Verify browser-type appears in the JSON
+        assertThat("browser-type should be in serialized JSON", json.contains("browser-type"), is(true));
+
+        // Deserialize and verify
+        FileTracker deserialized = JacksonWrapper.readFileTrackerFile(filesJsonPath.toFile());
+        assertThat(deserialized, is(notNullValue()));
+
+        String contextHash = context.contextHash();
+        ScreenshotContextFileTracker ctxTracker = deserialized.getScreenshotContextFileTracker(contextHash);
+        assertThat("Context should be found by hash " + contextHash, ctxTracker, is(notNullValue()));
+        assertThat("browserType should survive round-trip", ctxTracker.screenshotContext.browserType, is(Browser.Type.CHROME_HEADLESS));
     }
 }

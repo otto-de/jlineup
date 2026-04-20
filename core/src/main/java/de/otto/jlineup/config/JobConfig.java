@@ -69,6 +69,8 @@ public final class JobConfig  {
 
     public final Map<String, UrlConfig> urls;
     public final Browser.Type browser;
+    @JsonInclude(Include.NON_NULL)
+    public final List<Browser.Type> browsers;
 
     @JsonInclude(Include.NON_DEFAULT)
     public final String name;
@@ -112,7 +114,15 @@ public final class JobConfig  {
         message = builder.message;
         approvalLink = builder.approvalLink;
         urls = builder.urls;
-        browser = builder.browser;
+        // Resolve browsers vs browser: browsers wins if set, otherwise derive from browser
+        if (builder.browsers != null && !builder.browsers.isEmpty()) {
+            List<Browser.Type> browsersList = ImmutableList.copyOf(builder.browsers);
+            this.browsers = browsersList;
+            this.browser = browsersList.get(0);
+        } else {
+            this.browser = builder.browser;
+            this.browsers = null; // null means single browser mode (backwards compat — won't serialize)
+        }
         globalWaitAfterPageLoad = builder.globalWaitAfterPageLoad;
         pageLoadTimeout = builder.pageLoadTimeout;
         windowHeight = builder.windowHeight;
@@ -183,6 +193,45 @@ public final class JobConfig  {
 
     public Browser.Type getBrowser() {
         return browser;
+    }
+
+    public List<Browser.Type> getBrowsers() {
+        return browsers;
+    }
+
+    /**
+     * Returns the effective list of browsers for this config.
+     * If browsers (plural) is set, returns it. Otherwise returns a singleton list of browser.
+     */
+    @JsonIgnore
+    public List<Browser.Type> getEffectiveBrowsers() {
+        if (browsers != null && !browsers.isEmpty()) {
+            return browsers;
+        }
+        return ImmutableList.of(browser);
+    }
+
+    /**
+     * Resolves the effective browsers for a specific (url, device) combination using the cascade:
+     * device-level overrides site-level overrides global-level.
+     * If a device uses mobile emulation (isMobile()), Chrome is forced regardless.
+     */
+    @JsonIgnore
+    public List<Browser.Type> resolveEffectiveBrowsers(UrlConfig urlConfig, DeviceConfig deviceConfig) {
+        // Mobile emulation forces Chrome
+        if (deviceConfig != null && deviceConfig.isMobile()) {
+            return ImmutableList.of(Browser.Type.CHROME_HEADLESS);
+        }
+        // Device-level overrides site-level
+        if (deviceConfig != null && deviceConfig.browsers != null && !deviceConfig.browsers.isEmpty()) {
+            return deviceConfig.browsers;
+        }
+        // Site-level overrides global
+        if (urlConfig != null && urlConfig.browsers != null && !urlConfig.browsers.isEmpty()) {
+            return urlConfig.browsers;
+        }
+        // Global
+        return getEffectiveBrowsers();
     }
 
     public String getName() {
@@ -270,6 +319,7 @@ public final class JobConfig  {
                 .withUrls(jobConfig.urls)
                 .withHttpCheck(jobConfig.httpCheck)
                 .withBrowser(jobConfig.browser)
+                .withBrowsers(jobConfig.browsers)
                 .withGlobalWaitAfterPageLoad(jobConfig.globalWaitAfterPageLoad)
                 .withPageLoadTimeout(jobConfig.pageLoadTimeout)
                 .withWindowHeight(jobConfig.windowHeight)
@@ -288,12 +338,12 @@ public final class JobConfig  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JobConfig jobConfig = (JobConfig) o;
-        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && flakyTolerance == jobConfig.flakyTolerance && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(name, jobConfig.name) && Objects.equals(message, jobConfig.message) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
+        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && flakyTolerance == jobConfig.flakyTolerance && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(browsers, jobConfig.browsers) && Objects.equals(name, jobConfig.name) && Objects.equals(message, jobConfig.message) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(urls, browser, name, message, approvalLink, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, screenshotRetries, threads, globalTimeout, flakyTolerance, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
+        return Objects.hash(urls, browser, browsers, name, message, approvalLink, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, screenshotRetries, threads, globalTimeout, flakyTolerance, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
     }
 
     @Override
@@ -301,6 +351,7 @@ public final class JobConfig  {
         return "JobConfig{" +
                 "urls=" + urls +
                 ", browser=" + browser +
+                ", browsers=" + browsers +
                 ", name='" + name + '\'' +
                 ", message='" + message + '\'' +
                 ", approvalLink='" + approvalLink + '\'' +
@@ -448,6 +499,7 @@ public final class JobConfig  {
         private String approvalLink = null;
         private Map<String, UrlConfig> urls = null;
         private Browser.Type browser = DEFAULT_BROWSER;
+        private List<Browser.Type> browsers = null;
         private float globalWaitAfterPageLoad = DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD;
         private int pageLoadTimeout = DEFAULT_PAGELOAD_TIMEOUT;
         private Integer windowHeight = null;
@@ -489,6 +541,11 @@ public final class JobConfig  {
 
         public Builder withBrowser(Browser.Type val) {
             browser = val;
+            return this;
+        }
+
+        public Builder withBrowsers(List<Browser.Type> val) {
+            browsers = val;
             return this;
         }
 

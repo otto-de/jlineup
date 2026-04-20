@@ -5,7 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
+import java.util.List;
 import java.util.Objects;
+
+import de.otto.jlineup.browser.Browser;
 
 import static de.otto.jlineup.config.JobConfig.*;
 
@@ -40,6 +43,9 @@ public class DeviceConfig  {
 
     public final boolean touch;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public final List<Browser.Type> browsers;
+
     public DeviceConfig() {
         deviceName = DEFAULT_DEVICE_NAME;
         width = DEFAULT_WINDOW_WIDTH;
@@ -47,6 +53,7 @@ public class DeviceConfig  {
         pixelRatio = DEFAULT_PIXEL_RATIO;
         touch = DEFAULT_TOUCH_OPTION;
         userAgent = DEFAULT_USER_AGENT;
+        browsers = null;
     }
 
     private DeviceConfig(int width, int height, float pixelRatio, String deviceName, String userAgent, boolean touch) {
@@ -56,6 +63,7 @@ public class DeviceConfig  {
         this.deviceName = deviceName;
         this.userAgent = userAgent;
         this.touch = touch;
+        this.browsers = null;
     }
 
     private DeviceConfig(Builder builder) {
@@ -65,6 +73,7 @@ public class DeviceConfig  {
         deviceName = builder.deviceName;
         userAgent = builder.userAgent;
         touch = builder.touch;
+        browsers = builder.browsers;
     }
 
     public static DeviceConfig deviceConfig(int width, int height) {
@@ -105,6 +114,10 @@ public class DeviceConfig  {
 ////@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
     public boolean isTouch() {
         return touch;
+    }
+
+    public List<Browser.Type> getBrowsers() {
+        return browsers;
     }
 
     /*
@@ -150,6 +163,7 @@ public class DeviceConfig  {
         private String deviceName = DEFAULT_DEVICE_NAME;
         private String userAgent = DEFAULT_USER_AGENT;
         private boolean touch = DEFAULT_TOUCH_OPTION;
+        private List<Browser.Type> browsers = null;
 
         private Builder() {
         }
@@ -187,6 +201,11 @@ public class DeviceConfig  {
             return this;
         }
 
+        public Builder withBrowsers(List<Browser.Type> val) {
+            browsers = val;
+            return this;
+        }
+
         public DeviceConfig build() {
             return new DeviceConfig(this);
         }
@@ -202,12 +221,13 @@ public class DeviceConfig  {
                 Float.compare(that.pixelRatio, pixelRatio) == 0 &&
                 touch == that.touch &&
                 Objects.equals(deviceName, that.deviceName) &&
-                Objects.equals(userAgent, that.userAgent);
+                Objects.equals(userAgent, that.userAgent) &&
+                Objects.equals(browsers, that.browsers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(width, height, pixelRatio, deviceName, userAgent, touch);
+        return Objects.hash(width, height, pixelRatio, deviceName, userAgent, touch, browsers != null ? browsers.stream().map(Enum::name).toList() : null);
     }
 
     @Override
@@ -219,6 +239,7 @@ public class DeviceConfig  {
                 ", deviceName='" + deviceName + '\'' +
                 ", userAgent='" + userAgent + '\'' +
                 ", touch=" + touch +
+                ", browsers=" + browsers +
                 '}';
     }
 }

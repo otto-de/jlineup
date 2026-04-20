@@ -77,12 +77,13 @@ class BrowserTest {
         when(webDriverOptionsMock.window()).thenReturn(webDriverWindowMock);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class))).thenReturn(webDriverMock);
         when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class), any(DeviceConfig.class))).thenReturn(webDriverMock);
+        when(browserUtilsMock.getWebDriverByConfig(any(JobConfig.class), any(RunStepConfig.class), any(DeviceConfig.class), any())).thenReturn(webDriverMock);
         when(webDriverMock.executeScript(JS_GET_USER_AGENT_CALL)).thenReturn("Mocked Webdriver");
         when(webDriverMock.getCapabilities()).thenReturn(capabilitiesMock);
         when(capabilitiesMock.getBrowserName()).thenReturn("MockBrowser 1 2 3 4.0");
         JobConfig jobConfig = jobConfigBuilder().build();
         testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
-        testee.initializeWebDriver();
+        testee.initializeWebDriver(null);
     }
 
     @AfterEach

@@ -1,5 +1,6 @@
 package de.otto.jlineup.report;
 
+import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.Cookie;
@@ -99,6 +100,12 @@ public record ContextReport(String contextHash, ScreenshotContext screenshotCont
             }
         }
         return sb.toString();
+    }
+
+    @UsedInTemplate
+    public String getBrowserInfo() {
+        Browser.Type bt = screenshotContext.browserType;
+        return bt != null ? bt.name().toLowerCase().replace('_', '-') : null;
     }
 
     @Override

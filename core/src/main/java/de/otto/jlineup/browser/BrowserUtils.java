@@ -65,17 +65,22 @@ public class BrowserUtils {
     }
 
     synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig) {
-        return getWebDriverByConfig(jobConfig, runStepConfig, new DeviceConfig());
+        return getWebDriverByConfig(jobConfig, runStepConfig, new DeviceConfig(), null);
     }
 
     synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig, DeviceConfig device) {
+        return getWebDriverByConfig(jobConfig, runStepConfig, device, null);
+    }
+
+    synchronized WebDriver getWebDriverByConfig(JobConfig jobConfig, RunStepConfig runStepConfig, DeviceConfig device, Browser.Type browserType) {
+        Browser.Type effectiveBrowserType = browserType != null ? browserType : jobConfig.browser;
         WebDriver driver;
-        if (jobConfig.browser.isFirefox()) {
+        if (effectiveBrowserType.isFirefox()) {
             FirefoxOptions options = new FirefoxOptions();
             FirefoxProfile firefoxProfileWithDisabledAnimatedGifs = getFirefoxProfileWithDisabledAnimatedGifs();
             options.setProfile(firefoxProfileWithDisabledAnimatedGifs);
             options.addArguments(runStepConfig.getFirefoxParameters());
-            if (jobConfig.browser.isHeadless()) {
+            if (effectiveBrowserType.isHeadless()) {
                 options.addArguments("-headless", "-width", device.width + "", "-height", device.height + "");
             }
 
@@ -86,7 +91,7 @@ public class BrowserUtils {
 
             LOG.debug("Creating firefox with options: {}", options.toString());
             driver = new FirefoxDriver(options);
-        } else if (jobConfig.browser.isChrome()) {
+        } else if (effectiveBrowserType.isChrome()) {
             ChromeOptions options = new ChromeOptions();
             //To work in a headless env, this is needed
             options.addArguments("--no-sandbox");
@@ -138,7 +143,7 @@ public class BrowserUtils {
                 options.addArguments("--user-agent='" + device.userAgent + "'");
             }
 
-            if (jobConfig.browser.isHeadless()) {
+            if (effectiveBrowserType.isHeadless()) {
                 options.addArguments("--headless=new");
                 options.addArguments("--window-size=" + device.width + "," + device.height);
                 options.addArguments("--new-window");
@@ -152,11 +157,11 @@ public class BrowserUtils {
 
             LOG.debug("Creating chrome with options: {}", options);
             driver = new ChromeDriver(options);
-        } else if (jobConfig.browser.isChromium()) {
+        } else if (effectiveBrowserType.isChromium()) {
             driver = new ChromeDriver();
-        } else if (jobConfig.browser.isSafari()) {
+        } else if (effectiveBrowserType.isSafari()) {
             driver = new SafariDriver();
-        } else if (jobConfig.browser.isWebkit()) {
+        } else if (effectiveBrowserType.isWebkit()) {
             LOG.debug("Creating WebKit driver via WebKitWebDriver + Xvfb");
             driver = WebKitDriverManager.createWebKitDriver();
         } else {
@@ -215,20 +220,22 @@ public class BrowserUtils {
                 if (urlConfig.alternatingCookies.isEmpty()) {
                     screenshotContextList.addAll(
                             urlConfig.devices.stream()
-                                    .map(deviceConfig ->
+                                    .flatMap(deviceConfig ->
+                                            jobConfig.resolveEffectiveBrowsers(urlConfig, deviceConfig).stream().map(browserType ->
                                             new ScreenshotContext(prepareDomain(runStepConfig, urlConfig.url), path, deviceConfig,
-                                                    urlConfig.cookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey()))
+                                                    urlConfig.cookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey(), browserType)))
                                     .toList());
                 } else {
                     screenshotContextList.addAll(
                             urlConfig.devices.stream()
                                     .flatMap(deviceConfig ->
+                                            jobConfig.resolveEffectiveBrowsers(urlConfig, deviceConfig).stream().flatMap(browserType ->
                                             urlConfig.alternatingCookies.stream().map(alternatingCookies -> {
                                                 ArrayList<Cookie> newCookies = urlConfig.cookies != null ? new ArrayList<>(urlConfig.cookies) : new ArrayList<>();
                                                 newCookies.addAll(alternatingCookies);
                                                 return new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getValue().url), path, deviceConfig,
-                                                        newCookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey());
-                                            })).toList());
+                                                        newCookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey(), browserType);
+                                            }))).toList());
                 }
             }
         }
@@ -251,7 +258,7 @@ public class BrowserUtils {
             for (final String path : paths) {
                 //TODO: alternatingCookies
                 screenshotContextList.add(new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getValue().url), path, deviceConfigBuilder().build(),
-                        urlConfigEntry.getValue().cookies, runStepConfig.getBrowserStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig), false, urlConfigEntry.getKey()));
+                        urlConfigEntry.getValue().cookies, runStepConfig.getBrowserStep(), urlConfigEntry.getValue(), getFullPathOfReportDir(runStepConfig), false, urlConfigEntry.getKey(), null));
             }
         }
         return screenshotContextList;
