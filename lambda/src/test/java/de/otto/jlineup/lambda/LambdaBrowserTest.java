@@ -406,6 +406,10 @@ public class LambdaBrowserTest {
     }
 
     private ScreenshotContext createTestScreenshotContext() {
+        return createTestScreenshotContext(null);
+    }
+
+    private ScreenshotContext createTestScreenshotContext(de.otto.jlineup.browser.Browser.Type browserType) {
         DeviceConfig deviceConfig = DeviceConfig.deviceConfigBuilder()
                 .withWidth(800)
                 .withHeight(600)
@@ -420,7 +424,125 @@ public class LambdaBrowserTest {
                 BrowserStep.before,
                 urlConfig,
                 Collections.emptyList(),
-                "url1"
+                "url1",
+                browserType
         );
+    }
+
+    // --- resolveLambdaFunctionName tests ---
+
+    @Test
+    void resolveLambdaFunctionName_legacyFallback() {
+        // Only JLINEUP_LAMBDA_FUNCTION_NAME is set (already mocked in setUp)
+        String result = lambdaBrowser.resolveLambdaFunctionName(de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS);
+        assertEquals("test-lambda-function", result);
+    }
+
+    @Test
+    void resolveLambdaFunctionName_perBrowserOptionWins() {
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS))
+                .thenReturn("my-chrome-lambda");
+
+        String result = lambdaBrowser.resolveLambdaFunctionName(de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS);
+        assertEquals("my-chrome-lambda", result);
+    }
+
+    @Test
+    void resolveLambdaFunctionName_baseNameSlug() {
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_BASE))
+                .thenReturn("jlineup");
+        // Per-browser option not set → base name wins over legacy
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS))
+                .thenReturn(null);
+
+        String result = lambdaBrowser.resolveLambdaFunctionName(de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS);
+        assertEquals("jlineup-chrome-headless", result);
+    }
+
+    @Test
+    void resolveLambdaFunctionName_baseNameSlugFirefox() {
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_BASE))
+                .thenReturn("jlineup");
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_FIREFOX_HEADLESS))
+                .thenReturn(null);
+
+        String result = lambdaBrowser.resolveLambdaFunctionName(de.otto.jlineup.browser.Browser.Type.FIREFOX_HEADLESS);
+        assertEquals("jlineup-firefox-headless", result);
+    }
+
+    @Test
+    void resolveLambdaFunctionName_baseNameSlugWebkit() {
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_BASE))
+                .thenReturn("jlineup");
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_WEBKIT_HEADLESS))
+                .thenReturn(null);
+
+        String result = lambdaBrowser.resolveLambdaFunctionName(de.otto.jlineup.browser.Browser.Type.WEBKIT_HEADLESS);
+        assertEquals("jlineup-webkit-headless", result);
+    }
+
+    @Test
+    void resolveLambdaFunctionName_perBrowserTakesPrecedenceOverBase() {
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_BASE))
+                .thenReturn("jlineup");
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS))
+                .thenReturn("explicit-chrome-lambda");
+
+        String result = lambdaBrowser.resolveLambdaFunctionName(de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS);
+        assertEquals("explicit-chrome-lambda", result);
+    }
+
+    @Test
+    void validateLambdaFunctionNames_throwsWhenNoneConfigured() {
+        // Clear all function name options
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME))
+                .thenReturn(null);
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_BASE))
+                .thenReturn(null);
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS))
+                .thenReturn(null);
+
+        ScreenshotContext ctx = createTestScreenshotContext(de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS);
+
+        assertThrows(IllegalStateException.class, () ->
+                lambdaBrowser.takeScreenshots(Collections.singletonList(ctx)));
+    }
+
+    @Test
+    void takeScreenshots_routesToCorrectFunctionPerBrowser() throws Exception {
+        // Setup per-browser function names
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS))
+                .thenReturn("jlineup-chrome-headless");
+        mockedGlobalOptions.when(() -> GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_FIREFOX_HEADLESS))
+                .thenReturn("jlineup-firefox-headless");
+
+        ScreenshotContext chromeCtx = createTestScreenshotContext(de.otto.jlineup.browser.Browser.Type.CHROME_HEADLESS);
+        ScreenshotContext firefoxCtx = createTestScreenshotContext(de.otto.jlineup.browser.Browser.Type.FIREFOX_HEADLESS);
+        List<ScreenshotContext> contexts = Arrays.asList(chromeCtx, firefoxCtx);
+
+        Path lambdaS3Dir = tempDir.resolve("report/lambda-s3");
+        Files.createDirectories(lambdaS3Dir);
+
+        try (MockedStatic<LambdaClient> mockedLambdaClient = mockStatic(LambdaClient.class);
+             MockedStatic<S3TransferManager> mockedTransferManager = mockStatic(S3TransferManager.class);
+             MockedStatic<S3AsyncClient> mockedS3AsyncClient = mockStatic(S3AsyncClient.class);
+             MockedStatic<DefaultCredentialsProvider> mockedCredentials = mockStatic(DefaultCredentialsProvider.class)) {
+
+            setupMocks(mockedLambdaClient, mockedTransferManager, mockedS3AsyncClient, mockedCredentials,
+                    "{\"status\":\"success\"}", 2);
+
+            lambdaBrowser.takeScreenshots(contexts);
+
+            // Capture all InvokeRequests and verify they used the correct function names
+            org.mockito.ArgumentCaptor<InvokeRequest> captor =
+                    org.mockito.ArgumentCaptor.forClass(InvokeRequest.class);
+            verify(mockLambdaClient, times(2)).invoke(captor.capture());
+
+            List<String> invokedFunctions = captor.getAllValues().stream()
+                    .map(InvokeRequest::functionName)
+                    .sorted()
+                    .toList();
+            assertEquals(List.of("jlineup-chrome-headless", "jlineup-firefox-headless"), invokedFunctions);
+        }
     }
 }

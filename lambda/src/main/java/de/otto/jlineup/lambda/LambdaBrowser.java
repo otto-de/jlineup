@@ -2,6 +2,7 @@ package de.otto.jlineup.lambda;
 
 import com.google.common.base.Strings;
 import de.otto.jlineup.*;
+import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.CloudBrowser;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
@@ -15,6 +16,7 @@ import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.GetFunctionRequest;
+import software.amazon.awssdk.services.lambda.model.GetFunctionResponse;
 import software.amazon.awssdk.services.lambda.model.InvokeRequest;
 import software.amazon.awssdk.services.lambda.model.InvokeResponse;
 import software.amazon.awssdk.services.lambda.model.ServiceException;
@@ -49,8 +51,68 @@ public class LambdaBrowser implements CloudBrowser {
         this.jobConfig = jobConfig;
     }
 
+    /**
+     * Resolves the Lambda function name for a given browser type.
+     *
+     * <p>Resolution order:
+     * <ol>
+     *   <li>Per-browser explicit option (e.g. {@code JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS})</li>
+     *   <li>Base name + browser slug (e.g. {@code JLINEUP_LAMBDA_FUNCTION_NAME_BASE} → {@code mybase-chrome-headless})</li>
+     *   <li>Legacy fallback: {@code JLINEUP_LAMBDA_FUNCTION_NAME}</li>
+     * </ol>
+     *
+     * @param browserType the browser type to resolve the function name for
+     * @return the Lambda function name, or {@code null} if none is configured
+     */
+    String resolveLambdaFunctionName(Browser.Type browserType) {
+        // 1. Per-browser explicit override
+        GlobalOption perBrowserOption = perBrowserGlobalOption(browserType);
+        if (perBrowserOption != null) {
+            String perBrowser = GlobalOptions.getOption(perBrowserOption);
+            if (perBrowser != null) {
+                return perBrowser;
+            }
+        }
+
+        // 2. Base name + browser slug
+        String base = GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_BASE);
+        if (base != null) {
+            String slug = browserType != null ? browserType.name().toLowerCase().replace("_", "-") : "chrome-headless";
+            return base + "-" + slug;
+        }
+
+        // 3. Legacy fallback
+        return GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME);
+    }
+
+    private static GlobalOption perBrowserGlobalOption(Browser.Type browserType) {
+        if (browserType == null) return null;
+        return switch (browserType) {
+            case CHROME_HEADLESS -> GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS;
+            case FIREFOX_HEADLESS -> GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_FIREFOX_HEADLESS;
+            case WEBKIT_HEADLESS -> GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_WEBKIT_HEADLESS;
+            default -> null;
+        };
+    }
+
+    private void validateLambdaFunctionNamesConfigured(List<ScreenshotContext> screenshotContexts) {
+        screenshotContexts.stream()
+                .map(ctx -> ctx.browserType)
+                .distinct()
+                .forEach(browserType -> {
+                    if (resolveLambdaFunctionName(browserType) == null) {
+                        throw new IllegalStateException(
+                                "No Lambda function name configured for browser type '" + browserType + "'. " +
+                                "Set JLINEUP_LAMBDA_FUNCTION_NAME_BASE, a per-browser option like " +
+                                "JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS, or the legacy JLINEUP_LAMBDA_FUNCTION_NAME.");
+                    }
+                });
+    }
+
     @Override
     public void takeScreenshots(List<ScreenshotContext> screenshotContexts) throws ExecutionException, InterruptedException, IOException {
+
+        validateLambdaFunctionNamesConfigured(screenshotContexts);
 
         String runId = UUID.randomUUID().toString();
         HashMap<ScreenshotContext, Future<InvokeResponse>> lambdaCalls = new HashMap<>();
@@ -59,6 +121,11 @@ public class LambdaBrowser implements CloudBrowser {
         final String s3Bucket;
         final String s3Prefix;
         DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
+
+        // Use the function name of the first context to read the shared S3 config.
+        // All browser-specific Lambda functions are expected to share the same S3 bucket/prefix.
+        String s3ConfigFunctionName = resolveLambdaFunctionName(screenshotContexts.get(0).browserType);
+
         try (LambdaClient lambdaClient = LambdaClient.builder()
                 .credentialsProvider(credentialsProvider)
                 .region(Region.of(GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_AWS_REGION)))
@@ -67,17 +134,16 @@ public class LambdaBrowser implements CloudBrowser {
                         .socketTimeout(Duration.ofSeconds(jobConfig.globalTimeout))
                         .connectionTimeout(Duration.ofSeconds(jobConfig.globalTimeout)))
                 .build()) {
-            s3Bucket = lambdaClient.getFunction(GetFunctionRequest.builder()
-                            .functionName(GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME))
-                            .build())
+            GetFunctionResponse s3ConfigFunction = lambdaClient.getFunction(GetFunctionRequest.builder()
+                    .functionName(s3ConfigFunctionName)
+                    .build());
+            s3Bucket = s3ConfigFunction
                     .configuration()
                     .environment()
                     .variables()
                     .get(GlobalOption.JLINEUP_LAMBDA_S3_BUCKET.name());
             LOG.info("Using S3 bucket: {}", s3Bucket);
-            s3Prefix = lambdaClient.getFunction(GetFunctionRequest.builder()
-                            .functionName(GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME))
-                            .build())
+            s3Prefix = s3ConfigFunction
                     .configuration()
                     .environment()
                     .variables()
@@ -227,8 +293,10 @@ public class LambdaBrowser implements CloudBrowser {
     private Future<InvokeResponse> invokeLambdaAndGetInvokeResponseFuture(ScreenshotContext screenshotContext, String runId, LambdaClient lambdaClient) {
         InvokeRequest invokeRequest;
         try {
+            String functionName = resolveLambdaFunctionName(screenshotContext.browserType);
+            LOG.debug("Routing screenshotContext (browser={}) to Lambda function '{}'", screenshotContext.browserType, functionName);
             invokeRequest = InvokeRequest.builder()
-                    .functionName(GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME))
+                    .functionName(functionName)
                     .payload(SdkBytes.fromUtf8String(jsonMapper.writeValueAsString(
                             new LambdaRequestPayload(runId, jobConfig, screenshotContext, runStepConfig.getStep(), screenshotContext.urlKey))))
                     .build();
