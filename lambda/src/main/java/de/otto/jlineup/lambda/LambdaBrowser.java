@@ -117,7 +117,11 @@ public class LambdaBrowser implements CloudBrowser {
         String runId = UUID.randomUUID().toString();
         HashMap<ScreenshotContext, Future<InvokeResponse>> lambdaCalls = new HashMap<>();
 
-        LOG.info("Starting {} lambda calls for run '{}'...", screenshotContexts.size(), runId);
+        LOG.info("Starting {} lambda calls for run '{}' using functions: {}", screenshotContexts.size(), runId,
+                screenshotContexts.stream()
+                        .map(ctx -> resolveLambdaFunctionName(ctx.browserType))
+                        .distinct()
+                        .collect(java.util.stream.Collectors.joining(", ")));
         final String s3Bucket;
         final String s3Prefix;
         DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
@@ -161,12 +165,13 @@ public class LambdaBrowser implements CloudBrowser {
             for (Map.Entry<ScreenshotContext, Future<InvokeResponse>> lambdaCall : lambdaCalls.entrySet()) {
                 i++;
                 String indexString = Strings.padStart(String.valueOf(i), digits, '0');
+                String functionName = resolveLambdaFunctionName(lambdaCall.getKey().browserType);
                 InvokeResponse invokeResponse = lambdaCall.getValue().get();
                 String answer = invokeResponse.payload().asUtf8String();
                 String logResult = invokeResponse.logResult();
                 //write out the return value
                 if (logResult != null) {
-                    LOG.error("[{}] Log: {}", indexString, logResult);
+                    LOG.error("[{}] [{}] Log: {}", indexString, functionName, logResult);
                 }
                 if (answer.contains("errorMessage")) {
                     if (answer.contains("SessionNotCreatedException")
@@ -175,23 +180,23 @@ public class LambdaBrowser implements CloudBrowser {
                             || answer.contains("unknown error: unhandled inspector error")
                             || answer.contains("Task timed out after")
                             || answer.contains("error writing PNG file")) {
-                        LOG.warn("[{}] Retrying lambda call because of specific error message in answer: '{}'", indexString, answer);
+                        LOG.warn("[{}] [{}] Retrying lambda call because of specific error message in answer: '{}'", indexString, functionName, answer);
                         //Do one retry if browser crashed in lambda
                         Future<InvokeResponse> invokeResponseFuture = invokeLambdaAndGetInvokeResponseFuture(lambdaCall.getKey(), runId, lambdaClient);
                         InvokeResponse invokeResponseRetry = invokeResponseFuture.get();
                         String retryAnswer = invokeResponseRetry.payload().asUtf8String();
                         if (retryAnswer.contains("errorMessage")) {
                             //LOG.error(retryAnswer); Is logged outside of this method by catching function
-                            throw new RuntimeException("Lambda call [" + indexString + "] failed even when retried: " + retryAnswer);
+                            throw new RuntimeException("Lambda call [" + indexString + "] [" + functionName + "] failed even when retried: " + retryAnswer);
                         } else {
-                            LOG.info("[{}] Answer from Lambda after retry: '{}'", indexString, retryAnswer);
+                            LOG.info("[{}] [{}] Answer from Lambda after retry: '{}'", indexString, functionName, retryAnswer);
                         }
                     } else {
                         //LOG.error(answer); Is logged outside of this method by catching function
-                        throw new RuntimeException("Lambda call failed: " + answer);
+                        throw new RuntimeException("Lambda call [" + indexString + "] [" + functionName + "] failed: " + answer);
                     }
                 } else {
-                    LOG.info("[{}] Answer from Lambda: '{}'", indexString, answer);
+                    LOG.info("[{}] [{}] Answer from Lambda: '{}'", indexString, functionName, answer);
                 }
             }
 
