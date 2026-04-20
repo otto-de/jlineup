@@ -44,7 +44,9 @@ public class ReportGenerator {
                 contextReports = applyFlakyTolerance(contextReports, flakyTolerance);
             }
 
-            contextReports.sort(Comparator.comparing(ContextReport::getUrl).thenComparing(ContextReport::getWidth).thenComparing(ContextReport::getShownCookiesString));
+            contextReports.sort(Comparator.comparing(ContextReport::getUrl)
+                    .thenComparing(ContextReport::getWidth)
+                    .thenComparing(ContextReport::getShownCookiesString, Comparator.nullsLast(Comparator.naturalOrder())));
 
             UrlReport urlReport = new UrlReport(resultForUrl.getKey(), config.urls.get(resultForUrl.getKey()).url, urlSummary, contextReports);
             urlReports.add(urlReport);
