@@ -475,9 +475,23 @@ public class Browser implements AutoCloseable {
         //
         // Start with screenshots
         //
+        // For WebKit: hide scrollbars by toggling overflow:hidden around each screenshot.
+        // WebKitGTK uses native GTK scrollbars that cannot be hidden via CSS stylesheets or
+        // environment variables. Setting overflow:hidden removes the scrollbar while preserving
+        // the current scroll position. We restore it after each screenshot so that page height
+        // recalculation and window.scrollTo continue to work correctly.
+        boolean hideScrollbarsForWebkit = effectiveBrowserType.isWebkit();
+
         for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += scrollDistance) {
             LOG.debug("Scrolling info: yPosition: {}, pageHeight: {}, maxScrollHeight: {}, viewPortHeight: {}", yPosition, pageHeight, screenshotContext.urlConfig.maxScrollHeight, scrollDistance);
+
+            if (hideScrollbarsForWebkit) {
+                ((JavascriptExecutor) localDriver).executeScript("document.documentElement.style.overflow = 'hidden';");
+            }
             BufferedImage currentScreenshot = takeScreenshot();
+            if (hideScrollbarsForWebkit) {
+                ((JavascriptExecutor) localDriver).executeScript("document.documentElement.style.overflow = '';");
+            }
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
 
             if (scrollDistance == viewportHeight && yPosition + viewportHeight > pageHeight && GlobalOptions.getOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT).equalsIgnoreCase("true")) {
