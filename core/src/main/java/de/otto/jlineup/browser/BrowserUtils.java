@@ -13,6 +13,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.firefox.GeckoDriverService;
 import org.openqa.selenium.safari.SafariDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,20 @@ public class BrowserUtils {
             }
 
             LOG.debug("Creating firefox with options: {}", options.toString());
-            driver = new FirefoxDriver(options);
+
+            String debugLogDir = System.getProperty("jlineup.debug.logdir");
+            if (debugLogDir != null) {
+                java.io.File logDir = new java.io.File(debugLogDir);
+                logDir.mkdirs();
+                java.io.File geckoLog = new java.io.File(logDir, "firefox_debug.log");
+                GeckoDriverService service = new GeckoDriverService.Builder()
+                        .withLogFile(geckoLog)
+                        .build();
+                LOG.debug("GeckoDriver log redirected to {}", geckoLog.getAbsolutePath());
+                driver = new FirefoxDriver(service, options);
+            } else {
+                driver = new FirefoxDriver(options);
+            }
         } else if (effectiveBrowserType.isChrome()) {
             ChromeOptions options = new ChromeOptions();
             //To work in a headless env, this is needed

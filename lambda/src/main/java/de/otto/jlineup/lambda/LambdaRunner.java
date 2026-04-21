@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
@@ -49,6 +51,7 @@ public class LambdaRunner {
 
     public int run() {
         final FileService fileService = new FileService(runStepConfig, jobConfig, "files_" + runStepConfig.getStep() + "_" + screenshotContext.contextHash() + ".json");
+        String debugLogDir = "/tmp/jlineup/debug-" + this.id;
         try {
             fileService.createWorkingDirectoryIfNotExists();
             fileService.createOrClearReportDirectory(runStepConfig.isKeepExisting());
@@ -56,6 +59,7 @@ public class LambdaRunner {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        System.setProperty("jlineup.debug.logdir", debugLogDir);
         MDC.put(REPORT_LOG_NAME_KEY, getFullPathOfReportDir(runStepConfig) + "/" + LOGFILE_NAME);
         LOG.info("JLineup run started for context '{}'", screenshotContext);
         BrowserUtils browserUtils = new BrowserUtils();
@@ -66,27 +70,7 @@ public class LambdaRunner {
                 LOG.warn("It took '{}' retries to take screenshots", retries);
             }
         } catch (Exception exception) {
-            Path pathToDebugFile = Paths.get("/tmp", "jlineup", "chrome-profile-" + this.id, "chrome_debug.log");
-            try {
-                Stream<String> stream = Files.lines(pathToDebugFile);
-                try {
-                    stream.forEach(LOG::info);
-                } catch (Throwable throwable) {
-                    if (stream != null) {
-                        try {
-                            stream.close();
-                        } catch (Throwable t) {
-                            throwable.addSuppressed(t);
-                        }
-                    }
-                    throw throwable;
-                }
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (IOException ioException) {
-                LOG.error("Could not read '{}'", pathToDebugFile.toAbsolutePath(), ioException);
-            }
+            logBrowserDebugOutput(debugLogDir);
             throw new RuntimeException(exception);
         }
 
@@ -116,5 +100,32 @@ public class LambdaRunner {
 
     private void validateConfig() throws ValidationError {
         JobConfigValidator.validateJobConfig(jobConfig);
+    }
+
+    private void logBrowserDebugOutput(String debugLogDir) {
+        Browser.Type browserType = screenshotContext.getBrowserType();
+        // Determine which log files to look for based on browser type
+        List<Path> logFiles = new ArrayList<>();
+        if (browserType == null || browserType.isChrome()) {
+            // Legacy path for Chrome debug log
+            logFiles.add(Paths.get("/tmp", "jlineup", "chrome-profile-" + this.id, "chrome_debug.log"));
+            logFiles.add(Paths.get(debugLogDir, "chrome_debug.log"));
+        } else if (browserType.isFirefox()) {
+            logFiles.add(Paths.get(debugLogDir, "firefox_debug.log"));
+        } else if (browserType.isWebkit()) {
+            logFiles.add(Paths.get(debugLogDir, "webkit_debug.log"));
+        }
+
+        for (Path logFile : logFiles) {
+            if (Files.exists(logFile)) {
+                LOG.info("--- Debug log from {} ---", logFile.getFileName());
+                try (Stream<String> lines = Files.lines(logFile)) {
+                    lines.forEach(LOG::info);
+                } catch (IOException ioException) {
+                    LOG.error("Could not read '{}'", logFile.toAbsolutePath(), ioException);
+                }
+                LOG.info("--- End of {} ---", logFile.getFileName());
+            }
+        }
     }
 }

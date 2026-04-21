@@ -127,7 +127,16 @@ class WebKitDriverManager {
             pb.environment().put("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
             pb.environment().put("WEBKIT_DISABLE_GPU_PROCESS", "1");
             pb.environment().put("WEBKIT_DISABLE_ACCELERATED_2D_CANVAS", "1");
-            pb.redirectErrorStream(true);
+            String debugLogDir = System.getProperty("jlineup.debug.logdir");
+            if (debugLogDir != null) {
+                java.io.File logFile = new java.io.File(debugLogDir, "webkit_debug.log");
+                logFile.getParentFile().mkdirs();
+                pb.redirectErrorStream(true);
+                pb.redirectOutput(ProcessBuilder.Redirect.appendTo(logFile));
+                LOG.debug("WebKitWebDriver output redirected to {}", logFile.getAbsolutePath());
+            } else {
+                pb.redirectErrorStream(true);
+            }
             Process process = pb.start();
             LOG.debug("WebKitWebDriver starting on port {} with DISPLAY :{}", port, xvfbDisplay);
             return process;
