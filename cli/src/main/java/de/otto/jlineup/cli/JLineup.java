@@ -159,6 +159,34 @@ public class JLineup implements Callable<Integer> {
                             GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_AWS_REGION, value);
                         })
                         .build());
+                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("--" + GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_BASE.kebabCaseNameWithoutJLineupPrefix())
+                        .order(240).description("Base name for browser-specific Lambda functions. Derives function names as {base}-chrome-headless, {base}-firefox-headless, etc.")
+                        .parameterConsumer((stack, argSpec, commandSpec1) -> {
+                            String value = stack.pop();
+                            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_BASE, value);
+                        })
+                        .build());
+                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("--" + GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS.kebabCaseNameWithoutJLineupPrefix())
+                        .order(250).description("Explicit Lambda function name for Chrome Headless")
+                        .parameterConsumer((stack, argSpec, commandSpec1) -> {
+                            String value = stack.pop();
+                            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_CHROME_HEADLESS, value);
+                        })
+                        .build());
+                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("--" + GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_FIREFOX_HEADLESS.kebabCaseNameWithoutJLineupPrefix())
+                        .order(260).description("Explicit Lambda function name for Firefox Headless")
+                        .parameterConsumer((stack, argSpec, commandSpec1) -> {
+                            String value = stack.pop();
+                            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_FIREFOX_HEADLESS, value);
+                        })
+                        .build());
+                commandSpec.addOption(CommandLine.Model.OptionSpec.builder("--" + GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_WEBKIT_HEADLESS.kebabCaseNameWithoutJLineupPrefix())
+                        .order(270).description("Explicit Lambda function name for WebKit Headless")
+                        .parameterConsumer((stack, argSpec, commandSpec1) -> {
+                            String value = stack.pop();
+                            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_WEBKIT_HEADLESS, value);
+                        })
+                        .build());
             } catch (ClassNotFoundException e) {
                 LOG.debug("No LambdaBrowser reachable.", e);
             }
