@@ -33,6 +33,15 @@ check_configuration() {
 
 check_configuration
 
+SKIP_TESTS=false
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --skip-tests) SKIP_TESTS=true ;;
+        *) echo "Unknown parameter: $1"; exit 1 ;;
+    esac
+    shift
+done
+
 set +e
 grep '_version = ".*-SNAPSHOT"' "$SCRIPT_DIR/build.gradle"
 SNAPSHOT=$?
@@ -46,8 +55,14 @@ fi
 
 export JLINEUP_LAMBDA_ACCEPTANCE_TEST_ENABLED=false
 
-"${SCRIPT_DIR}"/gradlew clean jreleaserConfig check
-"${SCRIPT_DIR}"/gradlew build installBootDist publish
+if [[ "$SKIP_TESTS" == true ]]; then
+  echo "INFO: Skipping tests (--skip-tests)."
+  "${SCRIPT_DIR}"/gradlew clean jreleaserConfig -x test -x check
+  "${SCRIPT_DIR}"/gradlew build installBootDist publish -x test -x check
+else
+  "${SCRIPT_DIR}"/gradlew clean jreleaserConfig check
+  "${SCRIPT_DIR}"/gradlew build installBootDist publish
+fi
 
 #
 # Some debug options for JReleaser:

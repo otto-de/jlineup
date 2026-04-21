@@ -125,7 +125,7 @@ class JobConfigTest {
     }
 
     private void assertThatMinimalConfigContentsAreCorrect(JobConfig jobConfig) {
-        assertThat(jobConfig.browser.isHeadlessRealBrowser(), is(true));
+        assertThat(jobConfig.browser.isHeadless(), is(true));
         assertThat(jobConfig.windowHeight, is(nullValue()));
         assertThat(jobConfig.urls.get("https://www.otto.de").windowWidths, is(nullValue()));
         assertThat(jobConfig.urls.get("https://www.otto.de").devices, is(ImmutableList.of(deviceConfig(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT))));

@@ -100,12 +100,8 @@ public class Browser implements AutoCloseable {
             return this == WEBKIT || this == WEBKIT_HEADLESS;
         }
 
-        public boolean isHeadlessRealBrowser() {
-            return this == FIREFOX_HEADLESS || this == CHROME_HEADLESS || this == CHROMIUM_HEADLESS;
-        }
-
         public boolean isHeadless() {
-            return isHeadlessRealBrowser();
+            return this == FIREFOX_HEADLESS || this == CHROME_HEADLESS || this == CHROMIUM_HEADLESS || this == WEBKIT_HEADLESS;
         }
 
         @JsonCreator
@@ -348,7 +344,7 @@ public class Browser implements AutoCloseable {
         }
 
         Browser.Type effectiveBrowserType = getEffectiveBrowserType(screenshotContext);
-        boolean headlessRealBrowserOrMobileEmulation = effectiveBrowserType.isHeadlessRealBrowser() || screenshotContext.dontShareBrowser;
+        boolean headlessRealBrowserOrMobileEmulation = effectiveBrowserType.isHeadless() || screenshotContext.dontShareBrowser;
         final WebDriver localDriver;
         if (headlessRealBrowserOrMobileEmulation) {
             localDriver = initializeWebDriver(screenshotContext.deviceConfig, effectiveBrowserType);
@@ -909,6 +905,10 @@ public class Browser implements AutoCloseable {
     }
 
     private void moveMouseToZeroZero() {
+        if (GraphicsEnvironment.isHeadless()) {
+            LOG.debug("Skipping mouse move to 0,0 in headless environment.");
+            return;
+        }
         Robot robot;
         try {
             robot = new Robot();

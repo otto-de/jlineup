@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -117,12 +119,24 @@ class WebKitDriverManager {
 
     private static Process startWebKitWebDriver(int port, int xvfbDisplay) {
         try {
+            // Create a GTK CSS stylesheet that hides scrollbars
+            Path gtkConfigDir = Files.createDirectories(Path.of("/tmp/jlineup-gtk-" + ProcessHandle.current().pid(), "gtk-3.0"));
+            Path gtkCssFile = gtkConfigDir.resolve("gtk.css");
+            Files.writeString(gtkCssFile, "scrollbar { opacity: 0; -gtk-icon-size: 0; min-width: 0; min-height: 0; }");
+            LOG.debug("GTK CSS stylesheet for hiding scrollbars written to {}", gtkCssFile);
+
             ProcessBuilder pb = new ProcessBuilder("WebKitWebDriver", "--port=" + port);
             pb.environment().put("DISPLAY", ":" + xvfbDisplay);
             pb.environment().put("GDK_BACKEND", "x11");
             pb.environment().put("DBUS_SESSION_BUS_ADDRESS", "unix:path=/tmp/dbus-session-" + ProcessHandle.current().pid());
             // Disable WebKit's multiprocess mode — use single-process to avoid sandbox issues in Lambda
             pb.environment().put("WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS", "1");
+            pb.environment().put("GTK_OVERLAY_SCROLLING", "0");
+            // Point GTK to our custom config directory to pick up the scrollbar-hiding stylesheet
+            pb.environment().put("XDG_CONFIG_HOME", gtkConfigDir.getParent().toString());
+            pb.environment().put("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
+            pb.environment().put("WEBKIT_DISABLE_GPU_PROCESS", "1");
+            pb.environment().put("WEBKIT_DISABLE_ACCELERATED_2D_CANVAS", "1");
             pb.redirectErrorStream(true);
             Process process = pb.start();
             LOG.debug("WebKitWebDriver starting on port {} with DISPLAY :{}", port, xvfbDisplay);
