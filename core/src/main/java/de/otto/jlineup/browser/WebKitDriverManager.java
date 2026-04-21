@@ -123,10 +123,6 @@ class WebKitDriverManager {
             pb.environment().put("DBUS_SESSION_BUS_ADDRESS", "unix:path=/tmp/dbus-session-" + ProcessHandle.current().pid());
             // Disable WebKit's multiprocess mode — use single-process to avoid sandbox issues in Lambda
             pb.environment().put("WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS", "1");
-            pb.environment().put("GTK_OVERLAY_SCROLLING", "0");
-            pb.environment().put("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
-            pb.environment().put("WEBKIT_DISABLE_GPU_PROCESS", "1");
-            pb.environment().put("WEBKIT_DISABLE_ACCELERATED_2D_CANVAS", "1");
             String debugLogDir = System.getProperty("jlineup.debug.logdir");
             if (debugLogDir != null) {
                 java.io.File logFile = new java.io.File(debugLogDir, "webkit_debug.log");
