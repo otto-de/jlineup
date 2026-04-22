@@ -117,7 +117,7 @@ public class LambdaBrowser implements CloudBrowser {
         String runId = UUID.randomUUID().toString();
         HashMap<ScreenshotContext, Future<InvokeResponse>> lambdaCalls = new HashMap<>();
 
-        LOG.info("Starting {} lambda calls for run '{}' using functions: {}", screenshotContexts.size(), runId,
+        LOG.info("Starting {} lambda calls for run '{}' using function(s): {}", screenshotContexts.size(), runId,
                 screenshotContexts.stream()
                         .map(ctx -> resolveLambdaFunctionName(ctx.browserType))
                         .distinct()
