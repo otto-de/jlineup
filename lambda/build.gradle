@@ -20,6 +20,7 @@ dependencies {
     runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.2"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testImplementation "org.junit.jupiter:junit-jupiter-params"
     testImplementation "org.mockito:mockito-core:5.23.0"
     testImplementation "org.mockito:mockito-inline:5.2.0"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"

@@ -101,7 +101,7 @@ class WebKitDriverManager {
     private static Process startXvfb(int display, int dpi) {
         try {
             ProcessBuilder pb = new ProcessBuilder(
-                    "Xvfb", ":" + display, "-screen", "0", "1920x1200x24", "-nolisten", "tcp", "-dpi", String.valueOf(dpi)
+                    "Xvfb", ":" + display, "-screen", "0", "3840x2160x24", "-nolisten", "tcp", "-dpi", String.valueOf(dpi)
             );
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -125,10 +125,6 @@ class WebKitDriverManager {
             pb.environment().put("DBUS_SESSION_BUS_ADDRESS", "unix:path=/tmp/dbus-session-" + ProcessHandle.current().pid());
             // Disable WebKit's multiprocess mode — use single-process to avoid sandbox issues in Lambda
             pb.environment().put("WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS", "1");
-            pb.environment().put("GTK_OVERLAY_SCROLLING", "0");
-            pb.environment().put("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
-            pb.environment().put("WEBKIT_DISABLE_GPU_PROCESS", "1");
-            pb.environment().put("WEBKIT_DISABLE_ACCELERATED_2D_CANVAS", "1");
             // Set GDK scale factor to match the requested pixel ratio for HiDPI rendering
             if (pixelRatio > 1.0f) {
                 int scaleFactor = Math.round(pixelRatio);

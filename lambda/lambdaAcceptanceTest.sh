@@ -13,7 +13,15 @@ else
 fi
 
 export JLINEUP_LAMBDA_ACCEPTANCE_TEST_ENABLED=true
-export JLINEUP_LAMBDA_ACCEPTANCE_FORCE_DEPLOY=true
+
+# Pass --force-deploy (or -f) as argument to force a redeployment of the CDK stack
+FORCE_DEPLOY=false
+for arg in "$@"; do
+  if [[ "$arg" == "--force-deploy" || "$arg" == "-f" ]]; then
+    FORCE_DEPLOY=true
+  fi
+done
+export JLINEUP_LAMBDA_ACCEPTANCE_FORCE_DEPLOY=$FORCE_DEPLOY
 export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile jlineup --query "Account" --output text)
 
 eval $(aws configure export-credentials --profile jlineup --format env)

@@ -5,6 +5,7 @@ import de.otto.jlineup.RunStepConfig;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
+import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
@@ -13,11 +14,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.AppProps;
 import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudformation.CloudFormationClient;
@@ -28,21 +32,28 @@ import software.amazon.awssdk.services.cloudformation.model.StackStatus;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.model.InvokeRequest;
 import software.amazon.awssdk.services.lambda.model.InvokeResponse;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 import tools.jackson.databind.json.JsonMapper;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Real AWS acceptance test for the JLineup Docker Lambda.
@@ -112,6 +123,7 @@ class LambdaAcceptanceTest {
 
     private String functionName;
     private String webkitFunctionName;
+    private String bucketName;
     private String awsRegion;
 
     private final JsonMapper jsonMapper = JacksonWrapper.jsonMapperForLambdaHandler();
@@ -180,6 +192,13 @@ class LambdaAcceptanceTest {
                     .findFirst()
                     .map(Output::outputValue)
                     .orElse(null);
+            bucketName = stack.outputs().stream()
+                    .filter(o -> JLineupLambdaCdkStack.OUTPUT_BUCKET_NAME.equals(o.outputKey()))
+                    .findFirst()
+                    .map(Output::outputValue)
+                    .orElseThrow(() -> new IllegalStateException(
+                            "Stack exists but output '" + JLineupLambdaCdkStack.OUTPUT_BUCKET_NAME
+                            + "' is missing"));
             if (webkitFunctionName == null) {
                 LOG.warn("Stack '{}' has no '{}' output – WebKit test will be skipped. " +
                         "Set JLINEUP_LAMBDA_ACCEPTANCE_FORCE_DEPLOY=true to redeploy with WebKit support.",
@@ -217,7 +236,8 @@ class LambdaAcceptanceTest {
         LOG.info("CDK stack outputs: {}", outputsJson);
         functionName = parseJsonValue(outputsJson, JLineupLambdaCdkStack.OUTPUT_FUNCTION_NAME);
         webkitFunctionName = parseJsonValue(outputsJson, JLineupLambdaCdkStack.OUTPUT_WEBKIT_FUNCTION_NAME);
-        LOG.info("Deployed Lambda functions: default='{}', webkit='{}'", functionName, webkitFunctionName);
+        bucketName = parseJsonValue(outputsJson, JLineupLambdaCdkStack.OUTPUT_BUCKET_NAME);
+        LOG.info("Deployed Lambda functions: default='{}', webkit='{}', bucket='{}'", functionName, webkitFunctionName, bucketName);
     }
 
     // -------------------------------------------------------------------------
@@ -380,6 +400,169 @@ class LambdaAcceptanceTest {
     }
 
     // -------------------------------------------------------------------------
+    // Screenshot download & size verification tests
+    // -------------------------------------------------------------------------
+
+    /**
+     * Invokes the Chrome Lambda for a before step, downloads the screenshots
+     * from S3, and verifies the image dimensions match the configured viewport.
+     */
+    @Test
+    void shouldProduceChromeScreenshotsWithCorrectDimensions() throws Exception {
+        int viewportWidth = 800;
+        int viewportHeight = 600;
+
+        JobConfig jobConfig = JobConfig.jobConfigBuilder()
+                .withUrls(Map.of(
+                        "https://www.example.com",
+                        UrlConfig.urlConfigBuilder()
+                                .withPaths(List.of("/"))
+                                .withDevices(List.of(
+                                        DeviceConfig.deviceConfigBuilder()
+                                                .withWidth(viewportWidth)
+                                                .withHeight(viewportHeight)
+                                                .build()))
+                                .build()))
+                .withBrowser(Browser.Type.CHROME_HEADLESS)
+                .withGlobalTimeout(120)
+                .build().insertDefaults();
+
+        RunStepConfig beforeCfg = RunStepConfig.runStepConfigBuilder().withStep(RunStep.before).build();
+        List<ScreenshotContext> contexts =
+                BrowserUtils.buildScreenshotContextListFromConfigAndState(beforeCfg, jobConfig);
+
+        String runId = UUID.randomUUID().toString();
+
+        try (LambdaClient lambdaClient = LambdaClient.builder()
+                .region(Region.of(awsRegion))
+                .httpClientBuilder(ApacheHttpClient.builder()
+                        .socketTimeout(Duration.ofSeconds(330))
+                        .connectionTimeout(Duration.ofSeconds(30)))
+                .build()) {
+
+            for (ScreenshotContext ctx : contexts) {
+                String response = invokeLambda(lambdaClient, functionName, jobConfig, ctx, RunStep.before, runId);
+                assertTrue(response.startsWith("OK"), "Lambda failed: " + response);
+            }
+        }
+
+        List<BufferedImage> screenshots = downloadScreenshotsFromS3(runId);
+        assertFalse(screenshots.isEmpty(), "No screenshots found in S3 for run " + runId);
+
+        for (BufferedImage img : screenshots) {
+            LOG.info("Chrome screenshot dimensions: {}x{}", img.getWidth(), img.getHeight());
+            assertEquals(viewportWidth, img.getWidth(),
+                    "Screenshot width should match viewport width");
+            // Height can vary depending on page content, but should be at least viewport height
+            assertTrue(img.getHeight() >= viewportHeight,
+                    "Screenshot height (" + img.getHeight() + ") should be >= viewport height (" + viewportHeight + ")");
+        }
+    }
+
+    /**
+     * Invokes the WebKit Lambda with different pixel ratios, downloads the screenshots
+     * from S3, and verifies that the image dimensions scale accordingly.
+     */
+    @ParameterizedTest(name = "WebKit pixelRatio={0}")
+    @ValueSource(floats = {1.0f, 2.0f})
+    void shouldProduceWebKitScreenshotsWithCorrectDimensions(float pixelRatio) throws Exception {
+        org.junit.jupiter.api.Assumptions.assumeTrue(webkitFunctionName != null,
+                "WebKit Lambda not deployed – skipping.");
+
+        int viewportWidth = 800;
+        int viewportHeight = 600;
+
+        JobConfig jobConfig = JobConfig.jobConfigBuilder()
+                .withUrls(Map.of(
+                        "https://www.example.com",
+                        UrlConfig.urlConfigBuilder()
+                                .withPaths(List.of("/"))
+                                .withDevices(List.of(
+                                        DeviceConfig.deviceConfigBuilder()
+                                                .withWidth(viewportWidth)
+                                                .withHeight(viewportHeight)
+                                                .withPixelRatio(pixelRatio)
+                                                .build()))
+                                .build()))
+                .withBrowser(Browser.Type.WEBKIT_HEADLESS)
+                .withGlobalTimeout(120)
+                .build().insertDefaults();
+
+        RunStepConfig beforeCfg = RunStepConfig.runStepConfigBuilder().withStep(RunStep.before).build();
+        List<ScreenshotContext> contexts =
+                BrowserUtils.buildScreenshotContextListFromConfigAndState(beforeCfg, jobConfig);
+
+        String runId = UUID.randomUUID().toString();
+
+        try (LambdaClient lambdaClient = LambdaClient.builder()
+                .region(Region.of(awsRegion))
+                .httpClientBuilder(ApacheHttpClient.builder()
+                        .socketTimeout(Duration.ofSeconds(330))
+                        .connectionTimeout(Duration.ofSeconds(30)))
+                .build()) {
+
+            for (ScreenshotContext ctx : contexts) {
+                String response = invokeLambda(lambdaClient, webkitFunctionName, jobConfig, ctx, RunStep.before, runId);
+                assertTrue(response.startsWith("OK"), "WebKit Lambda failed: " + response);
+            }
+        }
+
+        List<BufferedImage> screenshots = downloadScreenshotsFromS3(runId);
+        assertFalse(screenshots.isEmpty(), "No screenshots found in S3 for run " + runId);
+
+        int expectedWidth = Math.round(viewportWidth * pixelRatio);
+        int expectedMinHeight = Math.round(viewportHeight * pixelRatio);
+
+        for (BufferedImage img : screenshots) {
+            LOG.info("WebKit (pixelRatio={}) screenshot dimensions: {}x{}", pixelRatio, img.getWidth(), img.getHeight());
+            assertEquals(expectedWidth, img.getWidth(),
+                    "Screenshot width should be " + expectedWidth + " (viewport " + viewportWidth + " * pixelRatio " + pixelRatio + ")");
+            assertTrue(img.getHeight() >= expectedMinHeight,
+                    "Screenshot height (" + img.getHeight() + ") should be >= " + expectedMinHeight
+                    + " (viewport " + viewportHeight + " * pixelRatio " + pixelRatio + ")");
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // S3 screenshot download helper
+    // -------------------------------------------------------------------------
+
+    /**
+     * Lists and downloads all PNG screenshots from S3 for the given run ID.
+     */
+    private List<BufferedImage> downloadScreenshotsFromS3(String runId) throws IOException {
+        String s3Prefix = "lamba-screenshots-prefix/jlineup-" + runId;
+        List<BufferedImage> images = new ArrayList<>();
+
+        try (S3Client s3 = S3Client.builder().region(Region.of(awsRegion)).build()) {
+            ListObjectsV2Response listing = s3.listObjectsV2(ListObjectsV2Request.builder()
+                    .bucket(bucketName)
+                    .prefix(s3Prefix)
+                    .build());
+
+            List<S3Object> pngObjects = listing.contents().stream()
+                    .filter(o -> o.key().endsWith(".png"))
+                    .toList();
+
+            LOG.info("Found {} PNG files in S3 under prefix '{}'", pngObjects.size(), s3Prefix);
+
+            for (S3Object obj : pngObjects) {
+                LOG.info("Downloading s3://{}/{}", bucketName, obj.key());
+                byte[] data = s3.getObject(
+                        r -> r.bucket(bucketName).key(obj.key()),
+                        ResponseTransformer.toBytes()
+                ).asByteArray();
+                BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
+                if (img != null) {
+                    images.add(img);
+                } else {
+                    LOG.warn("Could not decode PNG: {}", obj.key());
+                }
+            }
+        }
+        return images;
+    }
+
     // -------------------------------------------------------------------------
 
     private String invokeLambda(LambdaClient lambdaClient,
