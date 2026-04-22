@@ -32,13 +32,15 @@ class WebKitDriverManager {
      * The returned driver's {@code quit()} method is overridden to also clean up the
      * WebKitWebDriver and Xvfb processes.
      */
-    static RemoteWebDriver createWebKitDriver() {
+    static RemoteWebDriver createWebKitDriver(float pixelRatio) {
         int xvfbDisplay = findFreeDisplay();
         int webDriverPort = findFreePort();
 
+        int dpi = Math.round(96 * pixelRatio);
+
         Process dbusProcess = startDbusSession();
-        Process xvfbProcess = startXvfb(xvfbDisplay);
-        Process webKitDriverProcess = startWebKitWebDriver(webDriverPort, xvfbDisplay);
+        Process xvfbProcess = startXvfb(xvfbDisplay, dpi);
+        Process webKitDriverProcess = startWebKitWebDriver(webDriverPort, xvfbDisplay, pixelRatio);
 
         waitForDriverReady(webDriverPort);
 
@@ -62,7 +64,7 @@ class WebKitDriverManager {
                 }
             };
 
-            LOG.info("WebKit browser started (Xvfb display :{}, WebKitWebDriver port {})", xvfbDisplay, webDriverPort);
+            LOG.info("WebKit browser started (Xvfb display :{}, WebKitWebDriver port {}, DPI {}, pixelRatio {})", xvfbDisplay, webDriverPort, dpi, pixelRatio);
             return driver;
         } catch (Exception e) {
             // Clean up if driver connection fails
@@ -96,10 +98,10 @@ class WebKitDriverManager {
         }
     }
 
-    private static Process startXvfb(int display) {
+    private static Process startXvfb(int display, int dpi) {
         try {
             ProcessBuilder pb = new ProcessBuilder(
-                    "Xvfb", ":" + display, "-screen", "0", "1920x1200x24", "-nolisten", "tcp"
+                    "Xvfb", ":" + display, "-screen", "0", "1920x1200x24", "-nolisten", "tcp", "-dpi", String.valueOf(dpi)
             );
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -115,7 +117,7 @@ class WebKitDriverManager {
         }
     }
 
-    private static Process startWebKitWebDriver(int port, int xvfbDisplay) {
+    private static Process startWebKitWebDriver(int port, int xvfbDisplay, float pixelRatio) {
         try {
             ProcessBuilder pb = new ProcessBuilder("WebKitWebDriver", "--port=" + port);
             pb.environment().put("DISPLAY", ":" + xvfbDisplay);
@@ -123,6 +125,18 @@ class WebKitDriverManager {
             pb.environment().put("DBUS_SESSION_BUS_ADDRESS", "unix:path=/tmp/dbus-session-" + ProcessHandle.current().pid());
             // Disable WebKit's multiprocess mode — use single-process to avoid sandbox issues in Lambda
             pb.environment().put("WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS", "1");
+            pb.environment().put("GTK_OVERLAY_SCROLLING", "0");
+            pb.environment().put("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
+            pb.environment().put("WEBKIT_DISABLE_GPU_PROCESS", "1");
+            pb.environment().put("WEBKIT_DISABLE_ACCELERATED_2D_CANVAS", "1");
+            // Set GDK scale factor to match the requested pixel ratio for HiDPI rendering
+            if (pixelRatio > 1.0f) {
+                int scaleFactor = Math.round(pixelRatio);
+                pb.environment().put("GDK_SCALE", String.valueOf(scaleFactor));
+                // GDK_DPI_SCALE compensates font scaling so text isn't double-sized
+                pb.environment().put("GDK_DPI_SCALE", String.valueOf(1.0 / scaleFactor));
+                LOG.info("WebKit HiDPI: GDK_SCALE={}, Xvfb DPI={}", scaleFactor, Math.round(96 * pixelRatio));
+            }
             String debugLogDir = System.getProperty("jlineup.debug.logdir");
             if (debugLogDir != null) {
                 java.io.File logFile = new java.io.File(debugLogDir, "webkit_debug.log");

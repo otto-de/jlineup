@@ -177,7 +177,7 @@ public class BrowserUtils {
             driver = new SafariDriver();
         } else if (effectiveBrowserType.isWebkit()) {
             LOG.debug("Creating WebKit driver via WebKitWebDriver + Xvfb");
-            driver = WebKitDriverManager.createWebKitDriver();
+            driver = WebKitDriverManager.createWebKitDriver(device.pixelRatio);
         } else {
             LOG.error("You need Firefox, Chrome, Chromium or WebKit to make JLineup work. Install one of them and try again.");
             throw new RuntimeException("You need Firefox, Chrome, Chromium or WebKit to make JLineup work. Install one of them and try again.");
