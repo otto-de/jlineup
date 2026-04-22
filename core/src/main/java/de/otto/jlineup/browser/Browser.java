@@ -463,7 +463,13 @@ public class Browser implements AutoCloseable {
         scrollToTop();
 
         boolean hideScrollbars = effectiveBrowserType.isWebkit();
-        viewportHeight = validateViewportHeight(viewportHeight, hideScrollbars);
+        if (hideScrollbars) {
+            LOG.debug("Hiding scrollbars for WebKit by setting overflow:hidden");
+            ((JavascriptExecutor) getWebDriver()).executeScript(
+                    "document.documentElement.style.overflow = 'hidden';");
+        }
+
+        viewportHeight = validateViewportHeight(viewportHeight);
         LOG.debug("Viewport height of browser window: {}", viewportHeight);
 
         //Calculate scroll distance
@@ -480,7 +486,7 @@ public class Browser implements AutoCloseable {
         for (int yPosition = 0; yPosition < pageHeight && yPosition <= screenshotContext.urlConfig.maxScrollHeight; yPosition += scrollDistance) {
             LOG.debug("Scrolling info: yPosition: {}, pageHeight: {}, maxScrollHeight: {}, viewPortHeight: {}", yPosition, pageHeight, screenshotContext.urlConfig.maxScrollHeight, scrollDistance);
 
-            BufferedImage currentScreenshot = takeScreenshot(hideScrollbars);
+            BufferedImage currentScreenshot = takeScreenshot();
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
 
             if (scrollDistance == viewportHeight && yPosition + viewportHeight > pageHeight && GlobalOptions.getOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT).equalsIgnoreCase("true")) {
@@ -511,6 +517,12 @@ public class Browser implements AutoCloseable {
             LOG.debug("Page height is {}", pageHeight);
         }
 
+        if (hideScrollbars) {
+            LOG.debug("Restoring overflow for WebKit");
+            ((JavascriptExecutor) getWebDriver()).executeScript(
+                    "document.documentElement.style.overflow = '';");
+        }
+
         if (LOG.isDebugEnabled()) {
             try {
                 LogEntries logEntries = localDriver.manage().logs().get(LogType.BROWSER);
@@ -529,8 +541,8 @@ public class Browser implements AutoCloseable {
         fileService.writeFileTrackerDataForScreenshotContextOnly(screenshotContext);
     }
 
-    private int validateViewportHeight(int viewportHeight, boolean hideScrollbars) throws IOException {
-        BufferedImage bufferedImage = takeScreenshot(hideScrollbars);
+    private int validateViewportHeight(int viewportHeight) throws IOException {
+        BufferedImage bufferedImage = takeScreenshot();
         int realHeight = Math.toIntExact(Math.round(1D * bufferedImage.getHeight() / getDevicePixelRatio()));
 
         if (viewportHeight != realHeight) {
@@ -629,24 +641,9 @@ public class Browser implements AutoCloseable {
     }
 
     private BufferedImage takeScreenshot() throws IOException {
-        return takeScreenshot(false);
-    }
-
-    private BufferedImage takeScreenshot(boolean hideScrollbars) throws IOException {
         LOG.debug("Taking screenshot.");
-        if (hideScrollbars) {
-            ((JavascriptExecutor) getWebDriver()).executeScript(
-                    "document.documentElement.style.overflow = 'hidden';");
-        }
-        try {
-            File screenshot = ((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.FILE);
-            return ImageIO.read(screenshot);
-        } finally {
-            if (hideScrollbars) {
-                ((JavascriptExecutor) getWebDriver()).executeScript(
-                        "document.documentElement.style.overflow = '';");
-            }
-        }
+        File screenshot = ((TakesScreenshot) getWebDriver()).getScreenshotAs(OutputType.FILE);
+        return ImageIO.read(screenshot);
     }
 
     private BufferedImage waitForNoAnimation(ScreenshotContext screenshotContext, BufferedImage currentScreenshot) throws IOException {
