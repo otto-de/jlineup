@@ -507,6 +507,15 @@ public class Browser implements AutoCloseable {
             scrollTo(yPosition + scrollDistance);
             LOG.debug("Scroll by {} done", scrollDistance);
 
+            // Detect if browser actually scrolled — if not, we've reached the bottom
+            if (scrollDistance != viewportHeight) {
+                Long actualScrollPosition = getScrollPosition();
+                if (actualScrollPosition != null && actualScrollPosition <= yPosition) {
+                    LOG.debug("Scroll position did not advance (actual: {}, expected: {}). Reached bottom of page.", actualScrollPosition, yPosition + scrollDistance);
+                    break;
+                }
+            }
+
             if (screenshotContext.urlConfig.waitAfterScroll > 0) {
                 LOG.debug("Waiting for {} seconds (wait after scroll).", screenshotContext.urlConfig.waitAfterScroll);
                 TimeUnit.MILLISECONDS.sleep(Math.round(screenshotContext.urlConfig.waitAfterScroll * 1000));
@@ -760,6 +769,15 @@ public class Browser implements AutoCloseable {
         jse.executeScript(String.format(JS_SCROLL_TO_CALL, yPosition));
         //Sleep some milliseconds to give scrolling time before the next screenshot happens
         Thread.sleep(DEFAULT_SLEEP_AFTER_SCROLL_MILLIS);
+    }
+
+    private Long getScrollPosition() {
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
+        Object result = jse.executeScript("return Math.round(window.scrollY);");
+        if (result instanceof Number) {
+            return ((Number) result).longValue();
+        }
+        return null;
     }
 
     private void scrollToTop() throws InterruptedException {
