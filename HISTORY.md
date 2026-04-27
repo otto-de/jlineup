@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 6.0.0-SNAPSHOT - 2026-??-??
+* Feature: New improved and modernized HTML report format. It has a new design and is more interactive.
+* Feature: Support for multiple lambda functions to run one for every browser flavor
+* Feature: Prepared a webkit GTK lambda image, which can be used to test Safari-like rendering in a
+           linux lambda
+
 ## Release 5.3.0 - 2026-04-15
 * Feature: New `flaky-tolerance` config option to accept a flaky screenshot context if enough similar
            successful contexts exist in the run.
