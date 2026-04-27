@@ -102,6 +102,211 @@
             max-width: 1600px;
             margin-inline: auto;
             padding: var(--space-6) var(--space-5) var(--space-8);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .page-wrapper.has-toc {
+            grid-template-columns: 220px 1fr;
+            gap: var(--space-5);
+        }
+
+        /* ---------- TOC sidebar ---------- */
+        .toc-sidebar {
+            display: none;
+        }
+
+        .has-toc .toc-sidebar {
+            display: block;
+            position: sticky;
+            top: var(--space-5);
+            align-self: start;
+            max-height: calc(100vh - var(--space-8));
+            overflow-y: auto;
+            font-size: 12px;
+            padding-right: var(--space-3);
+        }
+
+        .toc-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .toc-sidebar::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 4px;
+        }
+
+        .toc-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-text-muted);
+            margin: 0 0 var(--space-3) 0;
+        }
+
+        .toc-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc-entry {
+            margin: 0;
+        }
+
+        .toc-link {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 5px 8px;
+            border-radius: var(--radius-sm);
+            color: var(--color-text-muted);
+            text-decoration: none;
+            line-height: 1.4;
+            transition: background 100ms, color 100ms;
+        }
+
+        .toc-link:hover {
+            background: var(--color-surface-2);
+            color: var(--color-text);
+            text-decoration: none;
+        }
+
+        .toc-link.active {
+            background: var(--color-surface-3);
+            color: var(--color-text);
+        }
+
+        .toc-dot {
+            flex-shrink: 0;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-top: 5px;
+        }
+
+        .toc-dot.success {
+            background: var(--color-success);
+        }
+
+        .toc-dot.failure {
+            background: var(--color-failure);
+        }
+
+        .toc-dot.flaky {
+            background: var(--color-flaky);
+        }
+
+        .toc-label {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .toc-diff {
+            flex-shrink: 0;
+            font-size: 10px;
+            color: var(--color-text-muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .toc-sub {
+            list-style: none;
+            margin: 0;
+            padding: 0 0 0 15px;
+        }
+
+        .toc-entry.filter-hidden {
+            display: none;
+        }
+
+        /* ---------- Focus mode ---------- */
+        .focus-mode .page-wrapper {
+            max-width: none;
+            padding-left: var(--space-4);
+            padding-right: var(--space-4);
+        }
+
+        .focus-mode .page-wrapper.has-toc {
+            grid-template-columns: 1fr;
+        }
+
+        .focus-mode .toc-sidebar {
+            display: none !important;
+        }
+
+        .focus-mode .sticky-bar-inner {
+            max-width: none;
+        }
+
+        .focus-mode .report-header {
+            max-width: 1200px;
+        }
+
+        .focus-mode .filter-bar {
+            max-width: none;
+        }
+
+        .sticky-bar-focus {
+            border: 1px solid var(--color-border);
+            background: transparent;
+            color: var(--color-text-muted);
+            border-radius: var(--radius-sm);
+            padding: 4px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .sticky-bar-focus:hover {
+            color: var(--color-text);
+            border-color: var(--color-text-muted);
+        }
+
+        .sticky-bar-focus.active {
+            background: var(--color-text);
+            color: var(--color-bg);
+            border-color: var(--color-text);
+        }
+
+        .focus-fab {
+            position: fixed;
+            top: 12px;
+            right: 16px;
+            z-index: 50;
+            border: 1px solid var(--color-border);
+            background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+            backdrop-filter: saturate(180%) blur(8px);
+            -webkit-backdrop-filter: saturate(180%) blur(8px);
+            color: var(--color-text-muted);
+            border-radius: var(--radius-sm);
+            padding: 5px 12px;
+            font-size: 0.8em;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+            transition: opacity 160ms ease, color 120ms ease, border-color 120ms ease;
+        }
+
+        .focus-fab:hover {
+            color: var(--color-text);
+            border-color: var(--color-text-muted);
+        }
+
+        .focus-fab.active {
+            background: var(--color-text);
+            color: var(--color-bg);
+            border-color: var(--color-text);
+        }
+
+        .focus-fab.is-hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
         /* Sticky top dashboard bar */
@@ -882,7 +1087,7 @@
 
         /* ---------- Dark mode ---------- */
         @media (prefers-color-scheme: dark) {
-            :root {
+            :root:not(.light-mode) {
                 --color-bg: #0f1115;
                 --color-surface: #181b22;
                 --color-surface-2: #1f232c;
@@ -910,6 +1115,35 @@
                 --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
                 --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
             }
+        }
+
+        :root.dark-mode {
+            --color-bg: #0f1115;
+            --color-surface: #181b22;
+            --color-surface-2: #1f232c;
+            --color-surface-3: #272c36;
+            --color-border: #2f3643;
+            --color-border-strong: #3b4352;
+            --color-text: #e5e7eb;
+            --color-text-muted: #9ca3af;
+            --color-text-soft: #6b7280;
+
+            --color-success: #4ade80;
+            --color-success-bg: #052e16;
+            --color-success-border: #14532d;
+            --color-failure: #f87171;
+            --color-failure-bg: #450a0a;
+            --color-failure-border: #7f1d1d;
+            --color-flaky: #fbbf24;
+            --color-flaky-bg: #451a03;
+            --color-flaky-border: #78350f;
+            --color-info: #60a5fa;
+            --color-info-bg: #172554;
+
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, .35);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
         }
     </style>
     <script type="application/javascript">
@@ -969,6 +1203,49 @@
             document.getElementById("clickdiff").style.display = "none";
             document.getElementById("black").style.display = "none";
             document.getElementsByClassName("legend")[0].style.display = "none";
+        }
+
+        // Focus mode: full-width, no TOC
+        function toggleFocusMode() {
+            document.body.classList.toggle('focus-mode');
+            const active = document.body.classList.contains('focus-mode');
+            document.querySelectorAll('#focus-toggle, #focus-fab').forEach(btn => btn.classList.toggle('active', active));
+            try { localStorage.setItem('jlineup-focus-mode', active ? '1' : ''); } catch(e) {}
+        }
+
+        // Dark mode: cycles auto → dark → light → auto
+        function toggleDarkMode() {
+            const root = document.documentElement;
+            const isDark = root.classList.contains('dark-mode');
+            const isLight = root.classList.contains('light-mode');
+            let next;
+            if (!isDark && !isLight) {
+                // auto → dark
+                root.classList.add('dark-mode');
+                next = 'dark';
+            } else if (isDark) {
+                // dark → light
+                root.classList.remove('dark-mode');
+                root.classList.add('light-mode');
+                next = 'light';
+            } else {
+                // light → auto
+                root.classList.remove('light-mode');
+                next = '';
+            }
+            syncDarkButtons(next);
+            try { localStorage.setItem('jlineup-dark-mode', next); } catch(e) {}
+        }
+
+        function syncDarkButtons(mode) {
+            document.querySelectorAll('.dark-toggle').forEach(btn => {
+                const isDark = mode === 'dark';
+                const isLight = mode === 'light';
+                btn.classList.toggle('active', isDark || isLight);
+                if (isDark) btn.textContent = '\u263E Dark';
+                else if (isLight) btn.textContent = '\u2600 Light';
+                else btn.textContent = '\u25D1 Auto';
+            });
         }
 
         function initZoom(element) {
@@ -1086,6 +1363,22 @@
     </script>
     <script type="module">
 
+        // Restore focus mode from localStorage
+        try {
+            if (localStorage.getItem('jlineup-focus-mode') === '1') {
+                document.body.classList.add('focus-mode');
+                document.querySelectorAll('#focus-toggle, #focus-fab').forEach(btn => btn.classList.add('active'));
+            }
+        } catch(e) {}
+
+        // Restore dark mode from localStorage
+        try {
+            const dm = localStorage.getItem('jlineup-dark-mode');
+            if (dm === 'dark') document.documentElement.classList.add('dark-mode');
+            else if (dm === 'light') document.documentElement.classList.add('light-mode');
+            syncDarkButtons(dm || '');
+        } catch(e) {}
+
         const options = {
 
             // UI Theme Defaults
@@ -1145,12 +1438,15 @@
         const sentinel = document.getElementById('sticky-bar-sentinel');
         if (stickyBar && sentinel && 'IntersectionObserver' in window) {
             const io = new IntersectionObserver(([entry]) => {
+                const fabs = document.querySelectorAll('.focus-fab');
                 if (entry.isIntersecting) {
                     stickyBar.classList.remove('is-visible');
                     stickyBar.setAttribute('aria-hidden', 'true');
+                    fabs.forEach(f => f.classList.remove('is-hidden'));
                 } else {
                     stickyBar.classList.add('is-visible');
                     stickyBar.setAttribute('aria-hidden', 'false');
+                    fabs.forEach(f => f.classList.add('is-hidden'));
                 }
             }, { rootMargin: '0px 0px 0px 0px', threshold: 0 });
             io.observe(sentinel);
@@ -1184,11 +1480,35 @@
             });
 
             // Build browser chips
+            const browserIconSvg = (name) => {
+                const n = name.toLowerCase();
+                let grad, letter;
+                if (n.includes('firefox')) {
+                    grad = '<linearGradient id="ff-chip" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFCB00"/><stop offset="35%" stop-color="#FF9500"/><stop offset="65%" stop-color="#E66000"/><stop offset="100%" stop-color="#331E54"/></linearGradient>';
+                    letter = 'F';
+                } else if (n.includes('chrome')) {
+                    grad = '<linearGradient id="cr-chip" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#DD5144"/><stop offset="33%" stop-color="#FFCD46"/><stop offset="66%" stop-color="#1DA462"/><stop offset="100%" stop-color="#4C8BF5"/></linearGradient>';
+                    letter = 'C';
+                } else if (n.includes('safari') || n.includes('webkit')) {
+                    grad = '<linearGradient id="sf-chip" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#006CFF"/><stop offset="50%" stop-color="#0FB5EE"/><stop offset="100%" stop-color="#00D3F9"/></linearGradient>';
+                    letter = 'S';
+                } else if (n.includes('edge')) {
+                    grad = '<linearGradient id="ed-chip" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3DC3F2"/><stop offset="50%" stop-color="#0078D4"/><stop offset="100%" stop-color="#004E8C"/></linearGradient>';
+                    letter = 'E';
+                } else {
+                    return '';
+                }
+                const id = grad.match(/id="([^"]+)"/)[1];
+                return '<svg viewBox="0 0 24 24" style="width:12px;height:12px;vertical-align:-1px;margin-right:3px;flex-shrink:0;" aria-hidden="true"><defs>' + grad + '</defs><circle cx="12" cy="12" r="10.5" fill="url(#' + id + ')"/><text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">' + letter + '</text></svg>';
+            };
+
             browsers.forEach(b => {
                 const chip = document.createElement('span');
                 chip.className = 'filter-chip';
                 chip.dataset.browserFilter = b;
-                chip.textContent = b.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                const icon = browserIconSvg(b);
+                const label = b.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                chip.innerHTML = icon + label;
                 browserContainer.appendChild(chip);
             });
 
@@ -1297,6 +1617,7 @@
 
                 countEl.textContent = shown === total ? total + ' contexts' : shown + ' / ' + total;
                 save();
+                document.dispatchEvent(new CustomEvent('jlineup-filters-changed'));
             }
 
             function syncChipUI() {
@@ -1357,10 +1678,106 @@
             syncChipUI();
             applyFilters();
         })();
+
+        // ---------- TOC sidebar logic ----------
+        (function initToc() {
+            const wrapper = document.querySelector('.page-wrapper');
+            const toc = document.getElementById('toc-sidebar');
+            const urlSections = document.querySelectorAll('.url[id]');
+
+            if (!toc || !wrapper) return;
+
+            // Only show TOC if there are multiple URL groups OR multiple sub-paths
+            const subPathSections = document.querySelectorAll('.urlSubPath[id]');
+            const totalSections = urlSections.length + subPathSections.length;
+            if (totalSections < 2) return;
+
+            wrapper.classList.add('has-toc');
+
+            // Smooth scroll on TOC link click
+            toc.addEventListener('click', (e) => {
+                const link = e.target.closest('.toc-link');
+                if (!link) return;
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+
+            // Active entry highlighting via IntersectionObserver
+            const tocLinks = toc.querySelectorAll('.toc-link');
+            const sectionMap = new Map();
+            tocLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                const target = document.querySelector(href);
+                if (target) sectionMap.set(target, link);
+            });
+
+            let activeLink = null;
+            function setActive(link) {
+                if (activeLink === link) return;
+                if (activeLink) activeLink.classList.remove('active');
+                if (link) link.classList.add('active');
+                activeLink = link;
+                // Scroll TOC to keep active entry visible
+                if (link) {
+                    link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+            }
+
+            const visibleSections = new Set();
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        visibleSections.add(entry.target);
+                    } else {
+                        visibleSections.delete(entry.target);
+                    }
+                });
+
+                // Pick the topmost visible section
+                let topmost = null;
+                let topY = Infinity;
+                visibleSections.forEach(sec => {
+                    const y = sec.getBoundingClientRect().top;
+                    if (y < topY) {
+                        topY = y;
+                        topmost = sec;
+                    }
+                });
+
+                if (topmost && sectionMap.has(topmost)) {
+                    setActive(sectionMap.get(topmost));
+                }
+            }, { rootMargin: '-10% 0px -60% 0px', threshold: 0 });
+
+            sectionMap.forEach((link, section) => observer.observe(section));
+
+            // Update TOC entry visibility when filters change
+            function syncTocWithFilters() {
+                toc.querySelectorAll('.toc-entry[data-toc-url-idx]').forEach(entry => {
+                    const idx = entry.dataset.tocUrlIdx;
+                    const urlEl = document.getElementById('url-' + idx);
+                    entry.classList.toggle('filter-hidden', urlEl?.classList.contains('filter-hidden') ?? false);
+                });
+                toc.querySelectorAll('.toc-entry[data-toc-sub-idx]').forEach(entry => {
+                    const idx = entry.dataset.tocSubIdx;
+                    const subEl = document.getElementById('url-' + idx);
+                    entry.classList.toggle('filter-hidden', subEl?.classList.contains('filter-hidden') ?? false);
+                });
+            }
+
+            document.addEventListener('jlineup-filters-changed', syncTocWithFilters);
+            syncTocWithFilters();
+        })();
     </script>
 </head>
 
 <body>
+
+<button type="button" class="focus-fab dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" style="right:110px;">&#x25D1; Auto</button>
+<button type="button" id="focus-fab" class="focus-fab" onclick="toggleFocusMode()" title="Toggle focus mode">&#x26F6; Focus</button>
 
 <div id="sticky-bar" class="sticky-bar" aria-hidden="true">
     <div class="sticky-bar-inner">
@@ -1376,11 +1793,36 @@
             <span class="stat"><span>Total</span><span class="num">[[${#numbers.formatDecimal(report.summary.differenceSum*100,1,2)}]]&nbsp;%</span></span>
             <span class="stat"><span>Max</span><span class="num">[[${#numbers.formatDecimal(report.summary.differenceMax*100,1,2)}]]&nbsp;%</span></span>
         </div>
+        <button type="button" class="sticky-bar-focus dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">&#x25D1; Auto</button>
+        <button type="button" id="focus-toggle" class="sticky-bar-focus" onclick="toggleFocusMode()" title="Toggle focus mode">&#x26F6; Focus</button>
         <button type="button" class="sticky-bar-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">&uarr; Top</button>
     </div>
 </div>
 
 <div class="page-wrapper">
+
+<nav class="toc-sidebar" id="toc-sidebar" aria-label="Table of contents">
+    <p class="toc-title">Contents</p>
+    <ul class="toc-list">
+        <li class="toc-entry" th:each="urlReport,iterationStatus : ${report.urlReports}"
+            th:data-toc-url-idx="${iterationStatus.index}">
+            <a class="toc-link" th:href="${'#url-' + iterationStatus.index}">
+                <span class="toc-dot" th:classappend="${urlReport.summary.error ? 'failure' : 'success'}"></span>
+                <span class="toc-label" th:text="${urlReport.urlKey}" th:title="${urlReport.url}"></span>
+                <span class="toc-diff" th:text="${#numbers.formatDecimal(urlReport.summary.differenceSum*100,1,1) + '%'}"></span>
+            </a>
+            <ul class="toc-sub" th:if="${#maps.size(urlReport.contextReportsBySubPath) > 1}">
+                <li class="toc-entry" th:each="subPathEntry,subIterStatus : ${urlReport.contextReportsBySubPath}"
+                    th:if="${!#strings.isEmpty(subPathEntry.key)}"
+                    th:data-toc-sub-idx="${iterationStatus.index + '-sub-' + subIterStatus.index}">
+                    <a class="toc-link" th:href="${'#url-' + iterationStatus.index + '-sub-' + subIterStatus.index}">
+                        <span class="toc-label" th:text="${subPathEntry.key}" th:title="${urlReport.url + subPathEntry.key}"></span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
 
 <div class="report">
     <div id="sticky-bar-sentinel" aria-hidden="true" style="height:1px;"></div>
@@ -1420,9 +1862,11 @@
     </div>
 
     <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}"
+         th:id="${'url-' + iterationStatus.index}"
          th:data-url="${urlReport.url}" th:data-urlkey="${urlReport.urlKey}">
         <h3 class="url-base" th:text="${urlReport.urlKey}"></h3>
-        <div class="urlSubPath" th:each="subPathEntry : ${urlReport.contextReportsBySubPath}"
+        <div class="urlSubPath" th:each="subPathEntry,subIterStatus : ${urlReport.contextReportsBySubPath}"
+             th:id="${'url-' + iterationStatus.index + '-sub-' + subIterStatus.index}"
              th:data-subpath="${subPathEntry.key}">
             <h3 class="sub-path" th:if="${!#strings.isEmpty(subPathEntry.key)}" th:text="${subPathEntry.key}" th:title="${urlReport.url + subPathEntry.key}"></h3>
             <details class="urlReport" th:each="contextReport,iterationStatus : ${subPathEntry.value}"
@@ -1438,34 +1882,24 @@
                             <span class="inline-size">[[${#strings.replace(contextReport.deviceInfo,'\n',', ')}]]</span>
                             <span th:if="${contextReport.browserInfo != null}" class="inline-size browser-pill" th:with="bi=${#strings.toLowerCase(contextReport.browserInfo)}" th:title="${contextReport.browserInfo}">
                                 <svg th:if="${#strings.contains(bi, 'firefox')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
-                                    <defs>
-                                        <radialGradient id="ff-grad" cx="50%" cy="50%" r="60%">
-                                            <stop offset="0%" stop-color="#ffcb00"/>
-                                            <stop offset="45%" stop-color="#ff7139"/>
-                                            <stop offset="100%" stop-color="#b5007f"/>
-                                        </radialGradient>
-                                    </defs>
-                                    <circle cx="12" cy="12" r="10.5" fill="url(#ff-grad)"/>
-                                    <path d="M12 3.5c-4.7 0-8.5 3.8-8.5 8.5 0 3.4 2 6.3 4.8 7.6-1-1.5-1.3-3.6-.4-5.4.6-1.3 2-2.4 3.4-2.5-1.3.6-2 1.9-2 3.2 0 1.9 1.6 3.5 3.5 3.5 3.6 0 5.8-3.9 4.1-7.2-1.1-2.2-3.8-3.3-6.3-2.7 2.7-1.6 6.5-.8 8 2 .7-4-2.3-7-6.6-7z" fill="#fff" opacity=".9"/>
+                                    <defs><linearGradient id="ff-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFCB00"/><stop offset="35%" stop-color="#FF9500"/><stop offset="65%" stop-color="#E66000"/><stop offset="100%" stop-color="#331E54"/></linearGradient></defs>
+                                    <circle cx="12" cy="12" r="10.5" fill="url(#ff-g1)"/>
+                                    <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">F</text>
                                 </svg>
                                 <svg th:if="${#strings.contains(bi, 'chrome')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
-                                    <circle cx="12" cy="12" r="10.5" fill="#fff"/>
-                                    <path d="M12 2a10 10 0 0 1 8.66 5H12a5 5 0 0 0-4.33 2.5L3.34 7A10 10 0 0 1 12 2z" fill="#ea4335"/>
-                                    <path d="M3.34 7l4.33 2.5a5 5 0 0 0 0 5L3.34 17A10 10 0 0 1 3.34 7z" fill="#fbbc05"/>
-                                    <path d="M12 22a10 10 0 0 1-8.66-5L7.67 14.5A5 5 0 0 0 12 17h8.66A10 10 0 0 1 12 22z" fill="#34a853"/>
-                                    <circle cx="12" cy="12" r="4" fill="#4285f4"/>
+                                    <defs><linearGradient id="cr-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#DD5144"/><stop offset="33%" stop-color="#FFCD46"/><stop offset="66%" stop-color="#1DA462"/><stop offset="100%" stop-color="#4C8BF5"/></linearGradient></defs>
+                                    <circle cx="12" cy="12" r="10.5" fill="url(#cr-g1)"/>
+                                    <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">C</text>
                                 </svg>
                                 <svg th:if="${#strings.contains(bi, 'safari') || #strings.contains(bi, 'webkit')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
-                                    <circle cx="12" cy="12" r="10.5" fill="#1e88e5"/>
-                                    <circle cx="12" cy="12" r="9" fill="#fff"/>
-                                    <circle cx="12" cy="12" r="9" fill="none" stroke="#1e88e5" stroke-width="0.5"/>
-                                    <path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2" stroke="#333" stroke-width="0.8" stroke-linecap="round"/>
-                                    <polygon points="12,12 13.5,4 12,12 10.5,4" fill="#e53935"/>
-                                    <polygon points="12,12 10.5,20 12,12 13.5,20" fill="#ccc"/>
+                                    <defs><linearGradient id="sf-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#006CFF"/><stop offset="50%" stop-color="#0FB5EE"/><stop offset="100%" stop-color="#00D3F9"/></linearGradient></defs>
+                                    <circle cx="12" cy="12" r="10.5" fill="url(#sf-g1)"/>
+                                    <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">S</text>
                                 </svg>
                                 <svg th:if="${#strings.contains(bi, 'edge')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
-                                    <circle cx="12" cy="12" r="10.5" fill="#0078d4"/>
-                                    <path d="M6 14c0-4 3-7 7-7 2.6 0 4.5 1.3 5.4 3-1.4-.6-3.2-.5-4.8.3-2.2 1.1-3.4 3.2-3.1 5.3.2 1.5 1.3 2.8 2.8 3.2C9.3 19.3 6 17 6 14z" fill="#fff"/>
+                                    <defs><linearGradient id="ed-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3DC3F2"/><stop offset="50%" stop-color="#0078D4"/><stop offset="100%" stop-color="#004E8C"/></linearGradient></defs>
+                                    <circle cx="12" cy="12" r="10.5" fill="url(#ed-g1)"/>
+                                    <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">E</text>
                                 </svg>
                             </span>
                             <span th:if="${#strings.isEmpty(contextReport.shownCookiesString) == false}"
@@ -1527,27 +1961,24 @@
                                      th:with="bi=${#strings.toLowerCase(contextReport.browserInfo)}">
                                     <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--color-text-muted);opacity:0.6;">
                                         <svg th:if="${#strings.contains(bi, 'firefox')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
-                                            <defs><radialGradient id="ff-grad2" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#ffcb00"/><stop offset="45%" stop-color="#ff7139"/><stop offset="100%" stop-color="#b5007f"/></radialGradient></defs>
-                                            <circle cx="12" cy="12" r="10.5" fill="url(#ff-grad2)"/>
-                                            <path d="M12 3.5c-4.7 0-8.5 3.8-8.5 8.5 0 3.4 2 6.3 4.8 7.6-1-1.5-1.3-3.6-.4-5.4.6-1.3 2-2.4 3.4-2.5-1.3.6-2 1.9-2 3.2 0 1.9 1.6 3.5 3.5 3.5 3.6 0 5.8-3.9 4.1-7.2-1.1-2.2-3.8-3.3-6.3-2.7 2.7-1.6 6.5-.8 8 2 .7-4-2.3-7-6.6-7z" fill="#fff" opacity=".9"/>
+                                            <defs><linearGradient id="ff-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFCB00"/><stop offset="35%" stop-color="#FF9500"/><stop offset="65%" stop-color="#E66000"/><stop offset="100%" stop-color="#331E54"/></linearGradient></defs>
+                                            <circle cx="12" cy="12" r="10.5" fill="url(#ff-g2)"/>
+                                            <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">F</text>
                                         </svg>
                                         <svg th:if="${#strings.contains(bi, 'chrome')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
-                                            <circle cx="12" cy="12" r="10.5" fill="#fff"/>
-                                            <path d="M12 2a10 10 0 0 1 8.66 5H12a5 5 0 0 0-4.33 2.5L3.34 7A10 10 0 0 1 12 2z" fill="#ea4335"/>
-                                            <path d="M3.34 7l4.33 2.5a5 5 0 0 0 0 5L3.34 17A10 10 0 0 1 3.34 7z" fill="#fbbc05"/>
-                                            <path d="M12 22a10 10 0 0 1-8.66-5L7.67 14.5A5 5 0 0 0 12 17h8.66A10 10 0 0 1 12 22z" fill="#34a853"/>
-                                            <circle cx="12" cy="12" r="4" fill="#4285f4"/>
+                                            <defs><linearGradient id="cr-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#DD5144"/><stop offset="33%" stop-color="#FFCD46"/><stop offset="66%" stop-color="#1DA462"/><stop offset="100%" stop-color="#4C8BF5"/></linearGradient></defs>
+                                            <circle cx="12" cy="12" r="10.5" fill="url(#cr-g2)"/>
+                                            <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">C</text>
                                         </svg>
                                         <svg th:if="${#strings.contains(bi, 'safari') || #strings.contains(bi, 'webkit')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
-                                            <circle cx="12" cy="12" r="10.5" fill="#1e88e5"/>
-                                            <circle cx="12" cy="12" r="9" fill="#fff"/>
-                                            <path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2" stroke="#333" stroke-width="0.8" stroke-linecap="round"/>
-                                            <polygon points="12,12 13.5,4 12,12 10.5,4" fill="#e53935"/>
-                                            <polygon points="12,12 10.5,20 12,12 13.5,20" fill="#ccc"/>
+                                            <defs><linearGradient id="sf-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#006CFF"/><stop offset="50%" stop-color="#0FB5EE"/><stop offset="100%" stop-color="#00D3F9"/></linearGradient></defs>
+                                            <circle cx="12" cy="12" r="10.5" fill="url(#sf-g2)"/>
+                                            <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">S</text>
                                         </svg>
                                         <svg th:if="${#strings.contains(bi, 'edge')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
-                                            <circle cx="12" cy="12" r="10.5" fill="#0078d4"/>
-                                            <path d="M6 14c0-4 3-7 7-7 2.6 0 4.5 1.3 5.4 3-1.4-.6-3.2-.5-4.8.3-2.2 1.1-3.4 3.2-3.1 5.3.2 1.5 1.3 2.8 2.8 3.2C9.3 19.3 6 17 6 14z" fill="#fff"/>
+                                            <defs><linearGradient id="ed-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3DC3F2"/><stop offset="50%" stop-color="#0078D4"/><stop offset="100%" stop-color="#004E8C"/></linearGradient></defs>
+                                            <circle cx="12" cy="12" r="10.5" fill="url(#ed-g2)"/>
+                                            <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">E</text>
                                         </svg>
                                         [[${contextReport.browserInfo}]]
                                     </span>
