@@ -188,6 +188,94 @@
             border-color: var(--color-text-muted);
         }
 
+        /* ---------- Filter bar ---------- */
+        .filter-bar {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-4);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+            font-size: 12px;
+        }
+
+        .filter-bar-search {
+            flex: 0 1 220px;
+            min-width: 120px;
+            padding: 5px 10px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background: var(--color-bg);
+            color: var(--color-text);
+            font-size: 12px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .filter-bar-search:focus {
+            border-color: var(--color-accent, #2563eb);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+        }
+
+        .filter-bar-sep {
+            width: 1px;
+            height: 20px;
+            background: var(--color-border);
+            flex-shrink: 0;
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border: 1px solid var(--color-border);
+            border-radius: 999px;
+            background: var(--color-bg);
+            color: var(--color-text-muted);
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            transition: background 100ms, color 100ms, border-color 100ms;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--color-text-muted);
+            color: var(--color-text);
+        }
+
+        .filter-chip.active {
+            background: var(--color-text);
+            color: var(--color-bg);
+            border-color: var(--color-text);
+        }
+
+        .filter-count {
+            margin-left: auto;
+            color: var(--color-text-muted);
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        #filter-browsers,
+        #filter-viewports {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: var(--space-3);
+        }
+
+        /* Hidden state for filtered-out items */
+        .url.filter-hidden,
+        .urlSubPath.filter-hidden,
+        .urlReport.filter-hidden {
+            display: none !important;
+        }
+
         h1 {
             font-weight: 700;
             font-size: 2em;
@@ -1067,6 +1155,208 @@
             }, { rootMargin: '0px 0px 0px 0px', threshold: 0 });
             io.observe(sentinel);
         }
+
+        // ---------- Filter bar logic ----------
+        (function initFilterBar() {
+            const STORAGE_KEY = 'jlineup-filters';
+            const allDetails = document.querySelectorAll('details.urlReport');
+            const allUrls = document.querySelectorAll('.url');
+            const allSubPaths = document.querySelectorAll('.urlSubPath');
+            const searchInput = document.getElementById('filter-search');
+            const countEl = document.getElementById('filter-count');
+            const browserContainer = document.getElementById('filter-browsers');
+            const viewportContainer = document.getElementById('filter-viewports');
+
+            if (!allDetails.length) return;
+
+            // Collect unique browsers and viewports from data attributes
+            const browsers = new Set();
+            const viewports = new Set();
+            allDetails.forEach(d => {
+                const b = d.dataset.browser;
+                if (b) browsers.add(b);
+                const dev = d.dataset.device;
+                if (dev) {
+                    // Extract WxH from device info (e.g. "1200x800, ...")
+                    const m = dev.match(/(\d+)\s*x\s*(\d+)/i);
+                    if (m) viewports.add(m[1] + 'x' + m[2]);
+                }
+            });
+
+            // Build browser chips
+            browsers.forEach(b => {
+                const chip = document.createElement('span');
+                chip.className = 'filter-chip';
+                chip.dataset.browserFilter = b;
+                chip.textContent = b.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                browserContainer.appendChild(chip);
+            });
+
+            // Build viewport chips
+            viewports.forEach(v => {
+                const chip = document.createElement('span');
+                chip.className = 'filter-chip';
+                chip.dataset.viewportFilter = v;
+                chip.textContent = v;
+                viewportContainer.appendChild(chip);
+            });
+
+            // Add separators if we have chips
+            if (browsers.size && viewports.size) {
+                const sep = document.createElement('div');
+                sep.className = 'filter-bar-sep';
+                viewportContainer.parentNode.insertBefore(sep, viewportContainer);
+            }
+
+            // State
+            let state = {
+                search: '',
+                status: 'all',  // 'all', 'different', 'flaky', 'match'
+                browsers: new Set(),     // empty = all
+                viewports: new Set(),    // empty = all
+            };
+
+            // Load from localStorage
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                if (saved) {
+                    state.search = saved.search || '';
+                    state.status = saved.status || 'all';
+                    state.browsers = new Set(saved.browsers || []);
+                    state.viewports = new Set(saved.viewports || []);
+                }
+            } catch (e) {}
+
+            function save() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        search: state.search,
+                        status: state.status,
+                        browsers: [...state.browsers],
+                        viewports: [...state.viewports],
+                    }));
+                } catch (e) {}
+            }
+
+            function applyFilters() {
+                const q = state.search.toLowerCase();
+                let shown = 0;
+                const total = allDetails.length;
+
+                allDetails.forEach(det => {
+                    let visible = true;
+
+                    // Status filter
+                    if (state.status !== 'all' && det.dataset.status !== state.status) {
+                        visible = false;
+                    }
+
+                    // Browser filter
+                    if (visible && state.browsers.size > 0) {
+                        const b = det.dataset.browser || '';
+                        if (!state.browsers.has(b)) visible = false;
+                    }
+
+                    // Viewport filter
+                    if (visible && state.viewports.size > 0) {
+                        const dev = det.dataset.device || '';
+                        const m = dev.match(/(\d+)\s*x\s*(\d+)/i);
+                        const vp = m ? m[1] + 'x' + m[2] : '';
+                        if (!state.viewports.has(vp)) visible = false;
+                    }
+
+                    // Search filter — match against url, urlkey, subpath, device, browser
+                    if (visible && q) {
+                        const urlDiv = det.closest('.url');
+                        const subDiv = det.closest('.urlSubPath');
+                        const haystack = [
+                            urlDiv?.dataset.url || '',
+                            urlDiv?.dataset.urlkey || '',
+                            subDiv?.dataset.subpath || '',
+                            det.dataset.device || '',
+                            det.dataset.browser || '',
+                        ].join(' ').toLowerCase();
+                        if (!haystack.includes(q)) visible = false;
+                    }
+
+                    det.classList.toggle('filter-hidden', !visible);
+                    if (visible) shown++;
+                });
+
+                // Hide empty subpath containers
+                allSubPaths.forEach(sp => {
+                    const hasVisible = sp.querySelector('details.urlReport:not(.filter-hidden)');
+                    sp.classList.toggle('filter-hidden', !hasVisible);
+                });
+
+                // Hide empty url containers
+                allUrls.forEach(u => {
+                    const hasVisible = u.querySelector('details.urlReport:not(.filter-hidden)');
+                    u.classList.toggle('filter-hidden', !hasVisible);
+                });
+
+                countEl.textContent = shown === total ? total + ' contexts' : shown + ' / ' + total;
+                save();
+            }
+
+            function syncChipUI() {
+                // Status chips
+                document.querySelectorAll('#filter-bar [data-filter]').forEach(chip => {
+                    chip.classList.toggle('active', chip.dataset.filter === state.status);
+                });
+                // Browser chips
+                document.querySelectorAll('#filter-bar [data-browser-filter]').forEach(chip => {
+                    chip.classList.toggle('active', state.browsers.has(chip.dataset.browserFilter));
+                });
+                // Viewport chips
+                document.querySelectorAll('#filter-bar [data-viewport-filter]').forEach(chip => {
+                    chip.classList.toggle('active', state.viewports.has(chip.dataset.viewportFilter));
+                });
+                // Search
+                searchInput.value = state.search;
+            }
+
+            // Event: search
+            searchInput.addEventListener('input', () => {
+                state.search = searchInput.value;
+                applyFilters();
+            });
+
+            // Event: status chips
+            document.querySelectorAll('#filter-bar [data-filter]').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    state.status = chip.dataset.filter;
+                    syncChipUI();
+                    applyFilters();
+                });
+            });
+
+            // Event: browser chips (toggle)
+            document.querySelectorAll('#filter-bar [data-browser-filter]').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const v = chip.dataset.browserFilter;
+                    if (state.browsers.has(v)) state.browsers.delete(v);
+                    else state.browsers.add(v);
+                    syncChipUI();
+                    applyFilters();
+                });
+            });
+
+            // Event: viewport chips (toggle)
+            document.querySelectorAll('#filter-bar [data-viewport-filter]').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const v = chip.dataset.viewportFilter;
+                    if (state.viewports.has(v)) state.viewports.delete(v);
+                    else state.viewports.add(v);
+                    syncChipUI();
+                    applyFilters();
+                });
+            });
+
+            // Init
+            syncChipUI();
+            applyFilters();
+        })();
     </script>
 </head>
 
@@ -1116,11 +1406,29 @@
              th:utext="${report.config.sanitizedMessage}">Some Message</pre>
     </header>
 
-    <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}">
+    <div id="filter-bar" class="filter-bar">
+        <input type="text" class="filter-bar-search" id="filter-search" placeholder="Filter by URL / path..." autocomplete="off"/>
+        <div class="filter-bar-sep"></div>
+        <span class="filter-chip active" data-filter="all">All</span>
+        <span class="filter-chip" data-filter="different">Different</span>
+        <span class="filter-chip" data-filter="flaky">Flaky</span>
+        <span class="filter-chip" data-filter="match">Match</span>
+        <div class="filter-bar-sep"></div>
+        <span id="filter-browsers"></span>
+        <span id="filter-viewports"></span>
+        <span class="filter-count" id="filter-count"></span>
+    </div>
+
+    <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}"
+         th:data-url="${urlReport.url}" th:data-urlkey="${urlReport.urlKey}">
         <h3 class="url-base" th:text="${urlReport.urlKey}"></h3>
-        <div class="urlSubPath" th:each="subPathEntry : ${urlReport.contextReportsBySubPath}">
+        <div class="urlSubPath" th:each="subPathEntry : ${urlReport.contextReportsBySubPath}"
+             th:data-subpath="${subPathEntry.key}">
             <h3 class="sub-path" th:if="${!#strings.isEmpty(subPathEntry.key)}" th:text="${subPathEntry.key}" th:title="${urlReport.url + subPathEntry.key}"></h3>
-            <details class="urlReport" th:each="contextReport,iterationStatus : ${subPathEntry.value}">
+            <details class="urlReport" th:each="contextReport,iterationStatus : ${subPathEntry.value}"
+                     th:data-browser="${contextReport.browserInfo}"
+                     th:data-device="${contextReport.deviceInfo}"
+                     th:data-status="${contextReport.isSuccess() ? (contextReport.isFlakyAccepted() ? 'flaky' : 'match') : 'different'}">
                 <summary>
                     <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                         <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
