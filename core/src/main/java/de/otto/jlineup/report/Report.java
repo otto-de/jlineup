@@ -6,12 +6,14 @@ import de.otto.jlineup.config.JobConfig;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record Report(Summary summary, JobConfig config, List<UrlReport> urlReports,
-                     Map<BrowserStep, String> browsers) {
+                     Map<BrowserStep, Set<String>> browsers) {
 
     @JsonCreator
-    public Report(Summary summary, JobConfig config, List<UrlReport> urlReports, Map<BrowserStep, String> browsers) {
+    public Report(Summary summary, JobConfig config, List<UrlReport> urlReports, Map<BrowserStep, Set<String>> browsers) {
         this.summary = summary;
         this.config = config.sanitize();
         this.urlReports = urlReports;
@@ -20,7 +22,11 @@ public record Report(Summary summary, JobConfig config, List<UrlReport> urlRepor
 
     @UsedInTemplate
     public String getBrowser(String step) {
-        return browsers.get(BrowserStep.valueOf(step));
+        Set<String> browserSet = browsers.get(BrowserStep.valueOf(step));
+        if (browserSet == null || browserSet.isEmpty()) {
+            return null;
+        }
+        return browserSet.stream().sorted().collect(Collectors.joining(", "));
     }
 
     /**

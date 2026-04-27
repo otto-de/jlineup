@@ -58,7 +58,13 @@ public class ScreenshotsComparator {
                     continue;
                 }
                 String fullUrlWithPath = BrowserUtils.buildUrl(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.urlConfig.envMapping);
-                Map<Integer, Map<BrowserStep, String>> screenshots = fileService.getFileTracker().getScreenshotsForContext(screenshotContext.contextHash());
+                Map<Integer, Map<BrowserStep, String>> screenshots;
+                try {
+                    screenshots = fileService.getFileTracker().getScreenshotsForContext(screenshotContext.contextHash());
+                } catch (IOException e) {
+                    LOG.warn("No screenshots found for context {} ({} {} {}). Skipping.", screenshotContext.contextHash(), fullUrlWithPath, screenshotContext.deviceConfig, screenshotContext.browserType);
+                    continue;
+                }
                 List<Integer> yPositions = new ArrayList<>(screenshots.keySet());
 
                 for (Integer yPosition : yPositions) {

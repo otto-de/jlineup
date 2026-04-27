@@ -9,6 +9,7 @@ import de.otto.jlineup.config.JobConfig;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 //@JsonDeserialize(builder = FileTracker.Builder.class)
@@ -17,10 +18,10 @@ public class FileTracker {
     public final JobConfig jobConfig;
     @JsonMerge
     public final ConcurrentHashMap<String, ScreenshotContextFileTracker> contexts;
-    public final ConcurrentHashMap<BrowserStep, String> browsers;
+    public final ConcurrentHashMap<BrowserStep, Set<String>> browsers;
 
     @JsonCreator
-    public FileTracker(JobConfig jobConfig, ConcurrentHashMap<String, ScreenshotContextFileTracker> contexts, ConcurrentHashMap<BrowserStep, String> browsers) {
+    public FileTracker(JobConfig jobConfig, ConcurrentHashMap<String, ScreenshotContextFileTracker> contexts, ConcurrentHashMap<BrowserStep, Set<String>> browsers) {
         this.jobConfig = jobConfig;
         this.contexts = contexts;
         this.browsers = browsers;
@@ -65,7 +66,7 @@ public class FileTracker {
         return contexts;
     }
 
-    public ConcurrentHashMap<BrowserStep, String> getBrowsers() {
+    public ConcurrentHashMap<BrowserStep, Set<String>> getBrowsers() {
         return browsers;
     }
 
@@ -128,7 +129,7 @@ public class FileTracker {
 
     public void setBrowserAndVersion(ScreenshotContext screenshotContext, String browserAndVersion) {
         if (browsers != null) {
-            browsers.put(screenshotContext.step, browserAndVersion);
+            browsers.computeIfAbsent(screenshotContext.step, k -> ConcurrentHashMap.newKeySet()).add(browserAndVersion);
         }
     }
 
@@ -141,7 +142,7 @@ public class FileTracker {
     public static final class Builder {
         private JobConfig jobConfig;
         private ConcurrentHashMap<String, ScreenshotContextFileTracker> contexts;
-        private ConcurrentHashMap<BrowserStep, String> browsers;
+        private ConcurrentHashMap<BrowserStep, Set<String>> browsers;
 
         private Builder() {
         }
@@ -156,7 +157,7 @@ public class FileTracker {
             return this;
         }
 
-        public Builder withBrowsers(ConcurrentHashMap<BrowserStep, String> val) {
+        public Builder withBrowsers(ConcurrentHashMap<BrowserStep, Set<String>> val) {
             browsers = val;
             return this;
         }

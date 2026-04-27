@@ -20,6 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Set;
 
 import static de.otto.jlineup.file.FileUtils.clearDirectory;
 import static de.otto.jlineup.file.ScreenshotContextFileTracker.screenshotContextFileTrackerBuilder;
@@ -246,7 +247,7 @@ public class FileService {
         fileTracker.setBrowserAndVersion(screenshotContext, browserAndVersion);
     }
 
-    public Map<BrowserStep, String> getBrowsers() {
+    public Map<BrowserStep, Set<String>> getBrowsers() {
         return fileTracker.browsers;
     }
 
@@ -269,7 +270,8 @@ public class FileService {
                     .addScreenshots(newContext.screenshots)
                     .build()));
 
-            fileTracker.browsers.putAll(part.browsers);
+            part.browsers.forEach((step, browserSet) ->
+                    fileTracker.browsers.computeIfAbsent(step, k -> java.util.concurrent.ConcurrentHashMap.newKeySet()).addAll(browserSet));
         }
         writeFileTrackerData();
     }

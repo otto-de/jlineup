@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Map;
+import java.util.Set;
 
 import static de.otto.jlineup.config.JobConfig.exampleConfig;
 import static java.util.Collections.singletonList;
@@ -41,7 +42,7 @@ class JSONReportWriterTest {
         final Summary localSummary = new Summary(false, 0d, 0d, 0);
         ContextReport contextReport = new ContextReport("1887", ScreenshotContext.of("url", null, DeviceConfig.deviceConfigBuilder().build(), BrowserStep.before, UrlConfig.urlConfigBuilder().build()), localSummary, singletonList(screenshotComparisonResult));
         UrlReport urlReport = new UrlReport("test", "url", localSummary, singletonList(contextReport));
-        Report report = new Report(globalSummary, exampleConfig(), singletonList(urlReport), Map.of(BrowserStep.before, "SomeBrowser"));
+        Report report = new Report(globalSummary, exampleConfig(), singletonList(urlReport), Map.of(BrowserStep.before, Set.of("SomeBrowser")));
 
         //language=JSON
         String expectedJSON = """
@@ -181,7 +182,7 @@ class JSONReportWriterTest {
                     } ]
                   } ],
                   "browsers" : {
-                    "before" : "SomeBrowser"
+                    "before" : [ "SomeBrowser" ]
                   }
                 }
                 """;

@@ -9,82 +9,175 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <style>
+        :root {
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                "Helvetica Neue", Arial, sans-serif;
 
-        body {
-            background-color: white;
-            font-family: Arial, Helvetica, sans-serif;
-            margin-left: 10px;
-            margin-top: 10px;
+            --color-bg: #f6f7f9;
+            --color-surface: #ffffff;
+            --color-border: #e4e6eb;
+            --color-text: #1b1f24;
+            --color-text-muted: #6b7280;
+
+            --color-accent: #2563eb;
+            --color-warn-bg: #fef3c7;
+            --color-warn-fg: #92400e;
+            --color-warn-dot: #d97706;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
+            --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.06);
+
+            --space-2: 6px;
+            --space-3: 10px;
+            --space-4: 14px;
+            --space-5: 20px;
+            --space-6: 28px;
+            --space-8: 44px;
         }
 
-        .footer {
-            margin-top: 25px;
-            font-size: 10px;
-            color: grey;
-        }
-
-        .context > table {
-            padding: 0 0 15px 20px;
-            display: none;
-        }
-
-        .context > table tr:nth-child(even) {
-            background-color: #eee;
-        }
-
-        .context > table tr:nth-child(odd) {
-            background-color: #fff;
-        }
-
-        .context > table th {
-            color: white;
-            background-color: black;
-        }
-
-        .context > table th .browser {
-            color: lightgray;
-            font-weight: normal;
-            font-size: smaller;
-        }
-
-        .context > table td:first-child {
-            padding: 4px;
-        }
-
-        .context > table td {
-            padding: 0 0 0 0;
-            border: 1px solid;
-            border-collapse: collapse;
-            vertical-align: top;
-            position: relative;
-        }
-
-        p {
-            padding: 5px;
-        }
-
-        .report label {
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 18px;
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: #0f1115;
+                --color-surface: #171a21;
+                --color-border: #262a33;
+                --color-text: #e6e8eb;
+                --color-text-muted: #9aa3af;
+                --color-accent: #60a5fa;
+                --color-warn-bg: #3a2a0a;
+                --color-warn-fg: #fcd34d;
+                --color-warn-dot: #f59e0b;
+                --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+                --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+            }
         }
 
         * {
             box-sizing: border-box;
         }
+
+        html {
+            font-family: var(--font-sans);
+            color: var(--color-text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            scrollbar-gutter: stable;
+            overflow-y: scroll;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .page-wrapper {
+            max-width: 1000px;
+            margin-inline: auto;
+            padding: var(--space-6) var(--space-5) var(--space-8);
+        }
+
+        h2 {
+            font-weight: 700;
+            font-size: 1.6em;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            margin: 0 0 var(--space-3) 0;
+        }
+
+        h3 {
+            font-weight: 600;
+            font-size: 1.15em;
+            color: var(--color-text-muted);
+            margin: 0 0 var(--space-5) 0;
+        }
+
+        .card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: var(--space-6);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: var(--color-warn-bg);
+            color: var(--color-warn-fg);
+            border-radius: 999px;
+            padding: 4px 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: var(--space-4);
+        }
+
+        .status-pill::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-warn-dot);
+            box-shadow: 0 0 0 0 var(--color-warn-dot);
+            animation: pulse 1.8s ease-out infinite;
+        }
+
+        @keyframes pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.55); }
+            70%  { box-shadow: 0 0 0 10px rgba(217, 119, 6, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(217, 119, 6, 0); }
+        }
+
+        p {
+            margin: 0 0 var(--space-4) 0;
+        }
+
+        a {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: var(--space-6);
+            font-size: 12px;
+            color: var(--color-text-muted);
+            text-align: center;
+        }
     </style>
 </head>
 
 <body>
+<div class="page-wrapper">
 
-<div class="report">
-    <h2>JLineup unfinished report</h2>
-    <h3 th:if="${config.name}" th:text="${config.name}"></h3>
-    <p>The JLineup run was not finished yet (before and after steps have to be finished to generate a screenshot comparison report) or ran into an error. You might check the <a th:href="jlineup.log">JLineup run log file</a> for details.</p>
+    <div class="report card">
+        <div class="status-pill">In progress</div>
+        <h2>JLineup unfinished report</h2>
+        <h3 th:if="${config.name}" th:text="${config.name}"></h3>
+        <p>
+            The JLineup run was not finished yet &mdash; both the <strong>before</strong> and
+            <strong>after</strong> steps need to complete before a screenshot comparison report
+            can be generated &mdash; or the run encountered an error.
+        </p>
+        <p>
+            You can check the <a th:href="jlineup.log">JLineup run log file</a> for details.
+        </p>
+    </div>
+
+    <p class="footer">
+        Generated with JLineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
+        [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]]
+    </p>
+
 </div>
-
-<p class="footer">Generated with Jlineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
-    [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]]</p>
-
 </body>
 </html>

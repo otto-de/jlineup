@@ -10,272 +10,279 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <style>
 
-        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+        /* ---------- Design tokens ---------- */
+        :root {
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+            --color-bg: #f5f6f8;
+            --color-surface: #ffffff;
+            --color-surface-2: #f9fafb;
+            --color-surface-3: #f1f3f5;
+            --color-border: #e4e7eb;
+            --color-border-strong: #d1d5db;
+            --color-text: #1f2937;
+            --color-text-muted: #6b7280;
+            --color-text-soft: #9ca3af;
+
+            --color-success: #15803d;
+            --color-success-bg: #dcfce7;
+            --color-failure: #b91c1c;
+            --color-failure-bg: #fee2e2;
+            --color-info: #1d4ed8;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-xs: 0 1px 2px rgba(16, 24, 40, .04);
+            --shadow-sm: 0 1px 3px rgba(16, 24, 40, .06), 0 1px 2px rgba(16, 24, 40, .04);
+            --shadow-md: 0 4px 12px rgba(16, 24, 40, .08), 0 2px 4px rgba(16, 24, 40, .04);
+            --shadow-lg: 0 12px 32px rgba(16, 24, 40, .12);
+
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+        }
 
         * {
-            font-family: 'Lato', Arial, Helvetica, sans-serif;
             box-sizing: border-box;
         }
 
+        html {
+            font-family: var(--font-sans);
+            color: var(--color-text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
         body {
-            background-color: white;
+            background-color: var(--color-bg);
             font-weight: 400;
-            margin-left: 10px;
-            margin-top: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+            padding: var(--space-6) var(--space-5) var(--space-8);
+            max-width: 1600px;
+            margin-inline: auto;
         }
 
         h1 {
             font-weight: 700;
-            font-size: 2.4em;
-            margin: 5px 0 15px 0;
+            font-size: 2em;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            margin: 0 0 var(--space-4) 0;
         }
 
         h2 {
             font-weight: 700;
-            font-size: 2em;
-            margin: 5px 0 15px 0;
+            font-size: 1.5em;
+            line-height: 1.25;
+            letter-spacing: -0.01em;
+            margin: 0 0 var(--space-3) 0;
         }
 
         h3 {
-            font-weight: 700;
-            font-size: 1.6em;
-            margin: 5px 0 5px 0;
+            font-weight: 600;
+            font-size: 1.15em;
+            line-height: 1.3;
+            margin: 0 0 var(--space-2) 0;
+            color: var(--color-text);
+            word-break: break-all;
         }
 
         h4 {
-            font-weight: 700;
-            font-size: 1.4em;
+            font-weight: 600;
+            font-size: 1em;
+            line-height: 1.35;
             margin: 0;
         }
 
         h5 {
-            font-weight: 700;
-            font-size: 1.2em;
+            font-weight: 600;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-text-muted);
+            margin: 0 0 var(--space-2) 0;
         }
 
         .footer {
-            margin-top: 25px;
-            font-size: 10px;
-            color: grey;
+            margin-top: var(--space-8);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--color-border);
+            font-size: 12px;
+            color: var(--color-text-soft);
+        }
+
+        .report-header {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: var(--space-5);
+            margin-bottom: var(--space-5);
+        }
+
+        .report-header .report-eyebrow {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-soft);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .message-block {
+            margin-top: var(--space-4);
+            padding: var(--space-3) var(--space-4);
+            background-color: var(--color-surface-3);
+            border-left: 3px solid var(--color-border-strong);
+            border-radius: var(--radius-sm);
+            white-space: pre;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            overflow-x: auto;
         }
 
         .url {
-            background-color: #ededed;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xs);
+            padding: var(--space-5);
+            margin-bottom: var(--space-4);
         }
 
         .urlReport {
-            background-color: #dedede;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+            background-color: var(--color-surface-2);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-3);
+            overflow: hidden;
+            transition: box-shadow .15s ease, border-color .15s ease;
+        }
+
+        .urlReport[open] {
+            box-shadow: var(--shadow-sm);
+            border-color: var(--color-border-strong);
+        }
+
+        .urlReport > summary {
+            list-style: none;
+            cursor: pointer;
+            padding: var(--space-3) var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            user-select: none;
+        }
+        .urlReport > summary::-webkit-details-marker {
+            display: none;
+        }
+        .urlReport > summary:hover {
+            background-color: var(--color-surface-3);
+        }
+        .urlReport > summary:focus-visible {
+            outline: 2px solid var(--color-info);
+            outline-offset: -2px;
+        }
+
+        .urlReport > summary .chevron {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            color: var(--color-text-muted);
+            transition: transform .15s ease;
+        }
+        .urlReport[open] > summary .chevron {
+            transform: rotate(90deg);
+        }
+
+        .urlReport > summary .summary-title {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            min-width: 0;
         }
 
         .urlReport > table {
-            padding: 0 0 0 0;
-            border-spacing: 10px;
-            border-radius: 4px;
-            display: none;
+            width: 100%;
+            border-spacing: 0;
+            border-collapse: collapse;
+            margin: 0;
+            background-color: var(--color-surface);
+            border-top: 1px solid var(--color-border);
         }
 
-        .urlReport > table tr:nth-child(even) {
-            background-color: #eee;
-        }
-
-        .urlReport > table tr:nth-child(odd) {
-            background-color: #ccc;
+        .urlReport > table tr + tr > td {
+            border-top: 1px solid var(--color-border);
         }
 
         .urlReport > table th {
-            color: white;
-            background-color: #565656;
-            border-radius: 4px 4px 0 0;
-            padding: 1px 1px 3px 1px;
-            overflow: hidden;
-            max-width: 0;
-        }
-
-        .urlReport > table td:first-child {
-            padding: 4px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            background-color: var(--color-surface-3);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--space-2) var(--space-3);
+            text-align: left;
         }
 
         .urlReport > table td {
-            padding: 0 0 0 0;
+            padding: var(--space-3);
             border-collapse: collapse;
             vertical-align: top;
             position: relative;
         }
 
-        div.legend {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 51;
-        }
-
-        .legend {
-            font-size: small;
-            display: none;
-        }
-
-        .legend > table {
-            background-color: white;
-            border-spacing: 2px;
-            border: 1px solid black;
-            #border-collapse: collapse;
-        }
-
-        .legend > table th {
-            background-color: black;
-            padding: 3px;
-            color: white;
-        }
-
-        .legend > table td {
-            padding: 3px;
-            border: 0;
-        }
-
-        .legend > table td:first-child {
-            padding: 4px;
-            border: 1px solid black;
+        .urlReport > table td:first-child {
+            padding: var(--space-3);
+            min-width: 140px;
+            max-width: 200px;
         }
 
         .deviceinfo {
-            font-size: small;
+            font-size: 12px;
         }
 
         .infotext {
-            font-size: small;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--color-text);
+        }
+
+        .infotext a {
+            color: var(--color-info);
+            text-decoration: none;
+        }
+
+        .infotext a:hover {
+            text-decoration: underline;
         }
 
         p {
-            padding: 5px;
-        }
-
-        .report label {
-            cursor: pointer;
-        }
-
-        .urlReport input[type=checkbox] {
-            display: none;
-        }
-
-        .urlReport input[type=checkbox]:checked ~ table {
-            display: block;
-        }
-
-        .urlReport input[type=checkbox]:checked ~ label .open-icon {
-            display: none;
-        }
-
-        .urlReport input[type=checkbox]:checked ~ label .close-icon {
-            display: inline;
-        }
-
-        .urlReport input[type=checkbox]:checked ~ label .open-report {
-            display: none;
-        }
-
-        .urlReport input[type=checkbox]:checked ~ label .close-report {
-            display: inline;
-        }
-
-        .open-report {
-            display: inline;
-        }
-
-        .close-report {
-            display: none;
-        }
-
-        .open-icon {
-            display: inline;
-            font-family: monospace;
-            font-size: xx-large;
-        }
-
-        .close-icon {
-            display: none;
-            font-family: monospace;
-            font-size: xx-large;
+            padding: 0;
+            margin: 0;
         }
 
         .success {
-            color: green;
+            color: var(--color-success);
         }
 
         .failure {
-            color: red;
-        }
-
-        .zoom-lens {
-            position: absolute;
-            border: 1px solid #c3c3c3;
-            width: 44px;
-            height: 44px;
-            z-index: 20;
-            cursor: pointer;
-        }
-
-        .zoom {
-            #border: 1px solid #c3c3c3;
-            width: 320px;
-            height: 320px;
-            image-rendering: pixelated;
-        }
-
-        #zoombox {
-            position: relative;
-        }
-
-        #zoomfix {
-            position: fixed;
-            z-index: 10;
-            background-color: #ffffff;
-            border-radius: 10px;
-        }
-
-        #zoomfix > table {
-            position: relative;
-            background-color: transparent;
-            border-spacing: 5px;
-            padding: 0 0 0 0;
-            border-collapse: separate;
-        }
-
-        #zoomfix > table th {
-            color: white;
-            padding: 0 0 0 0;
-            background-color: #565656;
-        }
-
-        #zoomfix > table th:nth-child(1) {
-            border-radius: 10px 0 0 0;
-        }
-
-        #zoomfix > table th:nth-child(3) {
-            border-radius: 0 10px 0 0;
-        }
-
-        #zoomfix > table td {
-            color: white;
-            padding: 1px;
-            background-color: #111111;
-        }
-
-        .visible {
-            visibility: visible;
-            transition-property: opacity;
-            transition-delay: 1s;
-        }
-
-        .invisible {
-            visibility: hidden;
-            transition-property: opacity;
-            transition-delay: 1s;
+            color: var(--color-failure);
         }
 
         a, a:visited, a:hover, a:active {
@@ -291,97 +298,40 @@
             opacity: 0;
         }
 
-        .info {
-            max-width: 10vw;
-        }
-
-        .icv__label {
-            font-weight: bold;
-            #top: 1rem;
-            #bottom: unset;
-        }
-
         .inline-size {
-            font-size: 0.7em;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--color-text-muted);
+            background-color: var(--color-surface-3);
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--color-border);
         }
 
-        .result-col-header {
-            min-width: 5em;
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: #0f1115;
+                --color-surface: #181b22;
+                --color-surface-2: #1f232c;
+                --color-surface-3: #272c36;
+                --color-border: #2f3643;
+                --color-border-strong: #3b4352;
+                --color-text: #e5e7eb;
+                --color-text-muted: #9ca3af;
+                --color-text-soft: #6b7280;
+
+                --color-success: #4ade80;
+                --color-success-bg: #052e16;
+                --color-failure: #f87171;
+                --color-failure-bg: #450a0a;
+                --color-info: #60a5fa;
+
+                --shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
+                --shadow-sm: 0 1px 3px rgba(0, 0, 0, .35);
+                --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
+                --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
+            }
         }
-
-        .result-col {
-            writing-mode: vertical-rl;
-            vertical-align: middle !important;
-            text-align: center;
-        }
-
-        #black {
-            width: 100%;
-            height: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 49;
-            display: none;
-            background: rgba(0, 0, 0, 0.9);
-        }
-
-        #clickdiff {
-            width: 100%;
-            height: 100%;
-            z-index: 50;
-            display: none;
-        }
-
-        #imagediv {
-
-        }
-
-        #imagediv img {
-            position: fixed;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            margin: auto;
-            z-index: 51;
-        }
-
-        #clickclose {
-            position: fixed;
-            color: white;
-            top: 30px;
-            right: 30px;
-            font-size: 50px;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: rgba(255, 255, 255, 0.7);
-            display: block;
-            border-radius: 10px;
-            padding: 4px 16px 4px 16px;
-            z-index: 51;
-        }
-
-        #clickimagelabel {
-            position: fixed;
-            color: white;
-            top: 30px;
-            left: 30px;
-            font-size: 50px;
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 0.7);
-            display: block;
-            border-radius: 10px;
-            padding: 4px 8px 8px 8px;
-            z-index: 51;
-        }
-
-        #clickimage {
-            max-width: 90%;
-            max-height: 90%;
-        }
-
     </style>
 
 </head>
@@ -389,27 +339,29 @@
 <body>
 
 <div class="report">
-    <h5 style="color: #777777; margin: 0;">JLineup Reference Report</h5>
-    <h1 th:if="${report.config.name}" th:text="${report.config.name}"></h1>
-    <div th:if="${report.config.sanitizedMessage}"style="background-color: #eeeeee; border-radius: 5px; padding: 5px;">
-        <h5 style="margin: 5px;">Message</h5>
-        <p  style="margin: 5px; background-color: #dedede; border-radius: 5px; white-space: pre;" th:utext="${report.config.sanitizedMessage}">Some Message</p>
-    </div>
+    <header class="report-header">
+        <p class="report-eyebrow">JLineup Reference Report</p>
+        <h1 th:if="${report.config.name}" th:text="${report.config.name}"></h1>
+        <pre th:if="${report.config.sanitizedMessage}" class="message-block"
+             th:utext="${report.config.sanitizedMessage}">Some Message</pre>
+    </header>
 
     <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}">
         <h3 th:text="${urlReport.urlKey}"></h3>
-        <div class="urlReport" th:each="contextReport,iterationStatus : ${urlReport.contextReports}">
-            <input type="checkbox" th:attr="id=${contextReport.contextHash}"/>
-            <label th:attr="for=${contextReport.contextHash}">
-                <h4>
-                    <span class="open-icon">[+]</span>
-                    <span class="close-icon">[-]</span>
-                    [[${#strings.substringAfter(contextReport.url,urlReport.url)}]]
-                    <span class="inline-size">([[${#strings.replace(contextReport.deviceInfo,'\n',', ')}]])</span>
-                    <span th:if="${contextReport.browserInfo != null}" class="inline-size">[[${contextReport.browserInfo}]]</span>
-                    <span th:if="${#strings.isEmpty(contextReport.shownCookiesString) == false}" class="inline-size">([[${contextReport.shownCookiesString}]])</span>
-                </h4>
-            </label>
+        <details class="urlReport" th:each="contextReport,iterationStatus : ${urlReport.contextReports}">
+            <summary>
+                <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="summary-title">
+                    <h4>
+                        [[${#strings.substringAfter(contextReport.url,urlReport.url)}]]
+                        <span class="inline-size">[[${#strings.replace(contextReport.deviceInfo,'\n',', ')}]]</span>
+                        <span th:if="${contextReport.browserInfo != null}" class="inline-size">[[${contextReport.browserInfo}]]</span>
+                        <span th:if="${#strings.isEmpty(contextReport.shownCookiesString) == false}" class="inline-size">[[${contextReport.shownCookiesString}]]</span>
+                    </h4>
+                </div>
+            </summary>
             <table>
                 <tr>
                     <th>Info</th>
@@ -441,32 +393,7 @@
                     </td>
                 </tr>
             </table>
-
-    </div>
-</div>
-
-<div id="zoombox" class="invisible">
-    <div id="zoomfix">
-        <table>
-            <tr>
-                <th>Before</th>
-            </tr>
-            <tr>
-                <td>
-                    <div id="zoom_before" class="zoom"></div>
-                </td>
-            </tr>
-        </table>
-    </div>
-</div>
-
-<div id="black" onclick="closeClickDiff()"></div>
-
-<div id="clickdiff">
-    <div id="imagediv">
-        <img id="clickimage" />
-        <div id="clickimagelabel">Before</div>
-        <div id="clickclose" onclick="closeClickDiff()">&#10006;</div>
+        </details>
     </div>
 </div>
 

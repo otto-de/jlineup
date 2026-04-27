@@ -331,6 +331,7 @@ public class Browser implements AutoCloseable {
     }
 
     private final AtomicBoolean printVersion = new AtomicBoolean(true);
+    private final Set<String> recordedBrowserVersions = ConcurrentHashMap.newKeySet();
 
     private Browser.Type getEffectiveBrowserType(ScreenshotContext screenshotContext) {
         return screenshotContext.browserType != null ? screenshotContext.browserType : jobConfig.browser;
@@ -354,7 +355,10 @@ public class Browser implements AutoCloseable {
 
         if (printVersion.getAndSet(false)) {
             LOG.info("User agent: " + getUserAgent());
-            fileService.setBrowserAndVersion(screenshotContext, getBrowserAndVersion(localDriver));
+        }
+        String browserAndVersion = getBrowserAndVersion(localDriver);
+        if (recordedBrowserVersions.add(browserAndVersion)) {
+            fileService.setBrowserAndVersion(screenshotContext, browserAndVersion);
         }
 
         //No need to move the mouse out of the way for headless browsers, but this avoids hovering links in other browsers

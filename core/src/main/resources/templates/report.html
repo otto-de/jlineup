@@ -15,102 +15,472 @@
 
     <style>
 
-        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+        /* ---------- Design tokens ---------- */
+        :root {
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+            --color-bg: #f5f6f8;
+            --color-surface: #ffffff;
+            --color-surface-2: #f9fafb;
+            --color-surface-3: #f1f3f5;
+            --color-border: #e4e7eb;
+            --color-border-strong: #d1d5db;
+            --color-text: #1f2937;
+            --color-text-muted: #6b7280;
+            --color-text-soft: #9ca3af;
+
+            --color-success: #15803d;
+            --color-success-bg: #dcfce7;
+            --color-success-border: #86efac;
+            --color-failure: #b91c1c;
+            --color-failure-bg: #fee2e2;
+            --color-failure-border: #fca5a5;
+            --color-flaky: #b45309;
+            --color-flaky-bg: #fef3c7;
+            --color-flaky-border: #fcd34d;
+            --color-info: #1d4ed8;
+            --color-info-bg: #dbeafe;
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+
+            --shadow-xs: 0 1px 2px rgba(16, 24, 40, .04);
+            --shadow-sm: 0 1px 3px rgba(16, 24, 40, .06), 0 1px 2px rgba(16, 24, 40, .04);
+            --shadow-md: 0 4px 12px rgba(16, 24, 40, .08), 0 2px 4px rgba(16, 24, 40, .04);
+            --shadow-lg: 0 12px 32px rgba(16, 24, 40, .12);
+
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+        }
 
         * {
-            font-family: 'Lato', Arial, Helvetica, sans-serif;
             box-sizing: border-box;
         }
 
+        html {
+            font-family: var(--font-sans);
+            color: var(--color-text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* Always reserve scrollbar space so that libraries that toggle
+               overflow:hidden on <body> (image-compare-viewer while dragging)
+               don't cause a horizontal layout shift. */
+            scrollbar-gutter: stable;
+            overflow-y: scroll;
+        }
+
+        /* Neutralize image-compare-viewer's body style hack that adds
+           padding-right and overflow:hidden while the user drags the slider.
+           With scrollbar-gutter:stable on <html> we don't need this compensation,
+           and keeping it causes a visible horizontal shift. */
+        body.icv__body {
+            padding-right: 0 !important;
+            overflow: visible !important;
+        }
+
         body {
-            background-color: white;
+            background-color: var(--color-bg);
             font-weight: 400;
-            margin-left: 10px;
-            margin-top: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+            /* No padding/max-width/centering here on purpose: image-compare-viewer
+               mutates <body> (adds padding-right + overflow:hidden) while the user
+               drags the slider. If <body> is the centered element, those mutations
+               cause a visible horizontal jump. Centering happens on .page-wrapper. */
+        }
+
+        .page-wrapper {
+            max-width: 1600px;
+            margin-inline: auto;
+            padding: var(--space-6) var(--space-5) var(--space-8);
+        }
+
+        /* Sticky top dashboard bar */
+        .sticky-bar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+            backdrop-filter: saturate(180%) blur(8px);
+            -webkit-backdrop-filter: saturate(180%) blur(8px);
+            border-bottom: 1px solid var(--color-border);
+            opacity: 0;
+            transform: translateY(-4px);
+            pointer-events: none;
+            transition: opacity 160ms ease, transform 160ms ease;
+        }
+
+        .sticky-bar.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .sticky-bar-inner {
+            max-width: 1600px;
+            margin-inline: auto;
+            padding: 10px var(--space-5);
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .sticky-bar-title {
+            font-weight: 600;
+            font-size: 0.95em;
+            color: var(--color-text);
+            margin-right: auto;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+
+        .sticky-bar-title .eyebrow {
+            color: var(--color-text-muted);
+            font-weight: 500;
+            font-size: 0.85em;
+            letter-spacing: 0.02em;
+        }
+
+        .sticky-bar-stats {
+            display: flex;
+            gap: var(--space-4);
+            font-size: 0.85em;
+            color: var(--color-text-muted);
+        }
+
+        .sticky-bar-stats .stat {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .sticky-bar-stats .stat .num {
+            color: var(--color-text);
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .sticky-bar-top {
+            border: 1px solid var(--color-border);
+            background: transparent;
+            color: var(--color-text-muted);
+            border-radius: var(--radius-sm);
+            padding: 4px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .sticky-bar-top:hover {
+            color: var(--color-text);
+            border-color: var(--color-text-muted);
         }
 
         h1 {
             font-weight: 700;
-            font-size: 2.4em;
-            margin: 5px 0 15px 0;
+            font-size: 2em;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            margin: 0 0 var(--space-4) 0;
         }
 
         h2 {
             font-weight: 700;
-            font-size: 2em;
-            margin: 5px 0 15px 0;
+            font-size: 1.5em;
+            line-height: 1.25;
+            letter-spacing: -0.01em;
+            margin: 0 0 var(--space-3) 0;
         }
 
         h3 {
-            font-weight: 700;
-            font-size: 1.6em;
-            margin: 5px 0 5px 0;
+            font-weight: 600;
+            font-size: 1.15em;
+            line-height: 1.3;
+            margin: 0 0 var(--space-2) 0;
+            color: var(--color-text);
+            word-break: break-all;
         }
 
         h4 {
-            font-weight: 700;
-            font-size: 1.4em;
+            font-weight: 600;
+            font-size: 1em;
+            line-height: 1.35;
             margin: 0;
         }
 
         h5 {
-            font-weight: 700;
-            font-size: 1.2em;
+            font-weight: 600;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-text-muted);
+            margin: 0 0 var(--space-2) 0;
         }
 
         .footer {
-            margin-top: 25px;
-            font-size: 10px;
-            color: grey;
+            margin-top: var(--space-8);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--color-border);
+            font-size: 12px;
+            color: var(--color-text-soft);
         }
 
+        /* ---------- Header / summary card ---------- */
+        .report-header {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: var(--space-5);
+            margin-bottom: var(--space-5);
+        }
+
+        .report-header .report-eyebrow {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-soft);
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-3);
+            margin-top: var(--space-4);
+        }
+
+        .summary-item {
+            background-color: var(--color-surface-2);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-4);
+        }
+
+        .summary-item .label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-text-muted);
+            margin-bottom: 4px;
+        }
+
+        .summary-item .value {
+            font-size: 1.15em;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        /* ---------- Status pills ---------- */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            line-height: 1.2;
+        }
+        .status-pill::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        .status-pill.success {
+            color: var(--color-success);
+            background-color: var(--color-success-bg);
+            border-color: var(--color-success-border);
+        }
+        .status-pill.failure {
+            color: var(--color-failure);
+            background-color: var(--color-failure-bg);
+            border-color: var(--color-failure-border);
+        }
+        .status-pill.flaky-accepted {
+            color: var(--color-flaky);
+            background-color: var(--color-flaky-bg);
+            border-color: var(--color-flaky-border);
+        }
+
+        .message-block {
+            margin-top: var(--space-4);
+            padding: var(--space-3) var(--space-4);
+            background-color: var(--color-surface-3);
+            border-left: 3px solid var(--color-border-strong);
+            border-radius: var(--radius-sm);
+            white-space: pre;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            overflow-x: auto;
+        }
+
+        /* ---------- Nested cards ---------- */
         .url {
-            background-color: #ededed;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xs);
+            padding: var(--space-5);
+            margin-bottom: var(--space-4);
+        }
+
+        .urlSubPath {
+            background-color: var(--color-surface-2);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-top: var(--space-3);
+        }
+
+        .urlSubPath:first-of-type {
+            margin-top: var(--space-3);
+        }
+
+        h3.url-base {
+            color: var(--color-text);
+        }
+
+        h3.sub-path {
+            color: var(--color-text);
+            font-size: 1em;
+            margin: 0 0 var(--space-2) 0;
         }
 
         .urlReport {
-            background-color: #dedede;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            margin-top: var(--space-3);
+            overflow: hidden;
+            transition: box-shadow .15s ease, border-color .15s ease;
         }
 
-        .urlReport > table {
-            padding: 0 0 0 0;
-            border-spacing: 10px;
-            border-radius: 4px;
+        .urlReport[open] {
+            box-shadow: var(--shadow-sm);
+            border-color: var(--color-border-strong);
+        }
+
+        .urlReport > summary {
+            list-style: none;
+            cursor: pointer;
+            padding: var(--space-3) var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            user-select: none;
+        }
+        .urlReport > summary::-webkit-details-marker {
             display: none;
         }
-
-        .urlReport > table tr:nth-child(even) {
-            background-color: #eee;
+        .urlReport > summary:hover {
+            background-color: var(--color-surface-2);
+        }
+        .urlReport > summary:focus-visible {
+            outline: 2px solid var(--color-info);
+            outline-offset: -2px;
         }
 
-        .urlReport > table tr:nth-child(odd) {
-            background-color: #ccc;
+        .urlReport > summary .chevron {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            color: var(--color-text-muted);
+            transition: transform .15s ease;
+        }
+        .urlReport[open] > summary .chevron {
+            transform: rotate(90deg);
         }
 
-        .urlReport > table th {
-            color: white;
-            background-color: #565656;
-            border-radius: 4px 4px 0 0;
-            padding: 1px 1px 3px 1px;
-            overflow: hidden;
-            max-width: 0;
+        .urlReport > summary .summary-title {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            min-width: 0;
         }
 
-        .urlReport > table td:first-child {
-            padding: 4px;
+        .urlReport .compare-grid {
+            display: grid;
+            grid-template-columns:
+                minmax(160px, 200px)    /* info */
+                minmax(0, 1fr)          /* before | after */
+                35px                    /* result (vertical text, no header) */
+                minmax(0, 1fr);         /* difference */
+            background-color: var(--color-surface-2);
+            border-top: 1px solid var(--color-border);
         }
 
-        .urlReport > table td {
-            padding: 0 0 0 0;
-            border-collapse: collapse;
+        .urlReport .compare-grid > .compare-row {
+            display: contents;
+        }
+
+        /* Header row */
+        .urlReport .compare-grid > .compare-head > .compare-cell {
+            position: sticky;
+            top: 0;
+            z-index: 4;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            background-color: var(--color-surface-3);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--space-2) var(--space-3);
+            text-align: left;
+        }
+
+        /* Data cells */
+        .urlReport .compare-grid > .compare-row > .compare-cell {
+            padding: var(--space-3);
             vertical-align: top;
             position: relative;
+            background-color: var(--color-surface-2);
+        }
+
+        /* Row separators */
+        .urlReport .compare-grid > .compare-row + .compare-row > .compare-cell {
+            border-top: 1px solid var(--color-border);
+        }
+
+        .urlReport .compare-grid > .compare-row > .compare-cell > div {
+            position: relative;
+        }
+
+        .urlReport .compare-grid > .compare-row > .compare-cell.result-col {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-3) 0;
+        }
+
+        .urlReport .compare-grid > .compare-row > .compare-cell.result-col h5 {
+            margin: 0;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            text-align: center;
+            letter-spacing: 0.04em;
         }
 
         div.legend {
@@ -121,120 +491,97 @@
         }
 
         .legend {
-            font-size: small;
+            font-size: 12px;
             display: none;
         }
 
-        .legend > table {
-            background-color: white;
-            border-spacing: 2px;
-            border: 1px solid black;
-            #border-collapse: collapse;
+        .legend-box {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            min-width: 180px;
         }
 
-        .legend > table th {
-            background-color: black;
-            padding: 3px;
-            color: white;
+        .legend-box h4 {
+            background-color: var(--color-surface-3);
+            padding: 6px 10px;
+            margin: 0;
+            color: var(--color-text);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
-        .legend > table td {
-            padding: 3px;
-            border: 0;
+        .legend-grid {
+            display: grid;
+            grid-template-columns: 26px 1fr;
+            gap: 4px 10px;
+            padding: 8px 10px;
         }
 
-        .legend > table td:first-child {
-            padding: 4px;
-            border: 1px solid black;
+        .legend-grid .swatch {
+            width: 18px;
+            height: 18px;
+            border: 1px solid var(--color-border);
+            border-radius: 3px;
+        }
+
+        .legend-grid .label {
+            align-self: center;
+            color: var(--color-text);
         }
 
         .deviceinfo {
-            font-size: small;
+            font-size: 12px;
         }
 
         .infotext {
-            font-size: small;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--color-text);
+        }
+
+        .infotext a {
+            color: var(--color-info);
+            text-decoration: none;
+        }
+
+        .infotext a:hover {
+            text-decoration: underline;
         }
 
         p {
-            padding: 5px;
-        }
-
-        .report label {
-            cursor: pointer;
-        }
-
-        .urlReport input[type=checkbox] {
-            display: none;
-        }
-
-        .urlReport input[type=checkbox]:checked ~ table {
-            display: block;
-        }
-
-        /*.urlReport input[type=checkbox]:checked ~ .legend {*/
-        /*    display: block;*/
-        /*}*/
-
-        .urlReport input[type=checkbox]:checked ~ label .open-icon {
-            display: none;
-        }
-
-        .urlReport input[type=checkbox]:checked ~ label .close-icon {
-            display: inline;
-        }
-
-        .urlReport input[type=checkbox]:checked ~ label .open-report {
-            display: none;
-        }
-
-        .urlReport input[type=checkbox]:checked ~ label .close-report {
-            display: inline;
-        }
-
-        .open-report {
-            display: inline;
-        }
-
-        .close-report {
-            display: none;
-        }
-
-        .open-icon {
-            display: inline;
-            font-family: monospace;
-            font-size: xx-large;
-        }
-
-        .close-icon {
-            display: none;
-            font-family: monospace;
-            font-size: xx-large;
+            padding: 0;
+            margin: 0;
         }
 
         .success {
-            color: green;
+            color: var(--color-success);
         }
 
         .failure {
-            color: red;
+            color: var(--color-failure);
         }
 
         .flaky-accepted {
-            color: #cc8800;
+            color: var(--color-flaky);
         }
 
         .zoom-lens {
             position: absolute;
-            border: 1px solid #c3c3c3;
+            border: 1px solid var(--color-border-strong);
+            background-color: rgba(29, 78, 216, 0.08);
             width: 44px;
             height: 44px;
             z-index: 20;
-            cursor: pointer;
+            cursor: crosshair;
+            border-radius: 2px;
         }
 
         .zoom {
-            #border: 1px solid #c3c3c3;
             width: 320px;
             height: 320px;
             image-rendering: pixelated;
@@ -247,35 +594,36 @@
         #zoomfix {
             position: fixed;
             z-index: 10;
-            background-color: #ffffff;
-            border-radius: 10px;
+            background-color: var(--color-surface);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--color-border);
+            overflow: hidden;
         }
 
-        #zoomfix > table {
-            position: relative;
-            background-color: transparent;
-            border-spacing: 5px;
-            padding: 0 0 0 0;
-            border-collapse: separate;
+        #zoomfix .zoom-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto 1fr;
         }
 
-        #zoomfix > table th {
-            color: white;
-            padding: 0 0 0 0;
-            background-color: #565656;
+        #zoomfix .zoom-grid > .zoom-head {
+            color: var(--color-text);
+            padding: 6px 10px;
+            background-color: var(--color-surface-3);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            text-align: left;
         }
 
-        #zoomfix > table th:nth-child(1) {
-            border-radius: 10px 0 0 0;
+        #zoomfix .zoom-grid > .zoom-head + .zoom-head,
+        #zoomfix .zoom-grid > .zoom-cell + .zoom-cell {
+            border-left: 1px solid var(--color-border);
         }
 
-        #zoomfix > table th:nth-child(3) {
-            border-radius: 0 10px 0 0;
-        }
-
-        #zoomfix > table td {
-            color: white;
-            padding: 1px;
+        #zoomfix .zoom-grid > .zoom-cell {
             background-color: #111111;
         }
 
@@ -310,21 +658,63 @@
 
         .icv__label {
             font-weight: bold;
-            #top: 1rem;
-            #bottom: unset;
+        }
+
+        .inline-size,
+        .summary-title .status-pill {
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
         }
 
         .inline-size {
-            font-size: 0.7em;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--color-text-muted);
+            background-color: var(--color-surface-3);
+            padding: 0 8px;
+            border-radius: 999px;
+            border: 1px solid var(--color-border);
+        }
+
+        .inline-size .browser-logo {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+        }
+
+        .inline-size.browser-pill {
+            padding: 0 6px;
+        }
+
+        .inline-size.browser-pill .browser-logo {
+            width: 14px;
+            height: 14px;
+            display: block;
+        }
+
+        /* Inside the context summary row, make status pills match the
+           inline-size bubbles (resolution / browser) in footprint. */
+        .summary-title .status-pill {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 0 8px;
+            gap: 5px;
+            line-height: 1;
+        }
+
+        .summary-title .status-pill::before {
+            width: 6px;
+            height: 6px;
         }
 
         .result-col-header {
-            min-width: 5em;
+            text-align: center !important;
         }
 
         .result-col {
-            writing-mode: vertical-rl;
-            vertical-align: middle !important;
             text-align: center;
         }
 
@@ -346,10 +736,6 @@
             display: none;
         }
 
-        #imagediv {
-
-        }
-
         #imagediv img {
             position: fixed;
             cursor: pointer;
@@ -366,14 +752,20 @@
             color: white;
             top: 30px;
             right: 30px;
-            font-size: 50px;
-            font-weight: bold;
+            font-size: 24px;
+            font-weight: 600;
             cursor: pointer;
-            background-color: rgba(255, 255, 255, 0.7);
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
             display: block;
-            border-radius: 10px;
-            padding: 4px 16px 4px 16px;
+            border-radius: var(--radius-md);
+            padding: 8px 16px;
             z-index: 51;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #clickclose:hover {
+            background-color: rgba(255, 255, 255, 0.25);
         }
 
         #clickimagelabel {
@@ -381,38 +773,72 @@
             color: white;
             top: 30px;
             left: 30px;
-            font-size: 50px;
-            font-weight: bold;
-            background-color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            font-weight: 600;
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
             display: block;
-            border-radius: 10px;
-            padding: 4px 8px 8px 8px;
+            border-radius: var(--radius-md);
+            padding: 8px 16px;
             z-index: 51;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            letter-spacing: 0.02em;
         }
 
         #clickimage {
             max-width: 90%;
             max-height: 90%;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
         }
 
+        /* ---------- Dark mode ---------- */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg: #0f1115;
+                --color-surface: #181b22;
+                --color-surface-2: #1f232c;
+                --color-surface-3: #272c36;
+                --color-border: #2f3643;
+                --color-border-strong: #3b4352;
+                --color-text: #e5e7eb;
+                --color-text-muted: #9ca3af;
+                --color-text-soft: #6b7280;
+
+                --color-success: #4ade80;
+                --color-success-bg: #052e16;
+                --color-success-border: #14532d;
+                --color-failure: #f87171;
+                --color-failure-bg: #450a0a;
+                --color-failure-border: #7f1d1d;
+                --color-flaky: #fbbf24;
+                --color-flaky-bg: #451a03;
+                --color-flaky-border: #78350f;
+                --color-info: #60a5fa;
+                --color-info-bg: #172554;
+
+                --shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
+                --shadow-sm: 0 1px 3px rgba(0, 0, 0, .35);
+                --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
+                --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
+            }
+        }
     </style>
     <script type="application/javascript">
 
         function initClickImage(file1, file2, file3) {
-            let current = document.getElementById("clickimage").src;
-
             function setAfter() {
                 if (file2 === "null") {
-                    setDifference()
+                    setBefore();
                 } else {
-                    document.getElementById("clickimage").src = file2
+                    document.getElementById("clickimage").src = file2;
                     document.getElementById("clickimagelabel").innerText = "After";
                 }
             }
 
             function setDifference() {
                 if (file3 === "null") {
-                    setBefore()
+                    setAfter();
                 } else {
                     document.getElementById("clickimage").src = file3;
                     document.getElementById("clickimagelabel").innerText = "Difference";
@@ -421,22 +847,29 @@
 
             function setBefore() {
                 if (file1 === "null") {
-                    setAfter()
+                    setAfter();
                 } else {
                     document.getElementById("clickimage").src = file1;
                     document.getElementById("clickimagelabel").innerText = "Before";
                 }
             }
 
-            if (current && current.includes(file1)) {
+            // When the modal is already open for this same triple, cycle
+            // Difference -> Before -> After -> Difference. On a fresh open
+            // (different or no current src) always start with Difference.
+            const currentSrc = document.getElementById("clickimage").src || "";
+            const modalOpen = document.getElementById("clickdiff").style.display === "block";
+
+            if (modalOpen && file3 !== "null" && currentSrc.includes(file3)) {
+                setBefore();
+            } else if (modalOpen && file1 !== "null" && currentSrc.includes(file1)) {
                 setAfter();
-            }
-            else if (current && current.includes(file2)) {
+            } else if (modalOpen && file2 !== "null" && currentSrc.includes(file2)) {
+                setDifference();
+            } else {
                 setDifference();
             }
-            else {
-                setBefore();
-            }
+
             document.getElementById("clickimage").onclick = () => initClickImage(file1, file2, file3);
 
             document.getElementById("clickdiff").style.display = "block";
@@ -596,221 +1029,350 @@
             fluidMode: false
         };
 
-        const viewers = document.querySelectorAll(".image-compare");
+        // Lazily initialize image-compare viewers when their containing <details> is opened.
+        // Initializing while hidden (display:none ancestor) gives the viewer wrong dimensions,
+        // which then "snap" to the correct size on first interaction, making the layout jump.
+        function mountViewersIn(root) {
+            const viewers = root.querySelectorAll(".image-compare:not([data-icv-mounted])");
+            viewers.forEach((element) => {
+                element.setAttribute("data-icv-mounted", "true");
+                new ImageCompare(element, options).mount();
+            });
+        }
 
-        viewers.forEach((element) => {
-            let view = new ImageCompare(element, options).mount();
+        document.querySelectorAll("details.urlReport").forEach((det) => {
+            det.addEventListener("toggle", () => {
+                if (det.open) {
+                    mountViewersIn(det);
+                }
+            });
+            // If any <details> is already open on load (e.g., via #hash), mount immediately.
+            if (det.open) {
+                mountViewersIn(det);
+            }
         });
+
+        // Toggle sticky top bar when the summary header scrolls out of view.
+        const stickyBar = document.getElementById('sticky-bar');
+        const sentinel = document.getElementById('sticky-bar-sentinel');
+        if (stickyBar && sentinel && 'IntersectionObserver' in window) {
+            const io = new IntersectionObserver(([entry]) => {
+                if (entry.isIntersecting) {
+                    stickyBar.classList.remove('is-visible');
+                    stickyBar.setAttribute('aria-hidden', 'true');
+                } else {
+                    stickyBar.classList.add('is-visible');
+                    stickyBar.setAttribute('aria-hidden', 'false');
+                }
+            }, { rootMargin: '0px 0px 0px 0px', threshold: 0 });
+            io.observe(sentinel);
+        }
     </script>
 </head>
 
 <body>
 
+<div id="sticky-bar" class="sticky-bar" aria-hidden="true">
+    <div class="sticky-bar-inner">
+        <div class="sticky-bar-title">
+            <span class="eyebrow">JLineup &middot;</span>
+            <span th:if="${report.config.name}" th:text="${report.config.name}">Report</span>
+            <span th:unless="${report.config.name}">Comparison Report</span>
+        </div>
+        <span th:if="${!report.summary.error}" class="status-pill success">Success</span>
+        <span th:if="${report.summary.error && report.onlyFlakyDifferences}" class="status-pill flaky-accepted">Flaky (accepted)</span>
+        <span th:if="${report.summary.error && !report.onlyFlakyDifferences}" class="status-pill failure">Different</span>
+        <div class="sticky-bar-stats">
+            <span class="stat"><span>Total</span><span class="num">[[${#numbers.formatDecimal(report.summary.differenceSum*100,1,2)}]]&nbsp;%</span></span>
+            <span class="stat"><span>Max</span><span class="num">[[${#numbers.formatDecimal(report.summary.differenceMax*100,1,2)}]]&nbsp;%</span></span>
+        </div>
+        <button type="button" class="sticky-bar-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">&uarr; Top</button>
+    </div>
+</div>
+
+<div class="page-wrapper">
+
 <div class="report">
-    <h5 style="color: #777777; margin: 0;">JLineup Comparison Report</h5>
-    <h1 th:if="${report.config.name}" th:text="${report.config.name}"></h1>
-    <div style="background-color: #eeeeee; border-radius: 5px; padding: 5px;">
-        <h5 style="margin: 5px;">Results</h5>
-        <p style="margin: 5px; border-radius: 5px;" th:styleappend="${!report.summary.error ? 'background-color: green;' : (report.onlyFlakyDifferences ? 'background-color: #cc8800;' : 'background-color: red;')}">Run status: <strong>[[${!report.summary.error ? 'Success' : (report.onlyFlakyDifferences ? 'Difference detected, accepted as flaky' : 'Difference detected!')}]]</strong></p>
-        <p style="margin: 5px; border-radius: 5px; background-color: #c3c3c3">Total difference: <strong>[[${#numbers.formatDecimal(report.summary.differenceSum*100,1,2)}]]%</strong> - Maximum difference of a single screenshot: <strong>[[${#numbers.formatDecimal(report.summary.differenceMax*100,1,2)}]]%</strong></p>
-        <!--<p>Accepted different pixels: [[${report.summary.acceptedDifferentPixels}]]</p>-->
-        <p th:if="${report.config.sanitizedMessage}" style="margin: 5px; background-color: #dedede; border-radius: 5px; white-space: pre;" th:utext="${report.config.sanitizedMessage}">Some Message</p>
-     </div>
+    <div id="sticky-bar-sentinel" aria-hidden="true" style="height:1px;"></div>
+    <header class="report-header">
+        <p class="report-eyebrow">JLineup Comparison Report</p>
+        <h1 th:if="${report.config.name}" th:text="${report.config.name}"></h1>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span th:if="${!report.summary.error}" class="status-pill success">Success</span>
+            <span th:if="${report.summary.error && report.onlyFlakyDifferences}" class="status-pill flaky-accepted">Difference detected - accepted as flaky</span>
+            <span th:if="${report.summary.error && !report.onlyFlakyDifferences}" class="status-pill failure">Difference detected</span>
+        </div>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="label">Total difference</div>
+                <div class="value">[[${#numbers.formatDecimal(report.summary.differenceSum*100,1,2)}]] %</div>
+            </div>
+            <div class="summary-item">
+                <div class="label">Max difference (single screenshot)</div>
+                <div class="value">[[${#numbers.formatDecimal(report.summary.differenceMax*100,1,2)}]] %</div>
+            </div>
+        </div>
+        <pre th:if="${report.config.sanitizedMessage}" class="message-block"
+             th:utext="${report.config.sanitizedMessage}">Some Message</pre>
+    </header>
 
     <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}">
-        <h3 th:text="${urlReport.urlKey}"></h3>
-        <div class="urlReport" th:each="contextReport,iterationStatus : ${urlReport.contextReports}">
-            <input type="checkbox" th:attr="id=${contextReport.contextHash}"/>
-            <label th:attr="for=${contextReport.contextHash}">
-                <h4>
-                    <span class="open-icon">[+]</span>
-                    <span class="close-icon">[-]</span>
-                    [[${#strings.substringAfter(contextReport.url,urlReport.url)}]]
-                    <span class="inline-size">([[${#strings.replace(contextReport.deviceInfo,'\n',', ')}]])</span>
-                    <span th:if="${contextReport.browserInfo != null}" class="inline-size">[[${contextReport.browserInfo}]]</span>
-                    <span th:if="${#strings.isEmpty(contextReport.shownCookiesString) == false}" class="inline-size">([[${contextReport.shownCookiesString}]])</span>
-                    <span th:if="${contextReport.isSuccess() && !contextReport.isFlakyAccepted()}"
-                          th:classappend="${contextReport.isSuccess()} ? success : failure">[matching]</span>
-                    <span th:if="${contextReport.isFlakyAccepted()}"
-                          class="flaky-accepted">[flaky - accepted]</span>
-                    <span th:if="${contextReport.isSuccess() == false}"
-                          th:classappend="${contextReport.isSuccess()} ? success : failure">[different]</span>
-                </h4>
-            </label>
-            <table>
-                <tr>
-                    <th>Info</th>
-                    <th>Before | After</th>
-                    <th class="result-col-header">Result</th>
-                    <th>Difference</th>
-                </tr>
-                <tr th:each="result,iterationStatus : ${contextReport.results}">
-                    <td>
-                        <div class="infotext"><span title="Vertical scroll position">Pos: [[${result.verticalScrollPosition}]]</span><br/>
-                            <span title="Percentage of different pixels in compared before and after images">Diff: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%</span><br />
-                            <span title="Maximum detected color difference">ColDiff:&nbsp;[[${#numbers.formatDecimal(result.maxDetectedColorDifference,1,2)}]]</span><br />
+        <h3 class="url-base" th:text="${urlReport.urlKey}"></h3>
+        <div class="urlSubPath" th:each="subPathEntry : ${urlReport.contextReportsBySubPath}">
+            <h3 class="sub-path" th:if="${!#strings.isEmpty(subPathEntry.key)}" th:text="${subPathEntry.key}" th:title="${urlReport.url + subPathEntry.key}"></h3>
+            <details class="urlReport" th:each="contextReport,iterationStatus : ${subPathEntry.value}">
+                <summary>
+                    <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="summary-title">
+                        <h4>
+                            <span class="inline-size">[[${#strings.replace(contextReport.deviceInfo,'\n',', ')}]]</span>
+                            <span th:if="${contextReport.browserInfo != null}" class="inline-size browser-pill" th:with="bi=${#strings.toLowerCase(contextReport.browserInfo)}" th:title="${contextReport.browserInfo}">
+                                <svg th:if="${#strings.contains(bi, 'firefox')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
+                                    <defs>
+                                        <radialGradient id="ff-grad" cx="50%" cy="50%" r="60%">
+                                            <stop offset="0%" stop-color="#ffcb00"/>
+                                            <stop offset="45%" stop-color="#ff7139"/>
+                                            <stop offset="100%" stop-color="#b5007f"/>
+                                        </radialGradient>
+                                    </defs>
+                                    <circle cx="12" cy="12" r="10.5" fill="url(#ff-grad)"/>
+                                    <path d="M12 3.5c-4.7 0-8.5 3.8-8.5 8.5 0 3.4 2 6.3 4.8 7.6-1-1.5-1.3-3.6-.4-5.4.6-1.3 2-2.4 3.4-2.5-1.3.6-2 1.9-2 3.2 0 1.9 1.6 3.5 3.5 3.5 3.6 0 5.8-3.9 4.1-7.2-1.1-2.2-3.8-3.3-6.3-2.7 2.7-1.6 6.5-.8 8 2 .7-4-2.3-7-6.6-7z" fill="#fff" opacity=".9"/>
+                                </svg>
+                                <svg th:if="${#strings.contains(bi, 'chrome')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10.5" fill="#fff"/>
+                                    <path d="M12 2a10 10 0 0 1 8.66 5H12a5 5 0 0 0-4.33 2.5L3.34 7A10 10 0 0 1 12 2z" fill="#ea4335"/>
+                                    <path d="M3.34 7l4.33 2.5a5 5 0 0 0 0 5L3.34 17A10 10 0 0 1 3.34 7z" fill="#fbbc05"/>
+                                    <path d="M12 22a10 10 0 0 1-8.66-5L7.67 14.5A5 5 0 0 0 12 17h8.66A10 10 0 0 1 12 22z" fill="#34a853"/>
+                                    <circle cx="12" cy="12" r="4" fill="#4285f4"/>
+                                </svg>
+                                <svg th:if="${#strings.contains(bi, 'safari') || #strings.contains(bi, 'webkit')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10.5" fill="#1e88e5"/>
+                                    <circle cx="12" cy="12" r="9" fill="#fff"/>
+                                    <circle cx="12" cy="12" r="9" fill="none" stroke="#1e88e5" stroke-width="0.5"/>
+                                    <path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2" stroke="#333" stroke-width="0.8" stroke-linecap="round"/>
+                                    <polygon points="12,12 13.5,4 12,12 10.5,4" fill="#e53935"/>
+                                    <polygon points="12,12 10.5,20 12,12 13.5,20" fill="#ccc"/>
+                                </svg>
+                                <svg th:if="${#strings.contains(bi, 'edge')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10.5" fill="#0078d4"/>
+                                    <path d="M6 14c0-4 3-7 7-7 2.6 0 4.5 1.3 5.4 3-1.4-.6-3.2-.5-4.8.3-2.2 1.1-3.4 3.2-3.1 5.3.2 1.5 1.3 2.8 2.8 3.2C9.3 19.3 6 17 6 14z" fill="#fff"/>
+                                </svg>
+                            </span>
+                            <span th:if="${#strings.isEmpty(contextReport.shownCookiesString) == false}"
+                                  class="inline-size">[[${contextReport.shownCookiesString}]]</span>
+                        </h4>
+                        <span th:if="${contextReport.isSuccess() && !contextReport.isFlakyAccepted()}"
+                              class="status-pill success">matching</span>
+                        <span th:if="${contextReport.isFlakyAccepted()}"
+                              class="status-pill flaky-accepted">flaky - accepted</span>
+                        <span th:if="${contextReport.isSuccess() == false}"
+                              class="status-pill failure">different</span>
+                    </div>
+                </summary>
+                <div class="compare-grid">
+                    <div class="compare-row compare-head">
+                        <div class="compare-cell">Info</div>
+                        <div class="compare-cell">Before | After</div>
+                        <div class="compare-cell result-col-header"></div>
+                        <div class="compare-cell">Difference</div>
+                    </div>
+                    <div class="compare-row" th:each="result,iterationStatus : ${contextReport.results}">
+                        <div class="compare-cell">
+                            <div class="infotext">
+                                <span title="Vertical scroll position">Pos: [[${result.verticalScrollPosition}]]</span><br/>
+                                <span title="Percentage of different pixels in compared before and after images">Diff: [[${#numbers.formatDecimal(result.difference*100,1,2)}]]%</span><br/>
+                                <span title="Maximum detected color difference">ColDiff:&nbsp;[[${#numbers.formatDecimal(result.maxDetectedColorDifference,1,2)}]]</span><br/>
+                            </div>
+                            <div class="infotext">
+                                <div th:switch="${result.screenshotBeforeFileName!=null}">
+                                    <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}"
+                                       target="_blank">
+                                        &#8599;&nbsp;Before
+                                    </a>
+                                    <span th:case="${false}">No&nbsp;before&nbsp;image</span>
+                                </div>
+                                <div th:switch="${result.screenshotAfterFileName!=null}">
+                                    <a th:case="${true}" th:href="${result.screenshotAfterFileNameForHTML}"
+                                       target="_blank">
+                                        &#8599;&nbsp;After
+                                    </a>
+                                    <span th:case="${false}">No&nbsp;after&nbsp;image</span>
+                                </div>
+                                <div th:switch="${result.differenceImageFileName!=null}">
+                                    <a th:case="${true}" th:href="${result.differenceImageFileNameForHTML}"
+                                       target="_blank">
+                                        &#8599;&nbsp;Diff
+                                    </a>
+                                    <span th:case="${false}">No&nbsp;diff&nbsp;image</span>
+                                </div>
+                                <div>
+                                    <a th:href="${contextReport.url}" target="_blank" th:title="${contextReport.url}">&#8599;&nbsp;Open&nbsp;page</a>
+                                </div>
+                                <div style="margin-top: 2em;">
+                                    <a href="#"
+                                       th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">Diff
+                                        clicker</a>
+                                </div>
+                                <div th:if="${contextReport.browserInfo != null}" style="margin-top: var(--space-3);"
+                                     th:with="bi=${#strings.toLowerCase(contextReport.browserInfo)}">
+                                    <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--color-text-muted);opacity:0.6;">
+                                        <svg th:if="${#strings.contains(bi, 'firefox')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
+                                            <defs><radialGradient id="ff-grad2" cx="50%" cy="50%" r="60%"><stop offset="0%" stop-color="#ffcb00"/><stop offset="45%" stop-color="#ff7139"/><stop offset="100%" stop-color="#b5007f"/></radialGradient></defs>
+                                            <circle cx="12" cy="12" r="10.5" fill="url(#ff-grad2)"/>
+                                            <path d="M12 3.5c-4.7 0-8.5 3.8-8.5 8.5 0 3.4 2 6.3 4.8 7.6-1-1.5-1.3-3.6-.4-5.4.6-1.3 2-2.4 3.4-2.5-1.3.6-2 1.9-2 3.2 0 1.9 1.6 3.5 3.5 3.5 3.6 0 5.8-3.9 4.1-7.2-1.1-2.2-3.8-3.3-6.3-2.7 2.7-1.6 6.5-.8 8 2 .7-4-2.3-7-6.6-7z" fill="#fff" opacity=".9"/>
+                                        </svg>
+                                        <svg th:if="${#strings.contains(bi, 'chrome')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
+                                            <circle cx="12" cy="12" r="10.5" fill="#fff"/>
+                                            <path d="M12 2a10 10 0 0 1 8.66 5H12a5 5 0 0 0-4.33 2.5L3.34 7A10 10 0 0 1 12 2z" fill="#ea4335"/>
+                                            <path d="M3.34 7l4.33 2.5a5 5 0 0 0 0 5L3.34 17A10 10 0 0 1 3.34 7z" fill="#fbbc05"/>
+                                            <path d="M12 22a10 10 0 0 1-8.66-5L7.67 14.5A5 5 0 0 0 12 17h8.66A10 10 0 0 1 12 22z" fill="#34a853"/>
+                                            <circle cx="12" cy="12" r="4" fill="#4285f4"/>
+                                        </svg>
+                                        <svg th:if="${#strings.contains(bi, 'safari') || #strings.contains(bi, 'webkit')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
+                                            <circle cx="12" cy="12" r="10.5" fill="#1e88e5"/>
+                                            <circle cx="12" cy="12" r="9" fill="#fff"/>
+                                            <path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2" stroke="#333" stroke-width="0.8" stroke-linecap="round"/>
+                                            <polygon points="12,12 13.5,4 12,12 10.5,4" fill="#e53935"/>
+                                            <polygon points="12,12 10.5,20 12,12 13.5,20" fill="#ccc"/>
+                                        </svg>
+                                        <svg th:if="${#strings.contains(bi, 'edge')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
+                                            <circle cx="12" cy="12" r="10.5" fill="#0078d4"/>
+                                            <path d="M6 14c0-4 3-7 7-7 2.6 0 4.5 1.3 5.4 3-1.4-.6-3.2-.5-4.8.3-2.2 1.1-3.4 3.2-3.1 5.3.2 1.5 1.3 2.8 2.8 3.2C9.3 19.3 6 17 6 14z" fill="#fff"/>
+                                        </svg>
+                                        [[${contextReport.browserInfo}]]
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="infotext">
-                            <div th:switch="${result.screenshotBeforeFileName!=null}">
-                                <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}"
-                                   target="_blank">
-                                    &#8599;&nbsp;Before
-                                </a>
-                                <span th:case="${false}">No&nbsp;before&nbsp;image</span>
-                            </div>
-                            <div th:switch="${result.screenshotAfterFileName!=null}">
-                                <a th:case="${true}" th:href="${result.screenshotAfterFileNameForHTML}"
-                                   target="_blank">
-                                    &#8599;&nbsp;After
-                                </a>
-                                <span th:case="${false}">No&nbsp;after&nbsp;image</span>
-                            </div>
-                            <div th:switch="${result.differenceImageFileName!=null}">
-                                <a th:case="${true}" th:href="${result.differenceImageFileNameForHTML}"
-                                   target="_blank">
-                                    &#8599;&nbsp;Diff
-                                </a>
-                                <span th:case="${false}">No&nbsp;diff&nbsp;image</span>
-                            </div>
-                            <div>
-                                <a th:href="${contextReport.url}" target="_blank" th:title="${contextReport.url}">&#8599;&nbsp;Open&nbsp;page</a>
-                            </div>
-                            <div style="margin-top: 2em;">
-                                <a href="#"
-                                   th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">Diff clicker</a>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="image-compare"
-                             th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML != null}">
-                            <div class="zoom-lens invisible keep" th:classappend="${'lens-' + contextReport.contextHash + '-' +
+                        <div class="compare-cell">
+                            <div class="image-compare"
+                                 th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML != null}">
+                                <div class="zoom-lens invisible keep" th:classappend="${'lens-' + contextReport.contextHash + '-' +
                     result.verticalScrollPosition}" th:id="${'lens-before_' + contextReport.contextHash + '-' +
                     result.verticalScrollPosition}">
-                            </div>
-                            <img width="100%" loading="lazy"
-                                 th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                                 th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
-                            <div class="zoom-lens invisible keep" th:classappend="${'lens-' + contextReport.contextHash + '-' +
-                    result.verticalScrollPosition}" th:id="${'lens-after_' + contextReport.contextHash + '-' +
-                    result.verticalScrollPosition}"></div>
-                            <img width="100%" loading="lazy"
-                                 th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                                 th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
-                        </div>
-                        <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}"
-                             class="icv">
-                            <img class="screenshot-difference" width="100%" loading="lazy"
-                                 th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                                 th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
-                            <span class="icv__label icv__label-after keep on-hover">Before (only)</span>
-                        </div>
-                        <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}"
-                             class="icv">
-                            <img class="screenshot-difference" width="100%" loading="lazy"
-                                 th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                                 th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
-                            <span class="icv__label icv__label-after keep on-hover">After (only)</span>
-                        </div>
-                    </td>
-                    <td th:switch="${result.difference > 0}" class="result-col">
-                        <h5><span th:case="${true}" class="failure">different</span><span th:case="${false}" class="success">match</span></h5>
-                    </td>
-                    <td th:switch="${result.differenceImageFileName!=null}">
-                        <div th:case="${true}"
-                             th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                             onmouseenter="initZoom(this)"
-                             onmouseleave="stopZoom()"
-                             th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">
-                            <div class="zoom-lens"
-                                 th:classappend="${'lens-' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                                 th:id="${'lens-difference_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"></div>
-                            <img class="screenshot-difference" width="100%" loading="lazy"
-                                 th:src="${result.differenceImageFileNameForHTML}"
-                                 th:id="${'diff_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                            />
-                        </div>
-                        <div th:case="${false}"
-                             th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                             th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">
-                            <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}" th:style="${'background-color: ' + legend_different_size_rgb}">
-                                <img class="screenshot-difference screenshot-transparent" width="100%" loading="lazy"
+                                </div>
+                                <img width="100%" loading="lazy"
                                      th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
-
-                            </div>
-                            <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}" th:style="${'background-color: ' + legend_different_size_rgb}">
-                                <img class="screenshot-difference screenshot-transparent" width="100%" loading="lazy"
+                                <div class="zoom-lens invisible keep" th:classappend="${'lens-' + contextReport.contextHash + '-' +
+                    result.verticalScrollPosition}" th:id="${'lens-after_' + contextReport.contextHash + '-' +
+                    result.verticalScrollPosition}"></div>
+                                <img width="100%" loading="lazy"
                                      th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
                             </div>
-                            <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML != null}" th:style="${'background-color: ' + legend_same_rgb}">
-                                <img class="screenshot-difference screenshot-transparent" width="100%" loading="lazy"
+                            <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}"
+                                 class="icv">
+                                <img class="screenshot-difference" width="100%" loading="lazy"
+                                     th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                     th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
+                                <span class="icv__label icv__label-after keep on-hover">Before (only)</span>
+                            </div>
+                            <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}"
+                                 class="icv">
+                                <img class="screenshot-difference" width="100%" loading="lazy"
                                      th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
+                                <span class="icv__label icv__label-after keep on-hover">After (only)</span>
                             </div>
                         </div>
-                    </td>
-                </tr>
-            </table>
-            <div class="legend">
-                <table>
-                    <tr>
-                        <th colspan="2">Difference image</th>
-                    </tr>
-                    <tr>
-                        <td th:style="${'background-color: ' + legend_same_rgb}">&nbsp;&nbsp;</td>
-                        <td>Same</td>
-                    </tr>
-                    <tr>
-                        <td th:style="${'background-color: ' + legend_look_same_rgb}">&nbsp;&nbsp;&nbsp;</td>
-                        <td>Look same</td>
-                    </tr>
-                    <tr>
-                        <td th:style="${'background-color: ' + legend_anti_alias_rgb}">&nbsp;&nbsp;&nbsp;</td>
-                        <td>Anti aliasing</td>
-                    </tr>
-                    <tr>
-                        <td th:style="${'background-color: ' + legend_different_rgb}">&nbsp;&nbsp;&nbsp;</td>
-                        <td>Different</td>
-                    </tr>
-                    <tr>
-                        <td th:style="${'background-color: ' + legend_different_size_rgb}">&nbsp;&nbsp;&nbsp;</td>
-                        <td>Different size</td>
-                    </tr>
-                </table>
-            </div>
+                        <div th:switch="${result.difference > 0}" class="compare-cell result-col">
+                            <h5><span th:case="${true}" class="failure">different</span><span th:case="${false}"
+                                                                                              class="success">match</span>
+                            </h5>
+                        </div>
+                        <div th:switch="${result.differenceImageFileName!=null}" class="compare-cell">
+                            <div th:case="${true}"
+                                 th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                 onmouseenter="initZoom(this)"
+                                 onmouseleave="stopZoom()"
+                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">
+                                <div class="zoom-lens invisible keep"
+                                     th:classappend="${'lens-' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                     th:id="${'lens-difference_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"></div>
+                                <img class="screenshot-difference" width="100%" loading="lazy"
+                                     th:src="${result.differenceImageFileNameForHTML}"
+                                     th:id="${'diff_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                />
+                            </div>
+                            <div th:case="${false}"
+                                 th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">
+                                <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}"
+                                     th:style="${'background-color: ' + legend_different_size_rgb}">
+                                    <img class="screenshot-difference screenshot-transparent" width="100%"
+                                         loading="lazy"
+                                         th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                         th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
+
+                                </div>
+                                <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}"
+                                     th:style="${'background-color: ' + legend_different_size_rgb}">
+                                    <img class="screenshot-difference screenshot-transparent" width="100%"
+                                         loading="lazy"
+                                         th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                         th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
+                                </div>
+                                <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML != null}"
+                                     th:style="${'background-color: ' + legend_same_rgb}">
+                                    <img class="screenshot-difference screenshot-transparent" width="100%"
+                                         loading="lazy"
+                                         th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                         th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="legend">
+                    <div class="legend-box">
+                        <h4>Difference image</h4>
+                        <div class="legend-grid">
+                            <div class="swatch" th:style="${'background-color: ' + legend_same_rgb}"></div>
+                            <div class="label">Same</div>
+                            <div class="swatch" th:style="${'background-color: ' + legend_look_same_rgb}"></div>
+                            <div class="label">Look same</div>
+                            <div class="swatch" th:style="${'background-color: ' + legend_anti_alias_rgb}"></div>
+                            <div class="label">Anti aliasing</div>
+                            <div class="swatch" th:style="${'background-color: ' + legend_different_rgb}"></div>
+                            <div class="label">Different</div>
+                            <div class="swatch" th:style="${'background-color: ' + legend_different_size_rgb}"></div>
+                            <div class="label">Different size</div>
+                        </div>
+                    </div>
+                </div>
+            </details>
         </div>
 
     </div>
 </div>
 
-<div th:if="${report.summary.error == true && report.config.approvalLink != null}" style="padding: 5px; border-radius: 5px; background-color: #44AAFF">
-    <div style="margin: 5px; border-radius: 5px; background-color: red;">
-        <p><a th:href="${report.config.approvalLink}" style="color: white;">I checked the differences - <strong>approve changes!</strong></a></p>
-    </div>
+<div th:if="${report.summary.error == true && report.config.approvalLink != null}"
+     style="margin-top: var(--space-5);">
+    <a th:href="${report.config.approvalLink}"
+       style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background-color: var(--color-failure); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; box-shadow: var(--shadow-sm);">
+        I checked the differences &mdash; <strong>approve changes</strong>
+    </a>
 </div>
 
 <div id="zoombox" class="invisible">
     <div id="zoomfix">
-        <table>
-            <tr>
-                <th>Before</th>
-                <th>After</th>
-                <th>Difference</th>
-            </tr>
-            <tr>
-                <td>
-                    <div id="zoom_before" class="zoom"></div>
-                </td>
-                <td>
-                    <div id="zoom_after" class="zoom"></div>
-                </td>
-                <td>
-                    <div id="zoom_diff" class="zoom"></div>
-                </td>
-            </tr>
-        </table>
+        <div class="zoom-grid">
+            <div class="zoom-head">Before</div>
+            <div class="zoom-head">After</div>
+            <div class="zoom-head">Difference</div>
+            <div class="zoom-cell">
+                <div id="zoom_before" class="zoom"></div>
+            </div>
+            <div class="zoom-cell">
+                <div id="zoom_after" class="zoom"></div>
+            </div>
+            <div class="zoom-cell">
+                <div id="zoom_diff" class="zoom"></div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -818,7 +1380,7 @@
 
 <div id="clickdiff">
     <div id="imagediv">
-        <img id="clickimage" />
+        <img id="clickimage"/>
         <div id="clickimagelabel">Before</div>
         <div id="clickclose" onclick="closeClickDiff()">&#10006;</div>
     </div>
@@ -830,6 +1392,8 @@
         "[[${report.getBrowser("before")}]]" and the 'after' step was rendered with "[[${report.getBrowser("after")}]]".</span><span
             th:if="${#strings.equals(report.getBrowser('before'), report.getBrowser('after'))}">Both steps were rendered with "[[${report.getBrowser("after")}]]".</span>
 </p>
+
+</div>
 
 </body>
 </html>

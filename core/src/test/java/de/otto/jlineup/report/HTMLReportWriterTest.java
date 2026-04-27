@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.FileNotFoundException;
 import java.util.Map;
+import java.util.Set;
 
 import static de.otto.jlineup.browser.BrowserStep.after;
 import static de.otto.jlineup.browser.BrowserStep.before;
@@ -44,7 +45,7 @@ class HTMLReportWriterTest {
             singletonList(screenshotComparisonResult)
     );
     private final UrlReport urlReport = new UrlReport("someurl/somepath", "someurl/somepath", localSummary, singletonList(contextReport));
-    private final Report report = new Report(globalSummary, JobConfig.exampleConfig(), singletonList(urlReport), Map.of(before, "SomeBrowser 1.2.3", after, "SomeBrowser 4.5.6"));
+    private final Report report = new Report(globalSummary, JobConfig.exampleConfig(), singletonList(urlReport), Map.of(before, Set.of("SomeBrowser 1.2.3"), after, Set.of("SomeBrowser 4.5.6")));
 
     @BeforeEach
     void setup() {

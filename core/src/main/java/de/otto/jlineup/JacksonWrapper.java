@@ -41,6 +41,7 @@ public class JacksonWrapper {
                 .configure(JsonReadFeature.ALLOW_JAVA_COMMENTS, true)
                 .configure(INDENT_OUTPUT, true)
                 .configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, false)
+                .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
                 .propertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE)
                 .build();
 

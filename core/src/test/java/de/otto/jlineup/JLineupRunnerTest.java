@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -21,7 +22,7 @@ class JLineupRunnerTest {
     void shouldNotFailIfMaxDiffIsSameAsDetectedDiff() {
 
         UrlReport urlReport = new UrlReport("abc", "abc", new Summary(false, 0, 15.1234567890123456, 0), Collections.emptyList());
-        Report report = new Report(new Summary(false, 0, 15.1234567890123456, 0), JobConfig.exampleConfigBuilder().withUrls(Collections.singletonMap("abc", UrlConfig.urlConfigBuilder().withMaxDiff(15.1234567890123456).build())).build(), List.of(urlReport), Map.of(BrowserStep.before, "SomeBrowser"));
+        Report report = new Report(new Summary(false, 0, 15.1234567890123456, 0), JobConfig.exampleConfigBuilder().withUrls(Collections.singletonMap("abc", UrlConfig.urlConfigBuilder().withMaxDiff(15.1234567890123456).build())).build(), List.of(urlReport), Map.of(BrowserStep.before, Set.of("SomeBrowser")));
         boolean detectedDifferenceGreaterThanMaxDifference = JLineupRunner.isDetectedDifferenceGreaterThanMaxDifference(report, JobConfig.exampleConfigBuilder().withUrls(Collections.singletonMap("abc", UrlConfig.urlConfigBuilder().withMaxDiff(15.1234567890123456).build())).build());
 
         assertThat(detectedDifferenceGreaterThanMaxDifference, is(false));
@@ -45,7 +46,7 @@ class JLineupRunnerTest {
                 .build();
 
         Report report = new Report(new Summary(true, 0.05, 0.05, 0), config,
-                List.of(urlReport), Map.of(BrowserStep.before, "SomeBrowser"));
+                List.of(urlReport), Map.of(BrowserStep.before, Set.of("SomeBrowser")));
 
         boolean result = JLineupRunner.isDetectedDifferenceGreaterThanMaxDifference(report, config);
 
@@ -76,7 +77,7 @@ class JLineupRunnerTest {
                 .build();
 
         Report report = new Report(new Summary(true, 0.15, 0.1, 0), config,
-                List.of(urlReport), Map.of(BrowserStep.before, "SomeBrowser"));
+                List.of(urlReport), Map.of(BrowserStep.before, Set.of("SomeBrowser")));
 
         boolean result = JLineupRunner.isDetectedDifferenceGreaterThanMaxDifference(report, config);
 
