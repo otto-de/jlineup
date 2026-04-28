@@ -14,7 +14,7 @@ dependencies {
     implementation("software.amazon.awssdk:sso:${awsSdkVersion}")
     implementation("software.amazon.awssdk:ssooidc:${awsSdkVersion}")
     implementation("software.amazon.awssdk:sts:${awsSdkVersion}")
-    implementation("software.amazon.awssdk.crt:aws-crt:0.44.0")
+    implementation("software.amazon.awssdk.crt:aws-crt:0.45.1")
     implementation("com.amazonaws:aws-lambda-java-core:1.4.0")
     implementation("com.amazonaws:aws-lambda-java-events:3.16.1")
     runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.2"
