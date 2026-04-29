@@ -6,7 +6,6 @@ public class JLineupWebLambdaProperties {
     private String functionNameChromeHeadless;
     private String functionNameFirefoxHeadless;
     private String functionNameWebkitHeadless;
-    private String awsProfile;
 
     public String getFunctionName() {
         return functionName;
@@ -48,11 +47,4 @@ public class JLineupWebLambdaProperties {
         this.functionNameWebkitHeadless = functionNameWebkitHeadless;
     }
 
-    public String getAwsProfile() {
-        return awsProfile;
-    }
-
-    public void setAwsProfile(String awsProfile) {
-        this.awsProfile = awsProfile;
-    }
 }

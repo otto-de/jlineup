@@ -97,17 +97,6 @@ public class LambdaBrowser implements CloudBrowser {
         };
     }
 
-    private static AwsCredentialsProvider buildCredentialsProvider() {
-        String profile = GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE);
-        LOG.info("Resolved AWS profile from GlobalOptions: '{}'", profile);
-        if (profile != null && !profile.equals("default")) {
-            LOG.info("Using AWS ProfileCredentialsProvider with profile '{}'", profile);
-            return ProfileCredentialsProvider.create(profile);
-        }
-        LOG.info("Using DefaultCredentialsProvider (profile is '{}').", profile);
-        return DefaultCredentialsProvider.builder().build();
-    }
-
     private void validateLambdaFunctionNamesConfigured(List<ScreenshotContext> screenshotContexts) {
         screenshotContexts.stream()
                 .map(ctx -> ctx.browserType)
@@ -137,7 +126,7 @@ public class LambdaBrowser implements CloudBrowser {
                         .collect(java.util.stream.Collectors.joining(", ")));
         final String s3Bucket;
         final String s3Prefix;
-        AwsCredentialsProvider credentialsProvider = buildCredentialsProvider();
+        AwsCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
 
         // Use the function name of the first context to read the shared S3 config.
         // All browser-specific Lambda functions are expected to share the same S3 bucket/prefix.
