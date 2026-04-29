@@ -258,25 +258,7 @@ public class FileService {
 
     public void mergeContextFileTrackersIntoFileTracker(Path directory, FilenameFilter filenameFilter) throws IOException {
         File dir = directory.toFile();
-        LOG.info("Looking for file tracker files in directory: '{}' (exists={}, isDir={})", dir.getAbsolutePath(), dir.exists(), dir.isDirectory());
-        File[] allFiles = dir.listFiles();
-        if (allFiles != null) {
-            LOG.info("  All files/dirs in download directory ({}):", allFiles.length);
-            for (File f : allFiles) {
-                LOG.info("    {} (isDir={}, size={})", f.getName(), f.isDirectory(), f.length());
-                if (f.isDirectory()) {
-                    File[] subFiles = f.listFiles();
-                    if (subFiles != null) {
-                        for (File sf : subFiles) {
-                            LOG.info("      {} (isDir={}, size={})", sf.getName(), sf.isDirectory(), sf.length());
-                        }
-                    }
-                }
-            }
-        }
         File[] files = dir.listFiles(filenameFilter);
-        assert files != null;
-        LOG.info("  Matching files: {}", files.length);
         assert files != null;
         for (File file : files) {
             FileTracker part = JacksonWrapper.readFileTrackerFile(file);
