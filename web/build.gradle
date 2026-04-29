@@ -6,7 +6,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-json")
     implementation("org.yaml:snakeyaml")
-    implementation("de.otto.edison:edison-core:4.0.5")
+    implementation("de.otto.edison:edison-core:4.0.6.2")
     implementation("io.micrometer:micrometer-registry-prometheus")
 
     implementation("org.hibernate.validator:hibernate-validator")

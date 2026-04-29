@@ -30,6 +30,12 @@ public record ContextReport(String contextHash, ScreenshotContext screenshotCont
         return BrowserUtils.buildUrl(screenshotContext.url, screenshotContext.urlSubPath, Collections.emptyMap());
     }
 
+    /** Returns the configured title for this sub-path, or null if none was set. */
+    @UsedInTemplate
+    public String getSubPathTitle() {
+        return screenshotContext.urlSubPathTitle;
+    }
+
     @UsedInTemplate
     public String getShortenedUrl() {
         String shortenedUrl = getUrl();

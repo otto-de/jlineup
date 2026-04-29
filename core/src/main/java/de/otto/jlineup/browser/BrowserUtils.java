@@ -228,7 +228,9 @@ public class BrowserUtils {
                 }
             });
 
-            for (final String path : urlConfig.paths) {
+            for (final de.otto.jlineup.config.PathConfig pathConfig : urlConfig.paths) {
+                final String path = pathConfig.path;
+                final String pathTitle = pathConfig.title;
                 //In most cases, there are no alternatingCookies
                 //TODO: Look for a more beautiful distinction
                 if (urlConfig.alternatingCookies.isEmpty()) {
@@ -237,7 +239,7 @@ public class BrowserUtils {
                                     .flatMap(deviceConfig ->
                                             jobConfig.resolveEffectiveBrowsers(urlConfig, deviceConfig).stream().map(browserType ->
                                             new ScreenshotContext(prepareDomain(runStepConfig, urlConfig.url), path, deviceConfig,
-                                                    urlConfig.cookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey(), browserType)))
+                                                    urlConfig.cookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey(), browserType, pathTitle)))
                                     .toList());
                 } else {
                     screenshotContextList.addAll(
@@ -248,7 +250,7 @@ public class BrowserUtils {
                                                 ArrayList<Cookie> newCookies = urlConfig.cookies != null ? new ArrayList<>(urlConfig.cookies) : new ArrayList<>();
                                                 newCookies.addAll(alternatingCookies);
                                                 return new ScreenshotContext(prepareDomain(runStepConfig, urlConfigEntry.getValue().url), path, deviceConfig,
-                                                        newCookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey(), browserType);
+                                                        newCookies, runStepConfig.getBrowserStep(), urlConfig, getFullPathOfReportDir(runStepConfig), dontShareBrowser.get(), urlConfigEntry.getKey(), browserType, pathTitle);
                                             }))).toList());
                 }
             }
