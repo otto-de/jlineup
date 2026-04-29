@@ -45,7 +45,7 @@ class LambdaRequestPayloadSerializationTest {
     private JobConfig buildJobConfig() {
         return JobConfig.jobConfigBuilder()
                 .withUrls(Map.of(URL_KEY, UrlConfig.urlConfigBuilder()
-                        .withStringPaths(List.of("/", "/about"))
+                        .withPaths(List.of("/", "/about"))
                         .withDevices(List.of(DeviceConfig.deviceConfigBuilder()
                                 .withWidth(1280).withHeight(800).build()))
                         .build()))
@@ -61,7 +61,7 @@ class LambdaRequestPayloadSerializationTest {
                 DeviceConfig.deviceConfigBuilder().withWidth(1280).withHeight(800).build(),
                 step,
                 UrlConfig.urlConfigBuilder()
-                        .withStringPaths(List.of("/"))
+                        .withPaths(List.of("/"))
                         .withDevices(List.of(DeviceConfig.deviceConfigBuilder()
                                 .withWidth(1280).withHeight(800).build()))
                         .build(),

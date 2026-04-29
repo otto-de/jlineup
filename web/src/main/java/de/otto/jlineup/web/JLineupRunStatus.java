@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-import static de.otto.jlineup.config.JobConfig.DEFAULT_PATH_CONFIGS;
+import static de.otto.jlineup.config.JobConfig.DEFAULT_PATHS;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
 
 @JsonNaming(PropertyNamingStrategy.class)
@@ -83,7 +83,7 @@ public class JLineupRunStatus {
     public List<String> getUrls() {
         List<String> urls = new ArrayList<>();
         Set<Map.Entry<String, UrlConfig>> urlMap = this.jobConfig.urls.entrySet();
-        urlMap.forEach(urlMapEntry -> (urlMapEntry.getValue().paths != null ? urlMapEntry.getValue().paths : DEFAULT_PATH_CONFIGS).forEach(pathConfig -> urls.add(BrowserUtils.buildUrl(urlMapEntry.getKey(), pathConfig.path, urlMapEntry.getValue().envMapping))));
+        urlMap.forEach(urlMapEntry -> (urlMapEntry.getValue().paths != null ? urlMapEntry.getValue().paths : DEFAULT_PATHS).forEach(path -> urls.add(BrowserUtils.buildUrl(urlMapEntry.getKey(), path, urlMapEntry.getValue().envMapping))));
         return urls;
     }
 

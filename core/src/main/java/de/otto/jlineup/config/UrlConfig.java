@@ -21,7 +21,7 @@ public class UrlConfig {
 
     public final String url;
 
-    public final List<PathConfig> paths;
+    public final List<String> paths;
     public final List<String> setupPaths;
     public final List<String> cleanupPaths;
     public final double maxDiff;
@@ -122,14 +122,8 @@ public class UrlConfig {
         return url;
     }
 
-    public List<PathConfig> getPaths() {
+    public List<String> getPaths() {
         return paths;
-    }
-
-    /** Returns just the path strings, for backwards compatibility with code that doesn't need titles. */
-    public List<String> getPathStrings() {
-        if (paths == null) return null;
-        return paths.stream().map(p -> p.path).collect(Collectors.toList());
     }
 
     public List<String> getSetupPaths() {
@@ -327,7 +321,7 @@ public class UrlConfig {
     public static final class Builder {
 
         private String url = null;
-        private List<PathConfig> paths = null;
+        private List<String> paths = null;
         private List<String> setupPaths = Collections.emptyList();
         private List<String> cleanupPaths = Collections.emptyList();
         private double maxDiff = DEFAULT_MAX_DIFF;
@@ -368,20 +362,8 @@ public class UrlConfig {
             return this;
         }
 
-        @JsonDeserialize(using = PathConfig.PathConfigListDeserializer.class)
-        public Builder withPaths(List<PathConfig> val) {
+        public Builder withPaths(List<String> val) {
             paths = val;
-            return this;
-        }
-
-        /** Convenience: accept plain string list (wraps each in PathConfig). Used by tests and programmatic config. */
-        public Builder withStringPaths(List<String> val) {
-            paths = val != null ? val.stream().map(PathConfig::of).collect(Collectors.toList()) : null;
-            return this;
-        }
-
-        public Builder withPath(String val) {
-            paths = ImmutableList.of(PathConfig.of(val));
             return this;
         }
 
@@ -553,6 +535,11 @@ public class UrlConfig {
 
         public Builder withBrowsers(List<Browser.Type> val) {
             browsers = val;
+            return this;
+        }
+
+        public Builder withPath(String val) {
+            paths = ImmutableList.of(val);
             return this;
         }
 

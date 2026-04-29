@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 public final class ScreenshotContext  {
     public final String url;
     public final String urlSubPath;
-    public final String urlSubPathTitle;
     public final DeviceConfig deviceConfig;
     public final List<Cookie> cookies;
     @JsonIgnore
@@ -34,13 +33,8 @@ public final class ScreenshotContext  {
 
     @JsonCreator
     ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, List<Cookie> cookies, BrowserStep step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String urlKey, Browser.Type browserType) {
-        this(url, urlSubPath, deviceConfig, cookies, step, urlConfig, fullPathOfReportDir, dontShareBrowser, urlKey, browserType, null);
-    }
-
-    ScreenshotContext(String url, String urlSubPath, DeviceConfig deviceConfig, List<Cookie> cookies, BrowserStep step, UrlConfig urlConfig, String fullPathOfReportDir, boolean dontShareBrowser, String urlKey, Browser.Type browserType, String urlSubPathTitle) {
         this.url = url;
         this.urlSubPath = urlSubPath;
-        this.urlSubPathTitle = urlSubPathTitle;
         this.deviceConfig = deviceConfig;
         this.cookies = cookies;
         this.step = step;
@@ -54,7 +48,6 @@ public final class ScreenshotContext  {
     private ScreenshotContext(Builder builder) {
         url = builder.url;
         urlSubPath = builder.urlSubPath;
-        urlSubPathTitle = builder.urlSubPathTitle;
         deviceConfig = builder.deviceConfig;
         cookies = builder.cookies;
         step = builder.step;
@@ -103,7 +96,6 @@ public final class ScreenshotContext  {
         Builder builder = new Builder();
         builder.url = copy.url;
         builder.urlSubPath = copy.urlSubPath;
-        builder.urlSubPathTitle = copy.urlSubPathTitle;
         builder.deviceConfig = copy.deviceConfig;
         builder.cookies = copy.cookies;
         builder.step = copy.step;
@@ -133,10 +125,6 @@ public final class ScreenshotContext  {
 
     public String getUrlSubPath() {
         return urlSubPath;
-    }
-
-    public String getUrlSubPathTitle() {
-        return urlSubPathTitle;
     }
 
     public DeviceConfig getDeviceConfig() {
@@ -229,7 +217,6 @@ public final class ScreenshotContext  {
     public static final class Builder {
         private String url;
         private String urlSubPath;
-        private String urlSubPathTitle;
         private DeviceConfig deviceConfig;
         private List<Cookie> cookies = Collections.emptyList();
         private BrowserStep step;
@@ -249,11 +236,6 @@ public final class ScreenshotContext  {
 
         public Builder withUrlSubPath(String val) {
             urlSubPath = val;
-            return this;
-        }
-
-        public Builder withUrlSubPathTitle(String val) {
-            urlSubPathTitle = val;
             return this;
         }
 

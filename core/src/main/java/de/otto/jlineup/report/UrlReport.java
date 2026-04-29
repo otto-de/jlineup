@@ -27,24 +27,4 @@ public record UrlReport(String urlKey, String url, Summary summary, List<Context
                         Collectors.toList()
                 ));
     }
-
-    /**
-     * Returns a map from sub-path to its configured title (if any).
-     * Used in the report template to display friendly names for sub-paths.
-     */
-    @UsedInTemplate
-    public Map<String, String> getSubPathTitles() {
-        Map<String, String> titles = new LinkedHashMap<>();
-        for (ContextReport cr : contextReports) {
-            String subPath = "";
-            String fullUrl = cr.getUrl();
-            if (fullUrl != null && url != null && fullUrl.startsWith(url)) {
-                subPath = fullUrl.substring(url.length());
-            }
-            if (!titles.containsKey(subPath) && cr.getSubPathTitle() != null) {
-                titles.put(subPath, cr.getSubPathTitle());
-            }
-        }
-        return titles;
-    }
 }

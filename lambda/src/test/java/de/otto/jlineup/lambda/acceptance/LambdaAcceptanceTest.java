@@ -292,7 +292,7 @@ class LambdaAcceptanceTest {
                 .withUrls(Map.of(
                         "https://www.example.com",
                         UrlConfig.urlConfigBuilder()
-                                .withStringPaths(List.of("/"))
+                                .withPaths(List.of("/"))
                                 .build()))
                 .withBrowser(Browser.Type.CHROME_HEADLESS)
                 .withGlobalTimeout(120)
@@ -352,7 +352,7 @@ class LambdaAcceptanceTest {
                 .withUrls(Map.of(
                         "https://www.example.com",
                         UrlConfig.urlConfigBuilder()
-                                .withStringPaths(List.of("/"))
+                                .withPaths(List.of("/"))
                                 .build()))
                 .withBrowser(Browser.Type.WEBKIT_HEADLESS)
                 .withGlobalTimeout(120)
@@ -416,7 +416,7 @@ class LambdaAcceptanceTest {
                 .withUrls(Map.of(
                         "https://www.example.com",
                         UrlConfig.urlConfigBuilder()
-                                .withStringPaths(List.of("/"))
+                                .withPaths(List.of("/"))
                                 .withDevices(List.of(
                                         DeviceConfig.deviceConfigBuilder()
                                                 .withWidth(viewportWidth)
@@ -476,7 +476,7 @@ class LambdaAcceptanceTest {
                 .withUrls(Map.of(
                         "https://www.example.com",
                         UrlConfig.urlConfigBuilder()
-                                .withStringPaths(List.of("/"))
+                                .withPaths(List.of("/"))
                                 .withDevices(List.of(
                                         DeviceConfig.deviceConfigBuilder()
                                                 .withWidth(viewportWidth)

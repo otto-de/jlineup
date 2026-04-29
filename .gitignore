@@ -10,7 +10,7 @@ build
 classes
 /lineup*.json
 /lineup*.yaml
-/report*
+/report
 /report/**
 /cli/report
 /cli-lambda/report

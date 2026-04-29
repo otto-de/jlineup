@@ -129,7 +129,7 @@ class JobConfigTest {
         assertThat(jobConfig.windowHeight, is(nullValue()));
         assertThat(jobConfig.urls.get("https://www.otto.de").windowWidths, is(nullValue()));
         assertThat(jobConfig.urls.get("https://www.otto.de").devices, is(ImmutableList.of(deviceConfig(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT))));
-        assertThat(jobConfig.urls.get("https://www.otto.de").paths, is(ImmutableList.of(PathConfig.of(DEFAULT_PATH))));
+        assertThat(jobConfig.urls.get("https://www.otto.de").paths, is(ImmutableList.of(DEFAULT_PATH)));
         assertThat(jobConfig.globalWaitAfterPageLoad, is(0F));
         assertThat(jobConfig.pageLoadTimeout, is(120));
         assertThat(jobConfig.screenshotRetries, is(0));
@@ -141,7 +141,7 @@ class JobConfigTest {
         assertThat(jobConfig.globalWaitAfterPageLoad, is(1f));
         assertThat(jobConfig.urls.get("https://www.otto.de").windowWidths, is(nullValue()));
         assertThat(jobConfig.urls.get("https://www.otto.de").devices, is(ImmutableList.of(deviceConfig(600, DEFAULT_WINDOW_HEIGHT), deviceConfig(800, DEFAULT_WINDOW_HEIGHT), deviceConfig(1200, DEFAULT_WINDOW_HEIGHT))));
-        assertThat(jobConfig.urls.get("https://www.otto.de").paths, is(ImmutableList.of(PathConfig.of("/"), PathConfig.of("multimedia"))));
+        assertThat(jobConfig.urls.get("https://www.otto.de").paths, is(ImmutableList.of("/","multimedia")));
         assertThat(jobConfig.urls.get("https://www.otto.de"), is(BrowserUtilsTest.getExpectedUrlConfigForOttoDe()));
         assertThat(jobConfig.urls.get("http://www.google.de"), is(BrowserUtilsTest.getExpectedUrlConfigForGoogleDe()));
         assertThat(jobConfig.pageLoadTimeout, is(60));

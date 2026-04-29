@@ -634,7 +634,6 @@
             box-shadow: var(--shadow-xs);
             padding: var(--space-5);
             margin-bottom: var(--space-4);
-            scroll-margin-top: 80px;
         }
 
         .urlSubPath {
@@ -643,7 +642,6 @@
             border-radius: var(--radius-md);
             padding: var(--space-4);
             margin-top: var(--space-3);
-            scroll-margin-top: 80px;
         }
 
         .urlSubPath:first-of-type {
@@ -1544,9 +1542,8 @@
                 if (saved) {
                     state.search = saved.search || '';
                     state.status = saved.status || 'all';
-                    // Only restore browsers/viewports that exist in this report
-                    state.browsers = new Set((saved.browsers || []).filter(b => browsers.has(b)));
-                    state.viewports = new Set((saved.viewports || []).filter(v => viewports.has(v)));
+                    state.browsers = new Set(saved.browsers || []);
+                    state.viewports = new Set(saved.viewports || []);
                 }
             } catch (e) {}
 
@@ -1704,8 +1701,7 @@
                 e.preventDefault();
                 const target = document.querySelector(link.getAttribute('href'));
                 if (target) {
-                    const y = target.getBoundingClientRect().top + window.pageYOffset - 80;
-                    window.scrollTo({ top: y, behavior: 'smooth' });
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
 
@@ -1820,7 +1816,7 @@
                     th:if="${!#strings.isEmpty(subPathEntry.key)}"
                     th:data-toc-sub-idx="${iterationStatus.index + '-sub-' + subIterStatus.index}">
                     <a class="toc-link" th:href="${'#url-' + iterationStatus.index + '-sub-' + subIterStatus.index}">
-                        <span class="toc-label" th:text="${urlReport.subPathTitles.containsKey(subPathEntry.key) ? urlReport.subPathTitles[subPathEntry.key] : subPathEntry.key}" th:title="${urlReport.url + subPathEntry.key}"></span>
+                        <span class="toc-label" th:text="${subPathEntry.key}" th:title="${urlReport.url + subPathEntry.key}"></span>
                     </a>
                 </li>
             </ul>
@@ -1872,11 +1868,7 @@
         <div class="urlSubPath" th:each="subPathEntry,subIterStatus : ${urlReport.contextReportsBySubPath}"
              th:id="${'url-' + iterationStatus.index + '-sub-' + subIterStatus.index}"
              th:data-subpath="${subPathEntry.key}">
-            <h3 class="sub-path" th:if="${!#strings.isEmpty(subPathEntry.key) && urlReport.subPathTitles.containsKey(subPathEntry.key)}" th:title="${urlReport.url + subPathEntry.key}">
-                <span th:text="${urlReport.subPathTitles[subPathEntry.key]}"></span>
-                <span style="display:block;font-size:0.75em;font-weight:normal;color:var(--color-text-muted);margin-top:2px;" th:text="${subPathEntry.key}"></span>
-            </h3>
-            <h3 class="sub-path" th:if="${!#strings.isEmpty(subPathEntry.key) && !urlReport.subPathTitles.containsKey(subPathEntry.key)}" th:text="${subPathEntry.key}" th:title="${urlReport.url + subPathEntry.key}"></h3>
+            <h3 class="sub-path" th:if="${!#strings.isEmpty(subPathEntry.key)}" th:text="${subPathEntry.key}" th:title="${urlReport.url + subPathEntry.key}"></h3>
             <details class="urlReport" th:each="contextReport,iterationStatus : ${subPathEntry.value}"
                      th:data-browser="${contextReport.browserInfo}"
                      th:data-device="${contextReport.deviceInfo}"
