@@ -197,6 +197,40 @@ class LambdaRequestPayloadSerializationTest {
     }
 
     @Test
+    void contextHashMatchesAfterRoundTrip() throws Exception {
+        JobConfig jobConfig = JobConfig.jobConfigBuilder()
+                .withUrls(Map.of(URL_KEY, UrlConfig.urlConfigBuilder()
+                        .withStringPaths(List.of("/"))
+                        .withDevices(List.of(DeviceConfig.deviceConfigBuilder()
+                                .withWidth(800).withHeight(800).build()))
+                        .build()))
+                .withBrowser(Browser.Type.CHROME_HEADLESS)
+                .build();
+        RunStepConfig rsc = RunStepConfig.runStepConfigBuilder()
+                .withStep(RunStep.before)
+                .build();
+        List<ScreenshotContext> contexts =
+                BrowserUtils.buildScreenshotContextListFromConfigAndState(rsc, jobConfig);
+        for (ScreenshotContext ctx : contexts) {
+            LambdaRequestPayload payload =
+                    new LambdaRequestPayload(RUN_ID, jobConfig, ctx, RunStep.before, ctx.urlKey);
+            String json = HANDLER_JSON_MAPPER.writeValueAsString(payload);
+            System.out.println("Serialized JSON: " + json);
+            LambdaRequestPayload deserialized = HANDLER_JSON_MAPPER.readValue(json, LambdaRequestPayload.class);
+            // Reconstruct exactly like JLineupHandler does
+            ScreenshotContext reconstructed = ScreenshotContext.copyOfBuilder(deserialized.screenshotContext())
+                    .withStep(deserialized.step().toBrowserStep())
+                    .withUrlKey(deserialized.urlKey())
+                    .withUrlConfig(deserialized.jobConfig().urls.get(deserialized.urlKey()))
+                    .build();
+            System.out.println("Original hash: " + ctx.contextHash() + " deviceConfig.hash=" + ctx.deviceConfig.hashCode() + " urlKey=" + ctx.urlKey + " urlSubPath=" + ctx.urlSubPath + " browserType=" + ctx.browserType);
+            System.out.println("Reconstructed hash: " + reconstructed.contextHash() + " deviceConfig.hash=" + reconstructed.deviceConfig.hashCode() + " urlKey=" + reconstructed.urlKey + " urlSubPath=" + reconstructed.urlSubPath + " browserType=" + reconstructed.browserType);
+            assertEquals(ctx.contextHash(), reconstructed.contextHash(),
+                    "contextHash must match after serialization round-trip");
+        }
+    }
+
+    @Test
     void deviceConfigRoundTrips() throws Exception {
         DeviceConfig device = DeviceConfig.deviceConfigBuilder()
                 .withWidth(375).withHeight(812).withDeviceName("iPhone 14").build();
