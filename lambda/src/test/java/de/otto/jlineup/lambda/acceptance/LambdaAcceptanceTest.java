@@ -9,6 +9,8 @@ import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
+import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.lambda.LambdaRequestPayload;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,9 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
+import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryDownload;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 import tools.jackson.databind.json.JsonMapper;
 
 import javax.imageio.ImageIO;
@@ -520,6 +525,100 @@ class LambdaAcceptanceTest {
             assertTrue(img.getHeight() >= expectedMinHeight,
                     "Screenshot height (" + img.getHeight() + ") should be >= " + expectedMinHeight
                     + " (viewport " + viewportHeight + " * pixelRatio " + pixelRatio + ")");
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // End-to-end: invoke lambda, download, merge file tracker, verify context hash
+    // -------------------------------------------------------------------------
+
+    /**
+     * Simulates the full LambdaBrowser flow: invoke lambda, download from S3
+     * using Transfer Manager, merge file trackers, and verify context hash lookup
+     * succeeds (i.e. screenshots are findable by the comparator).
+     */
+    @Test
+    void shouldDownloadAndMergeFileTrackerWithMatchingContextHash() throws Exception {
+        JobConfig jobConfig = JobConfig.jobConfigBuilder()
+                .withUrls(Map.of(
+                        "https://www.example.com",
+                        UrlConfig.urlConfigBuilder()
+                                .withStringPaths(List.of("/"))
+                                .withDevices(List.of(
+                                        DeviceConfig.deviceConfigBuilder()
+                                                .withWidth(800).withHeight(800).build()))
+                                .build()))
+                .withBrowser(Browser.Type.CHROME_HEADLESS)
+                .withGlobalTimeout(120)
+                .build().insertDefaults();
+
+        RunStepConfig runStepConfig = RunStepConfig.runStepConfigBuilder()
+                .withStep(RunStep.before)
+                .withWorkingDirectory(Files.createTempDirectory("jlineup-acc-test-").toString())
+                .withScreenshotsDirectory("screenshots")
+                .withReportDirectory("report")
+                .build();
+
+        List<ScreenshotContext> contexts =
+                BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig);
+        assertFalse(contexts.isEmpty());
+
+        String runId = UUID.randomUUID().toString();
+
+        // 1. Invoke lambda
+        try (LambdaClient lambdaClient = LambdaClient.builder()
+                .region(Region.of(awsRegion))
+                .httpClientBuilder(ApacheHttpClient.builder()
+                        .socketTimeout(Duration.ofSeconds(330))
+                        .connectionTimeout(Duration.ofSeconds(30)))
+                .build()) {
+
+            for (ScreenshotContext ctx : contexts) {
+                String response = invokeLambda(lambdaClient, functionName, jobConfig, ctx, RunStep.before, runId);
+                LOG.info("Lambda response: {}", response);
+                assertTrue(response.startsWith("OK"), "Lambda failed: " + response);
+            }
+        }
+
+        // 2. Download from S3 (same logic as LambdaBrowser.downloadFilesFromS3)
+        String s3Prefix = "lamba-screenshots-prefix/jlineup-" + runId;
+        Path localDownloadDir = Path.of(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory(), "lambda-s3");
+        Files.createDirectories(localDownloadDir);
+
+        try (S3TransferManager transferManager = S3TransferManager.builder()
+                .s3Client(S3AsyncClient.crtBuilder().build()).build()) {
+            CompletedDirectoryDownload download = transferManager.downloadDirectory(d -> d
+                    .bucket(bucketName)
+                    .listObjectsV2RequestTransformer(l -> l.prefix(s3Prefix))
+                    .destination(localDownloadDir)
+            ).completionFuture().get();
+            LOG.info("Download completed. Failed transfers: {}", download.failedTransfers().size());
+        }
+
+        // 3. Log what was downloaded
+        LOG.info("Contents of download dir '{}':", localDownloadDir);
+        try (var stream = Files.walk(localDownloadDir)) {
+            stream.forEach(p -> LOG.info("  {}", localDownloadDir.relativize(p)));
+        }
+
+        // 4. Create FileService and merge
+        FileService fileService = new FileService(runStepConfig, jobConfig);
+        Files.createDirectories(Path.of(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory()));
+        Files.createDirectories(Path.of(runStepConfig.getWorkingDirectory(), runStepConfig.getScreenshotsDirectory()));
+        fileService.mergeContextFileTrackersIntoFileTracker(localDownloadDir, (d, name) -> name.startsWith("files_") && name.endsWith(".json"));
+
+        // 5. Verify context hash lookup
+        FileTracker fileTracker = fileService.getFileTracker();
+        LOG.info("File tracker contexts after merge: {}", fileTracker.contexts.keySet());
+
+        for (ScreenshotContext ctx : contexts) {
+            String expectedHash = ctx.contextHash();
+            LOG.info("Looking up context hash '{}' (urlKey='{}', urlSubPath='{}', deviceConfig={}, browserType={})",
+                    expectedHash, ctx.urlKey, ctx.urlSubPath, ctx.deviceConfig, ctx.browserType);
+            assertTrue(fileTracker.contexts.containsKey(expectedHash),
+                    "File tracker should contain context hash '" + expectedHash + "' but only has: " + fileTracker.contexts.keySet());
+            assertFalse(fileTracker.contexts.get(expectedHash).getScreenshots().isEmpty(),
+                    "Context " + expectedHash + " should have at least one screenshot");
         }
     }
 

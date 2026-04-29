@@ -48,7 +48,9 @@ public class ScreenshotsComparator {
         }
         Map<String, List<ScreenshotComparisonResult>> results = new HashMap<>();
         List<ScreenshotContext> contextList = BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig);
-        LOG.info("Comparator looking for {} context(s). File tracker has context hashes: {}", contextList.size(), fileService.getFileTracker().contexts.keySet());
+        if (fileService.getFileTracker().contexts != null) {
+            LOG.info("Comparator looking for {} context(s). File tracker has context hashes: {}", contextList.size(), fileService.getFileTracker().contexts.keySet());
+        }
         for (ScreenshotContext ctx : contextList) {
             LOG.info("  Expected context hash '{}': urlKey='{}', urlSubPath='{}', deviceConfig={}, browserType={}", ctx.contextHash(), ctx.urlKey, ctx.urlSubPath, ctx.deviceConfig, ctx.browserType);
         }
