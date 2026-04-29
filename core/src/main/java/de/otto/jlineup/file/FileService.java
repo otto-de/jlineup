@@ -263,13 +263,21 @@ public class FileService {
         for (File file : files) {
             FileTracker part = JacksonWrapper.readFileTrackerFile(file);
 
+            LOG.info("Merging file '{}' with {} context(s): {}", file.getName(), part.contexts.size(), part.contexts.keySet());
             //fileTracker.contexts.putAll(part.contexts);
-            part.contexts.forEach((contextHash, screenshotContextFileTracker) -> fileTracker.contexts.merge(contextHash, screenshotContextFileTracker, (existingContext, newContext) -> screenshotContextFileTrackerBuilder()
+            part.contexts.forEach((contextHash, screenshotContextFileTracker) -> {
+                LOG.info("  Merging context hash '{}' with {} screenshot position(s), screenshotContext: urlSubPath='{}', deviceConfig={}, browserType={}",
+                        contextHash,
+                        screenshotContextFileTracker.screenshots != null ? screenshotContextFileTracker.screenshots.size() : 0,
+                        screenshotContextFileTracker.screenshotContext != null ? screenshotContextFileTracker.screenshotContext.urlSubPath : "null",
+                        screenshotContextFileTracker.screenshotContext != null ? screenshotContextFileTracker.screenshotContext.deviceConfig : "null",
+                        screenshotContextFileTracker.screenshotContext != null ? screenshotContextFileTracker.screenshotContext.browserType : "null");
+                fileTracker.contexts.merge(contextHash, screenshotContextFileTracker, (existingContext, newContext) -> screenshotContextFileTrackerBuilder()
                     .withScreenshotContext(existingContext.screenshotContext)
                     .withScreenshots(existingContext.screenshots)
                     .addScreenshots(newContext.screenshots)
-                    .build()));
-
+                    .build());
+            });
             part.browsers.forEach((step, browserSet) ->
                     fileTracker.browsers.computeIfAbsent(step, k -> java.util.concurrent.ConcurrentHashMap.newKeySet()).addAll(browserSet));
         }
