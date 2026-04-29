@@ -11,6 +11,7 @@ import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.file.FileTracker;
+import de.otto.jlineup.lambda.LambdaBrowser;
 import de.otto.jlineup.lambda.LambdaRequestPayload;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -529,7 +530,72 @@ class LambdaAcceptanceTest {
     }
 
     // -------------------------------------------------------------------------
-    // End-to-end: invoke lambda, download, merge file tracker, verify context hash
+    // End-to-end using LambdaBrowser class directly
+    // -------------------------------------------------------------------------
+
+    /**
+     * Uses the actual {@link de.otto.jlineup.lambda.LambdaBrowser} class to
+     * invoke the lambda, download from S3, and merge file trackers — exactly
+     * as the production web server does.
+     */
+    @Test
+    void shouldWorkEndToEndThroughLambdaBrowserClass() throws Exception {
+        // Set up GlobalOptions to point to the acceptance test lambda
+        de.otto.jlineup.GlobalOptions.setOption(de.otto.jlineup.GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME, functionName);
+        de.otto.jlineup.GlobalOptions.setOption(de.otto.jlineup.GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE, null);
+
+        JobConfig jobConfig = JobConfig.jobConfigBuilder()
+                .withUrls(Map.of(
+                        "https://www.example.com",
+                        UrlConfig.urlConfigBuilder()
+                                .withDevices(List.of(
+                                        DeviceConfig.deviceConfigBuilder()
+                                                .withWidth(800).withHeight(800).build()))
+                                .build()))
+                .withBrowser(Browser.Type.CHROME_HEADLESS)
+                .withGlobalTimeout(120)
+                .build().insertDefaults();
+
+        Path workDir = Files.createTempDirectory("jlineup-lambdabrowser-test-");
+        RunStepConfig runStepConfig = RunStepConfig.runStepConfigBuilder()
+                .withStep(RunStep.before)
+                .withWorkingDirectory(workDir.toString())
+                .withScreenshotsDirectory("screenshots")
+                .withReportDirectory("report")
+                .build();
+
+        // Create directories that FileService expects
+        Files.createDirectories(Path.of(workDir.toString(), "report"));
+        Files.createDirectories(Path.of(workDir.toString(), "screenshots"));
+
+        FileService fileService = new FileService(runStepConfig, jobConfig);
+
+        // Build contexts (same as Browser.runSetupAndTakeScreenshots does)
+        List<ScreenshotContext> contexts =
+                BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig);
+        LOG.info("Contexts to screenshot: {}", contexts.size());
+        for (ScreenshotContext ctx : contexts) {
+            LOG.info("  hash={}, urlSubPath='{}', deviceConfig={}", ctx.contextHash(), ctx.urlSubPath, ctx.deviceConfig);
+        }
+
+        // Use LambdaBrowser directly — this is exactly what production does
+        LambdaBrowser lambdaBrowser = new LambdaBrowser(runStepConfig, jobConfig, fileService);
+        lambdaBrowser.takeScreenshots(contexts);
+
+        // Verify file tracker has our context
+        FileTracker fileTracker = fileService.getFileTracker();
+        LOG.info("File tracker contexts after LambdaBrowser.takeScreenshots: {}", fileTracker.contexts.keySet());
+
+        for (ScreenshotContext ctx : contexts) {
+            String expectedHash = ctx.contextHash();
+            LOG.info("Verifying context hash '{}' exists in file tracker", expectedHash);
+            assertTrue(fileTracker.contexts.containsKey(expectedHash),
+                    "File tracker should contain context hash '" + expectedHash + "' but only has: " + fileTracker.contexts.keySet());
+            assertFalse(fileTracker.contexts.get(expectedHash).getScreenshots().isEmpty(),
+                    "Context " + expectedHash + " should have at least one screenshot");
+        }
+    }
+
     // -------------------------------------------------------------------------
 
     /**
@@ -539,11 +605,11 @@ class LambdaAcceptanceTest {
      */
     @Test
     void shouldDownloadAndMergeFileTrackerWithMatchingContextHash() throws Exception {
+        // Use default empty path (same as production when no paths are configured)
         JobConfig jobConfig = JobConfig.jobConfigBuilder()
                 .withUrls(Map.of(
                         "https://www.example.com",
                         UrlConfig.urlConfigBuilder()
-                                .withStringPaths(List.of("/"))
                                 .withDevices(List.of(
                                         DeviceConfig.deviceConfigBuilder()
                                                 .withWidth(800).withHeight(800).build()))
@@ -562,6 +628,11 @@ class LambdaAcceptanceTest {
         List<ScreenshotContext> contexts =
                 BrowserUtils.buildScreenshotContextListFromConfigAndState(runStepConfig, jobConfig);
         assertFalse(contexts.isEmpty());
+        LOG.info("JobConfig paths: {}", jobConfig.urls.get("https://www.example.com").paths);
+        LOG.info("Contexts: {}", contexts.size());
+        for (ScreenshotContext ctx : contexts) {
+            LOG.info("  Context: urlSubPath='{}', hash={}", ctx.urlSubPath, ctx.contextHash());
+        }
 
         String runId = UUID.randomUUID().toString();
 

@@ -10,7 +10,9 @@ import de.otto.jlineup.file.FileService;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -95,6 +97,17 @@ public class LambdaBrowser implements CloudBrowser {
         };
     }
 
+    private static AwsCredentialsProvider buildCredentialsProvider() {
+        String profile = GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE);
+        LOG.info("Resolved AWS profile from GlobalOptions: '{}'", profile);
+        if (profile != null && !profile.equals("default")) {
+            LOG.info("Using AWS ProfileCredentialsProvider with profile '{}'", profile);
+            return ProfileCredentialsProvider.create(profile);
+        }
+        LOG.info("Using DefaultCredentialsProvider (profile is '{}').", profile);
+        return DefaultCredentialsProvider.builder().build();
+    }
+
     private void validateLambdaFunctionNamesConfigured(List<ScreenshotContext> screenshotContexts) {
         screenshotContexts.stream()
                 .map(ctx -> ctx.browserType)
@@ -124,7 +137,7 @@ public class LambdaBrowser implements CloudBrowser {
                         .collect(java.util.stream.Collectors.joining(", ")));
         final String s3Bucket;
         final String s3Prefix;
-        DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
+        AwsCredentialsProvider credentialsProvider = buildCredentialsProvider();
 
         // Use the function name of the first context to read the shared S3 config.
         // All browser-specific Lambda functions are expected to share the same S3 bucket/prefix.
@@ -218,6 +231,12 @@ public class LambdaBrowser implements CloudBrowser {
 
     private void mergeLambdaContextsIntoLocalFileStructure(Path localFolderOfS3Content) throws IOException {
         LOG.info("Merging context file trackers into file tracker...");
+        LOG.info("Download directory: '{}' (exists={}, isDir={})", localFolderOfS3Content, java.nio.file.Files.exists(localFolderOfS3Content), java.nio.file.Files.isDirectory(localFolderOfS3Content));
+        if (java.nio.file.Files.exists(localFolderOfS3Content)) {
+            try (var stream = java.nio.file.Files.list(localFolderOfS3Content)) {
+                stream.forEach(p -> LOG.info("  Entry: {} (isDir={})", p.getFileName(), java.nio.file.Files.isDirectory(p)));
+            }
+        }
         fileService.mergeContextFileTrackersIntoFileTracker(localFolderOfS3Content, (d, name) -> name.startsWith("files_") && name.endsWith(".json"));
         Arrays.stream(Objects.requireNonNull(localFolderOfS3Content.toFile().listFiles()))
                 .forEach(f -> {
@@ -263,24 +282,26 @@ public class LambdaBrowser implements CloudBrowser {
         LOG.info("Merging finished.");
     }
 
-    private Path downloadFilesFromS3(DefaultCredentialsProvider credentialsProvider, String s3Bucket, String s3Prefix, String runId) {
+    private Path downloadFilesFromS3(AwsCredentialsProvider credentialsProvider, String s3Bucket, String s3Prefix, String runId) {
         LOG.info("All lambda calls finished, starting download from S3 with transfer manager...");
         CompletableFuture<CompletedDirectoryDownload> download;
         Path localFolderOfS3Content = Paths.get(this.runStepConfig.getWorkingDirectory(), this.runStepConfig.getReportDirectory(), "lambda-s3");
 
         final String prefix = buildS3Prefix(s3Prefix, runId);
+        LOG.info("S3 download prefix: '{}', destination: '{}'", prefix, localFolderOfS3Content);
 
         try (S3TransferManager transferManager = S3TransferManager.builder().s3Client(S3AsyncClient.crtBuilder().credentialsProvider(credentialsProvider).build()).build()) {
             download = transferManager.downloadDirectory(d -> d.bucket(s3Bucket).listObjectsV2RequestTransformer(l -> l.prefix(prefix)).destination(localFolderOfS3Content)).completionFuture();
         }
         LOG.info("Waiting for download to finish...");
         try {
-            download.get();
+            CompletedDirectoryDownload result = download.get();
+            LOG.info("Download finished. Failed transfers: {}", result.failedTransfers().size());
+            result.failedTransfers().forEach(ft -> LOG.error("  Failed transfer: {} - {}", ft.request().getObjectRequest().key(), ft.exception().getMessage()));
         } catch (Exception e) {
             LOG.error("S3 Download failed", e);
             throw new RuntimeException(e);
         }
-        LOG.info("Download finished.");
         return localFolderOfS3Content;
     }
 

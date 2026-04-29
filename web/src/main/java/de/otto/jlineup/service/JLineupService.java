@@ -66,6 +66,13 @@ public class JLineupService {
         if (jLineupWebProperties.getLambda().getFunctionNameWebkitHeadless() != null) {
             GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_FUNCTION_NAME_WEBKIT_HEADLESS, jLineupWebProperties.getLambda().getFunctionNameWebkitHeadless());
         }
+        if (jLineupWebProperties.getLambda().getAwsProfile() != null) {
+            LOG.info("Setting AWS profile from Spring properties: '{}'", jLineupWebProperties.getLambda().getAwsProfile());
+            GlobalOptions.setOption(GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE, jLineupWebProperties.getLambda().getAwsProfile());
+        } else {
+            LOG.info("No AWS profile configured in jlineup.lambda.aws-profile – using GlobalOptions default: '{}'",
+                    GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_AWS_PROFILE));
+        }
     }
 
     public synchronized JLineupRunStatus startBeforeRun(JobConfig jobConfig) throws Exception {
