@@ -50,6 +50,7 @@ public final class JobConfig  {
     static final float DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD = 0f;
     public static final String DEFAULT_PATH = "";
     public static final ImmutableList<String> DEFAULT_PATHS = ImmutableList.of(DEFAULT_PATH);
+    public static final ImmutableList<PathConfig> DEFAULT_PATH_CONFIGS = ImmutableList.of(PathConfig.of(DEFAULT_PATH));
     static final int DEFAULT_MAX_SCROLL_HEIGHT = 100000;
     static final float DEFAULT_WAIT_AFTER_PAGE_LOAD = 0;
     static final float DEFAULT_WAIT_AFTER_SCROLL = 0;
@@ -394,7 +395,7 @@ public final class JobConfig  {
                 .withUrls(ImmutableMap.of("https://www.example.com",
 
                         urlConfigBuilder()
-                                .withPaths(ImmutableList.of("/"))
+                                .withPaths(ImmutableList.of(PathConfig.of("/")))
                                 .withCookies(ImmutableList.of(
                                         new Cookie("exampleCookieName", "exampleValue", "www.example.com", "/", new Date(1000L), false, false, false)
                                 ))
@@ -481,7 +482,7 @@ public final class JobConfig  {
             //Remove window widths because devices were generated above
             urlConfigBuilder.withWindowWidths(null);
 
-            final List<String> paths = urlConfig.paths != null ? urlConfig.paths : DEFAULT_PATHS;
+            final List<PathConfig> paths = urlConfig.paths != null ? urlConfig.paths : DEFAULT_PATH_CONFIGS;
             urlConfigBuilder.withPaths(paths);
 
             jobConfigBuilder.addUrlConfig(url, urlConfigBuilder.build());

@@ -179,7 +179,7 @@ public class BrowserUtilsTest {
 
         return UrlConfig.urlConfigBuilder()
                 .withUrl("https://www.otto.de")
-                .withPaths(ImmutableList.of("/", "multimedia"))
+                .withStringPaths(ImmutableList.of("/", "multimedia"))
                 .withSetupPaths(ImmutableList.of("setup"))
                 .withCleanupPaths(ImmutableList.of("cleanup"))
                 .withMaxDiff(0.05d)

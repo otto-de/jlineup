@@ -133,7 +133,7 @@ class BrowserIntegrationTest {
     void shouldSetCookieOnCorrectPath() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withCookie(new Cookie("CookieName", "CookieValue"))
-                .withPaths(ImmutableList.of("/")).build();
+                .withStringPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("somerootpath/somevalidsubpath", Browser.Type.CHROME_HEADLESS, true, urlConfig);
         runJLineup(jobConfig, RunStep.before);
     }
@@ -142,7 +142,7 @@ class BrowserIntegrationTest {
     void shouldCheckHttpStatusCodeError() {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(new HttpCheckConfig(true))
-                .withPaths(ImmutableList.of("/")).build();
+                .withStringPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, false, urlConfig);
         try {
             runJLineup(jobConfig, RunStep.before);
@@ -157,7 +157,7 @@ class BrowserIntegrationTest {
     void shouldCheckCustomHttpStatusCodes() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(new HttpCheckConfig(true, ImmutableList.of(304)))
-                .withPaths(ImmutableList.of("/")).build();
+                .withStringPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("200", Browser.Type.CHROME_HEADLESS, false, urlConfig);
         try {
             runJLineup(jobConfig, RunStep.before);
@@ -172,7 +172,7 @@ class BrowserIntegrationTest {
     void shouldDetectErrorSignal() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(HttpCheckConfig.httpCheckConfigBuilder().withEnabled(true).withErrorSignals(singletonList("Hallo!")).build())
-                .withPaths(ImmutableList.of("/")).build();
+                .withStringPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("somerootpath/somevalidsubpath", Browser.Type.CHROME_HEADLESS, true, urlConfig);
         try {
             runJLineup(jobConfig, RunStep.before);
@@ -188,7 +188,7 @@ class BrowserIntegrationTest {
     void shouldNotCheckHttpStatusCodeErrorIfNotConfigured() throws ValidationError {
         UrlConfig urlConfig = UrlConfig.urlConfigBuilder()
                 .withHttpCheck(new HttpCheckConfig(false))
-                .withPaths(ImmutableList.of("/")).build();
+                .withStringPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("500", Browser.Type.CHROME_HEADLESS, false, urlConfig);
         runJLineup(jobConfig, RunStep.before);
         //no exception
@@ -206,7 +206,7 @@ class BrowserIntegrationTest {
                         ImmutableList.of(new Cookie("alternating", "SERVICE_UNAVAILABLE")),
                         ImmutableList.of(new Cookie("alternating", "UNAUTHORIZED"))
                 ))
-                .withPaths(ImmutableList.of("/")).build();
+                .withStringPaths(ImmutableList.of("/")).build();
         JobConfig jobConfig = localTestConfig("cookies", Browser.Type.FIREFOX_HEADLESS, false, urlConfig);
         runJLineup(jobConfig, RunStep.before);
         runJLineup(jobConfig, RunStep.after);
