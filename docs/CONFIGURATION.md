@@ -424,21 +424,25 @@ What are all those options about? Here are all the details.
 
 ### `paths`         
                
- These paths are appended to the current site url and screenshotted individually
+ These paths are appended to the current site url and screenshotted individually.
+ Each path can be specified as a plain string, or as an object with `path` and `title` fields.
+ When a title is provided, it is displayed in the report as a human-readable label above the path.
                                  
  * Scope: Site
- * Type: List of Strings
+ * Type: List of Strings or PathConfig objects
  * Default: `[ "" ]`
  * Example:
    ```yaml
    paths:
    - /
    - someOtherPath
+   - path: /settings/account
+     title: "Account Settings"
    ```
    <details>
    <summary>JSON</summary>
 
-   `"paths": [ "/", "someOtherPath" ]`
+   `"paths": [ "/", "someOtherPath", { "path": "/settings/account", "title": "Account Settings" } ]`
    </details>
 
 

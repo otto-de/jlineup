@@ -28,9 +28,12 @@
 
             --color-success: #15803d;
             --color-success-bg: #dcfce7;
+            --color-success-border: #86efac;
             --color-failure: #b91c1c;
             --color-failure-bg: #fee2e2;
+            --color-failure-border: #fca5a5;
             --color-info: #1d4ed8;
+            --color-info-bg: #dbeafe;
 
             --radius-sm: 6px;
             --radius-md: 10px;
@@ -48,31 +51,6 @@
             --space-5: 20px;
             --space-6: 24px;
             --space-8: 32px;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --color-bg: #0f1115;
-                --color-surface: #181b22;
-                --color-surface-2: #1f232c;
-                --color-surface-3: #272c36;
-                --color-border: #2f3643;
-                --color-border-strong: #3b4352;
-                --color-text: #e5e7eb;
-                --color-text-muted: #9ca3af;
-                --color-text-soft: #6b7280;
-
-                --color-success: #4ade80;
-                --color-success-bg: #052e16;
-                --color-failure: #f87171;
-                --color-failure-bg: #450a0a;
-                --color-info: #60a5fa;
-
-                --shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
-                --shadow-sm: 0 1px 3px rgba(0, 0, 0, .35);
-                --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
-                --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
-            }
         }
 
         * {
@@ -100,6 +78,346 @@
             max-width: 1600px;
             margin-inline: auto;
             padding: var(--space-6) var(--space-5) var(--space-8);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .page-wrapper.has-toc {
+            grid-template-columns: 220px 1fr;
+            gap: var(--space-5);
+        }
+
+        /* ---------- TOC sidebar ---------- */
+        .toc-sidebar {
+            display: none;
+        }
+
+        .has-toc .toc-sidebar {
+            display: block;
+            position: sticky;
+            top: var(--space-5);
+            align-self: start;
+            max-height: calc(100vh - var(--space-8));
+            overflow-y: auto;
+            font-size: 12px;
+            padding-right: var(--space-3);
+        }
+
+        .toc-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .toc-sidebar::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 4px;
+        }
+
+        .toc-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-text-muted);
+            margin: 0 0 var(--space-3) 0;
+        }
+
+        .toc-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc-entry {
+            margin: 0;
+        }
+
+        .toc-link {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 5px 8px;
+            border-radius: var(--radius-sm);
+            color: var(--color-text-muted);
+            text-decoration: none;
+            line-height: 1.4;
+            transition: background 100ms, color 100ms;
+        }
+
+        .toc-link:hover {
+            background: var(--color-surface-2);
+            color: var(--color-text);
+            text-decoration: none;
+        }
+
+        .toc-link.active {
+            background: var(--color-surface-3);
+            color: var(--color-text);
+        }
+
+        .toc-dot {
+            flex-shrink: 0;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-top: 5px;
+            background: var(--color-text-soft);
+        }
+
+        .toc-label {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .toc-sub {
+            list-style: none;
+            margin: 0;
+            padding: 0 0 0 15px;
+        }
+
+        .toc-entry.filter-hidden {
+            display: none;
+        }
+
+        /* ---------- Focus mode ---------- */
+        .focus-mode .page-wrapper {
+            max-width: none;
+            padding-left: var(--space-4);
+            padding-right: var(--space-4);
+        }
+
+        .focus-mode .page-wrapper.has-toc {
+            grid-template-columns: 1fr;
+        }
+
+        .focus-mode .toc-sidebar {
+            display: none !important;
+        }
+
+        .focus-mode .sticky-bar-inner {
+            max-width: none;
+        }
+
+        .focus-mode .report-header {
+            max-width: 1200px;
+        }
+
+        .focus-mode .filter-bar {
+            max-width: none;
+        }
+
+        .sticky-bar-focus {
+            border: 1px solid var(--color-border);
+            background: transparent;
+            color: var(--color-text-muted);
+            border-radius: var(--radius-sm);
+            padding: 4px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .sticky-bar-focus:hover {
+            color: var(--color-text);
+            border-color: var(--color-text-muted);
+        }
+
+        .sticky-bar-focus.active {
+            background: var(--color-text);
+            color: var(--color-bg);
+            border-color: var(--color-text);
+        }
+
+        .focus-fab {
+            position: fixed;
+            top: 12px;
+            right: 16px;
+            z-index: 50;
+            border: 1px solid var(--color-border);
+            background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+            backdrop-filter: saturate(180%) blur(8px);
+            -webkit-backdrop-filter: saturate(180%) blur(8px);
+            color: var(--color-text-muted);
+            border-radius: var(--radius-sm);
+            padding: 5px 12px;
+            font-size: 0.8em;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+            transition: opacity 160ms ease, color 120ms ease, border-color 120ms ease;
+        }
+
+        .focus-fab:hover {
+            color: var(--color-text);
+            border-color: var(--color-text-muted);
+        }
+
+        .focus-fab.active {
+            background: var(--color-text);
+            color: var(--color-bg);
+            border-color: var(--color-text);
+        }
+
+        .focus-fab.is-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Sticky top dashboard bar */
+        .sticky-bar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: color-mix(in srgb, var(--color-surface) 90%, transparent);
+            backdrop-filter: saturate(180%) blur(8px);
+            -webkit-backdrop-filter: saturate(180%) blur(8px);
+            border-bottom: 1px solid var(--color-border);
+            opacity: 0;
+            transform: translateY(-4px);
+            pointer-events: none;
+            transition: opacity 160ms ease, transform 160ms ease;
+        }
+
+        .sticky-bar.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .sticky-bar-inner {
+            max-width: 1600px;
+            margin-inline: auto;
+            padding: 10px var(--space-5);
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .sticky-bar-title {
+            font-weight: 600;
+            font-size: 0.95em;
+            color: var(--color-text);
+            margin-right: auto;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-width: 0;
+        }
+
+        .sticky-bar-title .eyebrow {
+            color: var(--color-text-muted);
+            font-weight: 500;
+            font-size: 0.85em;
+            letter-spacing: 0.02em;
+        }
+
+        .sticky-bar-top {
+            border: 1px solid var(--color-border);
+            background: transparent;
+            color: var(--color-text-muted);
+            border-radius: var(--radius-sm);
+            padding: 4px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .sticky-bar-top:hover {
+            color: var(--color-text);
+            border-color: var(--color-text-muted);
+        }
+
+        /* ---------- Filter bar ---------- */
+        .filter-bar {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-3) var(--space-4);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+            font-size: 12px;
+        }
+
+        .filter-bar-search {
+            flex: 0 1 220px;
+            min-width: 120px;
+            padding: 5px 10px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background: var(--color-bg);
+            color: var(--color-text);
+            font-size: 12px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .filter-bar-search:focus {
+            border-color: var(--color-accent, #2563eb);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+        }
+
+        .filter-bar-sep {
+            width: 1px;
+            height: 20px;
+            background: var(--color-border);
+            flex-shrink: 0;
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border: 1px solid var(--color-border);
+            border-radius: 999px;
+            background: var(--color-bg);
+            color: var(--color-text-muted);
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            transition: background 100ms, color 100ms, border-color 100ms;
+        }
+
+        .filter-chip:hover {
+            border-color: var(--color-text-muted);
+            color: var(--color-text);
+        }
+
+        .filter-chip.active {
+            background: var(--color-text);
+            color: var(--color-bg);
+            border-color: var(--color-text);
+        }
+
+        .filter-count {
+            margin-left: auto;
+            color: var(--color-text-muted);
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        #filter-browsers,
+        #filter-viewports {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: var(--space-3);
+        }
+
+        /* Hidden state for filtered-out items */
+        .url.filter-hidden,
+        .urlSubPath.filter-hidden,
+        .urlReport.filter-hidden {
+            display: none !important;
         }
 
         h1 {
@@ -143,11 +461,6 @@
             margin: 0 0 var(--space-2) 0;
         }
 
-        p {
-            padding: 0;
-            margin: 0;
-        }
-
         .footer {
             margin-top: var(--space-8);
             padding-top: var(--space-4);
@@ -156,6 +469,7 @@
             color: var(--color-text-soft);
         }
 
+        /* ---------- Header / summary card ---------- */
         .report-header {
             background-color: var(--color-surface);
             border: 1px solid var(--color-border);
@@ -186,7 +500,7 @@
             overflow-x: auto;
         }
 
-        /* ---------- URL cards ---------- */
+        /* ---------- Nested cards ---------- */
         .url {
             background-color: var(--color-surface);
             border: 1px solid var(--color-border);
@@ -194,11 +508,34 @@
             box-shadow: var(--shadow-xs);
             padding: var(--space-5);
             margin-bottom: var(--space-4);
+            scroll-margin-top: 80px;
         }
 
-        /* ---------- Details / accordion ---------- */
-        .urlReport {
+        .urlSubPath {
             background-color: var(--color-surface-2);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-top: var(--space-3);
+            scroll-margin-top: 80px;
+        }
+
+        .urlSubPath:first-of-type {
+            margin-top: var(--space-3);
+        }
+
+        h3.url-base {
+            color: var(--color-text);
+        }
+
+        h3.sub-path {
+            color: var(--color-text);
+            font-size: 1em;
+            margin: 0 0 var(--space-2) 0;
+        }
+
+        .urlReport {
+            background-color: var(--color-surface);
             border: 1px solid var(--color-border);
             border-radius: var(--radius-md);
             margin-top: var(--space-3);
@@ -224,7 +561,7 @@
             display: none;
         }
         .urlReport > summary:hover {
-            background-color: var(--color-surface-3);
+            background-color: var(--color-surface-2);
         }
         .urlReport > summary:focus-visible {
             outline: 2px solid var(--color-info);
@@ -315,6 +652,11 @@
             text-decoration: underline;
         }
 
+        p {
+            padding: 0;
+            margin: 0;
+        }
+
         .success {
             color: var(--color-success);
         }
@@ -366,14 +708,434 @@
             height: 14px;
             display: block;
         }
-    </style>
 
+        /* ---------- Dark mode ---------- */
+        @media (prefers-color-scheme: dark) {
+            :root:not(.light-mode) {
+                --color-bg: #0f1115;
+                --color-surface: #181b22;
+                --color-surface-2: #1f232c;
+                --color-surface-3: #272c36;
+                --color-border: #2f3643;
+                --color-border-strong: #3b4352;
+                --color-text: #e5e7eb;
+                --color-text-muted: #9ca3af;
+                --color-text-soft: #6b7280;
+
+                --color-success: #4ade80;
+                --color-success-bg: #052e16;
+                --color-success-border: #14532d;
+                --color-failure: #f87171;
+                --color-failure-bg: #450a0a;
+                --color-failure-border: #7f1d1d;
+                --color-info: #60a5fa;
+                --color-info-bg: #172554;
+
+                --shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
+                --shadow-sm: 0 1px 3px rgba(0, 0, 0, .35);
+                --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
+                --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
+            }
+        }
+
+        :root.dark-mode {
+            --color-bg: #0f1115;
+            --color-surface: #181b22;
+            --color-surface-2: #1f232c;
+            --color-surface-3: #272c36;
+            --color-border: #2f3643;
+            --color-border-strong: #3b4352;
+            --color-text: #e5e7eb;
+            --color-text-muted: #9ca3af;
+            --color-text-soft: #6b7280;
+
+            --color-success: #4ade80;
+            --color-success-bg: #052e16;
+            --color-success-border: #14532d;
+            --color-failure: #f87171;
+            --color-failure-bg: #450a0a;
+            --color-failure-border: #7f1d1d;
+            --color-info: #60a5fa;
+            --color-info-bg: #172554;
+
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, .35);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
+        }
+    </style>
+    <script type="application/javascript">
+
+        // Focus mode: full-width, no TOC
+        function toggleFocusMode() {
+            document.body.classList.toggle('focus-mode');
+            const active = document.body.classList.contains('focus-mode');
+            document.querySelectorAll('#focus-toggle, #focus-fab').forEach(btn => btn.classList.toggle('active', active));
+            try { localStorage.setItem('jlineup-focus-mode', active ? '1' : ''); } catch(e) {}
+        }
+
+        // Dark mode: cycles auto -> dark -> light -> auto
+        function toggleDarkMode() {
+            const root = document.documentElement;
+            const isDark = root.classList.contains('dark-mode');
+            const isLight = root.classList.contains('light-mode');
+            let next;
+            if (!isDark && !isLight) {
+                root.classList.add('dark-mode');
+                next = 'dark';
+            } else if (isDark) {
+                root.classList.remove('dark-mode');
+                root.classList.add('light-mode');
+                next = 'light';
+            } else {
+                root.classList.remove('light-mode');
+                next = '';
+            }
+            syncDarkButtons(next);
+            try { localStorage.setItem('jlineup-dark-mode', next); } catch(e) {}
+        }
+
+        function syncDarkButtons(mode) {
+            document.querySelectorAll('.dark-toggle').forEach(btn => {
+                const isDark = mode === 'dark';
+                const isLight = mode === 'light';
+                btn.classList.toggle('active', isDark || isLight);
+                if (isDark) btn.textContent = '\u263E Dark';
+                else if (isLight) btn.textContent = '\u2600 Light';
+                else btn.textContent = '\u25D1 Auto';
+            });
+        }
+
+    </script>
+    <script type="module">
+
+        // Restore focus mode from localStorage
+        try {
+            if (localStorage.getItem('jlineup-focus-mode') === '1') {
+                document.body.classList.add('focus-mode');
+                document.querySelectorAll('#focus-toggle, #focus-fab').forEach(btn => btn.classList.add('active'));
+            }
+        } catch(e) {}
+
+        // Restore dark mode from localStorage
+        try {
+            const dm = localStorage.getItem('jlineup-dark-mode');
+            if (dm === 'dark') document.documentElement.classList.add('dark-mode');
+            else if (dm === 'light') document.documentElement.classList.add('light-mode');
+            syncDarkButtons(dm || '');
+        } catch(e) {}
+
+        // Toggle sticky top bar when the summary header scrolls out of view.
+        const stickyBar = document.getElementById('sticky-bar');
+        const sentinel = document.getElementById('sticky-bar-sentinel');
+        if (stickyBar && sentinel && 'IntersectionObserver' in window) {
+            const io = new IntersectionObserver(([entry]) => {
+                const fabs = document.querySelectorAll('.focus-fab');
+                if (entry.isIntersecting) {
+                    stickyBar.classList.remove('is-visible');
+                    stickyBar.setAttribute('aria-hidden', 'true');
+                    fabs.forEach(f => f.classList.remove('is-hidden'));
+                } else {
+                    stickyBar.classList.add('is-visible');
+                    stickyBar.setAttribute('aria-hidden', 'false');
+                    fabs.forEach(f => f.classList.add('is-hidden'));
+                }
+            }, { rootMargin: '0px 0px 0px 0px', threshold: 0 });
+            io.observe(sentinel);
+        }
+
+        // ---------- Filter bar logic ----------
+        (function initFilterBar() {
+            const STORAGE_KEY = 'jlineup-before-filters';
+            const allDetails = document.querySelectorAll('details.urlReport');
+            const allUrls = document.querySelectorAll('.url');
+            const allSubPaths = document.querySelectorAll('.urlSubPath');
+            const searchInput = document.getElementById('filter-search');
+            const countEl = document.getElementById('filter-count');
+            const browserContainer = document.getElementById('filter-browsers');
+            const viewportContainer = document.getElementById('filter-viewports');
+
+            if (!allDetails.length) return;
+
+            const browsers = new Set();
+            const viewports = new Set();
+            allDetails.forEach(d => {
+                const b = d.dataset.browser;
+                if (b) browsers.add(b);
+                const dev = d.dataset.device;
+                if (dev) {
+                    const m = dev.match(/(\d+)\s*x\s*(\d+)/i);
+                    if (m) viewports.add(m[1] + 'x' + m[2]);
+                }
+            });
+
+            const browserIconSvg = (name) => {
+                const n = name.toLowerCase();
+                let grad, letter;
+                if (n.includes('firefox')) {
+                    grad = '<linearGradient id="ff-chip" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFCB00"/><stop offset="35%" stop-color="#FF9500"/><stop offset="65%" stop-color="#E66000"/><stop offset="100%" stop-color="#331E54"/></linearGradient>';
+                    letter = 'F';
+                } else if (n.includes('chrome')) {
+                    grad = '<linearGradient id="cr-chip" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#DD5144"/><stop offset="33%" stop-color="#FFCD46"/><stop offset="66%" stop-color="#1DA462"/><stop offset="100%" stop-color="#4C8BF5"/></linearGradient>';
+                    letter = 'C';
+                } else if (n.includes('safari') || n.includes('webkit')) {
+                    grad = '<linearGradient id="sf-chip" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#006CFF"/><stop offset="50%" stop-color="#0FB5EE"/><stop offset="100%" stop-color="#00D3F9"/></linearGradient>';
+                    letter = 'S';
+                } else if (n.includes('edge')) {
+                    grad = '<linearGradient id="ed-chip" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3DC3F2"/><stop offset="50%" stop-color="#0078D4"/><stop offset="100%" stop-color="#004E8C"/></linearGradient>';
+                    letter = 'E';
+                } else {
+                    return '';
+                }
+                const id = grad.match(/id="([^"]+)"/)[1];
+                return '<svg viewBox="0 0 24 24" style="width:12px;height:12px;vertical-align:-1px;margin-right:3px;flex-shrink:0;" aria-hidden="true"><defs>' + grad + '</defs><circle cx="12" cy="12" r="10.5" fill="url(#' + id + ')"/><text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">' + letter + '</text></svg>';
+            };
+
+            browsers.forEach(b => {
+                const chip = document.createElement('span');
+                chip.className = 'filter-chip';
+                chip.dataset.browserFilter = b;
+                const icon = browserIconSvg(b);
+                const label = b.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                chip.innerHTML = icon + label;
+                browserContainer.appendChild(chip);
+            });
+
+            viewports.forEach(v => {
+                const chip = document.createElement('span');
+                chip.className = 'filter-chip';
+                chip.dataset.viewportFilter = v;
+                chip.textContent = v;
+                viewportContainer.appendChild(chip);
+            });
+
+            if (browsers.size && viewports.size) {
+                const sep = document.createElement('div');
+                sep.className = 'filter-bar-sep';
+                viewportContainer.parentNode.insertBefore(sep, viewportContainer);
+            }
+
+            let state = {
+                search: '',
+                browsers: new Set(),
+                viewports: new Set(),
+            };
+
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                if (saved) {
+                    state.search = saved.search || '';
+                    state.browsers = new Set((saved.browsers || []).filter(b => browsers.has(b)));
+                    state.viewports = new Set((saved.viewports || []).filter(v => viewports.has(v)));
+                }
+            } catch (e) {}
+
+            function save() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                        search: state.search,
+                        browsers: [...state.browsers],
+                        viewports: [...state.viewports],
+                    }));
+                } catch (e) {}
+            }
+
+            function applyFilters() {
+                const q = state.search.toLowerCase();
+                let shown = 0;
+                const total = allDetails.length;
+
+                allDetails.forEach(det => {
+                    let visible = true;
+
+                    if (visible && state.browsers.size > 0) {
+                        const b = det.dataset.browser || '';
+                        if (!state.browsers.has(b)) visible = false;
+                    }
+
+                    if (visible && state.viewports.size > 0) {
+                        const dev = det.dataset.device || '';
+                        const m = dev.match(/(\d+)\s*x\s*(\d+)/i);
+                        const vp = m ? m[1] + 'x' + m[2] : '';
+                        if (!state.viewports.has(vp)) visible = false;
+                    }
+
+                    if (visible && q) {
+                        const urlDiv = det.closest('.url');
+                        const subDiv = det.closest('.urlSubPath');
+                        const haystack = [
+                            urlDiv?.dataset.url || '',
+                            urlDiv?.dataset.urlkey || '',
+                            subDiv?.dataset.subpath || '',
+                            det.dataset.device || '',
+                            det.dataset.browser || '',
+                        ].join(' ').toLowerCase();
+                        if (!haystack.includes(q)) visible = false;
+                    }
+
+                    det.classList.toggle('filter-hidden', !visible);
+                    if (visible) shown++;
+                });
+
+                allSubPaths.forEach(sp => {
+                    const hasVisible = sp.querySelector('details.urlReport:not(.filter-hidden)');
+                    sp.classList.toggle('filter-hidden', !hasVisible);
+                });
+
+                allUrls.forEach(u => {
+                    const hasVisible = u.querySelector('details.urlReport:not(.filter-hidden)');
+                    u.classList.toggle('filter-hidden', !hasVisible);
+                });
+
+                countEl.textContent = shown === total ? total + ' contexts' : shown + ' / ' + total;
+                save();
+                document.dispatchEvent(new CustomEvent('jlineup-filters-changed'));
+            }
+
+            function syncChipUI() {
+                document.querySelectorAll('#filter-bar [data-browser-filter]').forEach(chip => {
+                    chip.classList.toggle('active', state.browsers.has(chip.dataset.browserFilter));
+                });
+                document.querySelectorAll('#filter-bar [data-viewport-filter]').forEach(chip => {
+                    chip.classList.toggle('active', state.viewports.has(chip.dataset.viewportFilter));
+                });
+                searchInput.value = state.search;
+            }
+
+            searchInput.addEventListener('input', () => {
+                state.search = searchInput.value;
+                applyFilters();
+            });
+
+            document.querySelectorAll('#filter-bar [data-browser-filter]').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const v = chip.dataset.browserFilter;
+                    if (state.browsers.has(v)) state.browsers.delete(v);
+                    else state.browsers.add(v);
+                    syncChipUI();
+                    applyFilters();
+                });
+            });
+
+            document.querySelectorAll('#filter-bar [data-viewport-filter]').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const v = chip.dataset.viewportFilter;
+                    if (state.viewports.has(v)) state.viewports.delete(v);
+                    else state.viewports.add(v);
+                    syncChipUI();
+                    applyFilters();
+                });
+            });
+
+            syncChipUI();
+            applyFilters();
+        })();
+
+        // ---------- TOC sidebar logic ----------
+        (function initToc() {
+            const wrapper = document.querySelector('.page-wrapper');
+            const toc = document.getElementById('toc-sidebar');
+            const urlSections = document.querySelectorAll('.url[id]');
+
+            if (!toc || !wrapper) return;
+
+            const subPathSections = document.querySelectorAll('.urlSubPath[id]');
+            const totalSections = urlSections.length + subPathSections.length;
+            if (totalSections < 2) return;
+
+            wrapper.classList.add('has-toc');
+
+            // IntersectionObserver for active highlighting
+            const allSections = [...urlSections, ...subPathSections];
+            const tocLinks = toc.querySelectorAll('.toc-link');
+            let currentActive = null;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        tocLinks.forEach(link => {
+                            const isActive = link.getAttribute('href') === '#' + id;
+                            link.classList.toggle('active', isActive);
+                            if (isActive) currentActive = link;
+                        });
+                    }
+                });
+            }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+
+            allSections.forEach(s => observer.observe(s));
+
+            // Smooth scroll on TOC click
+            tocLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const target = document.querySelector(link.getAttribute('href'));
+                    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            });
+
+            // Sync TOC visibility with filter state
+            document.addEventListener('jlineup-filters-changed', () => {
+                toc.querySelectorAll('.toc-entry[data-toc-url-idx]').forEach(entry => {
+                    const idx = entry.dataset.tocUrlIdx;
+                    const urlEl = document.getElementById('url-' + idx);
+                    entry.classList.toggle('filter-hidden', urlEl?.classList.contains('filter-hidden'));
+                });
+                toc.querySelectorAll('.toc-entry[data-toc-sub-idx]').forEach(entry => {
+                    const idx = entry.dataset.tocSubIdx;
+                    const subEl = document.getElementById('url-' + idx);
+                    entry.classList.toggle('filter-hidden', subEl?.classList.contains('filter-hidden'));
+                });
+            });
+        })();
+
+    </script>
 </head>
 
 <body>
+
+<button type="button" class="focus-fab dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" style="right:110px;">&#x25D1; Auto</button>
+<button type="button" id="focus-fab" class="focus-fab" onclick="toggleFocusMode()" title="Toggle focus mode">&#x26F6; Focus</button>
+
+<div id="sticky-bar" class="sticky-bar" aria-hidden="true">
+    <div class="sticky-bar-inner">
+        <div class="sticky-bar-title">
+            <span class="eyebrow">JLineup &middot;</span>
+            <span th:if="${report.config.name}" th:text="${report.config.name}">Report</span>
+            <span th:unless="${report.config.name}">Reference Report</span>
+        </div>
+        <button type="button" class="sticky-bar-focus dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">&#x25D1; Auto</button>
+        <button type="button" id="focus-toggle" class="sticky-bar-focus" onclick="toggleFocusMode()" title="Toggle focus mode">&#x26F6; Focus</button>
+        <button type="button" class="sticky-bar-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">&uarr; Top</button>
+    </div>
+</div>
+
 <div class="page-wrapper">
 
+<nav class="toc-sidebar" id="toc-sidebar" aria-label="Table of contents">
+    <p class="toc-title">Contents</p>
+    <ul class="toc-list">
+        <li class="toc-entry" th:each="urlReport,iterationStatus : ${report.urlReports}"
+            th:data-toc-url-idx="${iterationStatus.index}">
+            <a class="toc-link" th:href="${'#url-' + iterationStatus.index}">
+                <span class="toc-dot"></span>
+                <span class="toc-label" th:text="${urlReport.urlKey}" th:title="${urlReport.url}"></span>
+            </a>
+            <ul class="toc-sub" th:if="${#maps.size(urlReport.contextReportsBySubPath) > 1}">
+                <li class="toc-entry" th:each="subPathEntry,subIterStatus : ${urlReport.contextReportsBySubPath}"
+                    th:if="${!#strings.isEmpty(subPathEntry.key)}"
+                    th:data-toc-sub-idx="${iterationStatus.index + '-sub-' + subIterStatus.index}">
+                    <a class="toc-link" th:href="${'#url-' + iterationStatus.index + '-sub-' + subIterStatus.index}">
+                        <span class="toc-label" th:text="${urlReport.subPathTitles.containsKey(subPathEntry.key) ? urlReport.subPathTitles[subPathEntry.key] : subPathEntry.key}" th:title="${urlReport.url + subPathEntry.key}"></span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
 <div class="report">
+    <div id="sticky-bar-sentinel" aria-hidden="true" style="height:1px;"></div>
     <header class="report-header">
         <p class="report-eyebrow">JLineup Reference Report</p>
         <h1 th:if="${report.config.name}" th:text="${report.config.name}"></h1>
@@ -381,100 +1143,120 @@
              th:utext="${report.config.sanitizedMessage}">Some Message</pre>
     </header>
 
-    <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}">
-        <h3 th:text="${urlReport.urlKey}"></h3>
-        <details class="urlReport" th:each="contextReport,iterationStatus : ${urlReport.contextReports}">
-            <summary>
-                <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                    <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <div class="summary-title">
-                    <h4>
-                        [[${#strings.substringAfter(contextReport.url,urlReport.url)}]]
-                        <span class="inline-size">[[${#strings.replace(contextReport.deviceInfo,'\n',', ')}]]</span>
-                        <span th:if="${contextReport.browserInfo != null}" class="inline-size browser-pill" th:with="bi=${#strings.toLowerCase(contextReport.browserInfo)}" th:title="${contextReport.browserInfo}">
-                            <svg th:if="${#strings.contains(bi, 'firefox')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
-                                <defs><linearGradient id="ff-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFCB00"/><stop offset="35%" stop-color="#FF9500"/><stop offset="65%" stop-color="#E66000"/><stop offset="100%" stop-color="#331E54"/></linearGradient></defs>
-                                <circle cx="12" cy="12" r="10.5" fill="url(#ff-g1)"/>
-                                <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">F</text>
-                            </svg>
-                            <svg th:if="${#strings.contains(bi, 'chrome')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
-                                <defs><linearGradient id="cr-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#DD5144"/><stop offset="33%" stop-color="#FFCD46"/><stop offset="66%" stop-color="#1DA462"/><stop offset="100%" stop-color="#4C8BF5"/></linearGradient></defs>
-                                <circle cx="12" cy="12" r="10.5" fill="url(#cr-g1)"/>
-                                <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">C</text>
-                            </svg>
-                            <svg th:if="${#strings.contains(bi, 'safari') || #strings.contains(bi, 'webkit')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
-                                <defs><linearGradient id="sf-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#006CFF"/><stop offset="50%" stop-color="#0FB5EE"/><stop offset="100%" stop-color="#00D3F9"/></linearGradient></defs>
-                                <circle cx="12" cy="12" r="10.5" fill="url(#sf-g1)"/>
-                                <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">S</text>
-                            </svg>
-                            <svg th:if="${#strings.contains(bi, 'edge')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
-                                <defs><linearGradient id="ed-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3DC3F2"/><stop offset="50%" stop-color="#0078D4"/><stop offset="100%" stop-color="#004E8C"/></linearGradient></defs>
-                                <circle cx="12" cy="12" r="10.5" fill="url(#ed-g1)"/>
-                                <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">E</text>
-                            </svg>
-                        </span>
-                        <span th:if="${#strings.isEmpty(contextReport.shownCookiesString) == false}" class="inline-size">[[${contextReport.shownCookiesString}]]</span>
-                    </h4>
-                </div>
-            </summary>
-            <div class="compare-grid">
-                <div class="compare-row compare-head">
-                    <div class="compare-cell">Info</div>
-                    <div class="compare-cell">Before</div>
-                </div>
-                <div class="compare-row" th:each="result,iterationStatus : ${contextReport.results}">
-                    <div class="compare-cell">
-                        <div class="infotext"><span title="Vertical scroll position">Pos: [[${result.verticalScrollPosition}]]</span></div>
-                        <div class="infotext">
-                            <div th:switch="${result.screenshotBeforeFileName!=null}">
-                                <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}"
-                                   target="_blank">
-                                    &#8599;&nbsp;Before
-                                </a>
-                                <span th:case="${false}">No&nbsp;before&nbsp;image</span>
+    <div id="filter-bar" class="filter-bar">
+        <input type="text" class="filter-bar-search" id="filter-search" placeholder="Filter by URL / path..." autocomplete="off"/>
+        <div class="filter-bar-sep"></div>
+        <span id="filter-browsers"></span>
+        <span id="filter-viewports"></span>
+        <span class="filter-count" id="filter-count"></span>
+    </div>
+
+    <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}"
+         th:id="${'url-' + iterationStatus.index}"
+         th:data-url="${urlReport.url}" th:data-urlkey="${urlReport.urlKey}">
+        <h3 class="url-base" th:text="${urlReport.urlKey}"></h3>
+        <div class="urlSubPath" th:each="subPathEntry,subIterStatus : ${urlReport.contextReportsBySubPath}"
+             th:id="${'url-' + iterationStatus.index + '-sub-' + subIterStatus.index}"
+             th:data-subpath="${subPathEntry.key}">
+            <h3 class="sub-path" th:if="${!#strings.isEmpty(subPathEntry.key) && urlReport.subPathTitles.containsKey(subPathEntry.key)}" th:title="${urlReport.url + subPathEntry.key}">
+                <span th:text="${urlReport.subPathTitles[subPathEntry.key]}"></span>
+                <span style="display:block;font-size:0.75em;font-weight:normal;color:var(--color-text-muted);margin-top:2px;" th:text="${subPathEntry.key}"></span>
+            </h3>
+            <h3 class="sub-path" th:if="${!#strings.isEmpty(subPathEntry.key) && !urlReport.subPathTitles.containsKey(subPathEntry.key)}" th:text="${subPathEntry.key}" th:title="${urlReport.url + subPathEntry.key}"></h3>
+            <details class="urlReport" th:each="contextReport,iterationStatus : ${subPathEntry.value}"
+                     th:data-browser="${contextReport.browserInfo}"
+                     th:data-device="${contextReport.deviceInfo}">
+                <summary>
+                    <svg class="chevron" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <div class="summary-title">
+                        <h4>
+                            <span class="inline-size">[[${#strings.replace(contextReport.deviceInfo,'\n',', ')}]]</span>
+                            <span th:if="${contextReport.browserInfo != null}" class="inline-size browser-pill" th:with="bi=${#strings.toLowerCase(contextReport.browserInfo)}" th:title="${contextReport.browserInfo}">
+                                <svg th:if="${#strings.contains(bi, 'firefox')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
+                                    <defs><linearGradient id="ff-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFCB00"/><stop offset="35%" stop-color="#FF9500"/><stop offset="65%" stop-color="#E66000"/><stop offset="100%" stop-color="#331E54"/></linearGradient></defs>
+                                    <circle cx="12" cy="12" r="10.5" fill="url(#ff-g1)"/>
+                                    <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">F</text>
+                                </svg>
+                                <svg th:if="${#strings.contains(bi, 'chrome')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
+                                    <defs><linearGradient id="cr-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#DD5144"/><stop offset="33%" stop-color="#FFCD46"/><stop offset="66%" stop-color="#1DA462"/><stop offset="100%" stop-color="#4C8BF5"/></linearGradient></defs>
+                                    <circle cx="12" cy="12" r="10.5" fill="url(#cr-g1)"/>
+                                    <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">C</text>
+                                </svg>
+                                <svg th:if="${#strings.contains(bi, 'safari') || #strings.contains(bi, 'webkit')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
+                                    <defs><linearGradient id="sf-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#006CFF"/><stop offset="50%" stop-color="#0FB5EE"/><stop offset="100%" stop-color="#00D3F9"/></linearGradient></defs>
+                                    <circle cx="12" cy="12" r="10.5" fill="url(#sf-g1)"/>
+                                    <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">S</text>
+                                </svg>
+                                <svg th:if="${#strings.contains(bi, 'edge')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true">
+                                    <defs><linearGradient id="ed-g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3DC3F2"/><stop offset="50%" stop-color="#0078D4"/><stop offset="100%" stop-color="#004E8C"/></linearGradient></defs>
+                                    <circle cx="12" cy="12" r="10.5" fill="url(#ed-g1)"/>
+                                    <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">E</text>
+                                </svg>
+                            </span>
+                            <span th:if="${#strings.isEmpty(contextReport.shownCookiesString) == false}" class="inline-size">[[${contextReport.shownCookiesString}]]</span>
+                        </h4>
+                    </div>
+                </summary>
+                <div class="compare-grid">
+                    <div class="compare-row compare-head">
+                        <div class="compare-cell">Info</div>
+                        <div class="compare-cell">Before</div>
+                    </div>
+                    <div class="compare-row" th:each="result,iterationStatus : ${contextReport.results}">
+                        <div class="compare-cell">
+                            <div class="infotext"><span title="Vertical scroll position">Pos: [[${result.verticalScrollPosition}]]</span></div>
+                            <div class="infotext">
+                                <div th:switch="${result.screenshotBeforeFileName!=null}">
+                                    <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}"
+                                       target="_blank">
+                                        &#8599;&nbsp;Before
+                                    </a>
+                                    <span th:case="${false}">No&nbsp;before&nbsp;image</span>
+                                </div>
+                                <div>
+                                    <a th:href="${contextReport.url}" target="_blank" th:title="${contextReport.url}">&#8599;&nbsp;Open&nbsp;page</a>
+                                </div>
+                                <div th:if="${contextReport.browserInfo != null}" style="margin-top: var(--space-3);"
+                                     th:with="bi=${#strings.toLowerCase(contextReport.browserInfo)}">
+                                    <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--color-text-muted);opacity:0.6;">
+                                        <svg th:if="${#strings.contains(bi, 'firefox')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
+                                            <defs><linearGradient id="ff-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFCB00"/><stop offset="35%" stop-color="#FF9500"/><stop offset="65%" stop-color="#E66000"/><stop offset="100%" stop-color="#331E54"/></linearGradient></defs>
+                                            <circle cx="12" cy="12" r="10.5" fill="url(#ff-g2)"/>
+                                            <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">F</text>
+                                        </svg>
+                                        <svg th:if="${#strings.contains(bi, 'chrome')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
+                                            <defs><linearGradient id="cr-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#DD5144"/><stop offset="33%" stop-color="#FFCD46"/><stop offset="66%" stop-color="#1DA462"/><stop offset="100%" stop-color="#4C8BF5"/></linearGradient></defs>
+                                            <circle cx="12" cy="12" r="10.5" fill="url(#cr-g2)"/>
+                                            <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">C</text>
+                                        </svg>
+                                        <svg th:if="${#strings.contains(bi, 'safari') || #strings.contains(bi, 'webkit')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
+                                            <defs><linearGradient id="sf-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#006CFF"/><stop offset="50%" stop-color="#0FB5EE"/><stop offset="100%" stop-color="#00D3F9"/></linearGradient></defs>
+                                            <circle cx="12" cy="12" r="10.5" fill="url(#sf-g2)"/>
+                                            <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">S</text>
+                                        </svg>
+                                        <svg th:if="${#strings.contains(bi, 'edge')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
+                                            <defs><linearGradient id="ed-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3DC3F2"/><stop offset="50%" stop-color="#0078D4"/><stop offset="100%" stop-color="#004E8C"/></linearGradient></defs>
+                                            <circle cx="12" cy="12" r="10.5" fill="url(#ed-g2)"/>
+                                            <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">E</text>
+                                        </svg>
+                                        [[${contextReport.browserInfo}]]
+                                    </span>
+                                </div>
                             </div>
-                            <div>
-                                <a th:href="${contextReport.url}" target="_blank" th:title="${contextReport.url}">&#8599;&nbsp;Open&nbsp;page</a>
-                            </div>
-                            <div th:if="${contextReport.browserInfo != null}" style="margin-top: var(--space-3);"
-                                 th:with="bi=${#strings.toLowerCase(contextReport.browserInfo)}">
-                                <span style="display:inline-flex;align-items:center;gap:4px;font-size:10px;color:var(--color-text-muted);opacity:0.6;">
-                                    <svg th:if="${#strings.contains(bi, 'firefox')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
-                                        <defs><linearGradient id="ff-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFCB00"/><stop offset="35%" stop-color="#FF9500"/><stop offset="65%" stop-color="#E66000"/><stop offset="100%" stop-color="#331E54"/></linearGradient></defs>
-                                        <circle cx="12" cy="12" r="10.5" fill="url(#ff-g2)"/>
-                                        <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">F</text>
-                                    </svg>
-                                    <svg th:if="${#strings.contains(bi, 'chrome')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
-                                        <defs><linearGradient id="cr-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#DD5144"/><stop offset="33%" stop-color="#FFCD46"/><stop offset="66%" stop-color="#1DA462"/><stop offset="100%" stop-color="#4C8BF5"/></linearGradient></defs>
-                                        <circle cx="12" cy="12" r="10.5" fill="url(#cr-g2)"/>
-                                        <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">C</text>
-                                    </svg>
-                                    <svg th:if="${#strings.contains(bi, 'safari') || #strings.contains(bi, 'webkit')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
-                                        <defs><linearGradient id="sf-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#006CFF"/><stop offset="50%" stop-color="#0FB5EE"/><stop offset="100%" stop-color="#00D3F9"/></linearGradient></defs>
-                                        <circle cx="12" cy="12" r="10.5" fill="url(#sf-g2)"/>
-                                        <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">S</text>
-                                    </svg>
-                                    <svg th:if="${#strings.contains(bi, 'edge')}" class="browser-logo" viewBox="0 0 24 24" aria-hidden="true" style="width:10px;height:10px;flex-shrink:0;">
-                                        <defs><linearGradient id="ed-g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3DC3F2"/><stop offset="50%" stop-color="#0078D4"/><stop offset="100%" stop-color="#004E8C"/></linearGradient></defs>
-                                        <circle cx="12" cy="12" r="10.5" fill="url(#ed-g2)"/>
-                                        <text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="bold" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">E</text>
-                                    </svg>
-                                    [[${contextReport.browserInfo}]]
-                                </span>
+                        </div>
+                        <div class="compare-cell">
+                            <div th:if="${result.screenshotBeforeFileNameForHTML != null}">
+                                <img class="screenshot-difference" width="100%" loading="lazy"
+                                     th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                     th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
                             </div>
                         </div>
                     </div>
-                    <div class="compare-cell">
-                        <div th:if="${result.screenshotBeforeFileNameForHTML != null}">
-                            <img class="screenshot-difference" width="100%" loading="lazy"
-                                 th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                                 th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
-                        </div>
-                    </div>
                 </div>
-            </div>
-        </details>
+            </details>
+        </div>
     </div>
 </div>
 
