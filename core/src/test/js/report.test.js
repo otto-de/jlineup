@@ -98,12 +98,15 @@ describe('initClickImage', () => {
     });
 
     test('cycles: before → after when current src includes FILE1', () => {
+        document.getElementById('clickdiff').style.display = 'block';
+        document.getElementById('clickimage').src = FILE1;
         initClickImage(FILE1, FILE2, FILE3);
         expect(document.getElementById('clickimage').src).toContain(FILE2);
         expect(document.getElementById('clickimagelabel').innerText).toBe('After');
     });
 
     test('cycles: after → difference when current src includes FILE2', () => {
+        document.getElementById('clickdiff').style.display = 'block';
         document.getElementById('clickimage').src = FILE2;
         initClickImage(FILE1, FILE2, FILE3);
         expect(document.getElementById('clickimage').src).toContain(FILE3);
@@ -111,6 +114,7 @@ describe('initClickImage', () => {
     });
 
     test('cycles: difference → before', () => {
+        document.getElementById('clickdiff').style.display = 'block';
         document.getElementById('clickimage').src = FILE3;
         initClickImage(FILE1, FILE2, FILE3);
         expect(document.getElementById('clickimage').src).toContain(FILE1);
@@ -118,6 +122,7 @@ describe('initClickImage', () => {
     });
 
     test('skips null file2: before → difference when file2 is "null"', () => {
+        document.getElementById('clickdiff').style.display = 'block';
         document.getElementById('clickimage').src = FILE1;
         initClickImage(FILE1, 'null', FILE3);
         expect(document.getElementById('clickimage').src).toContain(FILE3);
@@ -125,6 +130,7 @@ describe('initClickImage', () => {
     });
 
     test('skips null file3: after → before when file3 is "null"', () => {
+        document.getElementById('clickdiff').style.display = 'block';
         document.getElementById('clickimage').src = FILE2;
         initClickImage(FILE1, FILE2, 'null');
         expect(document.getElementById('clickimage').src).toContain(FILE1);

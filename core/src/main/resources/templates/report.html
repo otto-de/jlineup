@@ -1153,7 +1153,7 @@
         function initClickImage(file1, file2, file3) {
             function setAfter() {
                 if (file2 === "null") {
-                    setBefore();
+                    setDifference();
                 } else {
                     document.getElementById("clickimage").src = file2;
                     document.getElementById("clickimagelabel").innerText = "After";
@@ -1162,7 +1162,7 @@
 
             function setDifference() {
                 if (file3 === "null") {
-                    setAfter();
+                    setBefore();
                 } else {
                     document.getElementById("clickimage").src = file3;
                     document.getElementById("clickimagelabel").innerText = "Difference";
