@@ -14,6 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -164,6 +169,86 @@ public class JLineupService {
         changeState(runId, State.BEFORE_DONE);
 
         return startAfterRun(runId);
+    }
+
+    /**
+     * Creates a new run that reuses the 'before' screenshots from an existing
+     * (source) run. The source run's report directory is copied to a fresh run,
+     * then the after+compare step is executed against the live website.
+     *
+     * @return the status of the newly created run (already in after-pending state)
+     */
+    public synchronized JLineupRunStatus rerunAfterFromRun(String sourceRunId) throws Exception {
+
+        Optional<JLineupRunStatus> sourceOpt = getRun(sourceRunId);
+        if (sourceOpt.isEmpty()) {
+            throw new RunNotFoundException(sourceRunId);
+        }
+
+        JLineupRunStatus sourceStatus = sourceOpt.get();
+        if (!sourceStatus.getState().isRerunnableForAfter()) {
+            throw new InvalidRunStateException(sourceStatus.getId(), sourceStatus.getState(), State.BEFORE_DONE);
+        }
+
+        String newRunId = UUID.randomUUID().toString();
+
+        // Copy the source run's report directory (before screenshots + files.json) to the new run's directory
+        copyReportDirectory(sourceRunId, newRunId);
+
+        LOG.info("Creating rerun of 'after' step from source run {} as new run {}", sourceRunId, newRunId);
+
+        // Register the new run in BEFORE_DONE state so startAfterRun() accepts it
+        JLineupRunStatus newStatus = runStatusBuilder()
+                .withId(newRunId)
+                .withJobConfig(sourceStatus.getJobConfig())
+                .withState(State.BEFORE_DONE)
+                .withStartTime(sourceStatus.getStartTime())
+                .withPauseTime(Instant.now())
+                .withReports(JLineupRunStatus.Reports.reportsBuilder()
+                        .withLogUrl("/reports/report-" + newRunId + "/jlineup.log")
+                        .withHtmlUrl("/reports/report-" + newRunId + "/report_before.html")
+                        .build())
+                .build();
+
+        runs.put(newRunId, newStatus);
+        runPersistenceService.persistRuns(runs);
+
+        return startAfterRun(newRunId);
+    }
+
+    /**
+     * Copies the source run's report directory (including subdirectories with
+     * before screenshots and files.json) to a new directory for the rerun.
+     * Existing after screenshots will simply be overwritten by the new after step.
+     */
+    private void copyReportDirectory(String sourceRunId, String newRunId) throws IOException {
+        String sourceDir = jLineupWebProperties.getScreenshotsDirectory().replace("{id}", sourceRunId);
+        String targetDir = jLineupWebProperties.getScreenshotsDirectory().replace("{id}", newRunId);
+
+        Path sourcePath = Path.of(jLineupWebProperties.getWorkingDirectory(), sourceDir);
+        Path targetPath = Path.of(jLineupWebProperties.getWorkingDirectory(), targetDir);
+
+        if (!Files.isDirectory(sourcePath)) {
+            throw new IOException("Source report directory does not exist: " + sourcePath);
+        }
+
+        // Walk the entire source directory tree and copy everything
+        try (var walker = Files.walk(sourcePath)) {
+            walker.forEach(source -> {
+                Path target = targetPath.resolve(sourcePath.relativize(source));
+                try {
+                    if (Files.isDirectory(source)) {
+                        Files.createDirectories(target);
+                    } else {
+                        Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+                    }
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            });
+        }
+
+        LOG.info("Copied report directory from {} to {}", sourcePath, targetPath);
     }
 
     private JLineupRunStatus changeState(String runId, State state) {

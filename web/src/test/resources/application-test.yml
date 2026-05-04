@@ -1,4 +1,5 @@
 jlineup:
+  workingDirectory: /tmp/jlineup-test/
   installedBrowsers: chrome, chrome-headless
   chromeLaunchParameters: --user-data-dir=/tmp/jlineup/chrome-profile-{id}, --force-device-scale-factor=1
   allowedUrlPrefixes:

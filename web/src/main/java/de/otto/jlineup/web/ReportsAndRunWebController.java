@@ -49,7 +49,7 @@ public class ReportsAndRunWebController {
         String contextPath = request.getContextPath();
         return new ModelAndView("reports") {{
             addObject("reportList", jLineupService.getRunStatus().stream()
-                    .sorted(Comparator.comparing(JLineupRunStatus::getStartTime).reversed())
+                    .sorted(Comparator.comparing(ReportsAndRunWebController::latestTimestamp).reversed())
                     .map(s -> new Report(s, managementBasePath, contextPath))
                     .limit(jLineupWebProperties.getMaxPersistedRuns())
                     .collect(toList()));
@@ -96,6 +96,17 @@ public class ReportsAndRunWebController {
         return dateTimeFormatter.format(time);
     }
 
+    /**
+     * Returns the most recent timestamp for a run: endTime > resumeTime > pauseTime > startTime.
+     * Used to sort the reports table so that reruns and recently finished runs appear first.
+     */
+    private static Instant latestTimestamp(JLineupRunStatus status) {
+        return status.getEndTime()
+                .or(status::getResumeTime)
+                .or(status::getPauseTime)
+                .orElse(status.getStartTime());
+    }
+
     public static class Report {
 
         private String id;
@@ -105,10 +116,12 @@ public class ReportsAndRunWebController {
         private String duration;
         private String startTime;
         private long startTimeEpochMs;
+        private long sortTimeEpochMs;
         private List<String> urls;
         private State state;
         private String afterRunUrl;
         private String retryAfterUrl;
+        private String rerunAfterUrl;
 
         public Report(JLineupRunStatus lineupRunStatus, String managementBasePath, String contextPath) {
             this.id = lineupRunStatus.getId();
@@ -121,12 +134,16 @@ public class ReportsAndRunWebController {
             this.duration = getDurationAsString(lineupRunStatus);
             this.startTime = formatTime(lineupRunStatus.getStartTime());
             this.startTimeEpochMs = lineupRunStatus.getStartTime().toEpochMilli();
+            this.sortTimeEpochMs = latestTimestamp(lineupRunStatus).toEpochMilli();
             this.state = lineupRunStatus.getState();
             if (lineupRunStatus.getState() == State.BEFORE_DONE) {
                 this.afterRunUrl = contextPath + "/runs/" + lineupRunStatus.getId();
             }
             if (lineupRunStatus.getState().isRetryableForAfter()) {
                 this.retryAfterUrl = contextPath + "/runs/" + lineupRunStatus.getId() + "/retry";
+            }
+            if (lineupRunStatus.getState().isRerunnableForAfter() && lineupRunStatus.getState() != State.BEFORE_DONE) {
+                this.rerunAfterUrl = contextPath + "/runs/" + lineupRunStatus.getId() + "/rerun-after";
             }
         }
 
@@ -196,6 +213,10 @@ public class ReportsAndRunWebController {
             return startTimeEpochMs;
         }
 
+        public long getSortTimeEpochMs() {
+            return sortTimeEpochMs;
+        }
+
         public List<String> getUrls() {
             return urls;
         }
@@ -210,6 +231,10 @@ public class ReportsAndRunWebController {
 
         public String getRetryAfterUrl() {
             return retryAfterUrl;
+        }
+
+        public String getRerunAfterUrl() {
+            return rerunAfterUrl;
         }
 
         @Override

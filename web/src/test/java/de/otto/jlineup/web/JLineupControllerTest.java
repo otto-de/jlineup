@@ -440,4 +440,77 @@ class JLineupControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    public void shouldRerunAfterFromExistingRun() throws Exception {
+
+        // given
+        String sourceRunId = UUID.randomUUID().toString();
+        String newRunId = UUID.randomUUID().toString();
+        JLineupRunStatus newRun = runStatusBuilder().withId(newRunId).withJobConfig(exampleConfig()).withState(State.AFTER_RUNNING).build();
+        when(jLineupService.rerunAfterFromRun(sourceRunId)).thenReturn(newRun);
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/testContextPath/runs/" + sourceRunId + "/rerun-after")
+                        .contextPath("/testContextPath")
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isAccepted())
+                .andExpect(header().string("Location", "/testContextPath/runs/" + newRunId))
+                .andExpect(content().json("{\"id\":\"" + newRunId + "\"}"));
+
+        verify(jLineupService).rerunAfterFromRun(sourceRunId);
+    }
+
+    @Test
+    public void shouldReturn404ForRerunWhenRunIsUnknown() throws Exception {
+
+        // given
+        String unknownRunId = UUID.randomUUID().toString();
+        when(jLineupService.rerunAfterFromRun(unknownRunId)).thenThrow(new RunNotFoundException(unknownRunId));
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs/" + unknownRunId + "/rerun-after")
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(unknownRunId)));
+    }
+
+    @Test
+    public void shouldReturn412ForRerunWhenRunIsNotRerunnable() throws Exception {
+
+        // given
+        String runId = UUID.randomUUID().toString();
+        when(jLineupService.rerunAfterFromRun(runId)).thenThrow(new InvalidRunStateException(runId, State.BEFORE_RUNNING, State.BEFORE_DONE));
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs/" + runId + "/rerun-after")
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isPreconditionFailed())
+                .andExpect(content().string(containsString(runId)));
+    }
+
+    @Test
+    public void shouldReturn404ForRerunWhenRunIdIsInvalid() throws Exception {
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs/notAValidUUID/rerun-after")
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isNotFound());
+    }
+
 }

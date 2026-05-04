@@ -36,4 +36,13 @@ public enum State {
     public boolean isRetryableForAfter() {
         return this == ERROR || this == DEAD || this == FINISHED_WITH_DIFFERENCES;
     }
+
+    /**
+     * Returns true if this run's 'before' screenshots can be reused for a
+     * new after+compare run. This includes any state where the before step
+     * has completed: BEFORE_DONE plus all terminal states.
+     */
+    public boolean isRerunnableForAfter() {
+        return this == BEFORE_DONE || isDone();
+    }
 }

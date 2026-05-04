@@ -16,10 +16,13 @@ const {
     isBeforeReport,
     afterRunUrl,
     retryAfterUrl,
+    rerunAfterUrl,
     runName,
     runUrls,
     formatStartTime,
     escHtml,
+    latestTimestampMs,
+    buildActionButtons,
     buildRow,
     findInsertionPoint,
     patchRow,
@@ -43,7 +46,7 @@ function makeRun(overrides) {
 function makeRow(id, startTimeMs) {
     const tr = document.createElement('tr');
     tr.id = 'run-row-' + id;
-    tr.setAttribute('data-start-time', String(startTimeMs));
+    tr.setAttribute('data-sort-time', String(startTimeMs));
     return tr;
 }
 
@@ -236,15 +239,21 @@ describe('buildRow', () => {
         expect(tr.className).toBe('table-success');
     });
 
-    test('data-start-time attribute is epoch ms of startTime', () => {
-        const iso = '2024-01-15T10:00:00.000Z';
-        const tr = buildRow(makeRun({ startTime: iso }));
-        expect(tr.getAttribute('data-start-time')).toBe(String(new Date(iso).getTime()));
+    test('data-sort-time attribute uses latest timestamp (endTime)', () => {
+        const endIso = '2024-01-15T10:05:00.000Z';
+        const tr = buildRow(makeRun({ startTime: '2024-01-15T10:00:00.000Z', endTime: endIso }));
+        expect(tr.getAttribute('data-sort-time')).toBe(String(new Date(endIso).getTime()));
     });
 
-    test('data-start-time is 0 when startTime is null', () => {
-        const tr = buildRow(makeRun({ startTime: null }));
-        expect(tr.getAttribute('data-start-time')).toBe('0');
+    test('data-sort-time falls back to startTime when no other timestamps', () => {
+        const iso = '2024-01-15T10:00:00.000Z';
+        const tr = buildRow(makeRun({ startTime: iso, endTime: null, pauseTime: null, resumeTime: null }));
+        expect(tr.getAttribute('data-sort-time')).toBe(String(new Date(iso).getTime()));
+    });
+
+    test('data-sort-time is 0 when all timestamps are null', () => {
+        const tr = buildRow(makeRun({ startTime: null, endTime: null, pauseTime: null, resumeTime: null }));
+        expect(tr.getAttribute('data-sort-time')).toBe('0');
     });
 
     test('shows state label in run-state cell', () => {
@@ -483,5 +492,112 @@ describe('patchRow retry button', () => {
         expect(tr.querySelector('.retry-after-btn')).not.toBeNull();
         patchRow(tr, makeRun({ id: 'r1', state: 'AFTER_RUNNING', reports: { logUrl: '/log' } }));
         expect(tr.querySelector('.retry-after-btn')).toBeNull();
+    });
+});
+
+// ── rerunAfterUrl helper ─────────────────────────────────────────────────────
+
+describe('rerunAfterUrl', () => {
+    test('returns null for BEFORE_DONE (start-after takes precedence)', () => {
+        expect(rerunAfterUrl(makeRun({ id: 'x', state: 'BEFORE_DONE' }))).toBeNull();
+    });
+
+    test('returns rerun URL for FINISHED_WITHOUT_DIFFERENCES', () => {
+        expect(rerunAfterUrl(makeRun({ id: 'x', state: 'FINISHED_WITHOUT_DIFFERENCES' }))).toBe('/runs/x/rerun-after');
+    });
+
+    test('returns rerun URL for FINISHED_WITH_DIFFERENCES', () => {
+        expect(rerunAfterUrl(makeRun({ id: 'x', state: 'FINISHED_WITH_DIFFERENCES' }))).toBe('/runs/x/rerun-after');
+    });
+
+    test('returns rerun URL for ERROR', () => {
+        expect(rerunAfterUrl(makeRun({ id: 'x', state: 'ERROR' }))).toBe('/runs/x/rerun-after');
+    });
+
+    test('returns rerun URL for DEAD', () => {
+        expect(rerunAfterUrl(makeRun({ id: 'x', state: 'DEAD' }))).toBe('/runs/x/rerun-after');
+    });
+
+    test('returns null for BEFORE_RUNNING', () => {
+        expect(rerunAfterUrl(makeRun({ id: 'x', state: 'BEFORE_RUNNING' }))).toBeNull();
+    });
+
+    test('returns null for AFTER_RUNNING', () => {
+        expect(rerunAfterUrl(makeRun({ id: 'x', state: 'AFTER_RUNNING' }))).toBeNull();
+    });
+});
+
+// ── buildRow rerun button ────────────────────────────────────────────────────
+
+describe('buildRow rerun button', () => {
+    test('shows standalone rerun button for FINISHED_WITHOUT_DIFFERENCES', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'FINISHED_WITHOUT_DIFFERENCES' }));
+        const btn = tr.querySelector('.rerun-after-btn');
+        expect(btn).not.toBeNull();
+        expect(btn.getAttribute('data-rerun-url')).toBe('/runs/r1/rerun-after');
+        // Should be standalone (no btn-group)
+        expect(tr.querySelector('.action-btn-group')).toBeNull();
+    });
+
+    test('no rerun button for BEFORE_DONE', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'BEFORE_DONE', reports: null }));
+        expect(tr.querySelector('.rerun-after-btn')).toBeNull();
+    });
+
+    test('no rerun button for BEFORE_RUNNING', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'BEFORE_RUNNING', reports: null }));
+        expect(tr.querySelector('.rerun-after-btn')).toBeNull();
+    });
+
+    test('shows combined split button for ERROR (retry + rerun)', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'ERROR', reports: { logUrl: '/log' } }));
+        const group = tr.querySelector('.action-btn-group');
+        expect(group).not.toBeNull();
+        expect(group.querySelector('.retry-after-btn')).not.toBeNull();
+        expect(group.querySelector('.rerun-after-btn')).not.toBeNull();
+        expect(group.querySelector('.dropdown-toggle')).not.toBeNull();
+    });
+
+    test('shows combined split button for FINISHED_WITH_DIFFERENCES (retry + rerun)', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'FINISHED_WITH_DIFFERENCES' }));
+        const group = tr.querySelector('.action-btn-group');
+        expect(group).not.toBeNull();
+        expect(group.querySelector('.retry-after-btn')).not.toBeNull();
+        expect(group.querySelector('.rerun-after-btn')).not.toBeNull();
+    });
+});
+
+// ── patchRow rerun button ────────────────────────────────────────────────────
+
+describe('patchRow rerun button', () => {
+    test('no rerun button added when state changes to BEFORE_DONE', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'BEFORE_RUNNING', reports: null }));
+        expect(tr.querySelector('.rerun-after-btn')).toBeNull();
+        patchRow(tr, makeRun({ id: 'r1', state: 'BEFORE_DONE', reports: { logUrl: '/log' } }));
+        expect(tr.querySelector('.rerun-after-btn')).toBeNull();
+    });
+
+    test('removes rerun button when state changes to AFTER_RUNNING', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'FINISHED_WITHOUT_DIFFERENCES' }));
+        expect(tr.querySelector('.rerun-after-btn')).not.toBeNull();
+        patchRow(tr, makeRun({ id: 'r1', state: 'AFTER_RUNNING', reports: { logUrl: '/log' } }));
+        expect(tr.querySelector('.rerun-after-btn')).toBeNull();
+    });
+
+    test('adds combined split button when state changes to ERROR', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'AFTER_RUNNING', reports: { logUrl: '/log' } }));
+        expect(tr.querySelector('.action-btn-group')).toBeNull();
+        patchRow(tr, makeRun({ id: 'r1', state: 'ERROR', reports: { logUrl: '/log' } }));
+        const group = tr.querySelector('.action-btn-group');
+        expect(group).not.toBeNull();
+        expect(group.querySelector('.retry-after-btn')).not.toBeNull();
+        expect(group.querySelector('.rerun-after-btn')).not.toBeNull();
+    });
+
+    test('adds standalone rerun when state changes to FINISHED_WITHOUT_DIFFERENCES', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'AFTER_RUNNING', reports: { logUrl: '/log' } }));
+        patchRow(tr, makeRun({ id: 'r1', state: 'FINISHED_WITHOUT_DIFFERENCES', reports: { htmlUrl: '/report.html', logUrl: '/log' } }));
+        expect(tr.querySelector('.rerun-after-btn')).not.toBeNull();
+        expect(tr.querySelector('.action-btn-group')).toBeNull();
     });
 });

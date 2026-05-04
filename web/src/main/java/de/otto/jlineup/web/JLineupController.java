@@ -123,6 +123,17 @@ public class JLineupController {
         return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
     }
 
+    @PostMapping("/runs/{runId}/rerun-after")
+    public ResponseEntity<RunBeforeResponse> rerunAfterFromRun(@PathVariable final String runId, HttpServletRequest request) throws Exception {
+        String sanitizedRunId = validateAndSanitizeRunId(runId);
+        JLineupRunStatus newRun = jLineupService.rerunAfterFromRun(sanitizedRunId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(request.getContextPath() + "/runs/" + newRun.getId()));
+        return ResponseEntity.accepted()
+                .headers(headers)
+                .body(new RunBeforeResponse(newRun.getId()));
+    }
+
     @GetMapping("/runs")
     public ResponseEntity<List<JLineupRunStatus>> getRuns() {
         return ResponseEntity.ok(jLineupService.getRunStatus());
