@@ -88,6 +88,14 @@
             : null;
     }
 
+    var RETRYABLE_STATES = new Set(['ERROR', 'DEAD', 'FINISHED_WITH_DIFFERENCES']);
+
+    function retryAfterUrl(run) {
+        return RETRYABLE_STATES.has(run.state)
+            ? root._jlineup.runsUrl + '/' + run.id + '/retry'
+            : null;
+    }
+
     function runName(run) {
         return run.jobConfig && run.jobConfig.name ? run.jobConfig.name : null;
     }
@@ -133,6 +141,7 @@
         var reportUrl = getReportUrl(run);
         var logUrl    = getLogUrl(run);
         var aUrl      = afterRunUrl(run);
+        var rUrl      = retryAfterUrl(run);
         var name      = runName(run);
         var urls      = runUrls(run);
 
@@ -157,6 +166,12 @@
                   ' data-run-id="' + escHtml(run.id) + '"' +
                   ' data-run-name="' + escHtml(name || '') + '"' +
                   ' data-after-url="' + escHtml(aUrl) + '">Start \'After\' run</button>'
+                : '') +
+              (rUrl
+                ? '<button type="button" class="btn btn-danger retry-after-btn"' +
+                  ' data-run-id="' + escHtml(run.id) + '"' +
+                  ' data-run-name="' + escHtml(name || '') + '"' +
+                  ' data-retry-url="' + escHtml(rUrl) + '">Retry \'after\' run</button>'
                 : '') + '</td>';
         return tr;
     }
@@ -230,12 +245,12 @@
             }
         }
 
-        // After-run button: add or remove as state changes
+        // After-run button and Retry button: add or remove as state changes
         var afterCell = tr.querySelector('td:nth-child(9)');
         if (afterCell) {
-            var existing = afterCell.querySelector('.start-after-btn');
+            var existingAfter = afterCell.querySelector('.start-after-btn');
             var aUrl     = afterRunUrl(run);
-            if (aUrl && !existing) {
+            if (aUrl && !existingAfter) {
                 var btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = 'btn btn-warning start-after-btn';
@@ -245,8 +260,24 @@
                 btn.textContent = "Start 'after' run";
                 wireAfterBtn(btn);
                 afterCell.appendChild(btn);
-            } else if (!aUrl && existing) {
-                existing.remove();
+            } else if (!aUrl && existingAfter) {
+                existingAfter.remove();
+            }
+
+            var existingRetry = afterCell.querySelector('.retry-after-btn');
+            var rUrl = retryAfterUrl(run);
+            if (rUrl && !existingRetry) {
+                var rbtn = document.createElement('button');
+                rbtn.type = 'button';
+                rbtn.className = 'btn btn-danger retry-after-btn';
+                rbtn.setAttribute('data-run-id',    run.id);
+                rbtn.setAttribute('data-run-name',  runName(run) || '');
+                rbtn.setAttribute('data-retry-url', rUrl);
+                rbtn.textContent = "Retry 'after' run";
+                wireRetryBtn(rbtn);
+                afterCell.appendChild(rbtn);
+            } else if (!rUrl && existingRetry) {
+                existingRetry.remove();
             }
         }
     }
@@ -254,6 +285,7 @@
     // ── After-run modal wiring ───────────────────────────────────────────────
 
     var pendingAfterUrl = null;
+    var pendingRetryUrl = null;
 
     function wireAfterBtn(btn) {
         btn.addEventListener('click', function () {
@@ -269,6 +301,23 @@
                 nameWrap.style.display = 'none';
             }
             new bootstrap.Modal(document.getElementById('afterRunModal')).show();
+        });
+    }
+
+    function wireRetryBtn(btn) {
+        btn.addEventListener('click', function () {
+            var runId   = btn.getAttribute('data-run-id');
+            var rName   = btn.getAttribute('data-run-name');
+            pendingRetryUrl = btn.getAttribute('data-retry-url');
+            document.getElementById('retry-modal-run-id').textContent = runId;
+            var nameWrap = document.getElementById('retry-modal-run-name-wrap');
+            if (rName) {
+                document.getElementById('retry-modal-run-name').textContent = rName;
+                nameWrap.style.display = '';
+            } else {
+                nameWrap.style.display = 'none';
+            }
+            new bootstrap.Modal(document.getElementById('retryAfterModal')).show();
         });
     }
 
@@ -295,6 +344,7 @@
                         // Brand-new run — insert in startTime-descending order
                         var newRow = buildRow(run);
                         newRow.querySelectorAll('.start-after-btn').forEach(wireAfterBtn);
+                        newRow.querySelectorAll('.retry-after-btn').forEach(wireRetryBtn);
                         var newTs = parseInt(newRow.getAttribute('data-start-time'), 10) || 0;
                         tbody.insertBefore(newRow, findInsertionPoint(tbody, newTs));
                         if (noRunsRow) noRunsRow.style.display = 'none';
@@ -313,6 +363,7 @@
 
     function init() {
         document.querySelectorAll('.start-after-btn').forEach(wireAfterBtn);
+        document.querySelectorAll('.retry-after-btn').forEach(wireRetryBtn);
 
         document.getElementById('modal-confirm-btn').addEventListener('click', function () {
             if (!pendingAfterUrl) return;
@@ -347,6 +398,41 @@
             pendingAfterUrl = null;
         });
 
+        document.getElementById('retry-modal-confirm-btn').addEventListener('click', function () {
+            if (!pendingRetryUrl) return;
+
+            var modalEl = document.getElementById('retryAfterModal');
+            document.activeElement && document.activeElement.blur();
+            bootstrap.Modal.getInstance(modalEl).hide();
+
+            fetch(pendingRetryUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+                .then(function (resp) {
+                    var alertEl = document.getElementById('after-run-alert');
+                    if (resp.status === 202) {
+                        alertEl.className = 'alert alert-success mt-2';
+                        alertEl.textContent = 'Retry of after run started successfully.';
+                        alertEl.classList.remove('d-none');
+                        setTimeout(function () { alertEl.classList.add('d-none'); }, 3000);
+                        // Restart polling since we now have an active run
+                        if (!pollTimer) pollTimer = setInterval(poll, POLL_INTERVAL_MS);
+                    } else {
+                        resp.text().then(function (body) {
+                            alertEl.className = 'alert alert-danger mt-2';
+                            alertEl.textContent = 'Failed to retry after run: ' + body;
+                            alertEl.classList.remove('d-none');
+                        });
+                    }
+                })
+                .catch(function (err) {
+                    var alertEl = document.getElementById('after-run-alert');
+                    alertEl.className = 'alert alert-danger mt-2';
+                    alertEl.textContent = 'Network error: ' + err.message;
+                    alertEl.classList.remove('d-none');
+                });
+
+            pendingRetryUrl = null;
+        });
+
         // Always start polling; it will stop itself once no active runs remain.
         pollTimer = setInterval(poll, POLL_INTERVAL_MS);
     }
@@ -366,6 +452,7 @@
             getLogUrl,
             isBeforeReport,
             afterRunUrl,
+            retryAfterUrl,
             runName,
             runUrls,
             formatStartTime,

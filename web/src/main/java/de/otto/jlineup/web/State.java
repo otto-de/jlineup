@@ -28,4 +28,12 @@ public enum State {
     public boolean isNonPersistable() {
         return this == BEFORE_PENDING || this == BEFORE_RUNNING || this == AFTER_PENDING || this == AFTER_RUNNING;
     }
+
+    /**
+     * Returns true if the run failed after the 'before' step completed,
+     * meaning it can be retried from the 'after' step.
+     */
+    public boolean isRetryableForAfter() {
+        return this == ERROR || this == DEAD || this == FINISHED_WITH_DIFFERENCES;
+    }
 }

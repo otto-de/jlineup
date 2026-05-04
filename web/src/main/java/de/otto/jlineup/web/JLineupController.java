@@ -114,6 +114,15 @@ public class JLineupController {
         return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
     }
 
+    @PostMapping("/runs/{runId}/retry")
+    public ResponseEntity<Void> retryAfterRun(@PathVariable final String runId, HttpServletRequest request) throws Exception {
+        String sanitizedRunId = validateAndSanitizeRunId(runId);
+        jLineupService.retryAfterRun(sanitizedRunId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(request.getContextPath() + "/runs/" + sanitizedRunId));
+        return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
+    }
+
     @GetMapping("/runs")
     public ResponseEntity<List<JLineupRunStatus>> getRuns() {
         return ResponseEntity.ok(jLineupService.getRunStatus());

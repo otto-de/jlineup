@@ -15,6 +15,7 @@ const {
     getLogUrl,
     isBeforeReport,
     afterRunUrl,
+    retryAfterUrl,
     runName,
     runUrls,
     formatStartTime,
@@ -397,5 +398,90 @@ describe('STATE_LABELS', () => {
         ACTIVE_STATES.forEach(s => {
             expect(STATE_LABELS[s]).toBeDefined();
         });
+    });
+});
+
+// ── retryAfterUrl ─────────────────────────────────────────────────────────────
+
+describe('retryAfterUrl', () => {
+    test('ERROR → constructed retry URL', () => {
+        const run = makeRun({ id: 'abc123', state: 'ERROR' });
+        expect(retryAfterUrl(run)).toBe('/runs/abc123/retry');
+    });
+
+    test('DEAD → constructed retry URL', () => {
+        const run = makeRun({ id: 'abc123', state: 'DEAD' });
+        expect(retryAfterUrl(run)).toBe('/runs/abc123/retry');
+    });
+
+    test('FINISHED_WITH_DIFFERENCES → constructed retry URL', () => {
+        const run = makeRun({ id: 'abc123', state: 'FINISHED_WITH_DIFFERENCES' });
+        expect(retryAfterUrl(run)).toBe('/runs/abc123/retry');
+    });
+
+    test('FINISHED_WITHOUT_DIFFERENCES → null', () => {
+        expect(retryAfterUrl(makeRun({ state: 'FINISHED_WITHOUT_DIFFERENCES' }))).toBeNull();
+    });
+
+    test('BEFORE_DONE → null', () => {
+        expect(retryAfterUrl(makeRun({ state: 'BEFORE_DONE' }))).toBeNull();
+    });
+
+    test('BEFORE_RUNNING → null', () => {
+        expect(retryAfterUrl(makeRun({ state: 'BEFORE_RUNNING' }))).toBeNull();
+    });
+});
+
+// ── buildRow retry button ────────────────────────────────────────────────────
+
+describe('buildRow retry button', () => {
+    test('retry button present for ERROR state', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'ERROR', reports: { logUrl: '/log' } }));
+        const btn = tr.querySelector('.retry-after-btn');
+        expect(btn).not.toBeNull();
+        expect(btn.getAttribute('data-retry-url')).toBe('/runs/r1/retry');
+    });
+
+    test('retry button present for DEAD state', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'DEAD', reports: null }));
+        const btn = tr.querySelector('.retry-after-btn');
+        expect(btn).not.toBeNull();
+        expect(btn.getAttribute('data-retry-url')).toBe('/runs/r1/retry');
+    });
+
+    test('retry button present for FINISHED_WITH_DIFFERENCES', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'FINISHED_WITH_DIFFERENCES' }));
+        const btn = tr.querySelector('.retry-after-btn');
+        expect(btn).not.toBeNull();
+    });
+
+    test('no retry button for FINISHED_WITHOUT_DIFFERENCES', () => {
+        const tr = buildRow(makeRun({ state: 'FINISHED_WITHOUT_DIFFERENCES' }));
+        expect(tr.querySelector('.retry-after-btn')).toBeNull();
+    });
+
+    test('no retry button for BEFORE_DONE', () => {
+        const tr = buildRow(makeRun({ state: 'BEFORE_DONE', reports: null }));
+        expect(tr.querySelector('.retry-after-btn')).toBeNull();
+    });
+});
+
+// ── patchRow retry button ────────────────────────────────────────────────────
+
+describe('patchRow retry button', () => {
+    test('adds retry button when state changes to ERROR', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'AFTER_RUNNING', reports: null }));
+        expect(tr.querySelector('.retry-after-btn')).toBeNull();
+        patchRow(tr, makeRun({ id: 'r1', state: 'ERROR', reports: { logUrl: '/log' } }));
+        const btn = tr.querySelector('.retry-after-btn');
+        expect(btn).not.toBeNull();
+        expect(btn.getAttribute('data-retry-url')).toBe('/runs/r1/retry');
+    });
+
+    test('removes retry button when state changes from ERROR to AFTER_RUNNING (re-running)', () => {
+        const tr = buildRow(makeRun({ id: 'r1', state: 'ERROR', reports: { logUrl: '/log' } }));
+        expect(tr.querySelector('.retry-after-btn')).not.toBeNull();
+        patchRow(tr, makeRun({ id: 'r1', state: 'AFTER_RUNNING', reports: { logUrl: '/log' } }));
+        expect(tr.querySelector('.retry-after-btn')).toBeNull();
     });
 });

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -106,6 +107,79 @@ class JLineupServiceTest {
         assertThat(currentStatus.get().getReports().getHtmlUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.html"));
         assertThat(currentStatus.get().getReports().getJsonUrl(), is("/reports/report-" + beforeStatus.getId() + "/report.json"));
 
+    }
+
+    @Test
+    void shouldRetryAfterRunWhenInErrorState() throws Exception {
+        //given
+        JobConfig jobConfig = JobConfig.exampleConfig();
+        when(jLineupRunnerBefore.run()).thenReturn(true);
+        when(jLineupRunnerAfter.run())
+                .thenThrow(new RuntimeException("Simulated failure"))
+                .thenReturn(true);
+
+        JLineupRunStatus beforeStatus = testee.startBeforeRun(jobConfig);
+        beforeStatus.getCurrentJobStepFuture().get().get();
+
+        JLineupRunStatus afterStatus = testee.startAfterRun(beforeStatus.getId());
+        afterStatus.getCurrentJobStepFuture().get().get();
+
+        // Verify the run is now in ERROR state
+        assertThat(testee.getRun(beforeStatus.getId()).get().getState(), is(State.ERROR));
+
+        //when — retry the after run
+        JLineupRunStatus retryStatus = testee.retryAfterRun(beforeStatus.getId());
+        retryStatus.getCurrentJobStepFuture().get().get();
+
+        //then
+        assertThat(testee.getRun(beforeStatus.getId()).get().getState(), is(State.FINISHED_WITHOUT_DIFFERENCES));
+        verify(jLineupRunnerFactory, times(2)).createAfterRun(beforeStatus.getId(), jobConfig);
+        verify(jLineupRunnerAfter, times(2)).run();
+    }
+
+    @Test
+    void shouldRetryAfterRunWhenFinishedWithDifferences() throws Exception {
+        //given
+        JobConfig jobConfig = JobConfig.exampleConfig();
+        when(jLineupRunnerBefore.run()).thenReturn(true);
+        when(jLineupRunnerAfter.run())
+                .thenReturn(false)  // first run: differences detected
+                .thenReturn(true);  // retry: no differences
+
+        JLineupRunStatus beforeStatus = testee.startBeforeRun(jobConfig);
+        beforeStatus.getCurrentJobStepFuture().get().get();
+
+        JLineupRunStatus afterStatus = testee.startAfterRun(beforeStatus.getId());
+        afterStatus.getCurrentJobStepFuture().get().get();
+
+        assertThat(testee.getRun(beforeStatus.getId()).get().getState(), is(State.FINISHED_WITH_DIFFERENCES));
+
+        //when
+        JLineupRunStatus retryStatus = testee.retryAfterRun(beforeStatus.getId());
+        retryStatus.getCurrentJobStepFuture().get().get();
+
+        //then
+        assertThat(testee.getRun(beforeStatus.getId()).get().getState(), is(State.FINISHED_WITHOUT_DIFFERENCES));
+    }
+
+    @Test
+    void shouldRejectRetryWhenRunIsNotRetryable() throws Exception {
+        //given
+        JobConfig jobConfig = JobConfig.exampleConfig();
+        when(jLineupRunnerBefore.run()).thenReturn(true);
+        JLineupRunStatus beforeStatus = testee.startBeforeRun(jobConfig);
+        beforeStatus.getCurrentJobStepFuture().get().get();
+
+        // Run is in BEFORE_DONE — not retryable
+        assertThat(testee.getRun(beforeStatus.getId()).get().getState(), is(State.BEFORE_DONE));
+
+        //when/then
+        assertThrows(InvalidRunStateException.class, () -> testee.retryAfterRun(beforeStatus.getId()));
+    }
+
+    @Test
+    void shouldRejectRetryWhenRunNotFound() {
+        assertThrows(RunNotFoundException.class, () -> testee.retryAfterRun("nonexistent-id"));
     }
 
 }

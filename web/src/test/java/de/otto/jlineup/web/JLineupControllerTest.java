@@ -369,4 +369,75 @@ class JLineupControllerTest {
                 .andExpect(content().string(containsString("Validation message")));
     }
 
+    @Test
+    public void shouldRetryAfterRun() throws Exception {
+
+        // given
+        String someRunId = UUID.randomUUID().toString();
+        JLineupRunStatus run = runStatusBuilder().withId(someRunId).withJobConfig(exampleConfig()).withState(State.AFTER_RUNNING).build();
+        when(jLineupService.retryAfterRun(someRunId)).thenReturn(run);
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/testContextPath/runs/" + someRunId + "/retry")
+                        .contextPath("/testContextPath")
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isAccepted())
+                .andExpect(header().string("Location", "/testContextPath/runs/" + someRunId));
+
+        verify(jLineupService).retryAfterRun(someRunId);
+    }
+
+    @Test
+    public void shouldReturn404ForRetryWhenRunIsUnknown() throws Exception {
+
+        // given
+        String unknownRunId = UUID.randomUUID().toString();
+        when(jLineupService.retryAfterRun(unknownRunId)).thenThrow(new RunNotFoundException(unknownRunId));
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs/" + unknownRunId + "/retry")
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString(unknownRunId)));
+    }
+
+    @Test
+    public void shouldReturn412ForRetryWhenRunIsNotRetryable() throws Exception {
+
+        // given
+        String runId = UUID.randomUUID().toString();
+        when(jLineupService.retryAfterRun(runId)).thenThrow(new InvalidRunStateException(runId, State.BEFORE_RUNNING, State.BEFORE_DONE));
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs/" + runId + "/retry")
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isPreconditionFailed())
+                .andExpect(content().string(containsString(runId)));
+    }
+
+    @Test
+    public void shouldReturn404ForRetryWhenRunIdIsInvalid() throws Exception {
+
+        // when
+        ResultActions result = mvc
+                .perform(post("/runs/notAValidUUID/retry")
+                        .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        result
+                .andExpect(status().isNotFound());
+    }
+
 }

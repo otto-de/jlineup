@@ -108,6 +108,7 @@ public class ReportsAndRunWebController {
         private List<String> urls;
         private State state;
         private String afterRunUrl;
+        private String retryAfterUrl;
 
         public Report(JLineupRunStatus lineupRunStatus, String managementBasePath, String contextPath) {
             this.id = lineupRunStatus.getId();
@@ -123,6 +124,9 @@ public class ReportsAndRunWebController {
             this.state = lineupRunStatus.getState();
             if (lineupRunStatus.getState() == State.BEFORE_DONE) {
                 this.afterRunUrl = contextPath + "/runs/" + lineupRunStatus.getId();
+            }
+            if (lineupRunStatus.getState().isRetryableForAfter()) {
+                this.retryAfterUrl = contextPath + "/runs/" + lineupRunStatus.getId() + "/retry";
             }
         }
 
@@ -202,6 +206,10 @@ public class ReportsAndRunWebController {
 
         public String getAfterRunUrl() {
             return afterRunUrl;
+        }
+
+        public String getRetryAfterUrl() {
+            return retryAfterUrl;
         }
 
         @Override

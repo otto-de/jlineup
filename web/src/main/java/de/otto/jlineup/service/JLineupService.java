@@ -141,6 +141,31 @@ public class JLineupService {
         return JLineupRunStatus.copyOfRunStatusBuilder(afterStatus).withCurrentJobStepFuture(state).build();
     }
 
+    /**
+     * Retries the 'after' step for a run that previously failed (ERROR, DEAD) or
+     * finished with differences. Resets the run state to BEFORE_DONE and then
+     * delegates to {@link #startAfterRun(String)}.
+     */
+    public synchronized JLineupRunStatus retryAfterRun(String runId) throws Exception {
+
+        Optional<JLineupRunStatus> run = getRun(runId);
+        if (run.isEmpty()) {
+            throw new RunNotFoundException(runId);
+        }
+
+        JLineupRunStatus currentStatus = run.get();
+        if (!currentStatus.getState().isRetryableForAfter()) {
+            throw new InvalidRunStateException(currentStatus.getId(), currentStatus.getState(), State.BEFORE_DONE);
+        }
+
+        LOG.info("Retrying 'after' step for run {} (previous state: {})", runId, currentStatus.getState());
+
+        // Reset state to BEFORE_DONE so startAfterRun() accepts it
+        changeState(runId, State.BEFORE_DONE);
+
+        return startAfterRun(runId);
+    }
+
     private JLineupRunStatus changeState(String runId, State state) {
         JLineupRunStatus runStatus = runs.get(runId);
         JLineupRunStatus.Builder runStatusBuilder = copyOfRunStatusBuilder(runStatus).withState(state);
