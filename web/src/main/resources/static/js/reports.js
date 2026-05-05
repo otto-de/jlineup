@@ -203,11 +203,11 @@
         var urls      = runUrls(run);
 
         tr.innerHTML =
-            '<td><div>' + escHtml(run.id) + '</div></td>' +
+            '<td><div title="' + escHtml(run.id) + '">' + escHtml(run.id.substring(0, 8)) + '</div></td>' +
             '<td><div>' + (name ? escHtml(name) : '') + '</div></td>' +
-            '<td><pre style="white-space:pre-line;">' + escHtml(urls.join('\n')) + '</pre></td>' +
-            '<td class="run-state">' + escHtml(STATE_LABELS[run.state] || run.state) + '</td>' +
-            '<td>' + escHtml(formatStartTime(run.startTime)) + '</td>' +
+            '<td style="max-width:400px;"><pre style="white-space:pre-line; word-break:break-all; overflow:auto; max-height:4em; margin:0;">' + escHtml(urls.join('\n')) + '</pre></td>' +
+            '<td class="run-state" style="white-space:nowrap">' + escHtml(STATE_LABELS[run.state] || run.state) + '</td>' +
+            '<td class="run-start" style="white-space:nowrap">' + escHtml(formatStartTime(run.startTime)) + '</td>' +
             '<td class="run-duration">' + formatDuration(durationMs(run)) + '</td>' +
             '<td>' + (reportUrl
                 ? '<a href="' + escHtml(reportUrl) + '" target="_blank" class="btn btn-sm ' +
@@ -446,6 +446,12 @@
     // ── Bootstrap init (browser only) ────────────────────────────────────────
 
     function init() {
+        // Convert server-rendered start times to browser local time
+        document.querySelectorAll('.run-start[data-epoch]').forEach(function (td) {
+            var epoch = parseInt(td.getAttribute('data-epoch'), 10);
+            if (!isNaN(epoch)) td.textContent = formatStartTime(new Date(epoch).toISOString());
+        });
+
         document.querySelectorAll('.start-after-btn').forEach(wireAfterBtn);
         document.querySelectorAll('.retry-after-btn').forEach(wireRetryBtn);
         document.querySelectorAll('.rerun-after-btn').forEach(wireRerunBtn);

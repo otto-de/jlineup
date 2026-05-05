@@ -84,7 +84,7 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<div class="container">
     <div class="panel panel-default m-2">
         <div class="panel-heading">
             <h3 class="panel-title">Reports Overview</h3>
@@ -110,11 +110,11 @@
                     th:id="'run-row-' + ${report.id}"
                     th:classappend="${report.stateCssClass}"
                     th:data-sort-time="${report.sortTimeEpochMs}">
-                    <td><div th:text="${report.id}">42</div></td>
+                    <td><div th:title="${report.id}" th:text="${#strings.substring(report.id, 0, 8)}">42</div></td>
                     <td><div th:if="${report.name != null}" th:text="${report.name}">Some application name</div></td>
-                    <td><pre style="white-space: pre-line;" th:utext="${#strings.listJoin(report.urls, '<br/>')}">https://www.verylongurl.com/some/cool/path</pre></td>
-                    <td class="run-state" th:text="${report.state}">OK</td>
-                    <td th:text="${report.startTime}">2018-09-09T20:00:00.000Z</td>
+                    <td style="max-width:400px;"><pre style="white-space:pre-line; word-break:break-all; overflow:auto; max-height:4em; margin:0;" th:utext="${#strings.listJoin(report.urls, '<br/>')}">https://www.verylongurl.com/some/cool/path</pre></td>
+                    <td class="run-state" style="white-space:nowrap" th:text="${report.state}">OK</td>
+                    <td class="run-start" style="white-space:nowrap" th:data-epoch="${report.startTimeEpochMs}" th:text="${report.startTime}">2018-09-09T20:00:00.000Z</td>
                     <td class="run-duration" th:text="${report.duration}">10:20:30</td>
                     <td style="white-space:nowrap"><a th:if="${report.reportUrl != null}" th:href="${report.reportUrl}" target="_blank" class="btn btn-sm" th:classappend="${report.reportUrl.contains('before') ? 'btn-secondary' : 'btn-primary'}" role="button">Report</a></td>
                     <td style="white-space:nowrap"><a th:if="${report.logUrl != null}" th:href="${report.logUrl}" target="_blank" class="btn btn-sm" th:classappend="${report.logButtonCssClass}" role="button">Log</a></td>

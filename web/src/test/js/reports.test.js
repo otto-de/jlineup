@@ -292,8 +292,12 @@ describe('buildRow', () => {
     });
 
     test('escapes HTML in id field', () => {
-        const tr = buildRow(makeRun({ id: '<b>evil</b>' }));
-        expect(tr.innerHTML).toContain('&lt;b&gt;evil&lt;/b&gt;');
+        const tr = buildRow(makeRun({ id: '<b>evil</b>-extra-chars' }));
+        // ID is truncated to first 8 chars ("<b>evil<") then escaped in text content
+        expect(tr.innerHTML).toContain('&lt;b&gt;evil&lt;');
+        // Full ID is in the title attribute for hover
+        const idDiv = tr.querySelector('td:first-child div');
+        expect(idDiv.getAttribute('title')).toBe('<b>evil</b>-extra-chars');
     });
 });
 

@@ -83,7 +83,7 @@ public class JLineupRunStatus {
     public List<String> getUrls() {
         List<String> urls = new ArrayList<>();
         Set<Map.Entry<String, UrlConfig>> urlMap = this.jobConfig.urls.entrySet();
-        urlMap.forEach(urlMapEntry -> (urlMapEntry.getValue().paths != null ? urlMapEntry.getValue().paths : DEFAULT_PATH_CONFIGS).forEach(pathConfig -> urls.add(BrowserUtils.buildUrl(urlMapEntry.getKey(), pathConfig.path, urlMapEntry.getValue().envMapping))));
+        urlMap.forEach(urlMapEntry -> (urlMapEntry.getValue().paths != null ? urlMapEntry.getValue().paths : DEFAULT_PATH_CONFIGS).forEach(pathConfig -> urls.add(BrowserUtils.buildUrl(urlMapEntry.getValue().url, pathConfig.path, urlMapEntry.getValue().envMapping))));
         return urls;
     }
 
