@@ -110,7 +110,7 @@
                     th:id="'run-row-' + ${report.id}"
                     th:classappend="${report.stateCssClass}"
                     th:data-sort-time="${report.sortTimeEpochMs}">
-                    <td><div th:title="${report.id}" th:text="${#strings.substring(report.id, 0, 8)}">42</div></td>
+                    <td><div th:title="${report.id}" th:text="${report.id.length() > 8 ? #strings.substring(report.id, 0, 8) : report.id}">42</div></td>
                     <td><div th:if="${report.name != null}" th:text="${report.name}">Some application name</div></td>
                     <td style="max-width:400px;"><pre style="white-space:pre-line; word-break:break-all; overflow:auto; max-height:4em; margin:0;" th:utext="${#strings.listJoin(report.urls, '<br/>')}">https://www.verylongurl.com/some/cool/path</pre></td>
                     <td class="run-state" style="white-space:nowrap" th:text="${report.state}">OK</td>

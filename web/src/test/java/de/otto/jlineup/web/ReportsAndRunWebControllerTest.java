@@ -135,11 +135,12 @@ class ReportsAndRunWebControllerTest {
     }
 
     private JobConfig createJobConfigWithUrlAndName(String url, String name) {
-        return jobConfigBuilder()
+        JobConfig jobConfig = jobConfigBuilder()
                 .withName(name)
                 .withUrls(ImmutableMap.of(url,
                         UrlConfig.urlConfigBuilder().withWindowWidths(ImmutableList.of(600)).withMaxScrollHeight(100000).build()))
                 .build();
-
+        jobConfig = jobConfig.insertDefaults();
+        return jobConfig;
     }
 }
