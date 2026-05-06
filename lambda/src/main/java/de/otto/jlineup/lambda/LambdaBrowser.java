@@ -220,7 +220,7 @@ public class LambdaBrowser implements CloudBrowser {
 
     private void mergeLambdaContextsIntoLocalFileStructure(Path localFolderOfS3Content) throws IOException {
         LOG.info("Merging context file trackers into file tracker...");
-        if LOG.isDebugEnabled() {
+        if (LOG.isDebugEnabled()) {
             LOG.info("Download directory: '{}' (exists={}, isDir={})", localFolderOfS3Content, java.nio.file.Files.exists(localFolderOfS3Content), java.nio.file.Files.isDirectory(localFolderOfS3Content));
             if (java.nio.file.Files.exists(localFolderOfS3Content)) {
                 try (var stream = java.nio.file.Files.list(localFolderOfS3Content)) {
