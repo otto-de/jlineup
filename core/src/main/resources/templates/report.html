@@ -1826,6 +1826,7 @@
             </ul>
         </li>
     </ul>
+    </div>
 </nav>
 
 <div class="report">
@@ -2094,14 +2095,14 @@
         </div>
 
     </div>
-</div>
 
-<div th:if="${report.summary.error == true && report.config.approvalLink != null}"
-     style="margin-top: var(--space-5);">
-    <a th:href="${report.config.approvalLink}"
-       style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background-color: var(--color-failure); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; box-shadow: var(--shadow-sm);">
-        I checked the differences &mdash; <strong>approve changes</strong>
-    </a>
+    <div th:if="${report.summary.error == true && report.config.approvalLink != null}"
+         style="margin-top: var(--space-5); text-align: center;">
+        <a th:href="${report.config.approvalLink}"
+           style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background-color: var(--color-failure); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; box-shadow: var(--shadow-sm);">
+            I checked the differences &mdash; <strong>approve changes</strong>
+        </a>
+    </div>
 </div>
 
 <div id="zoombox" class="invisible">
