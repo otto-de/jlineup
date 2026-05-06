@@ -5,6 +5,7 @@ import de.otto.jlineup.GlobalOption;
 import de.otto.jlineup.GlobalOptions;
 import de.otto.jlineup.JLineupRunner;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.JLineupRunnerFactory;
 import de.otto.jlineup.web.State;
@@ -194,6 +195,8 @@ public class JLineupService {
 
         // Copy the source run's report directory (before screenshots + files.json) to the new run's directory
         copyReportDirectory(sourceRunId, newRunId);
+        // Remove stale after screenshots and entries so the new after step starts clean
+        cleanAfterArtifacts(newRunId);
 
         LOG.info("Creating rerun of 'after' step from source run {} as new run {}", sourceRunId, newRunId);
 
@@ -249,6 +252,16 @@ public class JLineupService {
         }
 
         LOG.info("Copied report directory from {} to {}", sourcePath, targetPath);
+    }
+
+    /**
+     * Removes after/compare artifacts from a copied report directory so that stale
+     * screenshots from the source run cannot appear in the new run's report.
+     */
+    private void cleanAfterArtifacts(String runId) throws IOException {
+        String reportDir = jLineupWebProperties.getReportDirectory().replace("{id}", runId);
+        Path reportPath = Path.of(jLineupWebProperties.getWorkingDirectory(), reportDir);
+        FileService.cleanAfterArtifacts(reportPath);
     }
 
     private JLineupRunStatus changeState(String runId, State state) {

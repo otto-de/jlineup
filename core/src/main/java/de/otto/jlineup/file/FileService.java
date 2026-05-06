@@ -305,5 +305,57 @@ public class FileService {
     public void deleteRecursively(Path path) throws IOException {
         Files.delete(path);
     }
+
+    /**
+     * Removes all after/compare artifacts from a report directory so that a rerun
+     * starts with a clean slate. Strips after/compare entries from files.json and
+     * deletes after/compare screenshot files and metadata from disk.
+     */
+    public static void cleanAfterArtifacts(Path reportDirectory) throws IOException {
+        // 1. Clean files.json
+        Path filesJsonPath = reportDirectory.resolve(DEFAULT_FILETRACKER_FILENAME);
+        if (Files.isRegularFile(filesJsonPath)) {
+            try {
+                FileTracker fileTracker = JacksonWrapper.readFileTrackerFile(filesJsonPath.toFile());
+                if (fileTracker.getContexts() != null) {
+                    for (ScreenshotContextFileTracker ctxTracker : fileTracker.getContexts().values()) {
+                        if (ctxTracker.getScreenshots() != null) {
+                            for (Map<BrowserStep, String> stepMap : ctxTracker.getScreenshots().values()) {
+                                stepMap.remove(BrowserStep.after);
+                                stepMap.remove(BrowserStep.compare);
+                            }
+                        }
+                    }
+                }
+                if (fileTracker.getBrowsers() != null) {
+                    fileTracker.getBrowsers().remove(BrowserStep.after);
+                    fileTracker.getBrowsers().remove(BrowserStep.compare);
+                }
+                Files.writeString(filesJsonPath, JacksonWrapper.serializeObject(fileTracker));
+            } catch (Exception e) {
+                LOG.warn("Could not clean files.json at {}, will be overwritten by after step", filesJsonPath, e);
+            }
+        }
+
+        // 2. Delete after/compare screenshot files and metadata
+        try (var walker = Files.walk(reportDirectory)) {
+            walker.filter(Files::isRegularFile)
+                    .filter(p -> {
+                        String name = p.getFileName().toString();
+                        return name.contains("_after.png") || name.contains("_after.json")
+                                || name.contains("_compare.png")
+                                || name.startsWith("metadata_after");
+                    })
+                    .forEach(p -> {
+                        try {
+                            Files.delete(p);
+                        } catch (IOException e) {
+                            LOG.warn("Failed to delete after artifact: {}", p, e);
+                        }
+                    });
+        }
+
+        LOG.info("Cleaned after artifacts from {}", reportDirectory);
+    }
 }
 

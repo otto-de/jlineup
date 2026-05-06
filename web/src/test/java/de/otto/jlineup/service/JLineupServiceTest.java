@@ -51,6 +51,7 @@ class JLineupServiceTest {
         when(jLineupWebProperties.getLambda().getFunctionName()).thenReturn("jlineup-lambda-test");
         when(jLineupWebProperties.getWorkingDirectory()).thenReturn(tempDir.toString() + "/");
         when(jLineupWebProperties.getScreenshotsDirectory()).thenReturn("report-{id}");
+        when(jLineupWebProperties.getReportDirectory()).thenReturn("report-{id}");
         testee = new JLineupService(jLineupRunnerFactory, jLineupWebProperties, runPersistenceService);
     }
 
@@ -208,6 +209,7 @@ class JLineupServiceTest {
         Files.createDirectories(sourceDir.resolve("2d6834e2"));
         Files.writeString(sourceDir.resolve("files.json"), "{}");
         Files.writeString(sourceDir.resolve("2d6834e2").resolve("screenshot_before.png"), "fake-png-data");
+        Files.writeString(sourceDir.resolve("2d6834e2").resolve("screenshot_after.png"), "stale-after-data");
 
         //when
         JLineupRunStatus rerunStatus = testee.rerunAfterFromRun(beforeStatus.getId());
@@ -220,6 +222,8 @@ class JLineupServiceTest {
         Path newDir = tempDir.resolve("report-" + rerunStatus.getId());
         assertTrue(Files.exists(newDir.resolve("files.json")));
         assertTrue(Files.exists(newDir.resolve("2d6834e2").resolve("screenshot_before.png")));
+        // Stale after screenshot should have been cleaned
+        assertFalse(Files.exists(newDir.resolve("2d6834e2").resolve("screenshot_after.png")));
 
         // Verify after runner was created for the new run ID
         verify(jLineupRunnerFactory).createAfterRun(rerunStatus.getId(), jobConfig);
@@ -275,6 +279,87 @@ class JLineupServiceTest {
     @Test
     void shouldRejectRerunWhenRunNotFound() {
         assertThrows(RunNotFoundException.class, () -> testee.rerunAfterFromRun("nonexistent-id"));
+    }
+
+    @Test
+    void shouldCleanAfterArtifactsOnRerun() throws Exception {
+        //given
+        JobConfig jobConfig = JobConfig.exampleConfig();
+        when(jLineupRunnerBefore.run()).thenReturn(true);
+        when(jLineupRunnerAfter.run()).thenReturn(true);
+
+        JLineupRunStatus beforeStatus = testee.startBeforeRun(jobConfig);
+        beforeStatus.getCurrentJobStepFuture().get().get();
+
+        // Set up a realistic source directory with before AND after artifacts
+        Path sourceDir = tempDir.resolve("report-" + beforeStatus.getId());
+        Files.createDirectories(sourceDir.resolve("abc123"));
+        Files.createDirectories(sourceDir.resolve("def456"));
+
+        // files.json with after and compare entries
+        String filesJson = """
+                {
+                  "job-config": null,
+                  "contexts": {
+                    "abc123": {
+                      "screenshotContext": null,
+                      "screenshots": {
+                        "0": {"before": "abc123/url_0_before.png", "after": "abc123/url_0_after.png", "compare": "abc123/url_0_compare.png"},
+                        "500": {"before": "abc123/url_500_before.png", "after": "abc123/url_500_after.png"}
+                      }
+                    },
+                    "def456": {
+                      "screenshotContext": null,
+                      "screenshots": {
+                        "0": {"before": "def456/page_0_before.png", "after": "def456/page_0_after.png"}
+                      }
+                    }
+                  },
+                  "browsers": {"before": ["chrome"], "after": ["chrome"]}
+                }
+                """;
+        Files.writeString(sourceDir.resolve("files.json"), filesJson);
+
+        // Before screenshots (should be preserved)
+        Files.writeString(sourceDir.resolve("abc123").resolve("url_0_before.png"), "before-data");
+        Files.writeString(sourceDir.resolve("abc123").resolve("url_500_before.png"), "before-data");
+        Files.writeString(sourceDir.resolve("def456").resolve("page_0_before.png"), "before-data");
+
+        // After screenshots (should be deleted)
+        Files.writeString(sourceDir.resolve("abc123").resolve("url_0_after.png"), "stale-after");
+        Files.writeString(sourceDir.resolve("abc123").resolve("url_500_after.png"), "stale-after");
+        Files.writeString(sourceDir.resolve("abc123").resolve("url_0_compare.png"), "stale-compare");
+        Files.writeString(sourceDir.resolve("def456").resolve("page_0_after.png"), "stale-after");
+
+        // Metadata files
+        Files.writeString(sourceDir.resolve("abc123").resolve("metadata_after.json"), "{}");
+        Files.writeString(sourceDir.resolve("abc123").resolve("metadata_before.json"), "{}");
+
+        //when
+        JLineupRunStatus rerunStatus = testee.rerunAfterFromRun(beforeStatus.getId());
+        rerunStatus.getCurrentJobStepFuture().get().get();
+
+        //then
+        Path newDir = tempDir.resolve("report-" + rerunStatus.getId());
+
+        // Before screenshots preserved
+        assertTrue(Files.exists(newDir.resolve("abc123").resolve("url_0_before.png")));
+        assertTrue(Files.exists(newDir.resolve("abc123").resolve("url_500_before.png")));
+        assertTrue(Files.exists(newDir.resolve("def456").resolve("page_0_before.png")));
+        assertTrue(Files.exists(newDir.resolve("abc123").resolve("metadata_before.json")));
+
+        // After/compare screenshots deleted
+        assertFalse(Files.exists(newDir.resolve("abc123").resolve("url_0_after.png")));
+        assertFalse(Files.exists(newDir.resolve("abc123").resolve("url_500_after.png")));
+        assertFalse(Files.exists(newDir.resolve("abc123").resolve("url_0_compare.png")));
+        assertFalse(Files.exists(newDir.resolve("def456").resolve("page_0_after.png")));
+        assertFalse(Files.exists(newDir.resolve("abc123").resolve("metadata_after.json")));
+
+        // files.json should not contain after/compare entries
+        String newFilesJson = Files.readString(newDir.resolve("files.json"));
+        assertFalse(newFilesJson.contains("\"after\""));
+        assertFalse(newFilesJson.contains("\"compare\""));
+        assertTrue(newFilesJson.contains("\"before\""));
     }
 
 }
