@@ -166,8 +166,18 @@ public class JLineupService {
 
         LOG.info("Retrying 'after' step for run {} (previous state: {})", runId, currentStatus.getState());
 
-        // Reset state to BEFORE_DONE so startAfterRun() accepts it
-        changeState(runId, State.BEFORE_DONE);
+        // Reset state to BEFORE_DONE so startAfterRun() accepts it.
+        // Preserve the original pauseTime (when before actually finished) to keep duration accurate.
+        JLineupRunStatus.Builder builder = copyOfRunStatusBuilder(currentStatus)
+                .withState(State.BEFORE_DONE)
+                .withEndTime(null)
+                .withReports(JLineupRunStatus.Reports.reportsBuilder()
+                        .withLogUrl("/reports/report-" + runId + "/jlineup.log")
+                        .withHtmlUrl("/reports/report-" + runId + "/report_before.html")
+                        .build());
+        JLineupRunStatus updatedStatus = builder.build();
+        runs.put(runId, updatedStatus);
+        runPersistenceService.persistRuns(runs);
 
         return startAfterRun(runId);
     }
@@ -205,7 +215,7 @@ public class JLineupService {
                 .withId(newRunId)
                 .withJobConfig(sourceStatus.getJobConfig())
                 .withState(State.BEFORE_DONE)
-                .withStartTime(sourceStatus.getStartTime())
+                .withStartTime(Instant.now())
                 .withPauseTime(Instant.now())
                 .withReports(JLineupRunStatus.Reports.reportsBuilder()
                         .withLogUrl("/reports/report-" + newRunId + "/jlineup.log")
