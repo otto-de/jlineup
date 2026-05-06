@@ -189,6 +189,10 @@ public class ReportsAndRunWebController {
             return (state == State.ERROR || state == State.DEAD) ? "btn-danger" : "btn-light";
         }
 
+        public boolean isFinishedWithDifferences() {
+            return state == State.FINISHED_WITH_DIFFERENCES;
+        }
+
         public void setState(State state) {
             this.state = state;
         }

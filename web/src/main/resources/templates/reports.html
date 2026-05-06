@@ -1,6 +1,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head th:replace="~{fragments/head :: head}" />
+<style>
+    #runs-tbody td:nth-child(9) > .btn,
+    #runs-tbody td:nth-child(9) > .btn-group > .btn:first-child { min-width: 110px; }
+</style>
 
 <body>
 
@@ -112,7 +116,7 @@
                     th:data-sort-time="${report.sortTimeEpochMs}">
                     <td><div th:title="${report.id}" th:text="${report.id.length() > 8 ? #strings.substring(report.id, 0, 8) : report.id}">42</div></td>
                     <td><div th:if="${report.name != null}" th:text="${report.name}">Some application name</div></td>
-                    <td style="max-width:400px;"><pre style="white-space:pre-line; word-break:break-all; overflow:auto; max-height:4em; margin:0;" th:utext="${#strings.listJoin(report.urls, '<br/>')}">https://www.verylongurl.com/some/cool/path</pre></td>
+                    <td style="max-width:400px;" th:title="${#strings.listJoin(report.urls, '&#10;')}"><pre style="white-space:pre-line; word-break:break-all; overflow:auto; max-height:4em; margin:0;" th:utext="${#strings.listJoin(report.urls, '<br/>')}">https://www.verylongurl.com/some/cool/path</pre></td>
                     <td class="run-state" style="white-space:nowrap" th:text="${report.state}">OK</td>
                     <td class="run-start" style="white-space:nowrap" th:data-epoch="${report.startTimeEpochMs}" th:text="${report.startTime}">2018-09-09T20:00:00.000Z</td>
                     <td class="run-duration" th:text="${report.duration}">10:20:30</td>
@@ -127,8 +131,28 @@
                                 th:data-after-url="${report.afterRunUrl}">
                             Start 'after' run
                         </button>
-                        <!-- Combined split button when both retry and rerun are available -->
-                        <div th:if="${report.retryAfterUrl != null and report.rerunAfterUrl != null}" class="btn-group action-btn-group">
+                        <!-- Combined split button: rerun primary for FINISHED_WITH_DIFFERENCES -->
+                        <div th:if="${report.retryAfterUrl != null and report.rerunAfterUrl != null and report.finishedWithDifferences}" class="btn-group action-btn-group">
+                            <button type="button"
+                                    class="btn btn-info btn-sm rerun-after-btn"
+                                    th:data-run-id="${report.id}"
+                                    th:data-run-name="${report.name}"
+                                    th:data-rerun-url="${report.rerunAfterUrl}">
+                                Rerun 'after' as new
+                            </button>
+                            <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="visually-hidden">More</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item retry-after-btn" href="#"
+                                       th:data-run-id="${report.id}"
+                                       th:data-run-name="${report.name}"
+                                       th:data-retry-url="${report.retryAfterUrl}">Retry 'after'</a></li>
+                            </ul>
+                        </div>
+                        <!-- Combined split button: retry primary for ERROR/DEAD -->
+                        <div th:if="${report.retryAfterUrl != null and report.rerunAfterUrl != null and !report.finishedWithDifferences}" class="btn-group action-btn-group">
                             <button type="button"
                                     class="btn btn-danger btn-sm retry-after-btn"
                                     th:data-run-id="${report.id}"

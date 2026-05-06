@@ -562,12 +562,16 @@ describe('buildRow rerun button', () => {
         expect(group.querySelector('.dropdown-toggle')).not.toBeNull();
     });
 
-    test('shows combined split button for FINISHED_WITH_DIFFERENCES (retry + rerun)', () => {
+    test('shows combined split button for FINISHED_WITH_DIFFERENCES with rerun as primary', () => {
         const tr = buildRow(makeRun({ id: 'r1', state: 'FINISHED_WITH_DIFFERENCES' }));
         const group = tr.querySelector('.action-btn-group');
         expect(group).not.toBeNull();
-        expect(group.querySelector('.retry-after-btn')).not.toBeNull();
-        expect(group.querySelector('.rerun-after-btn')).not.toBeNull();
+        // Rerun is the primary (direct child button), retry is in dropdown
+        const primaryBtn = group.querySelector(':scope > .rerun-after-btn');
+        expect(primaryBtn).not.toBeNull();
+        expect(primaryBtn.classList.contains('btn-info')).toBe(true);
+        const dropdownRetry = group.querySelector('.dropdown-menu .retry-after-btn');
+        expect(dropdownRetry).not.toBeNull();
     });
 });
 

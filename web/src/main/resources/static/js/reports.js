@@ -152,12 +152,29 @@
     // Build the retry/rerun action buttons for the actions cell.
     // When both retry and rerun are available, renders a Bootstrap split-button dropdown.
     // When only one is available, renders a standalone button.
-    function buildActionButtons(runId, name, retryUrl, rerunUrl) {
+    function buildActionButtons(runId, name, retryUrl, rerunUrl, state) {
         var eid  = escHtml(runId);
         var ename = escHtml(name || '');
 
         if (retryUrl && rerunUrl) {
-            // Split-button dropdown: primary action = retry, dropdown = rerun
+            var rerunPrimary = (state === 'FINISHED_WITH_DIFFERENCES');
+            if (rerunPrimary) {
+                // Split-button: primary = rerun, dropdown = retry
+                return '<div class="btn-group action-btn-group">' +
+                    '<button type="button" class="btn btn-info btn-sm rerun-after-btn"' +
+                    ' data-run-id="' + eid + '"' +
+                    ' data-run-name="' + ename + '"' +
+                    ' data-rerun-url="' + escHtml(rerunUrl) + '">Rerun \'after\' as new</button>' +
+                    '<button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split"' +
+                    ' data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">More</span></button>' +
+                    '<ul class="dropdown-menu">' +
+                    '<li><a class="dropdown-item retry-after-btn" href="#"' +
+                    ' data-run-id="' + eid + '"' +
+                    ' data-run-name="' + ename + '"' +
+                    ' data-retry-url="' + escHtml(retryUrl) + '">Retry \'after\'</a></li>' +
+                    '</ul></div>';
+            }
+            // Split-button: primary = retry, dropdown = rerun
             return '<div class="btn-group action-btn-group">' +
                 '<button type="button" class="btn btn-danger btn-sm retry-after-btn"' +
                 ' data-run-id="' + eid + '"' +
@@ -205,7 +222,7 @@
         tr.innerHTML =
             '<td><div title="' + escHtml(run.id) + '">' + escHtml(run.id.substring(0, 8)) + '</div></td>' +
             '<td><div>' + (name ? escHtml(name) : '') + '</div></td>' +
-            '<td style="max-width:400px;"><pre style="white-space:pre-line; word-break:break-all; overflow:auto; max-height:4em; margin:0;">' + escHtml(urls.join('\n')) + '</pre></td>' +
+            '<td style="max-width:400px;" title="' + escHtml(urls.join('\n')) + '"><pre style="white-space:pre-line; word-break:break-all; overflow:auto; max-height:4em; margin:0;">' + escHtml(urls.join('\n')) + '</pre></td>' +
             '<td class="run-state" style="white-space:nowrap">' + escHtml(STATE_LABELS[run.state] || run.state) + '</td>' +
             '<td class="run-start" style="white-space:nowrap">' + escHtml(formatStartTime(run.startTime)) + '</td>' +
             '<td class="run-duration">' + formatDuration(durationMs(run)) + '</td>' +
@@ -224,7 +241,7 @@
                   ' data-run-name="' + escHtml(name || '') + '"' +
                   ' data-after-url="' + escHtml(aUrl) + '">Start \'After\' run</button>'
                 : '') +
-              buildActionButtons(run.id, name, rUrl, rrUrl) + '</td>';
+              buildActionButtons(run.id, name, rUrl, rrUrl, run.state) + '</td>';
         return tr;
     }
 
@@ -332,7 +349,7 @@
 
             var rUrl = retryAfterUrl(run);
             var rrUrl = rerunAfterUrl(run);
-            var html = buildActionButtons(run.id, runName(run), rUrl, rrUrl);
+            var html = buildActionButtons(run.id, runName(run), rUrl, rrUrl, run.state);
             if (html) {
                 var tmp = document.createElement('div');
                 tmp.innerHTML = html;

@@ -258,17 +258,17 @@ public class FileService {
 
     public void mergeContextFileTrackersIntoFileTracker(Path directory, FilenameFilter filenameFilter) throws IOException {
         File dir = directory.toFile();
-        LOG.info("Looking for file tracker files in directory: '{}' (exists={}, isDir={})", dir.getAbsolutePath(), dir.exists(), dir.isDirectory());
+        LOG.debug("Looking for file tracker files in directory: '{}' (exists={}, isDir={})", dir.getAbsolutePath(), dir.exists(), dir.isDirectory());
         File[] allFiles = dir.listFiles();
         if (allFiles != null) {
-            LOG.info("  All files/dirs in download directory ({}):", allFiles.length);
+            LOG.debug("  All files/dirs in download directory ({}):", allFiles.length);
             for (File f : allFiles) {
-                LOG.info("    {} (isDir={}, size={})", f.getName(), f.isDirectory(), f.length());
+                LOG.debug("    {} (isDir={}, size={})", f.getName(), f.isDirectory(), f.length());
                 if (f.isDirectory()) {
                     File[] subFiles = f.listFiles();
                     if (subFiles != null) {
                         for (File sf : subFiles) {
-                            LOG.info("      {} (isDir={}, size={})", sf.getName(), sf.isDirectory(), sf.length());
+                            LOG.debug("      {} (isDir={}, size={})", sf.getName(), sf.isDirectory(), sf.length());
                         }
                     }
                 }
@@ -276,15 +276,15 @@ public class FileService {
         }
         File[] files = dir.listFiles(filenameFilter);
         assert files != null;
-        LOG.info("  Matching files: {}", files.length);
+        LOG.debug("  Matching files: {}", files.length);
         assert files != null;
         for (File file : files) {
             FileTracker part = JacksonWrapper.readFileTrackerFile(file);
 
-            LOG.info("Merging file '{}' with {} context(s): {}", file.getName(), part.contexts.size(), part.contexts.keySet());
+            LOG.debug("Merging file '{}' with {} context(s): {}", file.getName(), part.contexts.size(), part.contexts.keySet());
             //fileTracker.contexts.putAll(part.contexts);
             part.contexts.forEach((contextHash, screenshotContextFileTracker) -> {
-                LOG.info("  Merging context hash '{}' with {} screenshot position(s), screenshotContext: urlSubPath='{}', deviceConfig={}, browserType={}",
+                LOG.debug("  Merging context hash '{}' with {} screenshot position(s), screenshotContext: urlSubPath='{}', deviceConfig={}, browserType={}",
                         contextHash,
                         screenshotContextFileTracker.screenshots != null ? screenshotContextFileTracker.screenshots.size() : 0,
                         screenshotContextFileTracker.screenshotContext != null ? screenshotContextFileTracker.screenshotContext.urlSubPath : "null",
