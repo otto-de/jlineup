@@ -35,7 +35,7 @@
         return STATE_ROW_CLASS[state] || 'table-secondary';
     }
 
-    function logBtnClass(state) {
+    function logButtonClass(state) {
         return (state === 'ERROR' || state === 'DEAD') ? 'btn-danger' : 'btn-light';
     }
 
@@ -61,10 +61,10 @@
     }
 
     function formatDuration(ms) {
-        var s  = Math.floor(ms / 1000);
-        var HH = Math.floor(s / 3600);
-        var MM = Math.floor((s % 3600) / 60);
-        var SS = s % 60;
+        var seconds = Math.floor(ms / 1000);
+        var HH = Math.floor(seconds / 3600);
+        var MM = Math.floor((seconds % 3600) / 60);
+        var SS = seconds % 60;
         return String(HH).padStart(2,'0') + ':' + String(MM).padStart(2,'0') + ':' + String(SS).padStart(2,'0');
     }
 
@@ -115,19 +115,19 @@
         var result = [];
         Object.entries(run.jobConfig.urls).forEach(function(entry) {
             var url   = entry[0];
-            var cfg   = entry[1];
-            var paths = (cfg.paths && cfg.paths.length) ? cfg.paths : ['/'];
-            paths.forEach(function(p) { result.push(url + p); });
+            var config = entry[1];
+            var paths = (config.paths && config.paths.length) ? config.paths : ['/'];
+            paths.forEach(function(path) { result.push(url + path); });
         });
         return result;
     }
 
     function formatStartTime(iso) {
         if (!iso) return '';
-        var d   = new Date(iso);
-        var pad = function(n) { return String(n).padStart(2,'0'); };
-        return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) +
-               ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+        var date = new Date(iso);
+        var pad  = function(n) { return String(n).padStart(2,'0'); };
+        return date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) +
+               ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
     }
 
     function escHtml(s) {
@@ -153,8 +153,8 @@
     // When both retry and rerun are available, renders a Bootstrap split-button dropdown.
     // When only one is available, renders a standalone button.
     function buildActionButtons(runId, name, retryUrl, rerunUrl, state) {
-        var eid  = escHtml(runId);
-        var ename = escHtml(name || '');
+        var escapedId   = escHtml(runId);
+        var escapedName = escHtml(name || '');
 
         if (retryUrl && rerunUrl) {
             var rerunPrimary = (state === 'FINISHED_WITH_DIFFERENCES');
@@ -162,64 +162,64 @@
                 // Split-button: primary = rerun, dropdown = retry
                 return '<div class="btn-group action-btn-group">' +
                     '<button type="button" class="btn btn-info btn-sm rerun-after-btn"' +
-                    ' data-run-id="' + eid + '"' +
-                    ' data-run-name="' + ename + '"' +
+                    ' data-run-id="' + escapedId + '"' +
+                    ' data-run-name="' + escapedName + '"' +
                     ' data-rerun-url="' + escHtml(rerunUrl) + '">Rerun \'after\' as new</button>' +
                     '<button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split"' +
                     ' data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">More</span></button>' +
                     '<ul class="dropdown-menu">' +
                     '<li><a class="dropdown-item retry-after-btn" href="#"' +
-                    ' data-run-id="' + eid + '"' +
-                    ' data-run-name="' + ename + '"' +
+                    ' data-run-id="' + escapedId + '"' +
+                    ' data-run-name="' + escapedName + '"' +
                     ' data-retry-url="' + escHtml(retryUrl) + '">Retry \'after\'</a></li>' +
                     '</ul></div>';
             }
             // Split-button: primary = retry, dropdown = rerun
             return '<div class="btn-group action-btn-group">' +
                 '<button type="button" class="btn btn-danger btn-sm retry-after-btn"' +
-                ' data-run-id="' + eid + '"' +
-                ' data-run-name="' + ename + '"' +
+                ' data-run-id="' + escapedId + '"' +
+                ' data-run-name="' + escapedName + '"' +
                 ' data-retry-url="' + escHtml(retryUrl) + '">Retry \'after\'</button>' +
                 '<button type="button" class="btn btn-danger btn-sm dropdown-toggle dropdown-toggle-split"' +
                 ' data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">More</span></button>' +
                 '<ul class="dropdown-menu">' +
                 '<li><a class="dropdown-item rerun-after-btn" href="#"' +
-                ' data-run-id="' + eid + '"' +
-                ' data-run-name="' + ename + '"' +
-                ' data-rerun-url="' + escHtml(rerunUrl) + '">Rerun \'after\' as new run</a></li>' +
+                ' data-run-id="' + escapedId + '"' +
+                ' data-run-name="' + escapedName + '"' +
+                ' data-rerun-url="' + escHtml(rerunUrl) + '">Rerun \'after\' as new</a></li>' +
                 '</ul></div>';
         }
         if (retryUrl) {
             return '<button type="button" class="btn btn-danger btn-sm retry-after-btn"' +
-                ' data-run-id="' + eid + '"' +
-                ' data-run-name="' + ename + '"' +
+                ' data-run-id="' + escapedId + '"' +
+                ' data-run-name="' + escapedName + '"' +
                 ' data-retry-url="' + escHtml(retryUrl) + '">Retry \'after\'</button>';
         }
         if (rerunUrl) {
             return '<button type="button" class="btn btn-info btn-sm rerun-after-btn"' +
-                ' data-run-id="' + eid + '"' +
-                ' data-run-name="' + ename + '"' +
-                ' data-rerun-url="' + escHtml(rerunUrl) + '">Rerun \'after\'</button>';
+                ' data-run-id="' + escapedId + '"' +
+                ' data-run-name="' + escapedName + '"' +
+                ' data-rerun-url="' + escHtml(rerunUrl) + '">Rerun \'after\' as new</button>';
         }
         return '';
     }
 
     // Build a full <tr> for a run (used when inserting newly-seen rows during polling)
     function buildRow(run) {
-        var tr  = document.createElement('tr');
-        tr.id   = 'run-row-' + run.id;
-        tr.className = rowClass(run.state);
-        tr.setAttribute('data-sort-time', latestTimestampMs(run));
+        var row = document.createElement('tr');
+        row.id  = 'run-row-' + run.id;
+        row.className = rowClass(run.state);
+        row.setAttribute('data-sort-time', latestTimestampMs(run));
 
         var reportUrl = getReportUrl(run);
         var logUrl    = getLogUrl(run);
-        var aUrl      = afterRunUrl(run);
-        var rUrl      = retryAfterUrl(run);
-        var rrUrl     = rerunAfterUrl(run);
+        var afterUrl  = afterRunUrl(run);
+        var retryUrl  = retryAfterUrl(run);
+        var rerunUrl  = rerunAfterUrl(run);
         var name      = runName(run);
         var urls      = runUrls(run);
 
-        tr.innerHTML =
+        row.innerHTML =
             '<td><div title="' + escHtml(run.id) + '">' + escHtml(run.id.substring(0, 8)) + '</div></td>' +
             '<td><div>' + (name ? escHtml(name) : '') + '</div></td>' +
             '<td style="max-width:400px;" title="' + escHtml(urls.join('\n')) + '"><pre style="white-space:pre-line; word-break:break-all; overflow:auto; max-height:4em; margin:0;">' + escHtml(urls.join('\n')) + '</pre></td>' +
@@ -233,68 +233,68 @@
                 : '') + '</td>' +
             '<td>' + (logUrl
                 ? '<a href="' + escHtml(logUrl) + '" target="_blank" class="btn btn-sm ' +
-                  logBtnClass(run.state) + '" role="button">Log</a>'
+                  logButtonClass(run.state) + '" role="button">Log</a>'
                 : '') + '</td>' +
-            '<td>' + (aUrl
+            '<td>' + (afterUrl
                 ? '<button type="button" class="btn btn-warning btn-sm start-after-btn"' +
                   ' data-run-id="' + escHtml(run.id) + '"' +
                   ' data-run-name="' + escHtml(name || '') + '"' +
-                  ' data-after-url="' + escHtml(aUrl) + '">Start \'After\' run</button>'
+                  ' data-after-url="' + escHtml(afterUrl) + '">Start \'After\' run</button>'
                 : '') +
-              buildActionButtons(run.id, name, rUrl, rrUrl, run.state) + '</td>';
-        return tr;
+              buildActionButtons(run.id, name, retryUrl, rerunUrl, run.state) + '</td>';
+        return row;
     }
 
     // Find the correct insertion point for a new row so tbody stays sorted
     // by data-start-time descending (newest first).
     // Returns the existing <tr> to insert before, or null (= append at end).
-    function findInsertionPoint(tbody, newTs) {
+    function findInsertionPoint(tbody, newTimestamp) {
         var rows = Array.from(tbody.querySelectorAll('tr[data-sort-time]'));
         for (var i = 0; i < rows.length; i++) {
-            var rowTs = parseInt(rows[i].getAttribute('data-sort-time'), 10) || 0;
-            if (newTs > rowTs) return rows[i];
+            var rowTimestamp = parseInt(rows[i].getAttribute('data-sort-time'), 10) || 0;
+            if (newTimestamp > rowTimestamp) return rows[i];
         }
         return null;
     }
 
     // Patch an existing row in-place (only touch what changed)
-    function patchRow(tr, run) {
+    function patchRow(row, run) {
         // Update sort time
-        tr.setAttribute('data-sort-time', latestTimestampMs(run));
+        row.setAttribute('data-sort-time', latestTimestampMs(run));
 
         // Row CSS class
-        var keep = Array.from(tr.classList).filter(function(c) { return !c.startsWith('table-'); });
+        var keep = Array.from(row.classList).filter(function(c) { return !c.startsWith('table-'); });
         keep.push(rowClass(run.state));
-        tr.className = keep.join(' ');
+        row.className = keep.join(' ');
 
         // State label
-        var stateCell = tr.querySelector('.run-state');
+        var stateCell = row.querySelector('.run-state');
         if (stateCell) stateCell.textContent = STATE_LABELS[run.state] || run.state;
 
         // Duration (ticks for active runs)
-        var durCell = tr.querySelector('.run-duration');
-        if (durCell) durCell.textContent = formatDuration(durationMs(run));
+        var durationCell = row.querySelector('.run-duration');
+        if (durationCell) durationCell.textContent = formatDuration(durationMs(run));
 
         // Log button class
-        var logBtn = tr.querySelector('td:nth-child(8) a.btn');
-        if (logBtn) {
-            logBtn.classList.remove('btn-danger', 'btn-light');
-            logBtn.classList.add(logBtnClass(run.state));
+        var logButton = row.querySelector('td:nth-child(8) a.btn');
+        if (logButton) {
+            logButton.classList.remove('btn-danger', 'btn-light');
+            logButton.classList.add(logButtonClass(run.state));
         }
 
         // Report button: add if missing, update href+class if already present
-        var reportCell = tr.querySelector('td:nth-child(7)');
+        var reportCell = row.querySelector('td:nth-child(7)');
         if (reportCell) {
             var reportUrl = getReportUrl(run);
             var existingReport = reportCell.querySelector('a');
             if (reportUrl && !existingReport) {
-                var a = document.createElement('a');
-                a.href = reportUrl;
-                a.target = '_blank';
-                a.className = 'btn btn-sm ' + (isBeforeReport(reportUrl) ? 'btn-secondary' : 'btn-primary');
-                a.setAttribute('role', 'button');
-                a.textContent = 'Report';
-                reportCell.appendChild(a);
+                var reportLink = document.createElement('a');
+                reportLink.href = reportUrl;
+                reportLink.target = '_blank';
+                reportLink.className = 'btn btn-sm ' + (isBeforeReport(reportUrl) ? 'btn-secondary' : 'btn-primary');
+                reportLink.setAttribute('role', 'button');
+                reportLink.textContent = 'Report';
+                reportCell.appendChild(reportLink);
             } else if (reportUrl && existingReport) {
                 existingReport.href = reportUrl;
                 existingReport.classList.remove('btn-secondary', 'btn-primary');
@@ -303,37 +303,37 @@
         }
 
         // Log button: add if it just appeared
-        var logCell = tr.querySelector('td:nth-child(8)');
+        var logCell = row.querySelector('td:nth-child(8)');
         if (logCell && !logCell.querySelector('a')) {
             var logUrl = getLogUrl(run);
             if (logUrl) {
-                var la = document.createElement('a');
-                la.href = logUrl;
-                la.target = '_blank';
-                la.className = 'btn btn-sm ' + logBtnClass(run.state);
-                la.setAttribute('role', 'button');
-                la.textContent = 'Log';
-                logCell.appendChild(la);
+                var logLink = document.createElement('a');
+                logLink.href = logUrl;
+                logLink.target = '_blank';
+                logLink.className = 'btn btn-sm ' + logButtonClass(run.state);
+                logLink.setAttribute('role', 'button');
+                logLink.textContent = 'Log';
+                logCell.appendChild(logLink);
             }
         }
 
         // After-run / retry / rerun buttons: rebuild as state changes
-        var afterCell = tr.querySelector('td:nth-child(9)');
+        var afterCell = row.querySelector('td:nth-child(9)');
         if (afterCell) {
-            var existingAfter = afterCell.querySelector('.start-after-btn');
-            var aUrl     = afterRunUrl(run);
-            if (aUrl && !existingAfter) {
-                var btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'btn btn-warning btn-sm start-after-btn';
-                btn.setAttribute('data-run-id',    run.id);
-                btn.setAttribute('data-run-name',  runName(run) || '');
-                btn.setAttribute('data-after-url', aUrl);
-                btn.textContent = "Start 'after' run";
-                wireAfterBtn(btn);
-                afterCell.appendChild(btn);
-            } else if (!aUrl && existingAfter) {
-                existingAfter.remove();
+            var existingAfterButton = afterCell.querySelector('.start-after-btn');
+            var afterUrl = afterRunUrl(run);
+            if (afterUrl && !existingAfterButton) {
+                var afterButton = document.createElement('button');
+                afterButton.type = 'button';
+                afterButton.className = 'btn btn-warning btn-sm start-after-btn';
+                afterButton.setAttribute('data-run-id',    run.id);
+                afterButton.setAttribute('data-run-name',  runName(run) || '');
+                afterButton.setAttribute('data-after-url', afterUrl);
+                afterButton.textContent = "Start 'after' run";
+                wireAfterButton(afterButton);
+                afterCell.appendChild(afterButton);
+            } else if (!afterUrl && existingAfterButton) {
+                existingAfterButton.remove();
             }
 
             // Remove old retry/rerun elements and rebuild
@@ -342,24 +342,24 @@
             if (oldGroup && oldGroup.querySelector('.dropdown-menu.show')) return;
 
             if (oldGroup) oldGroup.remove();
-            var oldRetry = afterCell.querySelector('.retry-after-btn');
-            if (oldRetry) oldRetry.remove();
-            var oldRerun = afterCell.querySelector('.rerun-after-btn');
-            if (oldRerun) oldRerun.remove();
+            var oldRetryButton = afterCell.querySelector('.retry-after-btn');
+            if (oldRetryButton) oldRetryButton.remove();
+            var oldRerunButton = afterCell.querySelector('.rerun-after-btn');
+            if (oldRerunButton) oldRerunButton.remove();
 
-            var rUrl = retryAfterUrl(run);
-            var rrUrl = rerunAfterUrl(run);
-            var html = buildActionButtons(run.id, runName(run), rUrl, rrUrl, run.state);
+            var retryUrl = retryAfterUrl(run);
+            var rerunUrl = rerunAfterUrl(run);
+            var html = buildActionButtons(run.id, runName(run), retryUrl, rerunUrl, run.state);
             if (html) {
-                var tmp = document.createElement('div');
-                tmp.innerHTML = html;
-                var el = tmp.firstChild;
-                afterCell.appendChild(el);
-                el.querySelectorAll('.retry-after-btn').forEach(wireRetryBtn);
-                el.querySelectorAll('.rerun-after-btn').forEach(wireRerunBtn);
+                var container = document.createElement('div');
+                container.innerHTML = html;
+                var element = container.firstChild;
+                afterCell.appendChild(element);
+                element.querySelectorAll('.retry-after-btn').forEach(wireRetryButton);
+                element.querySelectorAll('.rerun-after-btn').forEach(wireRerunButton);
                 // Also wire directly if it's a standalone button
-                if (el.classList && el.classList.contains('retry-after-btn')) wireRetryBtn(el);
-                if (el.classList && el.classList.contains('rerun-after-btn')) wireRerunBtn(el);
+                if (element.classList && element.classList.contains('retry-after-btn')) wireRetryButton(element);
+                if (element.classList && element.classList.contains('rerun-after-btn')) wireRerunButton(element);
             }
         }
     }
@@ -369,16 +369,34 @@
     var pendingAfterUrl = null;
     var pendingRetryUrl = null;
     var pendingRerunUrl = null;
+    var pendingRetryRunId = null;
+    var pendingRerunRunId = null;
 
-    function wireAfterBtn(btn) {
-        btn.addEventListener('click', function () {
-            var runId   = btn.getAttribute('data-run-id');
-            var rName   = btn.getAttribute('data-run-name');
-            pendingAfterUrl = btn.getAttribute('data-after-url');
+    function disableActionButtons(runId) {
+        var row = document.getElementById('run-row-' + runId);
+        if (!row) return;
+        var lastCell = row.querySelector('td:last-child');
+        if (!lastCell) return;
+        lastCell.querySelectorAll('.btn').forEach(function (button) {
+            button.disabled = true;
+            button.classList.add('disabled');
+        });
+        // Add spinner to the primary action button
+        var primaryButton = lastCell.querySelector('.btn-group > .btn:first-child') || lastCell.querySelector('.rerun-after-btn') || lastCell.querySelector('.retry-after-btn');
+        if (primaryButton) {
+            primaryButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + primaryButton.textContent.trim();
+        }
+    }
+
+    function wireAfterButton(button) {
+        button.addEventListener('click', function () {
+            var runId   = button.getAttribute('data-run-id');
+            var runName = button.getAttribute('data-run-name');
+            pendingAfterUrl = button.getAttribute('data-after-url');
             document.getElementById('modal-run-id').textContent = runId;
             var nameWrap = document.getElementById('modal-run-name-wrap');
-            if (rName) {
-                document.getElementById('modal-run-name').textContent = rName;
+            if (runName) {
+                document.getElementById('modal-run-name').textContent = runName;
                 nameWrap.style.display = '';
             } else {
                 nameWrap.style.display = 'none';
@@ -387,15 +405,16 @@
         });
     }
 
-    function wireRetryBtn(btn) {
-        btn.addEventListener('click', function () {
-            var runId   = btn.getAttribute('data-run-id');
-            var rName   = btn.getAttribute('data-run-name');
-            pendingRetryUrl = btn.getAttribute('data-retry-url');
+    function wireRetryButton(button) {
+        button.addEventListener('click', function () {
+            var runId   = button.getAttribute('data-run-id');
+            var runName = button.getAttribute('data-run-name');
+            pendingRetryUrl = button.getAttribute('data-retry-url');
+            pendingRetryRunId = runId;
             document.getElementById('retry-modal-run-id').textContent = runId;
             var nameWrap = document.getElementById('retry-modal-run-name-wrap');
-            if (rName) {
-                document.getElementById('retry-modal-run-name').textContent = rName;
+            if (runName) {
+                document.getElementById('retry-modal-run-name').textContent = runName;
                 nameWrap.style.display = '';
             } else {
                 nameWrap.style.display = 'none';
@@ -404,15 +423,16 @@
         });
     }
 
-    function wireRerunBtn(btn) {
-        btn.addEventListener('click', function () {
-            var runId   = btn.getAttribute('data-run-id');
-            var rName   = btn.getAttribute('data-run-name');
-            pendingRerunUrl = btn.getAttribute('data-rerun-url');
+    function wireRerunButton(button) {
+        button.addEventListener('click', function () {
+            var runId   = button.getAttribute('data-run-id');
+            var runName = button.getAttribute('data-run-name');
+            pendingRerunUrl = button.getAttribute('data-rerun-url');
+            pendingRerunRunId = runId;
             document.getElementById('rerun-modal-run-id').textContent = runId;
             var nameWrap = document.getElementById('rerun-modal-run-name-wrap');
-            if (rName) {
-                document.getElementById('rerun-modal-run-name').textContent = rName;
+            if (runName) {
+                document.getElementById('rerun-modal-run-name').textContent = runName;
                 nameWrap.style.display = '';
             } else {
                 nameWrap.style.display = 'none';
@@ -428,7 +448,7 @@
 
     function poll() {
         fetch(root._jlineup.runsUrl)
-            .then(function(resp) { return resp.json(); })
+            .then(function(response) { return response.json(); })
             .then(function(runs) {
                 var tbody      = document.getElementById('runs-tbody');
                 var noRunsRow  = tbody && tbody.querySelector('.no-runs-row');
@@ -437,17 +457,17 @@
                 runs.forEach(function(run) {
                     if (ACTIVE_STATES.has(run.state)) anyActive = true;
 
-                    var tr = document.getElementById('run-row-' + run.id);
-                    if (tr) {
-                        patchRow(tr, run);
+                    var existingRow = document.getElementById('run-row-' + run.id);
+                    if (existingRow) {
+                        patchRow(existingRow, run);
                     } else {
                         // Brand-new run — insert in startTime-descending order
                         var newRow = buildRow(run);
-                        newRow.querySelectorAll('.start-after-btn').forEach(wireAfterBtn);
-                        newRow.querySelectorAll('.retry-after-btn').forEach(wireRetryBtn);
-                        newRow.querySelectorAll('.rerun-after-btn').forEach(wireRerunBtn);
-                        var newTs = parseInt(newRow.getAttribute('data-sort-time'), 10) || 0;
-                        tbody.insertBefore(newRow, findInsertionPoint(tbody, newTs));
+                        newRow.querySelectorAll('.start-after-btn').forEach(wireAfterButton);
+                        newRow.querySelectorAll('.retry-after-btn').forEach(wireRetryButton);
+                        newRow.querySelectorAll('.rerun-after-btn').forEach(wireRerunButton);
+                        var newTimestamp = parseInt(newRow.getAttribute('data-sort-time'), 10) || 0;
+                        tbody.insertBefore(newRow, findInsertionPoint(tbody, newTimestamp));
                         if (noRunsRow) noRunsRow.style.display = 'none';
                     }
                 });
@@ -464,43 +484,43 @@
 
     function init() {
         // Convert server-rendered start times to browser local time
-        document.querySelectorAll('.run-start[data-epoch]').forEach(function (td) {
-            var epoch = parseInt(td.getAttribute('data-epoch'), 10);
-            if (!isNaN(epoch)) td.textContent = formatStartTime(new Date(epoch).toISOString());
+        document.querySelectorAll('.run-start[data-epoch]').forEach(function (cell) {
+            var epoch = parseInt(cell.getAttribute('data-epoch'), 10);
+            if (!isNaN(epoch)) cell.textContent = formatStartTime(new Date(epoch).toISOString());
         });
 
-        document.querySelectorAll('.start-after-btn').forEach(wireAfterBtn);
-        document.querySelectorAll('.retry-after-btn').forEach(wireRetryBtn);
-        document.querySelectorAll('.rerun-after-btn').forEach(wireRerunBtn);
+        document.querySelectorAll('.start-after-btn').forEach(wireAfterButton);
+        document.querySelectorAll('.retry-after-btn').forEach(wireRetryButton);
+        document.querySelectorAll('.rerun-after-btn').forEach(wireRerunButton);
 
         document.getElementById('modal-confirm-btn').addEventListener('click', function () {
             if (!pendingAfterUrl) return;
 
-            var modalEl = document.getElementById('afterRunModal');
+            var modalElement = document.getElementById('afterRunModal');
             document.activeElement && document.activeElement.blur();
-            bootstrap.Modal.getInstance(modalEl).hide();
+            bootstrap.Modal.getInstance(modalElement).hide();
 
             fetch(pendingAfterUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
-                .then(function (resp) {
-                    var alertEl = document.getElementById('after-run-alert');
-                    if (resp.status === 202) {
-                        alertEl.className = 'alert alert-success mt-2';
-                        alertEl.textContent = 'After run started successfully.';
-                        alertEl.classList.remove('d-none');
-                        setTimeout(function () { alertEl.classList.add('d-none'); }, 3000);
+                .then(function (response) {
+                    var alertElement = document.getElementById('after-run-alert');
+                    if (response.status === 202) {
+                        alertElement.className = 'alert alert-success mt-2';
+                        alertElement.textContent = 'After run started successfully.';
+                        alertElement.classList.remove('d-none');
+                        setTimeout(function () { alertElement.classList.add('d-none'); }, 3000);
                     } else {
-                        resp.text().then(function (body) {
-                            alertEl.className = 'alert alert-danger mt-2';
-                            alertEl.textContent = 'Failed to start after run: ' + body;
-                            alertEl.classList.remove('d-none');
+                        response.text().then(function (body) {
+                            alertElement.className = 'alert alert-danger mt-2';
+                            alertElement.textContent = 'Failed to start after run: ' + body;
+                            alertElement.classList.remove('d-none');
                         });
                     }
                 })
-                .catch(function (err) {
-                    var alertEl = document.getElementById('after-run-alert');
-                    alertEl.className = 'alert alert-danger mt-2';
-                    alertEl.textContent = 'Network error: ' + err.message;
-                    alertEl.classList.remove('d-none');
+                .catch(function (error) {
+                    var alertElement = document.getElementById('after-run-alert');
+                    alertElement.className = 'alert alert-danger mt-2';
+                    alertElement.textContent = 'Network error: ' + error.message;
+                    alertElement.classList.remove('d-none');
                 });
 
             pendingAfterUrl = null;
@@ -509,73 +529,81 @@
         document.getElementById('retry-modal-confirm-btn').addEventListener('click', function () {
             if (!pendingRetryUrl) return;
 
-            var modalEl = document.getElementById('retryAfterModal');
+            var modalElement = document.getElementById('retryAfterModal');
             document.activeElement && document.activeElement.blur();
-            bootstrap.Modal.getInstance(modalEl).hide();
+            bootstrap.Modal.getInstance(modalElement).hide();
+
+            var retryRunId = pendingRetryRunId;
+            disableActionButtons(retryRunId);
 
             fetch(pendingRetryUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
-                .then(function (resp) {
-                    var alertEl = document.getElementById('after-run-alert');
-                    if (resp.status === 202) {
-                        alertEl.className = 'alert alert-success mt-2';
-                        alertEl.textContent = 'Retry of after run started successfully.';
-                        alertEl.classList.remove('d-none');
-                        setTimeout(function () { alertEl.classList.add('d-none'); }, 3000);
+                .then(function (response) {
+                    var alertElement = document.getElementById('after-run-alert');
+                    if (response.status === 202) {
+                        alertElement.className = 'alert alert-success mt-2';
+                        alertElement.textContent = 'Retry of after run started successfully.';
+                        alertElement.classList.remove('d-none');
+                        setTimeout(function () { alertElement.classList.add('d-none'); }, 3000);
                         // Restart polling since we now have an active run
                         if (!pollTimer) pollTimer = setInterval(poll, POLL_INTERVAL_MS);
                     } else {
-                        resp.text().then(function (body) {
-                            alertEl.className = 'alert alert-danger mt-2';
-                            alertEl.textContent = 'Failed to retry after run: ' + body;
-                            alertEl.classList.remove('d-none');
+                        response.text().then(function (body) {
+                            alertElement.className = 'alert alert-danger mt-2';
+                            alertElement.textContent = 'Failed to retry after run: ' + body;
+                            alertElement.classList.remove('d-none');
                         });
                     }
                 })
-                .catch(function (err) {
-                    var alertEl = document.getElementById('after-run-alert');
-                    alertEl.className = 'alert alert-danger mt-2';
-                    alertEl.textContent = 'Network error: ' + err.message;
-                    alertEl.classList.remove('d-none');
+                .catch(function (error) {
+                    var alertElement = document.getElementById('after-run-alert');
+                    alertElement.className = 'alert alert-danger mt-2';
+                    alertElement.textContent = 'Network error: ' + error.message;
+                    alertElement.classList.remove('d-none');
                 });
 
             pendingRetryUrl = null;
+            pendingRetryRunId = null;
         });
 
         document.getElementById('rerun-modal-confirm-btn').addEventListener('click', function () {
             if (!pendingRerunUrl) return;
 
-            var modalEl = document.getElementById('rerunAfterModal');
+            var modalElement = document.getElementById('rerunAfterModal');
             document.activeElement && document.activeElement.blur();
-            bootstrap.Modal.getInstance(modalEl).hide();
+            bootstrap.Modal.getInstance(modalElement).hide();
+
+            var rerunRunId = pendingRerunRunId;
+            disableActionButtons(rerunRunId);
 
             fetch(pendingRerunUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
-                .then(function (resp) {
-                    var alertEl = document.getElementById('after-run-alert');
-                    if (resp.status === 202) {
-                        resp.json().then(function (body) {
-                            alertEl.className = 'alert alert-success mt-2';
-                            alertEl.textContent = 'Rerun started as new run ' + body.id + '.';
-                            alertEl.classList.remove('d-none');
-                            setTimeout(function () { alertEl.classList.add('d-none'); }, 5000);
+                .then(function (response) {
+                    var alertElement = document.getElementById('after-run-alert');
+                    if (response.status === 202) {
+                        response.json().then(function (body) {
+                            alertElement.className = 'alert alert-success mt-2';
+                            alertElement.textContent = 'Rerun started as new run ' + body.id + '.';
+                            alertElement.classList.remove('d-none');
+                            setTimeout(function () { alertElement.classList.add('d-none'); }, 5000);
                         });
                         // Restart polling since we now have an active run
                         if (!pollTimer) pollTimer = setInterval(poll, POLL_INTERVAL_MS);
                     } else {
-                        resp.text().then(function (body) {
-                            alertEl.className = 'alert alert-danger mt-2';
-                            alertEl.textContent = 'Failed to start rerun: ' + body;
-                            alertEl.classList.remove('d-none');
+                        response.text().then(function (body) {
+                            alertElement.className = 'alert alert-danger mt-2';
+                            alertElement.textContent = 'Failed to start rerun: ' + body;
+                            alertElement.classList.remove('d-none');
                         });
                     }
                 })
-                .catch(function (err) {
-                    var alertEl = document.getElementById('after-run-alert');
-                    alertEl.className = 'alert alert-danger mt-2';
-                    alertEl.textContent = 'Network error: ' + err.message;
-                    alertEl.classList.remove('d-none');
+                .catch(function (error) {
+                    var alertElement = document.getElementById('after-run-alert');
+                    alertElement.className = 'alert alert-danger mt-2';
+                    alertElement.textContent = 'Network error: ' + error.message;
+                    alertElement.classList.remove('d-none');
                 });
 
             pendingRerunUrl = null;
+            pendingRerunRunId = null;
         });
 
         // Always start polling; it will stop itself once no active runs remain.
@@ -589,7 +617,7 @@
             ACTIVE_STATES,
             STATE_LABELS,
             rowClass,
-            logBtnClass,
+            logButtonClass,
             parseMsOrNull,
             durationMs,
             formatDuration,

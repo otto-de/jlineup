@@ -7,7 +7,7 @@ const {
     ACTIVE_STATES,
     STATE_LABELS,
     rowClass,
-    logBtnClass,
+    logButtonClass,
     parseMsOrNull,
     durationMs,
     formatDuration,
@@ -75,12 +75,12 @@ describe('rowClass', () => {
     });
 });
 
-// ── logBtnClass ───────────────────────────────────────────────────────────────
+// ── logButtonClass ───────────────────────────────────────────────────────────────
 
-describe('logBtnClass', () => {
-    test('ERROR → btn-danger', () => expect(logBtnClass('ERROR')).toBe('btn-danger'));
-    test('DEAD  → btn-danger', () => expect(logBtnClass('DEAD')).toBe('btn-danger'));
-    test('other → btn-light',  () => expect(logBtnClass('FINISHED_WITHOUT_DIFFERENCES')).toBe('btn-light'));
+describe('logButtonClass', () => {
+    test('ERROR → btn-danger', () => expect(logButtonClass('ERROR')).toBe('btn-danger'));
+    test('DEAD  → btn-danger', () => expect(logButtonClass('DEAD')).toBe('btn-danger'));
+    test('other → btn-light',  () => expect(logButtonClass('FINISHED_WITHOUT_DIFFERENCES')).toBe('btn-light'));
 });
 
 // ── parseMsOrNull ─────────────────────────────────────────────────────────────
