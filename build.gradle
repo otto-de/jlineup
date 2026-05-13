@@ -1,7 +1,7 @@
 buildscript {
     ext {
         springBootVersion = '4.0.6'
-        seleniumVersion = '4.43.0'
+        seleniumVersion = '4.44.0'
         graalvmVersion = '25.0.3'
         picoCliVersion = '4.7.7'
         awsSdkVersion = '2.43.0'
