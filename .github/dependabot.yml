@@ -51,3 +51,13 @@ updates:
           - "jest"
           - "jest-*"
           - "@jest/*"
+
+  - package-ecosystem: "docker"
+    directory: "/web"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "docker"
+    directory: "/lambda"
+    schedule:
+      interval: "weekly"
