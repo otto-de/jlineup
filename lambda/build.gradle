@@ -15,10 +15,10 @@ dependencies {
     implementation("software.amazon.awssdk:ssooidc:${awsSdkVersion}")
     implementation("software.amazon.awssdk:sts:${awsSdkVersion}")
     implementation("software.amazon.awssdk:signin:${awsSdkVersion}")
-    implementation("software.amazon.awssdk.crt:aws-crt:0.45.3")
+    implementation("software.amazon.awssdk.crt:aws-crt:0.45.4")
     implementation("com.amazonaws:aws-lambda-java-core:1.4.0")
     implementation("com.amazonaws:aws-lambda-java-events:3.16.1")
-    runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.2"
+    runtimeOnly "com.amazonaws:aws-lambda-java-log4j2:1.6.3"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api"
     testImplementation "org.junit.jupiter:junit-jupiter-params"
