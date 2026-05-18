@@ -231,37 +231,31 @@ public class JLineupRunStatus {
 
         @JsonProperty("htmlUrl")
         public String getHtmlUrlFromCurrentContext() {
-            if (htmlUrl == null) {
-                return null;
-            }
-            try {
-                return fromCurrentContextPath().path(htmlUrl).build().toString();
-            } catch (IllegalStateException e) {
-                return htmlUrl;
-            }
+            return resolveUrl(htmlUrl);
         }
 
         @JsonProperty("jsonUrl")
         public String getJsonUrlFromCurrentContext() {
-            if (jsonUrl == null) {
-                return null;
-            }
-            try {
-                return fromCurrentContextPath().path(jsonUrl).build().toString();
-            } catch (IllegalStateException e) {
-                return jsonUrl;
-            }
+            return resolveUrl(jsonUrl);
         }
 
         @JsonProperty("logUrl")
         public String getLogUrlFromCurrentContext() {
-            if (logUrl == null) {
+            return resolveUrl(logUrl);
+        }
+
+        private String resolveUrl(String url) {
+            if (url == null) {
                 return null;
             }
+            // Already an absolute URL (e.g. loaded from persisted runs.json) — return as-is
+            if (url.startsWith("http://") || url.startsWith("https://")) {
+                return url;
+            }
             try {
-                return fromCurrentContextPath().path(logUrl).build().toString();
+                return fromCurrentContextPath().path(url).build().toString();
             } catch (IllegalStateException e) {
-                return logUrl;
+                return url;
             }
         }
 
@@ -317,22 +311,46 @@ public class JLineupRunStatus {
             private String logUrl;
 
             public JLineupRunStatus.Reports.Builder withHtmlUrl(String htmlUrl) {
-                this.htmlUrl = htmlUrl;
+                this.htmlUrl = stripToRelative(htmlUrl);
                 return this;
             }
 
             public JLineupRunStatus.Reports.Builder withJsonUrl(String jsonUrl) {
-                this.jsonUrl = jsonUrl;
+                this.jsonUrl = stripToRelative(jsonUrl);
                 return this;
             }
 
             public JLineupRunStatus.Reports.Builder withLogUrl(String logUrl) {
-                this.logUrl = logUrl;
+                this.logUrl = stripToRelative(logUrl);
                 return this;
             }
 
             public Reports build() {
                 return new Reports(this);
+            }
+
+            /**
+             * Strips absolute URL prefixes back to relative paths.
+             * This handles the case where a previously-persisted runs.json contains
+             * fully-resolved URLs (from the @JsonProperty getter that prepends the context path).
+             */
+            private static String stripToRelative(String url) {
+                if (url == null) {
+                    return null;
+                }
+                // Already relative — nothing to do
+                if (url.startsWith("/")) {
+                    return url;
+                }
+                // Absolute URL — extract the path starting from /reports/ or /report/
+                int idx = url.indexOf("/reports/");
+                if (idx == -1) {
+                    idx = url.indexOf("/report/");
+                }
+                if (idx != -1) {
+                    return url.substring(idx);
+                }
+                return url;
             }
 
         }
