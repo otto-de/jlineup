@@ -8,17 +8,17 @@
 # are copied from the official Lambda base image via multi-stage build.
 
 # --- Stage 1: Grab Lambda runtime from official base image ---
-FROM public.ecr.aws/lambda/java:21-x86_64 AS lambda-runtime
+FROM --platform=linux/x86_64 public.ecr.aws/lambda/java:25-x86_64 AS lambda-runtime
 
 # --- Stage 2: Fedora with WebKitGTK + Lambda runtime ---
-FROM fedora:41
+FROM --platform=linux/x86_64 fedora:44
 
-# Install JDK 21, WebKitGTK + WebKitWebDriver, and MiniBrowser (in -devel package).
+# Install JDK 25, WebKitGTK + WebKitWebDriver, and MiniBrowser (in -devel package).
 # webkitgtk6.0       — WebKit engine and WebKitWebDriver binary
 # webkitgtk6.0-devel — MiniBrowser (required by WebKitWebDriver as the automation target)
 # Xvfb               — WebKit has no native headless mode; needs a virtual X display
 RUN dnf install -y \
-    java-21-openjdk-headless \
+    java-25-openjdk-headless \
     webkitgtk6.0 \
     webkitgtk6.0-devel \
     xorg-x11-server-Xvfb \
@@ -56,9 +56,9 @@ WORKDIR ${LAMBDA_TASK_ROOT}
 # The bootstrap binary hardcodes /var/lang/bin/java, so symlink it.
 # Also remove the CDS shared archive since it was built for AL2023's JDK and
 # causes a fatal "invalid archive" error with Fedora's JDK.
-RUN ln -sf /usr/lib/jvm/jre-21-openjdk/bin/java /var/lang/bin/java && \
+RUN ln -sf /usr/lib/jvm/jre-25-openjdk/bin/java /var/lang/bin/java && \
     rm -f /var/lang/lib/server/classes.jsa /var/lang/lib/server/runtime.jsa && \
-    /usr/lib/jvm/jre-21-openjdk/bin/java -Xshare:dump -XX:SharedArchiveFile=/var/lang/lib/server/runtime.jsa
+    /usr/lib/jvm/jre-25-openjdk/bin/java -Xshare:dump -XX:SharedArchiveFile=/var/lang/lib/server/runtime.jsa
 
 ENV HOME=/tmp/uusseerr
 
