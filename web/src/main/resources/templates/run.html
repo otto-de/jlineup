@@ -42,6 +42,7 @@
                     <button id="fmt-yaml-btn" class="btn btn-outline-primary active" type="button">YAML</button>
                     <button id="fmt-json-btn" class="btn btn-outline-primary" type="button">JSON</button>
                 </div>
+                <button id="clear-top-btn" class="btn btn-outline-danger btn-sm ms-auto" type="button">Clear</button>
             </div>
             <div id="codemirror-host"></div>
 
@@ -53,6 +54,7 @@
                 <button id="format-btn" class="btn btn-outline-secondary" type="button">Format</button>
                 <button id="copy-btn" class="btn btn-outline-secondary" type="button">Copy</button>
                 <button id="reset-btn" class="btn btn-outline-secondary" type="button">Reset to Example</button>
+                <button id="clear-bottom-btn" class="btn btn-outline-danger" type="button">Clear</button>
             </div>
         </div>
     </div>
@@ -401,6 +403,15 @@
         view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: exampleFor(activeFormat) } });
         hideAlerts();
     });
+
+    // Clear editor content
+    function clearEditor() {
+        view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: '' } });
+        clearSaved();
+        hideAlerts();
+    }
+    document.getElementById('clear-top-btn').addEventListener('click', clearEditor);
+    document.getElementById('clear-bottom-btn').addEventListener('click', clearEditor);
 
     // Start run
     document.getElementById('start-btn').addEventListener('click', async () => {
