@@ -1,7 +1,7 @@
 FROM public.ecr.aws/lambda/java:21-x86_64
 
 # This is used to grep the latest full release URL of Chrome with this Major version from the Chrome for Testing website
-ARG CHROME_MAJOR_VERSION="147"
+ARG CHROME_MAJOR_VERSION="148"
 
 # This sets the specific version of the AMI Linux 2023 release
 ARG AMI_LINUX_2023_VERSION="2023.11.20260514"
