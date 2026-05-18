@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17
+FROM eclipse-temurin:25
 
 USER root
 RUN mkdir -p /usr/share/man/man1
