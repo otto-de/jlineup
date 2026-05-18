@@ -7,7 +7,7 @@ ARG CHROME_MAJOR_VERSION="147"
 # This sets the specific version of the AMI Linux 2023 release
 # This is to ensure that the latest version of the AMI Linux 2023 release is used for the dnf upgrade,
 # as the java:21 lambda image is not always based on the latest AMI Linux 2023 release
-ARG AMI_LINUX_2023_VERSION="2023.11.20260406"
+ARG AMI_LINUX_2023_VERSION="2023.11.20260514"
 
 USER root
 

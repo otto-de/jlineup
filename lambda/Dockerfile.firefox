@@ -1,7 +1,7 @@
 FROM public.ecr.aws/lambda/java:21-x86_64
 
 # This sets the specific version of the AMI Linux 2023 release
-ARG AMI_LINUX_2023_VERSION="2023.11.20260406"
+ARG AMI_LINUX_2023_VERSION="2023.11.20260514"
 
 USER root
 
