@@ -1,5 +1,13 @@
 apply plugin: 'org.springframework.boot'
 
+// jlineup-web uses Jetty (spring-boot-starter-jetty) as its embedded server.
+// spring-boot-starter-webmvc and de.otto.edison:edison-core both transitively pull in
+// spring-boot-starter-tomcat, but Tomcat is never used. Exclude it globally so it does
+// not appear on the classpath at all.
+configurations.all {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+}
+
 dependencies {
     implementation project(":jlineup-core")
     implementation("org.springframework.boot:spring-boot-starter-jetty")

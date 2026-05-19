@@ -44,7 +44,10 @@ dependencies {
     testImplementation "org.hamcrest:hamcrest"
     testImplementation "org.mockito:mockito-core"
 
-    testImplementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.springframework.boot:spring-boot-starter-web") {
+        // Tests use Jetty (spring-boot-starter-jetty below); exclude the default Tomcat.
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
     testImplementation("org.springframework.boot:spring-boot-starter-jetty")
     testImplementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
