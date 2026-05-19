@@ -44,6 +44,7 @@ apply plugin: 'org.owasp.dependencycheck'
 apply plugin: 'io.spring.dependency-management'
 
 ext['selenium.version'] = "${seleniumVersion}"
+ext['tomcat.version'] = "11.0.22"
 
 group = 'de.otto'
 version = jlineup_version
