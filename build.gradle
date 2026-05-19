@@ -2,6 +2,7 @@ buildscript {
     ext {
         springBootVersion = '4.0.6'
         seleniumVersion = '4.44.0'
+        nettyVersion = '4.2.13.Final'
         graalvmVersion = '25.0.3'
         picoCliVersion = '4.7.7'
         awsSdkVersion = '2.44.7'
@@ -44,6 +45,7 @@ apply plugin: 'org.owasp.dependencycheck'
 apply plugin: 'io.spring.dependency-management'
 
 ext['selenium.version'] = "${seleniumVersion}"
+ext['netty.version'] = "${nettyVersion}"
 
 group = 'de.otto'
 version = jlineup_version
