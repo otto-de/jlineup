@@ -13,7 +13,7 @@ USER root
 
 RUN echo "$AMI_LINUX_2023_VERSION" > /etc/dnf/vars/releasever
 
-RUN dnf clean all; dnf upgrade -y
+RUN dnf clean all; dnf update -y; dnf upgrade -y
 RUN dnf install -y \
     alsa-lib \
     at-spi2-atk \

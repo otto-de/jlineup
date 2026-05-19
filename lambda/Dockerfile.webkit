@@ -31,6 +31,15 @@ RUN dnf install -y \
     && dnf clean all \
     && mkdir -p /run/dbus
 
+# Update rpm-sequoia because of CVE-2026-42783 (https://bodhi.fedoraproject.org/updates/FEDORA-2026-5619c60e85)
+RUN yum update rpm-sequoia -y
+# Update ngtcp2-crypto-ossl because of CVE-2026-40170 (https://bodhi.fedoraproject.org/updates/FEDORA-2026-705eb9cf95)
+RUN yum update ngtcp2-crypto-ossl -y
+# Update curl because of CVE-2026-3784 (https://bodhi.fedoraproject.org/updates/FEDORA-2026-f13d888b0f)
+RUN yum update curl -y
+
+
+
 # Verify WebKitWebDriver and MiniBrowser are available
 RUN ls /usr/bin/WebKitWebDriver /usr/libexec/webkitgtk-6.0/MiniBrowser
 
