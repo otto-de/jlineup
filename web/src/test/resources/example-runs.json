@@ -1,0 +1,196 @@
+{
+  "run-before-pending": {
+    "id": "run-before-pending",
+    "state": "BEFORE_PENDING",
+    "startTime": "2026-05-19T08:00:00.000Z",
+    "endTime": null,
+    "pauseTime": null,
+    "resumeTime": null,
+    "jobConfig": {
+      "name": "Before Pending Job",
+      "urls": {
+        "https://example.com": {
+          "url": "https://example.com",
+          "paths": ["/"]
+        }
+      }
+    },
+    "reports": null
+  },
+  "run-before-running": {
+    "id": "run-before-running",
+    "state": "BEFORE_RUNNING",
+    "startTime": "2026-05-19T08:01:00.000Z",
+    "endTime": null,
+    "pauseTime": null,
+    "resumeTime": null,
+    "jobConfig": {
+      "name": "Before Running Job",
+      "urls": {
+        "https://example.com": {
+          "url": "https://example.com",
+          "paths": ["/", "/about"]
+        }
+      }
+    },
+    "reports": {
+      "htmlUrl": null,
+      "jsonUrl": null,
+      "logUrl": "/reports/report-run-before-running/jlineup.log"
+    }
+  },
+  "run-before-done": {
+    "id": "run-before-done",
+    "state": "BEFORE_DONE",
+    "startTime": "2026-05-19T08:02:00.000Z",
+    "endTime": null,
+    "pauseTime": "2026-05-19T08:04:00.000Z",
+    "resumeTime": null,
+    "jobConfig": {
+      "name": "Before Done Job",
+      "urls": {
+        "https://example.com": {
+          "url": "https://example.com",
+          "paths": ["/"]
+        }
+      }
+    },
+    "reports": {
+      "htmlUrl": "/reports/report-run-before-done/report_before.html",
+      "jsonUrl": null,
+      "logUrl": "/reports/report-run-before-done/jlineup.log"
+    }
+  },
+  "run-after-pending": {
+    "id": "run-after-pending",
+    "state": "AFTER_PENDING",
+    "startTime": "2026-05-19T08:05:00.000Z",
+    "endTime": null,
+    "pauseTime": "2026-05-19T08:06:00.000Z",
+    "resumeTime": null,
+    "jobConfig": {
+      "name": "After Pending Job",
+      "urls": {
+        "https://example.com": {
+          "url": "https://example.com",
+          "paths": ["/contact"]
+        }
+      }
+    },
+    "reports": {
+      "htmlUrl": "/reports/report-run-after-pending/report_before.html",
+      "jsonUrl": null,
+      "logUrl": "/reports/report-run-after-pending/jlineup.log"
+    }
+  },
+  "run-after-running": {
+    "id": "run-after-running",
+    "state": "AFTER_RUNNING",
+    "startTime": "2026-05-19T08:07:00.000Z",
+    "endTime": null,
+    "pauseTime": "2026-05-19T08:08:00.000Z",
+    "resumeTime": "2026-05-19T08:09:00.000Z",
+    "jobConfig": {
+      "name": "After Running Job",
+      "urls": {
+        "https://example.com": {
+          "url": "https://example.com",
+          "paths": ["/"]
+        }
+      }
+    },
+    "reports": {
+      "htmlUrl": "/reports/report-run-after-running/report_before.html",
+      "jsonUrl": null,
+      "logUrl": "/reports/report-run-after-running/jlineup.log"
+    }
+  },
+  "run-finished-no-diff": {
+    "id": "run-finished-no-diff",
+    "state": "FINISHED_WITHOUT_DIFFERENCES",
+    "startTime": "2026-05-19T08:10:00.000Z",
+    "endTime": "2026-05-19T08:15:00.000Z",
+    "pauseTime": "2026-05-19T08:11:00.000Z",
+    "resumeTime": "2026-05-19T08:13:00.000Z",
+    "jobConfig": {
+      "name": "Success Job",
+      "urls": {
+        "https://example.com": {
+          "url": "https://example.com",
+          "paths": ["/", "/pricing"]
+        }
+      }
+    },
+    "reports": {
+      "htmlUrl": "/reports/report-run-finished-no-diff/report.html",
+      "jsonUrl": "/reports/report-run-finished-no-diff/report.json",
+      "logUrl": "/reports/report-run-finished-no-diff/jlineup.log"
+    }
+  },
+  "run-finished-with-diff": {
+    "id": "run-finished-with-diff",
+    "state": "FINISHED_WITH_DIFFERENCES",
+    "startTime": "2026-05-19T08:16:00.000Z",
+    "endTime": "2026-05-19T08:20:00.000Z",
+    "pauseTime": "2026-05-19T08:17:00.000Z",
+    "resumeTime": "2026-05-19T08:18:00.000Z",
+    "jobConfig": {
+      "name": "Diff Job",
+      "urls": {
+        "https://example.com": {
+          "url": "https://example.com",
+          "paths": ["/", "/dashboard"]
+        }
+      }
+    },
+    "reports": {
+      "htmlUrl": "/reports/report-run-finished-with-diff/report.html",
+      "jsonUrl": "/reports/report-run-finished-with-diff/report.json",
+      "logUrl": "/reports/report-run-finished-with-diff/jlineup.log"
+    }
+  },
+  "run-error": {
+    "id": "run-error",
+    "state": "ERROR",
+    "startTime": "2026-05-19T08:21:00.000Z",
+    "endTime": "2026-05-19T08:22:00.000Z",
+    "pauseTime": null,
+    "resumeTime": null,
+    "jobConfig": {
+      "name": "Error Job",
+      "urls": {
+        "https://broken.example.com": {
+          "url": "https://broken.example.com",
+          "paths": ["/"]
+        }
+      }
+    },
+    "reports": {
+      "htmlUrl": null,
+      "jsonUrl": null,
+      "logUrl": "/reports/report-run-error/jlineup.log"
+    }
+  },
+  "run-dead": {
+    "id": "run-dead",
+    "state": "DEAD",
+    "startTime": "2026-05-19T08:23:00.000Z",
+    "endTime": "2026-05-19T08:24:00.000Z",
+    "pauseTime": null,
+    "resumeTime": null,
+    "jobConfig": {
+      "name": "Dead Job",
+      "urls": {
+        "https://example.com": {
+          "url": "https://example.com",
+          "paths": ["/"]
+        }
+      }
+    },
+    "reports": {
+      "htmlUrl": null,
+      "jsonUrl": null,
+      "logUrl": "/reports/report-run-dead/jlineup.log"
+    }
+  }
+}
