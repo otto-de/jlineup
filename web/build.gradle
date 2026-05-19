@@ -1,5 +1,11 @@
 apply plugin: 'org.springframework.boot'
 
+// Dependabot alerts about tomcat, although its not used at all in jlineup-web, so we exclude it from all configurations to avoid the alert.
+// If we would use the spring-boot-starter-web instead of webmvc, tomcat would be included and the alert would be valid.
+configurations.all {
+    exclude group: 'org.apache.tomcat.embed'
+}
+
 dependencies {
     implementation project(":jlineup-core")
     implementation("org.springframework.boot:spring-boot-starter-jetty")
