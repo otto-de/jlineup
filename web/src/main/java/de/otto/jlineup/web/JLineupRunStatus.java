@@ -7,6 +7,7 @@ import tools.jackson.databind.annotation.JsonDeserialize;
 import tools.jackson.databind.annotation.JsonNaming;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
+import de.otto.jlineup.config.PathConfig;
 import de.otto.jlineup.config.UrlConfig;
 
 import java.time.Instant;
@@ -83,7 +84,11 @@ public class JLineupRunStatus {
     public List<String> getUrls() {
         List<String> urls = new ArrayList<>();
         Set<Map.Entry<String, UrlConfig>> urlMap = this.jobConfig.urls.entrySet();
-        urlMap.forEach(urlMapEntry -> (urlMapEntry.getValue().paths != null ? urlMapEntry.getValue().paths : DEFAULT_PATH_CONFIGS).forEach(pathConfig -> urls.add(BrowserUtils.buildUrl(urlMapEntry.getValue().url, pathConfig.path, urlMapEntry.getValue().envMapping))));
+        urlMap.forEach(urlMapEntry -> {
+            String baseUrl = urlMapEntry.getValue().url != null ? urlMapEntry.getValue().url : urlMapEntry.getKey();
+            List<PathConfig> paths = urlMapEntry.getValue().paths != null ? urlMapEntry.getValue().paths : DEFAULT_PATH_CONFIGS;
+            paths.forEach(pathConfig -> urls.add(BrowserUtils.buildUrl(baseUrl, pathConfig.path, urlMapEntry.getValue().envMapping)));
+        });
         return urls;
     }
 
