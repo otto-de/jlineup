@@ -5,8 +5,8 @@ buildscript {
         nettyVersion = '4.2.13.Final'
         graalvmVersion = '25.0.3'
         picoCliVersion = '4.7.7'
-        awsSdkVersion = '2.44.7'
-        awsCdkVersion = '2.254.0'
+        awsSdkVersion = '2.44.9'
+        awsCdkVersion = '2.256.0'
     }
 
     repositories {
