@@ -2,8 +2,12 @@ apply plugin: 'org.springframework.boot'
 
 dependencies {
     implementation project(":jlineup-core")
-    implementation("org.springframework.boot:spring-boot-starter-jetty")
-    implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    implementation("org.springframework.boot:spring-boot-starter-jetty") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+    implementation("org.springframework.boot:spring-boot-starter-webmvc") {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
     implementation("org.springframework.boot:spring-boot-starter-json")
     implementation("org.yaml:snakeyaml")
     implementation("de.otto.edison:edison-core:4.0.6.3") {
