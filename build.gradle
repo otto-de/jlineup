@@ -109,6 +109,16 @@ subprojects {
     version = jlineup_version
     group = 'de.otto'
 
+    // Tomcat is not used anywhere – Jetty is the embedded server.
+    // This global exclude removes Tomcat from the dependency graph entirely,
+    // which also suppresses false-positive Dependabot security alerts.
+    configurations.all {
+        exclude group: 'org.apache.tomcat.embed'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat-runtime'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-tomcat'
+    }
+
     repositories {
         mavenLocal()
         mavenCentral()
