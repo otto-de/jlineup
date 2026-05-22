@@ -27,7 +27,7 @@ permissions:  # added using https://github.com/step-security/secure-repo
 jobs:
   build:
     runs-on: ubuntu-24.04
-    if: ${{ !contains(toLower(github.event.head_commit.message), '[skip ci]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     env:
       DISPLAY: :0
       SE_BROWSER_PATH: /usr/bin/google-chrome
