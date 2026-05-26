@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 6.0.1 - 2026-05-26
+* Update: Reduce visibility of "action" buttons (that are rarely used) on web server reports page.
+
 ## Release 6.0.0 - 2026-05-19
 * Feature: New improved and modernized HTML report format. It has a new design and is more interactive.
 * Feature: Support for multiple lambda functions to run one for every browser flavor
