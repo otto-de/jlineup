@@ -152,56 +152,36 @@
     // Build the retry/rerun action buttons for the actions cell.
     // When both retry and rerun are available, renders a Bootstrap split-button dropdown.
     // When only one is available, renders a standalone button.
-    function buildActionButtons(runId, name, retryUrl, rerunUrl, state) {
+    function buildActionButtons(runId, name, afterUrl, retryUrl, rerunUrl, state) {
         var escapedId   = escHtml(runId);
         var escapedName = escHtml(name || '');
+        var items = [];
 
-        if (retryUrl && rerunUrl) {
-            var rerunPrimary = (state === 'FINISHED_WITH_DIFFERENCES');
-            if (rerunPrimary) {
-                // Split-button: primary = rerun, dropdown = retry
-                return '<div class="btn-group action-btn-group">' +
-                    '<button type="button" class="btn btn-info btn-sm rerun-after-btn"' +
-                    ' data-run-id="' + escapedId + '"' +
-                    ' data-run-name="' + escapedName + '"' +
-                    ' data-rerun-url="' + escHtml(rerunUrl) + '">Rerun \'after\' as new</button>' +
-                    '<button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split"' +
-                    ' data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">More</span></button>' +
-                    '<ul class="dropdown-menu">' +
-                    '<li><a class="dropdown-item retry-after-btn" href="#"' +
-                    ' data-run-id="' + escapedId + '"' +
-                    ' data-run-name="' + escapedName + '"' +
-                    ' data-retry-url="' + escHtml(retryUrl) + '">Retry \'after\'</a></li>' +
-                    '</ul></div>';
-            }
-            // Split-button: primary = retry, dropdown = rerun
-            return '<div class="btn-group action-btn-group">' +
-                '<button type="button" class="btn btn-danger btn-sm retry-after-btn"' +
+        if (afterUrl) {
+            items.push('<li><a class="dropdown-item start-after-btn" href="#"' +
                 ' data-run-id="' + escapedId + '"' +
                 ' data-run-name="' + escapedName + '"' +
-                ' data-retry-url="' + escHtml(retryUrl) + '">Retry \'after\'</button>' +
-                '<button type="button" class="btn btn-danger btn-sm dropdown-toggle dropdown-toggle-split"' +
-                ' data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden">More</span></button>' +
-                '<ul class="dropdown-menu">' +
-                '<li><a class="dropdown-item rerun-after-btn" href="#"' +
-                ' data-run-id="' + escapedId + '"' +
-                ' data-run-name="' + escapedName + '"' +
-                ' data-rerun-url="' + escHtml(rerunUrl) + '">Rerun \'after\' as new</a></li>' +
-                '</ul></div>';
+                ' data-after-url="' + escHtml(afterUrl) + '">Start \'after\' run</a></li>');
         }
         if (retryUrl) {
-            return '<button type="button" class="btn btn-danger btn-sm retry-after-btn"' +
+            items.push('<li><a class="dropdown-item retry-after-btn" href="#"' +
                 ' data-run-id="' + escapedId + '"' +
                 ' data-run-name="' + escapedName + '"' +
-                ' data-retry-url="' + escHtml(retryUrl) + '">Retry \'after\'</button>';
+                ' data-retry-url="' + escHtml(retryUrl) + '">Retry \'after\'</a></li>');
         }
         if (rerunUrl) {
-            return '<button type="button" class="btn btn-info btn-sm rerun-after-btn"' +
+            items.push('<li><a class="dropdown-item rerun-after-btn" href="#"' +
                 ' data-run-id="' + escapedId + '"' +
                 ' data-run-name="' + escapedName + '"' +
-                ' data-rerun-url="' + escHtml(rerunUrl) + '">Rerun \'after\' as new</button>';
+                ' data-rerun-url="' + escHtml(rerunUrl) + '">Rerun \'after\' as new</a></li>');
         }
-        return '';
+
+        if (items.length === 0) return '';
+
+        return '<div class="dropdown action-dropdown">' +
+            '<button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">' +
+            '<i class="bi bi-three-dots-vertical"></i></button>' +
+            '<ul class="dropdown-menu">' + items.join('') + '</ul></div>';
     }
 
     // Build a full <tr> for a run (used when inserting newly-seen rows during polling)
@@ -235,13 +215,7 @@
                 ? '<a href="' + escHtml(logUrl) + '" target="_blank" class="btn btn-sm ' +
                   logButtonClass(run.state) + '" role="button">Log</a>'
                 : '') + '</td>' +
-            '<td>' + (afterUrl
-                ? '<button type="button" class="btn btn-warning btn-sm start-after-btn"' +
-                  ' data-run-id="' + escHtml(run.id) + '"' +
-                  ' data-run-name="' + escHtml(name || '') + '"' +
-                  ' data-after-url="' + escHtml(afterUrl) + '">Start \'After\' run</button>'
-                : '') +
-              buildActionButtons(run.id, name, retryUrl, rerunUrl, run.state) + '</td>';
+            '<td>' + buildActionButtons(run.id, name, afterUrl, retryUrl, rerunUrl, run.state) + '</td>';
         return row;
     }
 
@@ -317,49 +291,24 @@
             }
         }
 
-        // After-run / retry / rerun buttons: rebuild as state changes
+        // Action dropdown: rebuild as state changes
         var afterCell = row.querySelector('td:nth-child(9)');
         if (afterCell) {
-            var existingAfterButton = afterCell.querySelector('.start-after-btn');
-            var afterUrl = afterRunUrl(run);
-            if (afterUrl && !existingAfterButton) {
-                var afterButton = document.createElement('button');
-                afterButton.type = 'button';
-                afterButton.className = 'btn btn-warning btn-sm start-after-btn';
-                afterButton.setAttribute('data-run-id',    run.id);
-                afterButton.setAttribute('data-run-name',  runName(run) || '');
-                afterButton.setAttribute('data-after-url', afterUrl);
-                afterButton.textContent = "Start 'after' run";
-                wireAfterButton(afterButton);
-                afterCell.appendChild(afterButton);
-            } else if (!afterUrl && existingAfterButton) {
-                existingAfterButton.remove();
-            }
-
-            // Remove old retry/rerun elements and rebuild
             // Skip if dropdown is currently open to avoid destroying the menu
-            var oldGroup = afterCell.querySelector('.action-btn-group');
-            if (oldGroup && oldGroup.querySelector('.dropdown-menu.show')) return;
+            var oldDropdown = afterCell.querySelector('.action-dropdown');
+            if (oldDropdown && oldDropdown.querySelector('.dropdown-menu.show')) return;
 
-            if (oldGroup) oldGroup.remove();
-            var oldRetryButton = afterCell.querySelector('.retry-after-btn');
-            if (oldRetryButton) oldRetryButton.remove();
-            var oldRerunButton = afterCell.querySelector('.rerun-after-btn');
-            if (oldRerunButton) oldRerunButton.remove();
-
+            // Clear and rebuild
+            afterCell.innerHTML = '';
+            var afterUrl = afterRunUrl(run);
             var retryUrl = retryAfterUrl(run);
             var rerunUrl = rerunAfterUrl(run);
-            var html = buildActionButtons(run.id, runName(run), retryUrl, rerunUrl, run.state);
+            var html = buildActionButtons(run.id, runName(run), afterUrl, retryUrl, rerunUrl, run.state);
             if (html) {
-                var container = document.createElement('div');
-                container.innerHTML = html;
-                var element = container.firstChild;
-                afterCell.appendChild(element);
-                element.querySelectorAll('.retry-after-btn').forEach(wireRetryButton);
-                element.querySelectorAll('.rerun-after-btn').forEach(wireRerunButton);
-                // Also wire directly if it's a standalone button
-                if (element.classList && element.classList.contains('retry-after-btn')) wireRetryButton(element);
-                if (element.classList && element.classList.contains('rerun-after-btn')) wireRerunButton(element);
+                afterCell.innerHTML = html;
+                afterCell.querySelectorAll('.start-after-btn').forEach(wireAfterButton);
+                afterCell.querySelectorAll('.retry-after-btn').forEach(wireRetryButton);
+                afterCell.querySelectorAll('.rerun-after-btn').forEach(wireRerunButton);
             }
         }
     }
@@ -381,15 +330,16 @@
             button.disabled = true;
             button.classList.add('disabled');
         });
-        // Add spinner to the primary action button
-        var primaryButton = lastCell.querySelector('.btn-group > .btn:first-child') || lastCell.querySelector('.rerun-after-btn') || lastCell.querySelector('.retry-after-btn');
-        if (primaryButton) {
-            primaryButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ' + primaryButton.textContent.trim();
+        // Add spinner to the dropdown toggle
+        var toggleBtn = lastCell.querySelector('.dropdown-toggle');
+        if (toggleBtn) {
+            toggleBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
         }
     }
 
     function wireAfterButton(button) {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
             var runId   = button.getAttribute('data-run-id');
             var runName = button.getAttribute('data-run-name');
             pendingAfterUrl = button.getAttribute('data-after-url');
@@ -406,7 +356,8 @@
     }
 
     function wireRetryButton(button) {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
             var runId   = button.getAttribute('data-run-id');
             var runName = button.getAttribute('data-run-name');
             pendingRetryUrl = button.getAttribute('data-retry-url');
@@ -424,7 +375,8 @@
     }
 
     function wireRerunButton(button) {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function (e) {
+            e.preventDefault();
             var runId   = button.getAttribute('data-run-id');
             var runName = button.getAttribute('data-run-name');
             pendingRerunUrl = button.getAttribute('data-rerun-url');

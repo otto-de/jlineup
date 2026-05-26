@@ -553,25 +553,21 @@ describe('buildRow rerun button', () => {
         expect(tr.querySelector('.rerun-after-btn')).toBeNull();
     });
 
-    test('shows combined split button for ERROR (retry + rerun)', () => {
+    test('shows three-dots dropdown for ERROR (retry + rerun)', () => {
         const tr = buildRow(makeRun({ id: 'r1', state: 'ERROR', reports: { logUrl: '/log' } }));
-        const group = tr.querySelector('.action-btn-group');
-        expect(group).not.toBeNull();
-        expect(group.querySelector('.retry-after-btn')).not.toBeNull();
-        expect(group.querySelector('.rerun-after-btn')).not.toBeNull();
-        expect(group.querySelector('.dropdown-toggle')).not.toBeNull();
+        const dropdown = tr.querySelector('.action-dropdown');
+        expect(dropdown).not.toBeNull();
+        expect(dropdown.querySelector('.retry-after-btn')).not.toBeNull();
+        expect(dropdown.querySelector('.rerun-after-btn')).not.toBeNull();
+        expect(dropdown.querySelector('.dropdown-toggle')).not.toBeNull();
     });
 
-    test('shows combined split button for FINISHED_WITH_DIFFERENCES with rerun as primary', () => {
+    test('shows three-dots dropdown for FINISHED_WITH_DIFFERENCES (retry + rerun)', () => {
         const tr = buildRow(makeRun({ id: 'r1', state: 'FINISHED_WITH_DIFFERENCES' }));
-        const group = tr.querySelector('.action-btn-group');
-        expect(group).not.toBeNull();
-        // Rerun is the primary (direct child button), retry is in dropdown
-        const primaryBtn = group.querySelector(':scope > .rerun-after-btn');
-        expect(primaryBtn).not.toBeNull();
-        expect(primaryBtn.classList.contains('btn-info')).toBe(true);
-        const dropdownRetry = group.querySelector('.dropdown-menu .retry-after-btn');
-        expect(dropdownRetry).not.toBeNull();
+        const dropdown = tr.querySelector('.action-dropdown');
+        expect(dropdown).not.toBeNull();
+        expect(dropdown.querySelector('.rerun-after-btn')).not.toBeNull();
+        expect(dropdown.querySelector('.retry-after-btn')).not.toBeNull();
     });
 });
 
@@ -592,20 +588,19 @@ describe('patchRow rerun button', () => {
         expect(tr.querySelector('.rerun-after-btn')).toBeNull();
     });
 
-    test('adds combined split button when state changes to ERROR', () => {
+    test('adds three-dots dropdown when state changes to ERROR', () => {
         const tr = buildRow(makeRun({ id: 'r1', state: 'AFTER_RUNNING', reports: { logUrl: '/log' } }));
-        expect(tr.querySelector('.action-btn-group')).toBeNull();
+        expect(tr.querySelector('.action-dropdown')).toBeNull();
         patchRow(tr, makeRun({ id: 'r1', state: 'ERROR', reports: { logUrl: '/log' } }));
-        const group = tr.querySelector('.action-btn-group');
-        expect(group).not.toBeNull();
-        expect(group.querySelector('.retry-after-btn')).not.toBeNull();
-        expect(group.querySelector('.rerun-after-btn')).not.toBeNull();
+        const dropdown = tr.querySelector('.action-dropdown');
+        expect(dropdown).not.toBeNull();
+        expect(dropdown.querySelector('.retry-after-btn')).not.toBeNull();
+        expect(dropdown.querySelector('.rerun-after-btn')).not.toBeNull();
     });
 
     test('adds standalone rerun when state changes to FINISHED_WITHOUT_DIFFERENCES', () => {
         const tr = buildRow(makeRun({ id: 'r1', state: 'AFTER_RUNNING', reports: { logUrl: '/log' } }));
         patchRow(tr, makeRun({ id: 'r1', state: 'FINISHED_WITHOUT_DIFFERENCES', reports: { htmlUrl: '/report.html', logUrl: '/log' } }));
         expect(tr.querySelector('.rerun-after-btn')).not.toBeNull();
-        expect(tr.querySelector('.action-btn-group')).toBeNull();
     });
 });

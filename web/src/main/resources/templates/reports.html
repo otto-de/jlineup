@@ -3,8 +3,10 @@
 
 <head th:replace="~{fragments/head :: head}" />
 <style>
-    #runs-tbody td:nth-child(9) > .btn,
-    #runs-tbody td:nth-child(9) > .btn-group > .btn:first-child { min-width: 110px; }
+    .action-dropdown .dropdown-toggle::after { display: none; }
+    #runs-tbody td:nth-child(7),
+    #runs-tbody td:nth-child(8),
+    #runs-tbody td:nth-child(9) { width: 1%; white-space: nowrap; }
 </style>
 
 <body>
@@ -124,63 +126,31 @@
                     <td style="white-space:nowrap"><a th:if="${report.reportUrl != null}" th:href="${report.reportUrl}" target="_blank" class="btn btn-sm" th:classappend="${report.reportUrl.contains('before') ? 'btn-secondary' : 'btn-primary'}" role="button">Report</a></td>
                     <td style="white-space:nowrap"><a th:if="${report.logUrl != null}" th:href="${report.logUrl}" target="_blank" class="btn btn-sm" th:classappend="${report.logButtonCssClass}" role="button">Log</a></td>
                     <td style="white-space:nowrap">
-                        <button th:if="${report.afterRunUrl != null}"
-                                type="button"
-                                class="btn btn-warning btn-sm start-after-btn"
-                                th:data-run-id="${report.id}"
-                                th:data-run-name="${report.name}"
-                                th:data-after-url="${report.afterRunUrl}">
-                            Start 'after' run
-                        </button>
-                        <!-- Combined split button: rerun primary for FINISHED_WITH_DIFFERENCES -->
-                        <div th:if="${report.retryAfterUrl != null and report.rerunAfterUrl != null and report.finishedWithDifferences}" class="btn-group action-btn-group">
-                            <button type="button"
-                                    class="btn btn-info btn-sm rerun-after-btn"
-                                    th:data-run-id="${report.id}"
-                                    th:data-run-name="${report.name}"
-                                    th:data-rerun-url="${report.rerunAfterUrl}">
-                                Rerun 'after' as new
-                            </button>
-                            <button type="button" class="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <span class="visually-hidden">More</span>
+                        <div th:if="${report.afterRunUrl != null or report.retryAfterUrl != null or report.rerunAfterUrl != null}" class="dropdown action-dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical"></i>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item retry-after-btn" href="#"
+                                <li th:if="${report.afterRunUrl != null}">
+                                    <a class="dropdown-item start-after-btn" href="#"
                                        th:data-run-id="${report.id}"
                                        th:data-run-name="${report.name}"
-                                       th:data-retry-url="${report.retryAfterUrl}">Retry 'after'</a></li>
-                            </ul>
-                        </div>
-                        <!-- Combined split button: retry primary for ERROR/DEAD -->
-                        <div th:if="${report.retryAfterUrl != null and report.rerunAfterUrl != null and !report.finishedWithDifferences}" class="btn-group action-btn-group">
-                            <button type="button"
-                                    class="btn btn-danger btn-sm retry-after-btn"
-                                    th:data-run-id="${report.id}"
-                                    th:data-run-name="${report.name}"
-                                    th:data-retry-url="${report.retryAfterUrl}">
-                                Retry 'after'
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm dropdown-toggle dropdown-toggle-split"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <span class="visually-hidden">More</span>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item rerun-after-btn" href="#"
+                                       th:data-after-url="${report.afterRunUrl}">Start 'after' run</a>
+                                </li>
+                                <li th:if="${report.retryAfterUrl != null}">
+                                    <a class="dropdown-item retry-after-btn" href="#"
                                        th:data-run-id="${report.id}"
                                        th:data-run-name="${report.name}"
-                                       th:data-rerun-url="${report.rerunAfterUrl}">Rerun 'after' as new</a></li>
+                                       th:data-retry-url="${report.retryAfterUrl}">Retry 'after'</a>
+                                </li>
+                                <li th:if="${report.rerunAfterUrl != null}">
+                                    <a class="dropdown-item rerun-after-btn" href="#"
+                                       th:data-run-id="${report.id}"
+                                       th:data-run-name="${report.name}"
+                                       th:data-rerun-url="${report.rerunAfterUrl}">Rerun 'after' as new</a>
+                                </li>
                             </ul>
                         </div>
-                        <!-- Standalone rerun button (only when retry is NOT available, e.g. FINISHED_WITHOUT_DIFFERENCES) -->
-                        <button th:if="${report.rerunAfterUrl != null and report.retryAfterUrl == null}"
-                                type="button"
-                                class="btn btn-info btn-sm rerun-after-btn"
-                                th:data-run-id="${report.id}"
-                                th:data-run-name="${report.name}"
-                                 th:data-rerun-url="${report.rerunAfterUrl}">
-                            Rerun 'after' as new
-                        </button>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(reportList)}" class="no-runs-row"><td colspan="9">No runs since start.</td></tr>
