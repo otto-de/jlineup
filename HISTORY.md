@@ -1,5 +1,8 @@
 # JLineup Release History
 
+## Release 6.0.2 - 2026-06-18
+* Update: This release includes a lot of dependency updates. Most noteworthy is Chrome 149 support.
+
 ## Release 6.0.1 - 2026-05-26
 * Update: Reduce visibility of "action" buttons (that are rarely used) on web server reports page.
 
