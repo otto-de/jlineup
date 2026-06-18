@@ -51,6 +51,17 @@ group = 'de.otto'
 version = jlineup_version
 
 jreleaser {
+    release {
+        github {
+            changelog {
+                // Use the pre-extracted section from HISTORY.md as the GitHub release body.
+                // The file is written by the "Build release notes" step in release.yml.
+                // When running locally via release.sh this file won't exist, so JReleaser
+                // falls back to its own commit-log based changelog automatically.
+                external = 'build/release-notes.md'
+            }
+        }
+    }
     project {
         snapshot {
             fullChangelog = true
