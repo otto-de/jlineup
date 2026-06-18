@@ -6,7 +6,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-json")
     implementation("org.yaml:snakeyaml")
-    implementation("de.otto.edison:edison-core:4.1.0") {
+    implementation("de.otto.edison:edison-core:4.1.0.1") {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
     }
     implementation("io.micrometer:micrometer-registry-prometheus")
