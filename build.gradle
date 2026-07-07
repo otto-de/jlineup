@@ -5,7 +5,7 @@ buildscript {
         nettyVersion = '4.2.13.Final'
         graalvmVersion = '25.0.3'
         picoCliVersion = '4.7.7'
-        awsSdkVersion = '2.46.21'
+        awsSdkVersion = '2.47.0'
         awsCdkVersion = '2.261.0'
     }
 
