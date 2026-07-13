@@ -23,36 +23,56 @@ updates:
     ignore:
         #Tomcat is excluded; Jetty is used as embedded server. Dependabot is mourning because Tomcat is provided in the Spring Boot BOM, but it is not used in the project.
       - dependency-name: "org.apache.tomcat.embed:*"
+        # AWS dependencies are handled by the aws-dependencies multi-ecosystem group below
+      - dependency-name: "com.amazonaws:*"
+      - dependency-name: "software.amazon.awssdk:*"
+      - dependency-name: "software.amazon.awssdk.crt:*"
+      - dependency-name: "software.amazon.awscdk:*"
     groups:
       test-dependencies:
         patterns:
           - "org.junit.*"
           - "org.mockito.*"
           - "org.hamcrest.*"
-      aws-dependencies:
-        patterns:
-          - "com.amazonaws:*"
-          - "software.amazon.awssdk:*"
-          - "software.amazon.awssdk.crt:*"
-          - "software.amazon.awscdk:*"
+
+  # AWS Gradle dependencies bundled with npm AWS deps into a single multi-ecosystem PR
+  - package-ecosystem: "gradle"
+    directory: "/"
+    patterns:
+      - "com.amazonaws:*"
+      - "software.amazon.awssdk:*"
+      - "software.amazon.awssdk.crt:*"
+      - "software.amazon.awscdk:*"
+    multi-ecosystem-group: "aws-dependencies"
 
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+        # AWS dependencies are handled by the aws-dependencies multi-ecosystem group below
+      - dependency-name: "aws-cdk"
+      - dependency-name: "aws-cdk-*"
+      - dependency-name: "@aws-cdk/*"
+      - dependency-name: "@aws-sdk/*"
+      - dependency-name: "aws-sdk"
     groups:
       jest:
         patterns:
           - "jest"
           - "jest-*"
           - "@jest/*"
-      aws-dependencies:
-        patterns:
-          - "aws-cdk"
-          - "aws-cdk-*"
-          - "@aws-cdk/*"
-          - "@aws-sdk/*"
-          - "aws-sdk"
+
+  # AWS npm dependencies bundled with gradle AWS deps into a single multi-ecosystem PR
+  - package-ecosystem: "npm"
+    directory: "/"
+    patterns:
+      - "aws-cdk"
+      - "aws-cdk-*"
+      - "@aws-cdk/*"
+      - "@aws-sdk/*"
+      - "aws-sdk"
+    multi-ecosystem-group: "aws-dependencies"
 
   - package-ecosystem: "docker"
     directory: "/web"
