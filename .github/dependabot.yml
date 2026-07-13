@@ -7,7 +7,7 @@ updates:
     groups:
       codeql-steps:
         patterns:
-          - "github/codeql-action"
+          - "github/codeql-action*"
 
   - package-ecosystem: "gradle"
     directory: "/"
