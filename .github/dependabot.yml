@@ -15,8 +15,8 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 25
     ignore:
+        #Tomcat is excluded; Jetty is used as embedded server. Dependabot is mourning because Tomcat is provided in the Spring Boot BOM, but it is not used in the project.
       - dependency-name: "org.apache.tomcat.embed:*"
-        reason: "Tomcat is excluded; Jetty is used as embedded server. Dependabot is mourning because Tomcat is provided in the Spring Boot BOM, but it is not used in the project."
     groups:
       test-dependencies:
         patterns:
