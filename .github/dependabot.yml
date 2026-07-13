@@ -1,4 +1,10 @@
 version: 2
+
+multi-ecosystem-groups:
+  aws-dependencies:
+    schedule:
+      interval: "weekly"
+
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -24,6 +30,7 @@ updates:
           - "org.mockito.*"
           - "org.hamcrest.*"
       aws-dependencies:
+        multi-ecosystem-group: "aws-dependencies"
         patterns:
           - "com.amazonaws:*"
           - "software.amazon.awssdk:*"
@@ -40,6 +47,14 @@ updates:
           - "jest"
           - "jest-*"
           - "@jest/*"
+      aws-dependencies:
+        multi-ecosystem-group: "aws-dependencies"
+        patterns:
+          - "aws-cdk"
+          - "aws-cdk-*"
+          - "@aws-cdk/*"
+          - "@aws-sdk/*"
+          - "aws-sdk"
 
   - package-ecosystem: "docker"
     directory: "/web"
