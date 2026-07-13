@@ -4,16 +4,6 @@ multi-ecosystem-groups:
   aws-dependencies:
     schedule:
       interval: "weekly"
-    patterns:
-      - "com.amazonaws:*"
-      - "software.amazon.awssdk:*"
-      - "software.amazon.awssdk.crt:*"
-      - "software.amazon.awscdk:*"
-      - "aws-cdk"
-      - "aws-cdk-*"
-      - "@aws-cdk/*"
-      - "@aws-sdk/*"
-      - "aws-sdk"
 
 updates:
   - package-ecosystem: "github-actions"
@@ -33,27 +23,36 @@ updates:
     ignore:
         #Tomcat is excluded; Jetty is used as embedded server. Dependabot is mourning because Tomcat is provided in the Spring Boot BOM, but it is not used in the project.
       - dependency-name: "org.apache.tomcat.embed:*"
-    multi-ecosystem-groups:
-      - "aws-dependencies"
     groups:
       test-dependencies:
         patterns:
           - "org.junit.*"
           - "org.mockito.*"
           - "org.hamcrest.*"
+      aws-dependencies:
+        patterns:
+          - "com.amazonaws:*"
+          - "software.amazon.awssdk:*"
+          - "software.amazon.awssdk.crt:*"
+          - "software.amazon.awscdk:*"
 
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
-    multi-ecosystem-groups:
-      - "aws-dependencies"
     groups:
       jest:
         patterns:
           - "jest"
           - "jest-*"
           - "@jest/*"
+      aws-dependencies:
+        patterns:
+          - "aws-cdk"
+          - "aws-cdk-*"
+          - "@aws-cdk/*"
+          - "@aws-sdk/*"
+          - "aws-sdk"
 
   - package-ecosystem: "docker"
     directory: "/web"
