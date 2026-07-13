@@ -15,6 +15,10 @@ on:
   schedule:
     - cron: '0 9 * * *'
 
+concurrency:
+  group: aws-lambda-acceptance-test
+  cancel-in-progress: false
+
 env:
   CHROME_VERSION: 146.0.7680.165
 
