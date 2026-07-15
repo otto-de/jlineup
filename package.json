@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "devDependencies": {
-    "aws-cdk": "^2.1130.0",
+    "aws-cdk": "^2.1131.0",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1"
   }
