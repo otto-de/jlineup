@@ -34,7 +34,7 @@ dependencies {
         exclude group: "com.fasterxml.jackson.datatype"
         exclude group: "com.fasterxml.jackson.dataformat"
     }
-    testImplementation "software.constructs:constructs:10.6.0"
+    testImplementation "software.constructs:constructs:10.7.0"
 }
 
 test {
