@@ -42,7 +42,7 @@ dependencies {
         exclude group: "com.fasterxml.jackson.datatype"
         exclude group: "com.fasterxml.jackson.dataformat"
     }
-    testImplementation "software.constructs:constructs:10.6.0"
+    testImplementation "software.constructs:constructs:10.7.0"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
