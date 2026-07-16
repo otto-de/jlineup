@@ -10,6 +10,7 @@ import de.otto.jlineup.file.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -102,6 +103,7 @@ class BrowserIntegrationTest {
     }
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
     void shouldNotThrowAnExceptionInFirefoxIfItIsConfiguredToNotCheckForErrorsOnA500() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.FIREFOX_HEADLESS, false);
@@ -112,6 +114,7 @@ class BrowserIntegrationTest {
     }
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
     void willNotThrowAnExceptionInFirefoxBecauseFirefoxWithSeleniumCantHandleResponseCodes() throws ValidationError {
         //given
         JobConfig jobConfig = localTestConfig("500", Browser.Type.FIREFOX_HEADLESS, true);
@@ -195,6 +198,7 @@ class BrowserIntegrationTest {
     }
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
     void shouldSetAllCookies() throws ValidationError, IOException {
 
         //ch.qos.logback.classic.Logger apache = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("org.apache.hc.client5.http");

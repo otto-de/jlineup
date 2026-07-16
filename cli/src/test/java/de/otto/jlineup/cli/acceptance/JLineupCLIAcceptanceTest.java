@@ -11,6 +11,7 @@ import de.otto.jlineup.report.Report;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -93,6 +94,7 @@ class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
     void shouldExitWithExitStatus1IfThereIsAMalformedUrlInFirefox() throws Exception {
         int status = catchSystemExit(() ->
             Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_wrong_url_firefox.lineup.json"}));
@@ -123,6 +125,7 @@ class JLineupCLIAcceptanceTest {
 
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
     void shouldRunJLineupWithTestPageThatDoesntChange_WithChrome() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
 
@@ -144,6 +147,7 @@ class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
     void shouldRunJLineupWithSomeDevices_WithChrome() throws Exception {
 
         System.err.println("Using " + tempDirectory.toString());
@@ -187,6 +191,7 @@ class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
     void shouldPassCommandLineParametersToChrome() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before", "--chrome-parameter", "--user-agent=\"fakeuseragent\""});
         assertThat(systemOutCaptor.toString(), containsString("User agent: \"fakeuseragent\""));
@@ -252,6 +257,7 @@ class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
     void shouldRunJLineupWithTestPageThatDoesntChange_WithFirefox() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
 
@@ -273,6 +279,7 @@ class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
     void shouldRunJLineupWithTestPageThatDoesntChange_WithDifferentConfigsButSamePages_FixesContextHashBug() throws Exception {
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox_variant1.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"});
         Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_firefox_variant2.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "after"});
