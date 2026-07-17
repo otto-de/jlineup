@@ -2,19 +2,19 @@
 #
 # HOW TO TRIGGER A RELEASE
 # -------------------------
-# 1. Update `jlineup_version` in build.gradle to a non-SNAPSHOT version (e.g. "6.0.2").
+# 1. Update `jlineup_version` in build.gradle to a non-SNAPSHOT version (e.g. "6.0.3").
 # 2. Add a "## Release <version>" entry at the top of HISTORY.md, e.g.:
-#      ## Release 6.0.2 - 2026-06-18
+#      ## Release 6.0.3 - 2026-07-17
 #      * Fix: ...
 # 3. Commit and push:
-#      git commit -am "chore: prepare release 6.0.2"
+#      git commit -am "chore: prepare release 6.0.3"
 #      git push
 # 4. Trigger this workflow:
-#      gh workflow run release.yml -f version=6.0.2
+#      gh workflow run release.yml -f version=6.0.3
 #    Or use the GitHub Actions UI: Actions → Release → Run workflow.
 #
 # After a successful release, bump build.gradle to the next SNAPSHOT version:
-#      git commit -am "chore: bump to 6.0.3-SNAPSHOT"
+#      git commit -am "chore: bump to 6.0.4-SNAPSHOT"
 
 name: Release
 

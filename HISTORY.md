@@ -1,5 +1,13 @@
 # JLineup Release History
 
+## Release 6.0.3 - 2026-07-17
+* Feature: Improved error messages for user-facing errors (HTTP check failures, timeouts, missing selectors).
+  Error output now shows clean, actionable messages instead of verbose stack traces. Full stack traces are
+  still available at DEBUG log level.
+* Update: Dependency updates (Selenium with Chrome 150 support, etc.)
+* Internal feature: CI optimization - Firefox and non-headless Chrome tests now only run on scheduled builds, releases,
+  and manual workflow dispatch with `test-all-browsers: true`. This speeds up regular PR checks.
+
 ## Release 6.0.2 - 2026-06-18
 * Update: This release includes a lot of dependency updates. Most noteworthy is Chrome 149 support.
 
