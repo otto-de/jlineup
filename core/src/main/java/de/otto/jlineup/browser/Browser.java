@@ -277,7 +277,10 @@ public class Browser implements AutoCloseable {
                     tryToTakeScreenshotsForContextNTimes(screenshotContext, jobConfig.screenshotRetries);
                 } catch (Exception e) {
                     //There was an error, prevent pool from taking more tasks and let run fail
-                    LOG.error("Exception in Browser thread while working on '" + screenshotContext.url + "' with device config " + screenshotContext.deviceConfig + ".", e);
+                    String userMessage = Utils.extractUserFriendlyErrorMessage(e);
+                    LOG.error("Exception in Browser thread while working on '{}' with device config {}: {}", 
+                            screenshotContext.url, screenshotContext.deviceConfig, userMessage);
+                    LOG.debug("Full stack trace for Browser thread exception:", e);
                     synchronized (webDrivers) {
                         threadPool.shutdownNow();
                     }

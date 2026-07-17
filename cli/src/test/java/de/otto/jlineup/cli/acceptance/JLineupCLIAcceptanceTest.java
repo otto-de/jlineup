@@ -115,7 +115,7 @@ class JLineupCLIAcceptanceTest {
         int status = catchSystemExit(() ->
             Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_timeout.lineup.json"}));
         assertEquals(1, status);
-        assertThat(combinedOutput(), containsString("Timeout"));
+        assertThat(combinedOutput(), containsString("timeout"));
     }
 
     @Test
@@ -147,8 +147,7 @@ class JLineupCLIAcceptanceTest {
     }
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
-    void shouldRunJLineupWithSomeDevices_WithChrome() throws Exception {
+    void shouldRunJLineupWithSomeDevices_WithChromeHeadless() throws Exception {
 
         System.err.println("Using " + tempDirectory.toString());
 
@@ -191,9 +190,8 @@ class JLineupCLIAcceptanceTest {
     }
 
     @Test
-    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
-    void shouldPassCommandLineParametersToChrome() throws Exception {
-        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before", "--chrome-parameter", "--user-agent=\"fakeuseragent\""});
+    void shouldPassCommandLineParametersToChromeHeadless() throws Exception {
+        Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-headless.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before", "--chrome-parameter", "--user-agent=\"fakeuseragent\""});
         assertThat(systemOutCaptor.toString(), containsString("User agent: \"fakeuseragent\""));
     }
 

@@ -188,14 +188,14 @@ public class LambdaBrowser implements CloudBrowser {
                         InvokeResponse invokeResponseRetry = invokeResponseFuture.get();
                         String retryAnswer = invokeResponseRetry.payload().asUtf8String();
                         if (retryAnswer.contains("errorMessage")) {
-                            //LOG.error(retryAnswer); Is logged outside of this method by catching function
-                            throw new RuntimeException("Lambda call [" + indexString + "] [" + functionName + "] failed even when retried: " + retryAnswer);
+                            String userMessage = extractLambdaUserMessage(retryAnswer, indexString, functionName);
+                            throw new RuntimeException("Lambda failed even when retried: " + userMessage);
                         } else {
                             LOG.info("[{}] [{}] Answer from Lambda after retry: '{}'", indexString, functionName, retryAnswer);
                         }
                     } else {
-                        //LOG.error(answer); Is logged outside of this method by catching function
-                        throw new RuntimeException("Lambda call [" + indexString + "] [" + functionName + "] failed: " + answer);
+                        String userMessage = extractLambdaUserMessage(answer, indexString, functionName);
+                        throw new RuntimeException(userMessage);
                     }
                 } else {
                     LOG.info("[{}] [{}] Answer from Lambda: '{}'", indexString, functionName, answer);
@@ -321,5 +321,29 @@ public class LambdaBrowser implements CloudBrowser {
             throw new RuntimeException(e);
         }
         return executor.submit(() -> lambdaClient.invoke(invokeRequest));
+    }
+
+    /**
+     * Extracts a user-friendly error message from a Lambda response.
+     * Uses Utils.extractUserFriendlyErrorMessage to parse JSON error responses
+     * and extract the actual error message (e.g., JLineupException messages).
+     *
+     * @param answer the raw Lambda response containing the error
+     * @param indexString the index string for context
+     * @param functionName the Lambda function name for context
+     * @return a formatted user-friendly error message
+     */
+    private String extractLambdaUserMessage(String answer, String indexString, String functionName) {
+        String extractedMessage = Utils.extractLambdaErrorMessage(answer);
+        if (extractedMessage != null) {
+            // Check if the extracted message contains a JLineupException
+            String jlineupMessage = Utils.extractJLineupExceptionMessage(extractedMessage);
+            if (jlineupMessage != null) {
+                return String.format("Lambda [%s] [%s]: %s", indexString, functionName, jlineupMessage);
+            }
+            return String.format("Lambda [%s] [%s]: %s", indexString, functionName, extractedMessage);
+        }
+        // Fallback to the raw answer if we couldn't extract a cleaner message
+        return String.format("Lambda [%s] [%s] failed: %s", indexString, functionName, answer);
     }
 }

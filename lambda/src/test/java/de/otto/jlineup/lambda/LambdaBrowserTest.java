@@ -299,7 +299,7 @@ public class LambdaBrowserTest {
                 lambdaBrowser.takeScreenshots(screenshotContexts);
             });
 
-            assertTrue(exception.getMessage().contains("failed"));
+            assertTrue(exception.getMessage().contains("Some other error"));
             // Should only call once, no retry for non-retryable errors
             verify(mockLambdaClient, times(1)).invoke(any(InvokeRequest.class));
         }

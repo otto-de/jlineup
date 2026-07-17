@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import de.otto.jlineup.GlobalOption;
 import de.otto.jlineup.GlobalOptions;
 import de.otto.jlineup.JLineupRunner;
+import de.otto.jlineup.Utils;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.web.JLineupRunStatus;
@@ -96,7 +97,9 @@ public class JLineupService {
                     return State.BEFORE_DONE;
                 }, executorService)
                 .exceptionally(ex -> {
-                    LOG.error("Error in before runStep.", ex);
+                    String userMessage = Utils.extractUserFriendlyErrorMessage(ex);
+                    LOG.error("Error in before runStep: {}", userMessage);
+                    LOG.debug("Full stack trace for before runStep error:", ex);
                     return State.ERROR;
                 })
                 .thenApply(st -> {
@@ -135,7 +138,9 @@ public class JLineupService {
                     }
                 }, executorService)
                 .exceptionally(ex -> {
-                    LOG.error("Error in after runStep.", ex);
+                    String userMessage = Utils.extractUserFriendlyErrorMessage(ex);
+                    LOG.error("Error in after runStep: {}", userMessage);
+                    LOG.debug("Full stack trace for after runStep error:", ex);
                     return State.ERROR;
                 })
                 .thenApply(st -> {

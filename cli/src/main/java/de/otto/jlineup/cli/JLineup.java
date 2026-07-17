@@ -430,8 +430,10 @@ public class JLineup implements Callable<Integer> {
                 return 1;
             }
         } catch (Exception e) {
-            LOG.error(e.getMessage(), e);
-            de.otto.jlineup.Utils.writeInfosForCommonErrors(e.getMessage());
+            String userMessage = de.otto.jlineup.Utils.extractUserFriendlyErrorMessage(e);
+            LOG.error("JLineup run failed: {}", userMessage);
+            LOG.debug("Full stack trace:", e);
+            de.otto.jlineup.Utils.writeInfosForCommonErrors(e.getMessage() != null ? e.getMessage() : "");
             return 1;
         }
         return NO_EXIT;
