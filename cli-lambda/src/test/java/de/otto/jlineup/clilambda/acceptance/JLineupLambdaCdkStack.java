@@ -7,11 +7,15 @@ import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Size;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.services.lambda.AssetImageCodeProps;
 import software.amazon.awscdk.services.lambda.DockerImageCode;
 import software.amazon.awscdk.services.lambda.DockerImageFunction;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.constructs.Construct;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
@@ -41,6 +45,15 @@ public class JLineupLambdaCdkStack extends Stack {
                         .build())
                 .build());
 
+        // Read Chrome major version from .chrome-version file in project root
+        String chromeMajorVersion = readChromeMajorVersion(dockerContextPath);
+        // Read Amazon Linux 2023 version from .al2023-version file in project root
+        String al2023Version = readAl2023Version(dockerContextPath);
+        Map<String, String> dockerBuildArgs = Map.of(
+                "CHROME_MAJOR_VERSION", chromeMajorVersion,
+                "AMI_LINUX_2023_VERSION", al2023Version
+        );
+
         // --- S3 bucket for screenshot results ---
         Bucket resultsBucket = Bucket.Builder.create(this, "ResultsBucket")
                 .removalPolicy(RemovalPolicy.DESTROY)
@@ -50,7 +63,9 @@ public class JLineupLambdaCdkStack extends Stack {
         // --- Docker Image Lambda built from lambda/Dockerfile ---
         DockerImageFunction function = DockerImageFunction.Builder.create(this, "JLineupDockerLambda")
                 .functionName(id + "-fn")
-                .code(DockerImageCode.fromImageAsset(dockerContextPath))
+                .code(DockerImageCode.fromImageAsset(dockerContextPath, AssetImageCodeProps.builder()
+                        .buildArgs(dockerBuildArgs)
+                        .build()))
                 .memorySize(3008)
                 .ephemeralStorageSize(Size.mebibytes(1024))
                 .timeout(Duration.seconds(300))
@@ -71,5 +86,36 @@ public class JLineupLambdaCdkStack extends Stack {
                 .value(resultsBucket.getBucketName())
                 .exportName(id + "-" + OUTPUT_BUCKET_NAME)
                 .build();
+    }
+
+    /**
+     * Reads the Chrome major version from the .chrome-version file in the project root.
+     * The file contains the full version (e.g., "150.0.7871.128"), and we extract the major version.
+     */
+    private String readChromeMajorVersion(String dockerContextPath) {
+        try {
+            // dockerContextPath is the lambda directory, so go up one level to find .chrome-version
+            Path chromeVersionFile = Path.of(dockerContextPath).getParent().resolve(".chrome-version");
+            String fullVersion = Files.readString(chromeVersionFile).trim();
+            // Extract major version (first segment before the dot)
+            String majorVersion = fullVersion.split("\\.")[0];
+            return majorVersion;
+        } catch (IOException e) {
+            // Fall back to default if file not found
+            return "150";
+        }
+    }
+
+    /**
+     * Reads the Amazon Linux 2023 version from the .al2023-version file in the project root.
+     */
+    private String readAl2023Version(String dockerContextPath) {
+        try {
+            Path versionFile = Path.of(dockerContextPath).getParent().resolve(".al2023-version");
+            return Files.readString(versionFile).trim();
+        } catch (IOException e) {
+            // Fall back to default if file not found
+            return "2023.12.20260710";
+        }
     }
 }

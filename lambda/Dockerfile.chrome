@@ -1,10 +1,12 @@
 FROM public.ecr.aws/lambda/java:21-x86_64
 
-# This is used to grep the latest full release URL of Chrome with this Major version from the Chrome for Testing website
+# Chrome major version for querying the Chrome for Testing API (e.g., "150")
+# Pass via --build-arg CHROME_MAJOR_VERSION=150
 ARG CHROME_MAJOR_VERSION="150"
 
-# This sets the specific version of the AMI Linux 2023 release
-ARG AMI_LINUX_2023_VERSION="2023.11.20260514"
+# Amazon Linux 2023 release version for dnf repositories
+# Pass via --build-arg AMI_LINUX_2023_VERSION=2023.12.20260710
+ARG AMI_LINUX_2023_VERSION="2023.12.20260710"
 
 USER root
 
@@ -50,7 +52,8 @@ RUN dnf install -y \
     xdg-utils
 
 RUN curl --insecure https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json
-RUN CHROME_FOR_TESTING_RELEASE=$(curl --insecure --silent https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq ".milestones.\"$CHROME_MAJOR_VERSION\"") \
+RUN echo "Using Chrome major version: $CHROME_MAJOR_VERSION" && \
+    CHROME_FOR_TESTING_RELEASE=$(curl --insecure --silent https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone-with-downloads.json | jq ".milestones.\"$CHROME_MAJOR_VERSION\"") && \
     CHROME_DOWNLOAD_URL="$(echo ""${CHROME_FOR_TESTING_RELEASE}"" | jq -r '.downloads.chrome[] | select(.platform == "linux64") | .url')"; \
     curl --insecure --remote-name --silent "${CHROME_DOWNLOAD_URL}"; \
     ls -alh; \

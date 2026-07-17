@@ -27,9 +27,6 @@ on:
   schedule:
     - cron: '0 9 * * *'
 
-env:
-  CHROME_VERSION: 150.0.7871.128
-
 permissions:  # added using https://github.com/step-security/secure-repo
   contents: read
   packages: write
@@ -70,6 +67,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - name: Read Chrome version
+        run: echo "CHROME_VERSION=$(cat .chrome-version)" >> $GITHUB_ENV
       - name: Set up JDK
         uses: actions/setup-java@ad2b38190b15e4d6bdf0c97fb4fca8412226d287 # v5.3.0
         with:

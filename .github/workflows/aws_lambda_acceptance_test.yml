@@ -19,9 +19,6 @@ concurrency:
   group: aws-lambda-acceptance-test
   cancel-in-progress: false
 
-env:
-  CHROME_VERSION: 146.0.7680.165
-
 permissions: # added using https://github.com/step-security/secure-repo
   contents: read
 

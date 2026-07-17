@@ -26,9 +26,6 @@ on:
         required: true
         type: string
 
-env:
-  CHROME_VERSION: 149.0.7827.114
-
 jobs:
   release:
     name: Release ${{ inputs.version }}
@@ -48,6 +45,9 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0  # JReleaser needs full history to generate changelogs
+
+      - name: Read Chrome version
+        run: echo "CHROME_VERSION=$(cat .chrome-version)" >> $GITHUB_ENV
 
       - name: Set up JDK 21
         uses: actions/setup-java@v5
