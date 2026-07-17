@@ -28,7 +28,7 @@ on:
     - cron: '0 9 * * *'
 
 env:
-  CHROME_VERSION: 149.0.7827.114
+  CHROME_VERSION: 150.0.7871.128
 
 permissions:  # added using https://github.com/step-security/secure-repo
   contents: read
@@ -100,17 +100,6 @@ jobs:
           echo "Executing: /usr/bin/google-chrome --version"
           /usr/bin/google-chrome --version
           echo "SE_BROWSER_PATH: '$SE_BROWSER_PATH'"
-      - name: Setup Firefox and Geckodriver (Linux) - for scheduled/manual all-browser builds
-        if: runner.os == 'Linux' && (github.event_name == 'schedule' || inputs.test-all-browsers == true)
-        run: |
-          sudo apt-get install -y firefox
-          # Install geckodriver
-          GECKODRIVER_VERSION=$(curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest | grep tag_name | cut -d '"' -f 4)
-          echo "Installing geckodriver $GECKODRIVER_VERSION"
-          curl -L "https://github.com/mozilla/geckodriver/releases/download/${GECKODRIVER_VERSION}/geckodriver-${GECKODRIVER_VERSION}-linux64.tar.gz" | sudo tar xz -C /usr/local/bin
-          sudo chmod +x /usr/local/bin/geckodriver
-          geckodriver --version
-          firefox --version
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Dependency check and build with gradle
