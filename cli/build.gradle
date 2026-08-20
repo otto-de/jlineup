@@ -27,6 +27,17 @@ project.afterEvaluate {
     }
 }
 
+tasks.processTestResources.doLast { task ->
+    def resourcesDir = project.sourceSets.test.output.resourcesDir
+    resourcesDir.mkdirs()
+
+    def settingsProperties = new File(resourcesDir, "settings.properties")
+    def chromeVersionFile = rootProject.file(".chrome-version")
+    def chromeMajorVersion = chromeVersionFile.text.trim().tokenize('.')[0]
+
+    settingsProperties.text = "jlineup.chrome-version=${chromeMajorVersion}\n"
+}
+
 bootJar {
     mainClass = "de.otto.jlineup.cli.Main"
 }
