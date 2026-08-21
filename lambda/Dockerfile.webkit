@@ -73,6 +73,8 @@ ENV HOME=/tmp/uusseerr
 
 # Copy function code and runtime dependencies from Gradle layout
 COPY build/classes/java/main ${LAMBDA_TASK_ROOT}
+# Resources contain logback.xml; without it Logback defaults to DEBUG on the root logger
+COPY build/resources/main ${LAMBDA_TASK_ROOT}
 COPY build/output/lib/* ${LAMBDA_TASK_ROOT}/lib/
 
 ENTRYPOINT [ "/lambda-entrypoint.sh" ]
