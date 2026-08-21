@@ -1,0 +1,29 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <Target>System.out</Target>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} -- %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Suppress verbose AWS SDK debug output -->
+    <logger name="software.amazon.awssdk" level="WARN"/>
+    <logger name="software.amazon.awscdk" level="WARN"/>
+    <logger name="com.amazonaws" level="WARN"/>
+    <logger name="io.netty" level="WARN"/>
+    <logger name="org.apache.http" level="WARN"/>
+
+    <!-- Selenium / WebDriver chatter -->
+    <logger name="org.openqa.selenium" level="WARN"/>
+    <logger name="org.openqa.selenium.remote" level="WARN"/>
+    <logger name="io.github.bonigarcia" level="INFO"/>
+
+    <!-- Keep JLineup's own output at INFO -->
+    <logger name="de.otto.jlineup" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+</configuration>
