@@ -17,7 +17,6 @@
     <!-- Selenium / WebDriver chatter -->
     <logger name="org.openqa.selenium" level="WARN"/>
     <logger name="org.openqa.selenium.remote" level="WARN"/>
-    <logger name="io.github.bonigarcia" level="INFO"/>
 
     <!-- Keep JLineup's own output at INFO -->
     <logger name="de.otto.jlineup" level="INFO"/>
