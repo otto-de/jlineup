@@ -176,12 +176,7 @@ public class LambdaBrowser implements CloudBrowser {
                     LOG.error("[{}] [{}] Log: {}", indexString, functionName, logResult);
                 }
                 if (answer.contains("errorMessage")) {
-                    if (answer.contains("SessionNotCreatedException")
-                            || answer.contains("disconnected: Unable to receive message from renderer")
-                            || answer.contains("disconnected: not connected to DevTools")
-                            || answer.contains("unknown error: unhandled inspector error")
-                            || answer.contains("Task timed out after")
-                            || answer.contains("error writing PNG file")) {
+                    if (isTransientLambdaError(answer)) {
                         LOG.warn("[{}] [{}] Retrying lambda call because of specific error message in answer: '{}'", indexString, functionName, answer);
                         //Do one retry if browser crashed in lambda
                         Future<InvokeResponse> invokeResponseFuture = invokeLambdaAndGetInvokeResponseFuture(lambdaCall.getKey(), runId, lambdaClient);
@@ -345,5 +340,15 @@ public class LambdaBrowser implements CloudBrowser {
         }
         // Fallback to the raw answer if we couldn't extract a cleaner message
         return String.format("Lambda [%s] [%s] failed: %s", indexString, functionName, answer);
+    }
+
+    public static boolean isTransientLambdaError(String answer) {
+        return answer.contains("SessionNotCreatedException")
+                || answer.contains("disconnected: Unable to receive message from renderer")
+                || answer.contains("Timed out receiving message from renderer")
+                || answer.contains("disconnected: not connected to DevTools")
+                || answer.contains("unknown error: unhandled inspector error")
+                || answer.contains("Task timed out after")
+                || answer.contains("error writing PNG file");
     }
 }
