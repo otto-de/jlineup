@@ -750,7 +750,18 @@ class LambdaAcceptanceTest {
                 .payload(SdkBytes.fromUtf8String(payloadJson))
                 .build());
 
-        return response.payload().asUtf8String();
+        String answer = response.payload().asUtf8String();
+
+        if (answer.contains("errorMessage") && LambdaBrowser.isTransientLambdaError(answer)) {
+            LOG.warn("Transient Lambda error detected, retrying once. Error: {}", answer);
+            InvokeResponse retryResponse = lambdaClient.invoke(InvokeRequest.builder()
+                    .functionName(targetFunctionName)
+                    .payload(SdkBytes.fromUtf8String(payloadJson))
+                    .build());
+            answer = retryResponse.payload().asUtf8String();
+        }
+
+        return answer;
     }
 
     private static void runCommand(String... command) throws Exception {
