@@ -1,5 +1,9 @@
 # JLineup Release History
 
+## Release 6.0.4 - 2026-08-31
+* Update: Dependency updates (Chrome 152 support, etc.)
+* Update: Improve resilience of lambda browser
+
 ## Release 6.0.3 - 2026-07-17
 * Feature: Improved error messages for user-facing errors (HTTP check failures, timeouts, missing selectors).
   Error output now shows clean, actionable messages instead of verbose stack traces. Full stack traces are
