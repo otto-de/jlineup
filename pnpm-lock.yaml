@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       aws-cdk:
-        specifier: ^2.1139.0
-        version: 2.1139.0
+        specifier: ^2.1140.0
+        version: 2.1140.0
       jest:
         specifier: ^30.5.1
         version: 30.5.1(@types/node@26.4.1)
@@ -656,8 +656,8 @@ packages:
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
 
-  aws-cdk@2.1139.0:
-    resolution: {integrity: sha512-JVvrVvY2fZasf4gW4fvF7x1QMXUtvvGjnTKDe6cppWR1FUG8XgRF/S7xOkcdPVcdEf4R5ss7QdEfNVI7xiDomQ==}
+  aws-cdk@2.1140.0:
+    resolution: {integrity: sha512-myrqWFEby3w+athNRM5EcnKXpby8shR7WwhxtAE853qDPmCggvIZe0wwkUzyuWJdFVD3zP5rzRuATxnnapeXig==}
     engines: {node: '>= 18.0.0'}
     hasBin: true
 
@@ -2235,7 +2235,7 @@ snapshots:
     dependencies:
       sprintf-js: 1.0.3
 
-  aws-cdk@2.1139.0: {}
+  aws-cdk@2.1140.0: {}
 
   babel-jest@30.5.1(@babel/core@7.29.7):
     dependencies:
