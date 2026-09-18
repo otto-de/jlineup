@@ -142,9 +142,25 @@ The Lambda function needs an IAM role with:
 |----------------------------|----------|---------------------------------------------------------|
 | `JLINEUP_LAMBDA_S3_BUCKET` | **Yes**  | Name of the S3 bucket where screenshots are stored      |
 | `JLINEUP_LAMBDA_S3_PREFIX` | No       | Optional key prefix within the bucket (e.g. `jlineup/`) |
+| `JLINEUP_LAMBDA_S3_BUNDLE` | No       | `true` (default) uploads all artifacts of an invocation as one ZIP, `false` falls back to one S3 object per file |
 
 The caller discovers these values automatically at runtime by reading the Lambda function's
 own configuration via the AWS API — you do not need to set them on the CLI or web server.
+
+### Screenshot bundles
+
+By default, every Lambda invocation uploads **one** ZIP object per screenshot context
+(`bundle_{contextHash}_{step}.zip`) instead of one object per screenshot file. A run with 200 contexts
+and 20 scroll positions each therefore exchanges ~200 S3 objects instead of ~4400.
+
+The screenshots themselves barely shrink — PNG is already DEFLATE compressed, so PNG entries are stored
+verbatim inside the archive rather than being re-compressed. The gain is the elimination of round trips:
+the upload blocks the Lambda handler, so the saved time is saved billed Lambda duration. A bundle is
+also atomic, so a Lambda that dies mid-upload can no longer leave a partial set of screenshots in S3.
+
+The caller auto-detects the format, so Lambda functions and callers of different JLineup versions — and
+even a mix of both within one run, as can happen while rolling out per-browser functions — keep working.
+Set `JLINEUP_LAMBDA_S3_BUNDLE=false` on the Lambda function to go back to the old behavior.
 
 ## Using Lambda with the CLI
 

@@ -14,23 +14,37 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.lambda.LambdaClient;
 import software.amazon.awssdk.services.lambda.LambdaClientBuilder;
 import software.amazon.awssdk.services.lambda.model.*;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3CrtAsyncClientBuilder;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryDownload;
 import software.amazon.awssdk.transfer.s3.model.DirectoryDownload;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -333,6 +347,54 @@ public class LambdaBrowserTest {
         }
     }
 
+    @Test
+    void testTakeScreenshots_UnpacksBundlesInsteadOfDownloadingEveryFile() throws Exception {
+        ScreenshotContext screenshotContext = createTestScreenshotContext();
+        List<ScreenshotContext> screenshotContexts = Collections.singletonList(screenshotContext);
+
+        Files.createDirectories(tempDir.resolve("screenshots"));
+        byte[] bundle = buildBundle(Map.of(
+                "1234567/shot_before.png", "screenshot-bytes",
+                "files_before_1234567.json", "{}"));
+
+        try (MockedStatic<LambdaClient> mockedLambdaClient = mockStatic(LambdaClient.class);
+             MockedStatic<S3TransferManager> mockedTransferManager = mockStatic(S3TransferManager.class);
+             MockedStatic<S3AsyncClient> mockedS3AsyncClient = mockStatic(S3AsyncClient.class);
+             MockedStatic<DefaultCredentialsProvider> mockedCredentials = mockStatic(DefaultCredentialsProvider.class)) {
+
+            setupMocks(mockedLambdaClient, mockedTransferManager, mockedS3AsyncClient, mockedCredentials,
+                    "{\"status\":\"success\"}", 1);
+
+            String bundleKey = "jlineup-runid/bundle_1234567_before.zip";
+            S3Client mockS3Client = stubS3Listing(bundleKey);
+            when(mockS3Client.getObject(ArgumentMatchers.<Consumer<GetObjectRequest.Builder>>any()))
+                    .thenAnswer(i -> new ResponseInputStream<>(GetObjectResponse.builder().build(), new ByteArrayInputStream(bundle)));
+
+            lambdaBrowser.takeScreenshots(screenshotContexts);
+
+            // The bundle was fetched and extracted, the legacy per-file download was not used at all
+            verify(mockS3Client, times(1)).getObject(ArgumentMatchers.<Consumer<GetObjectRequest.Builder>>any());
+            verify(mockTransferManager, never()).downloadDirectory(any(java.util.function.Consumer.class));
+            verify(fileService, times(1)).mergeContextFileTrackersIntoFileTracker(any(Path.class), any());
+
+            // ...and the extracted content ended up where mergeLambdaContextsIntoLocalFileStructure puts it
+            assertEquals("screenshot-bytes", Files.readString(tempDir.resolve("screenshots/1234567/shot_before.png")));
+            assertEquals("{}", Files.readString(tempDir.resolve("screenshots/files_before_1234567.json")));
+        }
+    }
+
+    private static byte[] buildBundle(Map<String, String> entries) throws Exception {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (ZipOutputStream zip = new ZipOutputStream(out)) {
+            for (Map.Entry<String, String> entry : entries.entrySet()) {
+                zip.putNextEntry(new ZipEntry(entry.getKey()));
+                zip.write(entry.getValue().getBytes(StandardCharsets.UTF_8));
+                zip.closeEntry();
+            }
+        }
+        return out.toByteArray();
+    }
+
     private void setupMocks(MockedStatic<LambdaClient> mockedLambdaClient,
                            MockedStatic<S3TransferManager> mockedTransferManager,
                            MockedStatic<S3AsyncClient> mockedS3AsyncClient,
@@ -381,6 +443,9 @@ public class LambdaBrowserTest {
     private void setupS3Mocks(MockedStatic<S3TransferManager> mockedTransferManager,
                              MockedStatic<S3AsyncClient> mockedS3AsyncClient,
                              DefaultCredentialsProvider mockCredentialsProvider) {
+        // By default the bucket looks empty, so LambdaBrowser falls back to the legacy per-file download.
+        stubS3Listing();
+
         // Setup S3 Transfer Manager
         mockTransferManager = mock(S3TransferManager.class);
         S3TransferManager.Builder mockTransferManagerBuilder = mock(S3TransferManager.Builder.class);
@@ -405,8 +470,22 @@ public class LambdaBrowserTest {
         when(mockDirectoryDownload.completionFuture()).thenReturn(completableFuture);
     }
 
-    private ScreenshotContext createTestScreenshotContext() {
-        return createTestScreenshotContext(null);
+    /**
+     * Stubs {@code listObjectsV2} to report the given keys. An empty list means "no bundles", which makes
+     * LambdaBrowser take the legacy per-file download path.
+     */
+    private S3Client stubS3Listing(String... keys) {
+        S3Client mockS3Client = mock(S3Client.class);
+        when(mockS3Client.listObjectsV2(any(ListObjectsV2Request.class)))
+                .thenReturn(ListObjectsV2Response.builder()
+                        .contents(Arrays.stream(keys).map(k -> S3Object.builder().key(k).build()).toList())
+                        .isTruncated(false)
+                        .build());
+        lambdaBrowser.s3ClientFactory = credentialsProvider -> mockS3Client;
+        return mockS3Client;
+    }
+
+    private ScreenshotContext createTestScreenshotContext() {        return createTestScreenshotContext(null);
     }
 
     private ScreenshotContext createTestScreenshotContext(de.otto.jlineup.browser.Browser.Type browserType) {
