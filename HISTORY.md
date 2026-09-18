@@ -1,16 +1,21 @@
 # JLineup Release History
 
+## Release 6.1.0-SNAPSHOT - 2026-09-18
+* Feature: Bundle files as zip when up- and downloading to/from S3 in lambda mode.
+           This reduces the number of S3 requests and speeds up the process.
+* Update: Dependency updates (Chrome 153 support, etc.)
+
 ## Release 6.0.4 - 2026-08-31
 * Update: Dependency updates (Chrome 152 support, etc.)
 * Update: Improve resilience of lambda browser
 
 ## Release 6.0.3 - 2026-07-17
 * Feature: Improved error messages for user-facing errors (HTTP check failures, timeouts, missing selectors).
-  Error output now shows clean, actionable messages instead of verbose stack traces. Full stack traces are
-  still available at DEBUG log level.
-* Update: Dependency updates (Selenium with Chrome 150 support, etc.)
+           Error output now shows clean, actionable messages instead of verbose stack traces. Full stack traces are
+           still available at DEBUG log level.
+* Update:  Dependency updates (Selenium with Chrome 150 support, etc.)
 * Internal feature: CI optimization - Firefox and non-headless Chrome tests now only run on scheduled builds, releases,
-  and manual workflow dispatch with `test-all-browsers: true`. This speeds up regular PR checks.
+                    and manual workflow dispatch with `test-all-browsers: true`. This speeds up regular PR checks.
 
 ## Release 6.0.2 - 2026-06-18
 * Update: This release includes a lot of dependency updates. Most noteworthy is Chrome 149 support.
@@ -32,10 +37,10 @@
 * Feature: New `flaky-tolerance` config option to accept a flaky screenshot context if enough similar
            successful contexts exist in the run.
 * Feature: Simple file locking for `runs.json` to reduce race conditions when multiple web instances
-  share the same network file system.
-* Bugfix: Corrected `application/x-yaml` to `application/yaml` as the supported YAML content type
-  in the web module's POST endpoint.
-* Update: Dependency updates (Chrome 147 in Lambda, Selenium 4.43.0, AWS SDK, AWS CDK)
+           share the same network file system.
+* Bugfix:  Corrected `application/x-yaml` to `application/yaml` as the supported YAML content type
+           in the web module's POST endpoint.
+* Update:  Dependency updates (Chrome 147 in Lambda, Selenium 4.43.0, AWS SDK, AWS CDK)
 
 ## Release 5.2.1 - 2026-04-08
 * Feature: The manual run page in the web module now uses YAML as its default editor format.
