@@ -1,5 +1,6 @@
 package de.otto.jlineup.lambda;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import de.otto.jlineup.*;
 import de.otto.jlineup.browser.Browser;
@@ -7,7 +8,6 @@ import de.otto.jlineup.browser.CloudBrowser;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileService;
-import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -23,12 +23,17 @@ import software.amazon.awssdk.services.lambda.model.InvokeRequest;
 import software.amazon.awssdk.services.lambda.model.InvokeResponse;
 import software.amazon.awssdk.services.lambda.model.ServiceException;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.CompletedDirectoryDownload;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.time.Duration;
 import java.util.*;
@@ -39,6 +44,9 @@ import static java.lang.invoke.MethodHandles.lookup;
 public class LambdaBrowser implements CloudBrowser {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
+
+    private static final int MAX_PARALLEL_DOWNLOADS = 16;
+
     private final JobConfig jobConfig;
     private final RunStepConfig runStepConfig;
     private final ExecutorService executor = Executors.newCachedThreadPool(Utils.createThreadFactory("LambdaBrowserSupervisorThread"));
@@ -46,6 +54,18 @@ public class LambdaBrowser implements CloudBrowser {
     private final JsonMapper jsonMapper = JacksonWrapper.jsonMapperForLambdaHandler();
 
     private final FileService fileService;
+
+    /**
+     * Seam that lets tests inject a stubbed S3 client. Production code always uses
+     * {@link #defaultS3Client(AwsCredentialsProvider)}.
+     */
+    @VisibleForTesting
+    S3ClientFactory s3ClientFactory = LambdaBrowser::defaultS3Client;
+
+    @FunctionalInterface
+    interface S3ClientFactory {
+        S3Client create(AwsCredentialsProvider credentialsProvider);
+    }
 
     public LambdaBrowser(RunStepConfig runStepConfig, JobConfig jobConfig, FileService fileService) {
         this.fileService = fileService;
@@ -269,11 +289,118 @@ public class LambdaBrowser implements CloudBrowser {
     }
 
     private Path downloadFilesFromS3(AwsCredentialsProvider credentialsProvider, String s3Bucket, String s3Prefix, String runId) {
-        LOG.info("All lambda calls finished, starting download from S3 with transfer manager...");
-        CompletableFuture<CompletedDirectoryDownload> download;
         Path localFolderOfS3Content = Paths.get(this.runStepConfig.getWorkingDirectory(), this.runStepConfig.getReportDirectory(), "lambda-s3");
+        final String prefix = ScreenshotBundle.s3KeyPrefixForRun(s3Prefix, runId);
 
-        final String prefix = buildS3Prefix(s3Prefix, runId);
+        LOG.info("All lambda calls finished, listing S3 objects with prefix '{}'...", prefix);
+        List<String> keys;
+        try (S3Client s3Client = buildS3Client(credentialsProvider)) {
+            keys = listAllKeys(s3Client, s3Bucket, prefix);
+            if (keys.stream().anyMatch(ScreenshotBundle::isBundleKey)) {
+                downloadAndUnpack(s3Client, s3Bucket, prefix, keys, localFolderOfS3Content);
+                return localFolderOfS3Content;
+            }
+        } catch (Exception e) {
+            LOG.error("S3 download failed", e);
+            throw new RuntimeException(e);
+        }
+
+        LOG.info("No bundles found under prefix '{}' ({} object(s)), the lambdas seem to run an older JLineup version. " +
+                "Falling back to downloading every single file.", prefix, keys.size());
+        return downloadEverySingleFileFromS3(credentialsProvider, s3Bucket, prefix, localFolderOfS3Content);
+    }
+
+    private S3Client buildS3Client(AwsCredentialsProvider credentialsProvider) {
+        return s3ClientFactory.create(credentialsProvider);
+    }
+
+    static S3Client defaultS3Client(AwsCredentialsProvider credentialsProvider) {
+        return S3Client.builder()
+                .credentialsProvider(credentialsProvider)
+                .region(Region.of(GlobalOptions.getOption(GlobalOption.JLINEUP_LAMBDA_AWS_REGION)))
+                .build();
+    }
+
+    private static List<String> listAllKeys(S3Client s3Client, String s3Bucket, String prefix) {
+        List<String> keys = new ArrayList<>();
+        String continuationToken = null;
+        do {
+            final String token = continuationToken;
+            ListObjectsV2Response response = s3Client.listObjectsV2(ListObjectsV2Request.builder()
+                    .bucket(s3Bucket)
+                    .prefix(prefix)
+                    .continuationToken(token)
+                    .build());
+            response.contents().stream()
+                    .map(S3Object::key)
+                    .filter(key -> !key.endsWith("/"))
+                    .forEach(keys::add);
+            continuationToken = Boolean.TRUE.equals(response.isTruncated()) ? response.nextContinuationToken() : null;
+        } while (continuationToken != null);
+        return keys;
+    }
+
+    /**
+     * Downloads every object of the run and, for bundles, extracts it straight from the HTTP response into
+     * the target directory – no intermediate archive ever hits the local disk.
+     *
+     * <p>Plain objects are handled too, because during a rolling deployment the per-browser lambda functions
+     * can temporarily run different JLineup versions, so a single run may produce a mix of bundles and
+     * loose files.
+     */
+    private void downloadAndUnpack(S3Client s3Client, String s3Bucket, String prefix, List<String> keys, Path localFolderOfS3Content) throws IOException {
+        long start = System.currentTimeMillis();
+        long bundleCount = keys.stream().filter(ScreenshotBundle::isBundleKey).count();
+        LOG.info("Downloading {} bundle(s) and {} loose object(s) into '{}'...", bundleCount, keys.size() - bundleCount, localFolderOfS3Content);
+
+        Files.createDirectories(localFolderOfS3Content);
+        ExecutorService downloadPool = Executors.newFixedThreadPool(
+                Math.min(MAX_PARALLEL_DOWNLOADS, keys.size()), Utils.createThreadFactory("LambdaS3DownloadThread"));
+        List<Future<Integer>> results = new ArrayList<>(keys.size());
+        try {
+            for (String key : keys) {
+                results.add(downloadPool.submit(() -> downloadSingleObject(s3Client, s3Bucket, prefix, key, localFolderOfS3Content)));
+            }
+            int extractedFiles = 0;
+            for (Future<Integer> result : results) {
+                try {
+                    extractedFiles += result.get();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("Interrupted while downloading from S3", e);
+                } catch (ExecutionException e) {
+                    throw new IOException("Download from S3 failed: " + e.getCause().getMessage(), e.getCause());
+                }
+            }
+            LOG.info("Download finished. {} object(s) yielded {} file(s) in {} ms.", keys.size(), extractedFiles, System.currentTimeMillis() - start);
+        } finally {
+            downloadPool.shutdownNow();
+        }
+    }
+
+    private static int downloadSingleObject(S3Client s3Client, String s3Bucket, String prefix, String key, Path localFolderOfS3Content) throws IOException {
+        try (InputStream in = s3Client.getObject(g -> g.bucket(s3Bucket).key(key))) {
+            if (ScreenshotBundle.isBundleKey(key)) {
+                return ScreenshotBundle.unzipInto(in, localFolderOfS3Content);
+            }
+            //Loose object from an older lambda version: mirror the key below the run prefix, exactly like
+            //the transfer manager's downloadDirectory would have done.
+            String relativeKey = key.substring(prefix.length()).replaceFirst("^/+", "");
+            Path target = ScreenshotBundle.resolveSafely(localFolderOfS3Content.toAbsolutePath().normalize(), relativeKey);
+            Path parent = target.getParent();
+            if (parent != null) {
+                Files.createDirectories(parent);
+            }
+            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+            return 1;
+        }
+    }
+
+    /**
+     * Legacy path, used when no lambda of this run produced a bundle. Unchanged behaviour.
+     */
+    private Path downloadEverySingleFileFromS3(AwsCredentialsProvider credentialsProvider, String s3Bucket, String prefix, Path localFolderOfS3Content) {
+        CompletableFuture<CompletedDirectoryDownload> download;
         LOG.info("S3 download prefix: '{}', destination: '{}'", prefix, localFolderOfS3Content);
 
         try (S3TransferManager transferManager = S3TransferManager.builder().s3Client(S3AsyncClient.crtBuilder().credentialsProvider(credentialsProvider).build()).build()) {
@@ -289,17 +416,6 @@ public class LambdaBrowser implements CloudBrowser {
             throw new RuntimeException(e);
         }
         return localFolderOfS3Content;
-    }
-
-    private static @NonNull String buildS3Prefix(String s3Prefix, String runId) {
-        String prefix = s3Prefix;
-        if (prefix != null) {
-            prefix = prefix.endsWith("/") ? prefix : prefix + "/";
-            prefix = prefix + "jlineup-" + runId;
-        } else {
-            prefix = "jlineup-" + runId;
-        }
-        return prefix;
     }
 
     private Future<InvokeResponse> invokeLambdaAndGetInvokeResponseFuture(ScreenshotContext screenshotContext, String runId, LambdaClient lambdaClient) {

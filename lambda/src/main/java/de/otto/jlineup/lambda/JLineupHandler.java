@@ -80,11 +80,12 @@ public class JLineupHandler implements RequestStreamHandler {
                 throw new RuntimeException("Environment variable JLINEUP_LAMBDA_S3_BUCKET not set! Please create a bucket and set the environment variable to contain it's name.");
             }
             String s3Prefix = GlobalOptions.getOption(JLINEUP_LAMBDA_S3_PREFIX);
-            CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager.uploadDirectory(r -> r.bucket(bucketName).source(workingDir).s3Prefix(s3Prefix)).completionFuture();
 
-            //Block until upload is completed
-            CompletedDirectoryUpload completedDirectoryUpload = uploadStatus.get();
-            output.write(("OK! S3 upload status: " + completedDirectoryUpload.toString() + " - Retries: " + retries).getBytes(StandardCharsets.UTF_8));
+            String uploadStatus = isBundlingEnabled()
+                    ? uploadAsSingleBundle(bucketName, s3Prefix, event.runId(), runner.getRunStepConfig(), screenshotContext.contextHash(), event.step())
+                    : uploadEverySingleFile(bucketName, s3Prefix, workingDir);
+
+            output.write(("OK! S3 upload status: " + uploadStatus + " - Retries: " + retries).getBytes(StandardCharsets.UTF_8));
 
             // Introduced to avoid the following error: "java.lang.RuntimeException: java.nio.file.FileSystemException: /tmp/jlineup/run-c5f6232e-4e76-4b39-90f0-151ff69223f9/jlineup-c5f6232e-4e76-4b39-90f0-151ff69223f9/150886105: No space left on device","errorType":"java.lang.RuntimeException","stackTrace":["de.otto.jlineup.lambda.JLineupHandler.handleRequest(JLineupHandler.java:90)","java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)","java.base/java.lang.reflect.Method.invoke(Unknown Source)"]}
             //	at de.otto.jlineup.lambda.LambdaBrowser.takeScreenshots(LambdaBrowser.java:105)
@@ -96,6 +97,65 @@ public class JLineupHandler implements RequestStreamHandler {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static boolean isBundlingEnabled() {
+        return !"false".equalsIgnoreCase(GlobalOptions.getOption(JLINEUP_LAMBDA_S3_BUNDLE));
+    }
+
+    /**
+     * Packs all artifacts of this invocation into a single ZIP and uploads it as one S3 object.
+     *
+     * <p>The screenshots are dominated by PNGs and therefore barely shrink, but replacing one PUT per
+     * screenshot file with a single multipart upload removes most of the round trips – and the upload
+     * blocks the handler, so that time is billed as Lambda duration.
+     *
+     * <p>The bundle is written next to (not inside) the working directory and removed again right after
+     * the upload, so the peak usage of the 1 GiB ephemeral storage grows only by the size of the
+     * screenshots of this one context.
+     */
+    private String uploadAsSingleBundle(String bucketName, String s3Prefix, String runId, RunStepConfig runStepConfig,
+                                        String contextHash, RunStep step) throws Exception {
+        Path reportDir = Paths.get(getFullPathOfReportDir(runStepConfig));
+        String bundleFileName = ScreenshotBundle.bundleFileName(contextHash, step);
+        Path bundle = Paths.get("/tmp/jlineup", "upload-" + runId + "-" + bundleFileName);
+
+        try {
+            long zipStart = System.currentTimeMillis();
+            int entries = ScreenshotBundle.zipDirectory(reportDir, bundle);
+            long bundleSize = Files.size(bundle);
+            LOG.info("Bundled {} file(s) into '{}' ({} bytes) in {} ms", entries, bundleFileName, bundleSize, System.currentTimeMillis() - zipStart);
+
+            String key = ScreenshotBundle.s3KeyPrefixForRun(s3Prefix, runId) + "/" + bundleFileName;
+            long uploadStart = System.currentTimeMillis();
+            transferManager.uploadFile(u -> u
+                            .source(bundle)
+                            .putObjectRequest(p -> p.bucket(bucketName).key(key).contentType(ScreenshotBundle.BUNDLE_CONTENT_TYPE)))
+                    .completionFuture()
+                    //Block until upload is completed
+                    .get();
+            LOG.info("Uploaded bundle to 's3://{}/{}' in {} ms", bucketName, key, System.currentTimeMillis() - uploadStart);
+
+            return String.format("bundle='%s', entries=%d, bytes=%d", key, entries, bundleSize);
+        } finally {
+            Files.deleteIfExists(bundle);
+        }
+    }
+
+    /**
+     * Legacy upload: one S3 object per file. Kept behind {@code JLINEUP_LAMBDA_S3_BUNDLE=false} as an
+     * escape hatch, and understood by every core version.
+     */
+    private String uploadEverySingleFile(String bucketName, String s3Prefix, Path workingDir) throws Exception {
+        long uploadStart = System.currentTimeMillis();
+        CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager
+                .uploadDirectory(r -> r.bucket(bucketName).source(workingDir).s3Prefix(s3Prefix))
+                .completionFuture();
+
+        //Block until upload is completed
+        CompletedDirectoryUpload completedDirectoryUpload = uploadStatus.get();
+        LOG.info("Uploaded working directory file by file in {} ms", System.currentTimeMillis() - uploadStart);
+        return completedDirectoryUpload.toString();
     }
 
     private LambdaRunner createRun(String id, RunStep step, JobConfig jobConfig, ScreenshotContext screenshotContext) {
