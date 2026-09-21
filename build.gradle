@@ -6,7 +6,9 @@ buildscript {
         graalvmVersion = '25.0.4.1'
         picoCliVersion = '4.7.7'
         awsSdkVersion = '2.54.13'
-        awsCdkVersion = '2.268.0'
+        awsCdkVersion = '2.270.0'
+        // Must be kept in lockstep with awsCdkVersion - aws-cdk-lib is built against it.
+        constructsVersion = '10.8.1'
     }
 
     repositories {
@@ -152,6 +154,21 @@ subprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'idea'
+
+    // AWS CDK + CloudFormation client are only needed for the Lambda acceptance tests.
+    // Declared centrally so the version pins and the Jackson excludes cannot drift apart
+    // between :jlineup-lambda and :jlineup-cli-lambda.
+    if (project.name in ['jlineup-lambda', 'jlineup-cli-lambda']) {
+        dependencies {
+            testImplementation("software.amazon.awssdk:cloudformation:${awsSdkVersion}")
+            testImplementation("software.amazon.awscdk:aws-cdk-lib:${awsCdkVersion}") {
+                exclude group: "com.fasterxml.jackson.core"
+                exclude group: "com.fasterxml.jackson.datatype"
+                exclude group: "com.fasterxml.jackson.dataformat"
+            }
+            testImplementation("software.constructs:constructs:${constructsVersion}")
+        }
+    }
 
     tasks.distZip.enabled = false
     tasks.distTar.enabled = false

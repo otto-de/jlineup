@@ -28,6 +28,7 @@ updates:
       - dependency-name: "software.amazon.awssdk:*"
       - dependency-name: "software.amazon.awssdk.crt:*"
       - dependency-name: "software.amazon.awscdk:*"
+      - dependency-name: "software.constructs:*"
     groups:
       test-dependencies:
         patterns:
@@ -43,6 +44,7 @@ updates:
       - "software.amazon.awssdk:*"
       - "software.amazon.awssdk.crt:*"
       - "software.amazon.awscdk:*"
+      - "software.constructs:*"
     multi-ecosystem-group: "aws-dependencies"
 
   - package-ecosystem: "npm"
