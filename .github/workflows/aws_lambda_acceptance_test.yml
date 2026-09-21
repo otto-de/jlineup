@@ -60,3 +60,31 @@ jobs:
           ./gradlew build assemble -x test
           ./gradlew :jlineup-lambda:test --tests '*LambdaAcceptanceTest*'
           JLINEUP_LAMBDA_ACCEPTANCE_FORCE_DEPLOY=false ./gradlew :jlineup-cli-lambda:test --tests '*CliLambdaAcceptanceTest*'
+
+      # The Lambda container images are pushed into the CDK bootstrap ECR repository
+      # (cdk-hnb659fds-container-assets-<account>-<region>), which is NOT part of the
+      # acceptance test stack. Neither `cdk destroy` nor the stack's removal policies
+      # ever clean it up, so every image we ever pushed would accumulate there forever
+      # at multiple GB a piece.
+      #
+      # `cdk gc` resolves the templates of all deployed stacks in the environment,
+      # collects the asset hashes they reference and deletes only the images that are
+      # no longer referenced. The image used by the currently deployed
+      # 'jlineup-lambda-acc-test' stack is therefore always retained, so this is safe
+      # to run while the stack is alive.
+      - name: Garbage collect unreferenced CDK container images in ECR
+        if: always()
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-central-1
+          AWS_DEFAULT_REGION: eu-central-1
+        run: |
+          cdk gc "aws://${AWS_ACCOUNT_ID}/${AWS_REGION}" \
+            --unstable=gc \
+            --type=ecr \
+            --action=full \
+            --confirm=false \
+            --created-buffer-days=0 \
+            --rollback-buffer-days=0

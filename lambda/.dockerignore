@@ -1,0 +1,29 @@
+# Docker build context for the JLineup Lambda images.
+#
+# This file is ALSO the input to the CDK asset fingerprint: DockerImageCode.fromImageAsset()
+# hashes every file in the build context that is not ignored here. Anything that changes
+# between builds (Gradle reports, test results, tmp dirs, IDE output, .DS_Store) would
+# otherwise produce a new asset hash on every CI run, causing a fresh multi-GB image to be
+# pushed into the CDK bootstrap ECR repository even when nothing relevant changed.
+#
+# Therefore: deny everything, then re-include exactly what the Dockerfiles COPY.
+# Keep this in sync with the COPY instructions in Dockerfile, Dockerfile.chrome,
+# Dockerfile.firefox and Dockerfile.webkit.
+
+*
+
+# Dockerfiles themselves must stay in the context
+!Dockerfile
+!Dockerfile.chrome
+!Dockerfile.firefox
+!Dockerfile.webkit
+
+# Compiled handler classes    -> COPY build/classes/java/main ${LAMBDA_TASK_ROOT}
+!build/classes/java/main
+
+# Resources incl. logback.xml -> COPY build/resources/main ${LAMBDA_TASK_ROOT}
+!build/resources/main
+
+# Runtime dependencies        -> COPY build/output/lib/* ${LAMBDA_TASK_ROOT}/lib/
+# (produced by the 'copyDependenciesToLib' task in lambda/build.gradle)
+!build/output/lib
