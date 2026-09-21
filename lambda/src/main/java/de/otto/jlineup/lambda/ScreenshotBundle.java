@@ -43,7 +43,9 @@ import java.util.zip.ZipOutputStream;
  */
 public final class ScreenshotBundle {
 
+    /** File extension and S3 key suffix that identifies a bundle. */
     public static final String BUNDLE_EXTENSION = ".zip";
+    /** Content type the bundle is uploaded with. */
     public static final String BUNDLE_CONTENT_TYPE = "application/zip";
 
     private static final String BUNDLE_NAME_PREFIX = "bundle_";
@@ -56,11 +58,21 @@ public final class ScreenshotBundle {
     /**
      * File name (and S3 object name) of the bundle of a single screenshot context. Unique within a run,
      * because a run uses exactly one step and invokes at most one Lambda per context hash.
+     *
+     * @param contextHash hash of the screenshot context the Lambda worked on
+     * @param step        the run step the Lambda was invoked for
+     * @return the bundle file name
      */
     public static String bundleFileName(String contextHash, RunStep step) {
         return BUNDLE_NAME_PREFIX + contextHash + "_" + step + BUNDLE_EXTENSION;
     }
 
+    /**
+     * Tells bundles apart from the loose files an older Lambda version uploads.
+     *
+     * @param s3Key an S3 object key
+     * @return {@code true} if the key denotes a bundle rather than a loose screenshot file
+     */
     public static boolean isBundleKey(String s3Key) {
         return s3Key != null && s3Key.endsWith(BUNDLE_EXTENSION);
     }
@@ -68,6 +80,10 @@ public final class ScreenshotBundle {
     /**
      * The common S3 key prefix of all objects belonging to one run. Shared by the uploading Lambda and the
      * downloading core so that both sides cannot drift apart.
+     *
+     * @param s3Prefix the configured bucket prefix, may be {@code null}
+     * @param runId    the id of the run
+     * @return the key prefix of all objects of this run
      */
     public static @NonNull String s3KeyPrefixForRun(String s3Prefix, String runId) {
         String prefix = s3Prefix;
@@ -84,7 +100,10 @@ public final class ScreenshotBundle {
      * Zips every regular file below {@code sourceDir} into {@code targetZip}, keeping the paths relative to
      * {@code sourceDir}.
      *
+     * @param sourceDir the directory to bundle
+     * @param targetZip the archive to create, must lie outside of {@code sourceDir}
      * @return the number of files that were added
+     * @throws IOException if the archive cannot be created or a file cannot be read
      */
     public static int zipDirectory(Path sourceDir, Path targetZip) throws IOException {
         if (targetZip.toAbsolutePath().normalize().startsWith(sourceDir.toAbsolutePath().normalize())) {
@@ -139,7 +158,10 @@ public final class ScreenshotBundle {
      * Extracts a bundle straight from the given stream into {@code targetDir}, without an intermediate file
      * on disk. The stream is consumed and closed.
      *
+     * @param inputStream the bundle content
+     * @param targetDir   the directory to extract into, created if it does not exist
      * @return the number of files that were extracted
+     * @throws IOException if the archive is unreadable or an entry would escape {@code targetDir}
      */
     public static int unzipInto(InputStream inputStream, Path targetDir) throws IOException {
         Files.createDirectories(targetDir);

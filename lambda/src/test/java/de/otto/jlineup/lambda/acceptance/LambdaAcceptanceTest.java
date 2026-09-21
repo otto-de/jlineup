@@ -13,6 +13,7 @@ import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.lambda.LambdaBrowser;
 import de.otto.jlineup.lambda.LambdaRequestPayload;
+import de.otto.jlineup.lambda.ScreenshotBundle;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -49,6 +50,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,6 +60,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -666,19 +670,31 @@ class LambdaAcceptanceTest {
             LOG.info("Download completed. Failed transfers: {}", download.failedTransfers().size());
         }
 
-        // 3. Log what was downloaded
+        // 3. Unpack the bundles – a lambda uploads one ZIP per context, not loose files
+        List<Path> bundles;
+        try (var stream = Files.list(localDownloadDir)) {
+            bundles = stream.filter(p -> ScreenshotBundle.isBundleKey(p.getFileName().toString())).toList();
+        }
+        for (Path bundle : bundles) {
+            try (InputStream in = Files.newInputStream(bundle)) {
+                ScreenshotBundle.unzipInto(in, localDownloadDir);
+            }
+            Files.delete(bundle);
+        }
+
+        // 4. Log what was downloaded
         LOG.info("Contents of download dir '{}':", localDownloadDir);
         try (var stream = Files.walk(localDownloadDir)) {
             stream.forEach(p -> LOG.info("  {}", localDownloadDir.relativize(p)));
         }
 
-        // 4. Create FileService and merge
+        // 5. Create FileService and merge
         FileService fileService = new FileService(runStepConfig, jobConfig);
         Files.createDirectories(Path.of(runStepConfig.getWorkingDirectory(), runStepConfig.getReportDirectory()));
         Files.createDirectories(Path.of(runStepConfig.getWorkingDirectory(), runStepConfig.getScreenshotsDirectory()));
         fileService.mergeContextFileTrackersIntoFileTracker(localDownloadDir, (d, name) -> name.startsWith("files_") && name.endsWith(".json"));
 
-        // 5. Verify context hash lookup
+        // 6. Verify context hash lookup
         FileTracker fileTracker = fileService.getFileTracker();
         LOG.info("File tracker contexts after merge: {}", fileTracker.contexts.keySet());
 
@@ -698,7 +714,9 @@ class LambdaAcceptanceTest {
     // -------------------------------------------------------------------------
 
     /**
-     * Lists and downloads all PNG screenshots from S3 for the given run ID.
+     * Lists and downloads all screenshots from S3 for the given run ID. Lambdas upload one ZIP bundle per
+     * screenshot context, but loose PNG objects are still read as well so this also works against a Lambda
+     * that runs with {@code JLINEUP_LAMBDA_S3_BUNDLE=false}.
      */
     private List<BufferedImage> downloadScreenshotsFromS3(String runId) throws IOException {
         String s3Prefix = "lamba-screenshots-prefix/jlineup-" + runId;
@@ -710,27 +728,49 @@ class LambdaAcceptanceTest {
                     .prefix(s3Prefix)
                     .build());
 
-            List<S3Object> pngObjects = listing.contents().stream()
-                    .filter(o -> o.key().endsWith(".png"))
+            List<S3Object> screenshotObjects = listing.contents().stream()
+                    .filter(o -> o.key().endsWith(".png") || ScreenshotBundle.isBundleKey(o.key()))
                     .toList();
 
-            LOG.info("Found {} PNG files in S3 under prefix '{}'", pngObjects.size(), s3Prefix);
+            LOG.info("Found {} screenshot object(s) in S3 under prefix '{}': {}", screenshotObjects.size(), s3Prefix,
+                    screenshotObjects.stream().map(S3Object::key).toList());
 
-            for (S3Object obj : pngObjects) {
+            for (S3Object obj : screenshotObjects) {
                 LOG.info("Downloading s3://{}/{}", bucketName, obj.key());
                 byte[] data = s3.getObject(
                         r -> r.bucket(bucketName).key(obj.key()),
                         ResponseTransformer.toBytes()
                 ).asByteArray();
-                BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
-                if (img != null) {
-                    images.add(img);
+
+                if (ScreenshotBundle.isBundleKey(obj.key())) {
+                    readPngsFromBundle(obj.key(), data, images);
                 } else {
-                    LOG.warn("Could not decode PNG: {}", obj.key());
+                    decodePng(obj.key(), data, images);
                 }
             }
         }
         return images;
+    }
+
+    private static void readPngsFromBundle(String key, byte[] bundle, List<BufferedImage> images) throws IOException {
+        try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(bundle))) {
+            ZipEntry entry;
+            while ((entry = zip.getNextEntry()) != null) {
+                if (!entry.isDirectory() && entry.getName().endsWith(".png")) {
+                    decodePng(key + "!" + entry.getName(), zip.readAllBytes(), images);
+                }
+                zip.closeEntry();
+            }
+        }
+    }
+
+    private static void decodePng(String name, byte[] data, List<BufferedImage> images) throws IOException {
+        BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
+        if (img != null) {
+            images.add(img);
+        } else {
+            LOG.warn("Could not decode PNG: {}", name);
+        }
     }
 
     // -------------------------------------------------------------------------
