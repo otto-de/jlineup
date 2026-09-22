@@ -1,8 +1,8 @@
 # JLineup Release History
 
-## Release 6.1.0-SNAPSHOT - 2026-09-18
+## Release 6.1.0 - 2026-09-22
 * Feature: Bundle files as zip when up- and downloading to/from S3 in lambda mode.
-           This reduces the number of S3 requests and speeds up the process.
+           This reduces the number of S3 requests, speeds up the process and saves resources.
 * Update: Dependency updates (Chrome 153 support, etc.)
 
 ## Release 6.0.4 - 2026-08-31
