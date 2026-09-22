@@ -159,6 +159,13 @@ public class Browser implements AutoCloseable {
 
     @Override
     public void close() {
+        //The thread pool is only shut down inside takeScreenshots(), which is bypassed completely when a
+        //cloud browser is used and is left early whenever a screenshot task throws. Shutting it down here
+        //makes sure the pool never outlives the browser it belongs to. shutdownNow() is a no-op on an
+        //already terminated pool.
+        LOG.debug("Shutting down browser thread pool.");
+        threadPool.shutdownNow();
+
         LOG.debug("Closing webdrivers.");
         shutdownCalled.getAndSet(true);
         synchronized (webDrivers) {

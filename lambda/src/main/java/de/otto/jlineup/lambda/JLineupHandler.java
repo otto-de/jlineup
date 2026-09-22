@@ -41,10 +41,51 @@ public class JLineupHandler implements RequestStreamHandler {
 
     private final JsonMapper jsonMapper = JacksonWrapper.jsonMapperForLambdaHandler();
 
-    private S3TransferManager transferManager;
+    /**
+     * Built once per container and then kept for its whole lifetime.
+     *
+     * <p>Creating it per invocation used to leak: {@link S3TransferManager#close()} only closes the
+     * {@link S3AsyncClient} if the transfer manager created it itself, and we pass one in explicitly.
+     * Every orphaned CRT client keeps its "sdk-ScheduledExecutor" pool (5 threads, no core thread timeout)
+     * plus native CRT resources alive, and AWS reuses a warm container for hours worth of invocations.
+     *
+     * <p>Building it once also keeps the credential chain lookup and the CRT native setup off the hot path.
+     * It is intentionally never closed – there is exactly one per container, and the container dying
+     * releases it.
+     */
+    private static volatile S3TransferManager transferManager;
 
     static {
         Utils.setDebugLogLevelsOfSelectedThirdPartyLibsToWarn();
+    }
+
+    private static S3TransferManager transferManager() {
+        S3TransferManager result = transferManager;
+        if (result == null) {
+            synchronized (JLineupHandler.class) {
+                result = transferManager;
+                if (result == null) {
+                    AwsCredentialsProviderChain cp = AwsCredentialsProviderChain
+                            .builder()
+                            .credentialsProviders(
+                                    // instance profile is also needed for people not using ecs but directly using ec2 instances!!
+                                    ContainerCredentialsProvider.builder().build(),
+                                    //InstanceProfileCredentialsProvider.builder().build(),
+                                    EnvironmentVariableCredentialsProvider.create(),
+                                    ProfileCredentialsProvider
+                                            .builder()
+                                            .profileName(GlobalOptions.getOption(JLINEUP_LAMBDA_AWS_PROFILE))
+                                            .build())
+                            .build();
+
+                    result = S3TransferManager.builder()
+                            .s3Client(S3AsyncClient.crtBuilder().credentialsProvider(cp).build())
+                            .build();
+                    transferManager = result;
+                }
+            }
+        }
+        return result;
     }
 
     @Override
@@ -54,21 +95,6 @@ public class JLineupHandler implements RequestStreamHandler {
             ScreenshotContext screenshotContext = ScreenshotContext.copyOfBuilder(event.screenshotContext()).withStep(event.step().toBrowserStep()).withUrlKey(event.urlKey()).withUrlConfig(event.jobConfig().urls.get(event.urlKey())).build();
             LambdaRunner runner = createRun(event.runId(), event.step() == RunStep.after ? RunStep.after_only : event.step(), event.jobConfig(), screenshotContext);
             int retries = runner.run();
-
-            AwsCredentialsProviderChain cp = AwsCredentialsProviderChain
-                    .builder()
-                    .credentialsProviders(
-                            // instance profile is also needed for people not using ecs but directly using ec2 instances!!
-                            ContainerCredentialsProvider.builder().build(),
-                            //InstanceProfileCredentialsProvider.builder().build(),
-                            EnvironmentVariableCredentialsProvider.create(),
-                            ProfileCredentialsProvider
-                                    .builder()
-                                    .profileName(GlobalOptions.getOption(JLINEUP_LAMBDA_AWS_PROFILE))
-                                    .build())
-                    .build();
-
-            transferManager = S3TransferManager.builder().s3Client(S3AsyncClient.crtBuilder().credentialsProvider(cp).build()).build();
 
             Path logfile = Paths.get(getFullPathOfReportDir(runner.getRunStepConfig()) + "/" + LOGFILE_NAME);
             Path workingDir = Paths.get("/tmp/jlineup/run-" + event.runId());
@@ -128,7 +154,7 @@ public class JLineupHandler implements RequestStreamHandler {
 
             String key = ScreenshotBundle.s3KeyPrefixForRun(s3Prefix, runId) + "/" + bundleFileName;
             long uploadStart = System.currentTimeMillis();
-            transferManager.uploadFile(u -> u
+            transferManager().uploadFile(u -> u
                             .source(bundle)
                             .putObjectRequest(p -> p.bucket(bucketName).key(key).contentType(ScreenshotBundle.BUNDLE_CONTENT_TYPE)))
                     .completionFuture()
@@ -148,7 +174,7 @@ public class JLineupHandler implements RequestStreamHandler {
      */
     private String uploadEverySingleFile(String bucketName, String s3Prefix, Path workingDir) throws Exception {
         long uploadStart = System.currentTimeMillis();
-        CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager
+        CompletableFuture<CompletedDirectoryUpload> uploadStatus = transferManager()
                 .uploadDirectory(r -> r.bucket(bucketName).source(workingDir).s3Prefix(s3Prefix))
                 .completionFuture();
 

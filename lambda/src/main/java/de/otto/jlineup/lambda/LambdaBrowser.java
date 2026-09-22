@@ -133,6 +133,19 @@ public class LambdaBrowser implements CloudBrowser {
 
     @Override
     public void takeScreenshots(List<ScreenshotContext> screenshotContexts) throws ExecutionException, InterruptedException, IOException {
+        //The credentials provider is an SdkAutoCloseable that owns the http clients of the underlying provider
+        //chain, so it has to be closed explicitly. It is not closed by the clients it is handed to.
+        try (DefaultCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build()) {
+            takeScreenshots(screenshotContexts, credentialsProvider);
+        } finally {
+            //Has to happen in a finally block: if anything above throws, the supervisor threads are still
+            //blocked in LambdaClient.invoke() (up to globalTimeout, 1800s by default) and would otherwise
+            //never be interrupted. shutdownNow() interrupts the in-flight invocations as well.
+            executor.shutdownNow();
+        }
+    }
+
+    private void takeScreenshots(List<ScreenshotContext> screenshotContexts, AwsCredentialsProvider credentialsProvider) throws ExecutionException, InterruptedException, IOException {
 
         validateLambdaFunctionNamesConfigured(screenshotContexts);
 
@@ -146,7 +159,6 @@ public class LambdaBrowser implements CloudBrowser {
                         .collect(java.util.stream.Collectors.joining(", ")));
         final String s3Bucket;
         final String s3Prefix;
-        AwsCredentialsProvider credentialsProvider = DefaultCredentialsProvider.builder().build();
 
         // Use the function name of the first context to read the shared S3 config.
         // All browser-specific Lambda functions are expected to share the same S3 bucket/prefix.
@@ -229,8 +241,6 @@ public class LambdaBrowser implements CloudBrowser {
         LOG.info("Cleaning up temporary downloaded files...");
         fileService.deleteRecursively(localFolderOfS3Content);
         LOG.info("All done. :D");
-
-        executor.shutdownNow();
     }
 
     private void mergeLambdaContextsIntoLocalFileStructure(Path localFolderOfS3Content) throws IOException {
@@ -400,14 +410,17 @@ public class LambdaBrowser implements CloudBrowser {
      * Legacy path, used when no lambda of this run produced a bundle. Unchanged behaviour.
      */
     private Path downloadEverySingleFileFromS3(AwsCredentialsProvider credentialsProvider, String s3Bucket, String prefix, Path localFolderOfS3Content) {
-        CompletableFuture<CompletedDirectoryDownload> download;
         LOG.info("S3 download prefix: '{}', destination: '{}'", prefix, localFolderOfS3Content);
 
-        try (S3TransferManager transferManager = S3TransferManager.builder().s3Client(S3AsyncClient.crtBuilder().credentialsProvider(credentialsProvider).build()).build()) {
-            download = transferManager.downloadDirectory(d -> d.bucket(s3Bucket).listObjectsV2RequestTransformer(l -> l.prefix(prefix)).destination(localFolderOfS3Content)).completionFuture();
-        }
-        LOG.info("Waiting for download to finish...");
-        try {
+        //The S3AsyncClient has to be closed by us: S3TransferManager.close() only closes the async client if the
+        //transfer manager created it itself. Because we pass one in explicitly, an unclosed client would leak its
+        //"sdk-ScheduledExecutor" pool (5 threads, no core thread timeout) on every single run.
+        try (S3AsyncClient s3AsyncClient = S3AsyncClient.crtBuilder().credentialsProvider(credentialsProvider).build();
+             S3TransferManager transferManager = S3TransferManager.builder().s3Client(s3AsyncClient).build()) {
+            CompletableFuture<CompletedDirectoryDownload> download = transferManager
+                    .downloadDirectory(d -> d.bucket(s3Bucket).listObjectsV2RequestTransformer(l -> l.prefix(prefix)).destination(localFolderOfS3Content))
+                    .completionFuture();
+            LOG.info("Waiting for download to finish...");
             CompletedDirectoryDownload result = download.get();
             LOG.info("Download finished. Failed transfers: {}", result.failedTransfers().size());
             result.failedTransfers().forEach(ft -> LOG.error("  Failed transfer: {} - {}", ft.request().getObjectRequest().key(), ft.exception().getMessage()));
