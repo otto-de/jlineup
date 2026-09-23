@@ -5,7 +5,7 @@ buildscript {
         nettyVersion = '4.2.13.Final'
         graalvmVersion = '25.0.4.1.1'
         picoCliVersion = '4.7.7'
-        awsSdkVersion = '2.55.0'
+        awsSdkVersion = '2.55.1'
         awsCdkVersion = '2.270.0'
         // Must be kept in lockstep with awsCdkVersion - aws-cdk-lib is built against it.
         constructsVersion = '10.8.1'
