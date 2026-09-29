@@ -104,3 +104,19 @@ POST http://localhost:8080/runs/{{run_id}}
 
 ### Start after run for explicit run id
 POST http://localhost:8080/runs/8bbc397b-9528-4568-818e-f7018a2addc5
+
+### Import a completed 'before' run (e.g. from CLI: tar -czf /tmp/before.tar.gz -C report .)
+POST http://localhost:8080/runs
+Content-Type: multipart/form-data; boundary=jlineup
+
+--jlineup
+Content-Disposition: form-data; name="before"; filename="before.tar.gz"
+Content-Type: application/gzip
+
+< /tmp/before.tar.gz
+--jlineup--
+
+> {%
+    client.global.set("run_id", response.body.id);
+    client.log(`Run ID: ${client.global.get("run_id")}`);
+%}

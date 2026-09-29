@@ -11,6 +11,10 @@ jlineup:
     # functionNameChromeHeadless:       # explicit override for chrome-headless Lambda
     # functionNameFirefoxHeadless:      # explicit override for firefox-headless Lambda
     # functionNameWebkitHeadless:       # explicit override for webkit-headless Lambda
+  import:
+    # Limits for uploaded 'before' runs (POST /runs as multipart/form-data)
+    maxUncompressedSizeBytes: 2147483648
+    maxEntries: 50000
 
 edison:
   application:
@@ -35,6 +39,11 @@ management:
 spring:
   application:
     name: JLineup
+  servlet:
+    multipart:
+      # Uploaded 'before' runs (POST /runs as multipart/form-data) are spooled to disk
+      max-file-size: 1GB
+      max-request-size: 1GB
   banner:
     location: classpath:banner.txt
   web:

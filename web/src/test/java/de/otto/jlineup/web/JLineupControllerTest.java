@@ -3,7 +3,9 @@ package de.otto.jlineup.web;
 import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.exceptions.ValidationError;
+import de.otto.jlineup.service.BeforeRunImportService;
 import de.otto.jlineup.service.BrowserNotInstalledException;
+import de.otto.jlineup.service.InvalidBeforeRunArchiveException;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.service.RunNotFoundException;
@@ -14,11 +16,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,9 +31,13 @@ import static de.otto.jlineup.config.JobConfig.exampleConfig;
 import static de.otto.jlineup.web.JLineupRunStatus.runStatusBuilder;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
@@ -40,6 +48,9 @@ class JLineupControllerTest {
     @Mock
     private JLineupService jLineupService;
 
+    @Mock
+    private BeforeRunImportService beforeRunImportService;
+
     private JsonMapper jsonMapper;
 
     private AutoCloseable autoCloseable;
@@ -49,7 +60,7 @@ class JLineupControllerTest {
     @BeforeEach
     void setUp() {
         jsonMapper = JacksonWrapper.jsonMapper();
-        JLineupController jLineupController = new JLineupController(jLineupService, new JLineupWebProperties());
+        JLineupController jLineupController = new JLineupController(jLineupService, beforeRunImportService, new JLineupWebProperties());
         mvc = standaloneSetup(jLineupController).setMessageConverters(new JacksonJsonHttpMessageConverter(jsonMapper)).build();
     }
 
@@ -438,6 +449,102 @@ class JLineupControllerTest {
         // then
         result
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void shouldImportBeforeRunFromMultipartUpload() throws Exception {
+
+        // given
+        String newRunId = UUID.randomUUID().toString();
+        JobConfig jobConfig = exampleConfig();
+        when(beforeRunImportService.importBeforeRun(any(), eq(jobConfig)))
+                .thenReturn(runStatusBuilder().withId(newRunId).withJobConfig(jobConfig).withState(State.BEFORE_DONE).build());
+
+        // when
+        ResultActions result = mvc
+                .perform(multipart("/testContextPath/runs")
+                        .file(new MockMultipartFile("before", "before.tar.gz", "application/gzip", new byte[]{0x1f, (byte) 0x8b}))
+                        .file(new MockMultipartFile("config", "lineup.json", "application/json", JobConfig.prettyPrint(jobConfig).getBytes(StandardCharsets.UTF_8)))
+                        .contextPath("/testContextPath"));
+
+        // then
+        result
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/testContextPath/runs/" + newRunId))
+                .andExpect(content().json("{\"id\":\"" + newRunId + "\"}"));
+        verify(jLineupService, never()).startAfterRun(any());
+    }
+
+    @Test
+    public void shouldImportBeforeRunWithoutConfigAndStartAfterStep() throws Exception {
+
+        // given
+        String newRunId = UUID.randomUUID().toString();
+        when(beforeRunImportService.importBeforeRun(any(), isNull()))
+                .thenReturn(runStatusBuilder().withId(newRunId).withJobConfig(exampleConfig()).withState(State.BEFORE_DONE).build());
+
+        // when
+        ResultActions result = mvc
+                .perform(multipart("/runs")
+                        .file(new MockMultipartFile("before", "before.zip", "application/zip", new byte[]{'P', 'K', 3, 4}))
+                        .param("startAfter", "true"));
+
+        // then
+        result
+                .andExpect(status().isAccepted())
+                .andExpect(content().json("{\"id\":\"" + newRunId + "\"}"));
+        verify(jLineupService).startAfterRun(newRunId);
+    }
+
+    @Test
+    public void shouldAcceptYamlConfigPartForImport() throws Exception {
+
+        // given
+        JobConfig jobConfig = exampleConfig();
+        when(beforeRunImportService.importBeforeRun(any(), eq(jobConfig)))
+                .thenReturn(runStatusBuilder().withId(UUID.randomUUID().toString()).withJobConfig(jobConfig).withState(State.BEFORE_DONE).build());
+
+        // when
+        ResultActions result = mvc
+                .perform(multipart("/runs")
+                        .file(new MockMultipartFile("before", "before.tar.gz", "application/gzip", new byte[]{0x1f, (byte) 0x8b}))
+                        .file(new MockMultipartFile("config", "lineup.yaml", "application/octet-stream",
+                                JacksonWrapper.serializeObject(jobConfig, JacksonWrapper.ConfigFormat.YAML).getBytes(StandardCharsets.UTF_8))));
+
+        // then
+        result.andExpect(status().isCreated());
+    }
+
+    @Test
+    public void shouldReturn400ForInvalidBeforeRunArchive() throws Exception {
+
+        // given
+        when(beforeRunImportService.importBeforeRun(any(), any())).thenThrow(new InvalidBeforeRunArchiveException("Uploaded archive doesn't contain a files.json."));
+
+        // when
+        ResultActions result = mvc
+                .perform(multipart("/runs")
+                        .file(new MockMultipartFile("before", "before.tar.gz", "application/gzip", new byte[]{1, 2, 3})));
+
+        // then
+        result
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("files.json")));
+    }
+
+    @Test
+    public void shouldReturn422IfImportedBeforeRunDoesNotMatchConfig() throws Exception {
+
+        // given
+        when(beforeRunImportService.importBeforeRun(any(), any())).thenThrow(new IllegalArgumentException("The uploaded 'before' run doesn't match the config"));
+
+        // when
+        ResultActions result = mvc
+                .perform(multipart("/runs")
+                        .file(new MockMultipartFile("before", "before.tar.gz", "application/gzip", new byte[]{1, 2, 3})));
+
+        // then
+        result.andExpect(status().isUnprocessableContent());
     }
 
     @Test

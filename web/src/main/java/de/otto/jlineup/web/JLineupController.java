@@ -2,11 +2,14 @@ package de.otto.jlineup.web;
 
 import tools.jackson.databind.exc.InvalidDefinitionException;
 import com.google.common.collect.ImmutableMap;
+import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.config.ConfigMerger;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.exceptions.ValidationError;
+import de.otto.jlineup.service.BeforeRunImportService;
 import de.otto.jlineup.service.BrowserNotInstalledException;
+import de.otto.jlineup.service.InvalidBeforeRunArchiveException;
 import de.otto.jlineup.service.InvalidRunStateException;
 import de.otto.jlineup.service.JLineupService;
 import de.otto.jlineup.service.RunNotFoundException;
@@ -15,10 +18,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,13 +42,16 @@ public class JLineupController {
 
     private final JLineupService jLineupService;
 
+    private final BeforeRunImportService beforeRunImportService;
+
     private final JLineupWebProperties properties;
 
     private final AtomicReference<String> currentExampleRun = new AtomicReference<>();
 
     @Autowired
-    public JLineupController(JLineupService jLineupService, JLineupWebProperties properties) {
+    public JLineupController(JLineupService jLineupService, BeforeRunImportService beforeRunImportService, JLineupWebProperties properties) {
         this.jLineupService = jLineupService;
+        this.beforeRunImportService = beforeRunImportService;
         this.properties = properties;
     }
 
@@ -49,13 +63,7 @@ public class JLineupController {
     @PostMapping(value = "/runs", consumes = {"application/json", "application/yaml"})
     public ResponseEntity<RunBeforeResponse> runBefore(@RequestBody JobConfig jobConfig, HttpServletRequest request) throws Exception {
 
-        if (jobConfig.mergeConfig != null) {
-            JobConfig mainGlobalConfig = JobConfig.copyOfBuilder(jobConfig).withMergeConfig(null).build();
-            JobConfig mergeGlobalConfig = jobConfig.mergeConfig;
-            jobConfig = ConfigMerger.mergeJobConfigWithMergeConfig(mainGlobalConfig, mergeGlobalConfig);
-        }
-
-        String id = jLineupService.startBeforeRun(jobConfig.insertDefaults()).getId();
+        String id = jLineupService.startBeforeRun(prepareJobConfig(jobConfig)).getId();
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(request.getContextPath() + "/runs/" + id));
@@ -63,6 +71,64 @@ public class JLineupController {
         return ResponseEntity.accepted()
                 .headers(headers)
                 .body(new RunBeforeResponse(id));
+    }
+
+    /**
+     * Creates a run from an already completed 'before' run, i.e. the 'before' screenshots are uploaded
+     * instead of being taken by this server. The resulting run is in state BEFORE_DONE and behaves exactly
+     * like a regular run after its 'before' step.
+     *
+     * @param before     archive (tar.gz, tar or zip) of the directory containing files.json and the before screenshots
+     * @param config     optional job config (JSON or YAML). If omitted, the job-config from the uploaded files.json is used.
+     * @param startAfter if true, the 'after' step is started right away
+     * @return 201 with the new run id, or 202 if the 'after' step was started
+     */
+    @PostMapping(value = "/runs", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<RunBeforeResponse> importBeforeRun(@RequestPart("before") MultipartFile before,
+                                                             @RequestPart(value = "config", required = false) MultipartFile config,
+                                                             @RequestParam(value = "startAfter", defaultValue = "false") boolean startAfter,
+                                                             HttpServletRequest request) throws Exception {
+
+        JobConfig jobConfig = config != null && !config.isEmpty() ? prepareJobConfig(parseConfigPart(config)) : null;
+
+        String id;
+        try (InputStream archive = before.getInputStream()) {
+            id = beforeRunImportService.importBeforeRun(archive, jobConfig).getId();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create(request.getContextPath() + "/runs/" + id));
+
+        if (startAfter) {
+            jLineupService.startAfterRun(id);
+            return ResponseEntity.accepted().headers(headers).body(new RunBeforeResponse(id));
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(new RunBeforeResponse(id));
+    }
+
+    private static JobConfig prepareJobConfig(JobConfig jobConfig) {
+        if (jobConfig.mergeConfig != null) {
+            JobConfig mainGlobalConfig = JobConfig.copyOfBuilder(jobConfig).withMergeConfig(null).build();
+            JobConfig mergeGlobalConfig = jobConfig.mergeConfig;
+            jobConfig = ConfigMerger.mergeJobConfigWithMergeConfig(mainGlobalConfig, mergeGlobalConfig);
+        }
+        return jobConfig.insertDefaults();
+    }
+
+    private static JobConfig parseConfigPart(MultipartFile config) throws InvalidBeforeRunArchiveException {
+        String contentType = config.getContentType() != null ? config.getContentType().toLowerCase() : "";
+        JacksonWrapper.ConfigFormat format = contentType.contains("yaml") || contentType.contains("yml")
+                ? JacksonWrapper.ConfigFormat.YAML
+                : JacksonWrapper.ConfigFormat.fromFilename(config.getOriginalFilename());
+        try (Reader reader = new InputStreamReader(config.getInputStream(), StandardCharsets.UTF_8)) {
+            return JacksonWrapper.deserializeConfig(reader, format);
+        } catch (Exception e) {
+            Throwable root = e;
+            while (root.getCause() != null && root.getCause() != root) {
+                root = root.getCause();
+            }
+            throw new InvalidBeforeRunArchiveException("Could not parse config part: " + root.getMessage(), e);
+        }
     }
 
     @GetMapping(value = "/exampleRun")
@@ -155,6 +221,16 @@ public class JLineupController {
         } catch (IllegalArgumentException e) {
             throw new RunNotFoundException(runId);
         }
+    }
+
+    @ExceptionHandler(InvalidBeforeRunArchiveException.class)
+    public ResponseEntity<String> exceptionHandler(final InvalidBeforeRunArchiveException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<String> exceptionHandler(final MaxUploadSizeExceededException exception) {
+        return new ResponseEntity<>("Upload too large: " + exception.getMessage(), HttpStatus.CONTENT_TOO_LARGE);
     }
 
     @ExceptionHandler(RunNotFoundException.class)

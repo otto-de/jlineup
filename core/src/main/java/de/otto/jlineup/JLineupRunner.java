@@ -1,6 +1,7 @@
 package de.otto.jlineup;
 
 import de.otto.jlineup.browser.Browser;
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.JobConfigValidator;
@@ -16,6 +17,8 @@ import org.slf4j.MDC;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathToLogFile;
 import static java.lang.invoke.MethodHandles.lookup;
@@ -63,6 +66,10 @@ public class JLineupRunner {
                 browser.runSetupAndTakeScreenshots();
             } catch (Exception e) {
                 throw new RuntimeException(e);
+            }
+
+            if (runStepConfig.getStep() == RunStep.after) {
+                warnIfBrowserVersionsDiffer(fileService.getBrowsers());
             }
 
             if (runStepConfig.getStep() == RunStep.before) {
@@ -126,6 +133,30 @@ public class JLineupRunner {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+
+    /**
+     * The browser versions of both steps are recorded in files.json. If they differ (e.g. because the 'before'
+     * screenshots were taken elsewhere, or the browser was updated in between), differences in the screenshots
+     * may be caused by the browser's rendering and not by the page itself.
+     *
+     * @return true if versions for both steps are known and differ
+     */
+    static boolean warnIfBrowserVersionsDiffer(Map<BrowserStep, Set<String>> browsers) {
+        if (browsers == null) {
+            return false;
+        }
+        Set<String> before = browsers.get(BrowserStep.before);
+        Set<String> after = browsers.get(BrowserStep.after);
+        if (before == null || after == null || before.isEmpty() || after.isEmpty()) {
+            return false;
+        }
+        if (!new TreeSet<>(before).equals(new TreeSet<>(after))) {
+            LOG.warn("Browser versions differ between 'before' ({}) and 'after' ({}) step. Detected differences may be caused by the browser's rendering.",
+                    String.join(", ", new TreeSet<>(before)), String.join(", ", new TreeSet<>(after)));
+            return true;
         }
         return false;
     }

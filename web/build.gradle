@@ -13,6 +13,9 @@ dependencies {
 
     implementation("org.hibernate.validator:hibernate-validator")
 
+    // Used to extract uploaded 'before' run archives (tar, tar.gz, zip)
+    implementation("org.apache.commons:commons-compress:1.28.0")
+
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testImplementation "org.junit.jupiter:junit-jupiter"
     testImplementation("org.springframework.boot:spring-boot-starter-test")

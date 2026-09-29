@@ -1,5 +1,14 @@
 # JLineup Release History
 
+## Release 6.2.0-SNAPSHOT - 2026-09-29
+* Feature: Web server accepts completed 'before' runs as upload (`POST /runs` as `multipart/form-data` with a
+           tar.gz/zip archive of the run directory and an optional config). The imported run is in state
+           `BEFORE_DONE` and the 'after' step can be triggered as usual. This can be used to have a stable
+           set of 'before'-screenshots to compare the current state of a website against, e.g. for regression testing.
+* Feature: A warning is logged if the browser versions of 'before' and 'after' step differ.
+* Bugfix: Fixed some resource leaks through lingering threads in the web server variants. This could lead to
+          unresponsive services after a while.
+
 ## Release 6.1.0 - 2026-09-22
 * Feature: Bundle files as zip when up- and downloading to/from S3 in lambda mode.
            This reduces the number of S3 requests, speeds up the process and saves resources.

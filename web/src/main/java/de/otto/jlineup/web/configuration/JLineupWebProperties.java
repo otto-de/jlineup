@@ -48,6 +48,7 @@ public class JLineupWebProperties {
                 ", allowedUrlPrefixes=" + allowedUrlPrefixes +
                 ", maxPersistedRuns=" + maxPersistedRuns +
                 ", lambda=" + lambda +
+                ", importSettings=" + importSettings +
                 '}';
     }
 
@@ -56,12 +57,12 @@ public class JLineupWebProperties {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JLineupWebProperties that = (JLineupWebProperties) o;
-        return cleanupProfile == that.cleanupProfile && maxParallelJobs == that.maxParallelJobs && maxThreadsPerJob == that.maxThreadsPerJob && maxPersistedRuns == that.maxPersistedRuns && Objects.equals(workingDirectory, that.workingDirectory) && Objects.equals(screenshotsDirectory, that.screenshotsDirectory) && Objects.equals(reportDirectory, that.reportDirectory) && Objects.equals(chromeLaunchParameters, that.chromeLaunchParameters) && Objects.equals(firefoxLaunchParameters, that.firefoxLaunchParameters) && Objects.equals(installedBrowsers, that.installedBrowsers) && Objects.equals(allowedUrlPrefixes, that.allowedUrlPrefixes) && Objects.equals(lambda, that.lambda);
+        return cleanupProfile == that.cleanupProfile && maxParallelJobs == that.maxParallelJobs && maxThreadsPerJob == that.maxThreadsPerJob && maxPersistedRuns == that.maxPersistedRuns && Objects.equals(workingDirectory, that.workingDirectory) && Objects.equals(screenshotsDirectory, that.screenshotsDirectory) && Objects.equals(reportDirectory, that.reportDirectory) && Objects.equals(chromeLaunchParameters, that.chromeLaunchParameters) && Objects.equals(firefoxLaunchParameters, that.firefoxLaunchParameters) && Objects.equals(installedBrowsers, that.installedBrowsers) && Objects.equals(allowedUrlPrefixes, that.allowedUrlPrefixes) && Objects.equals(lambda, that.lambda) && Objects.equals(importSettings, that.importSettings);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(workingDirectory, screenshotsDirectory, reportDirectory, cleanupProfile, maxParallelJobs, maxThreadsPerJob, chromeLaunchParameters, firefoxLaunchParameters, installedBrowsers, allowedUrlPrefixes, maxPersistedRuns, lambda);
+        return Objects.hash(workingDirectory, screenshotsDirectory, reportDirectory, cleanupProfile, maxParallelJobs, maxThreadsPerJob, chromeLaunchParameters, firefoxLaunchParameters, installedBrowsers, allowedUrlPrefixes, maxPersistedRuns, lambda, importSettings);
     }
 
     private List<String> allowedUrlPrefixes = emptyList();
@@ -69,6 +70,9 @@ public class JLineupWebProperties {
     private int maxPersistedRuns = DEFAULT_MAX_PERSISTED_RUNS;
 
     private JLineupWebLambdaProperties lambda = new JLineupWebLambdaProperties();
+
+    // Bound to 'jlineup.import.*' ('import' is a Java keyword, hence the different field name)
+    private JLineupWebImportProperties importSettings = new JLineupWebImportProperties();
 
     public String getWorkingDirectory() {
         return workingDirectory;
@@ -148,6 +152,14 @@ public class JLineupWebProperties {
 
     public void setLambda(JLineupWebLambdaProperties lambda) {
         this.lambda = lambda;
+    }
+
+    public JLineupWebImportProperties getImport() {
+        return importSettings;
+    }
+
+    public void setImport(JLineupWebImportProperties importSettings) {
+        this.importSettings = importSettings;
     }
 
     public int getMaxPersistedRuns() {

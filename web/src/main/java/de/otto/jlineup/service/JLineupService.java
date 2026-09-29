@@ -235,6 +235,31 @@ public class JLineupService {
     }
 
     /**
+     * Registers a run whose 'before' step was not executed by this server, but whose
+     * complete 'before' result was imported into the run's report directory beforehand
+     * (see {@link BeforeRunImportService}). The run ends up in state BEFORE_DONE, exactly
+     * like a regular 'before' run, so the 'after' step can be triggered as usual.
+     */
+    public synchronized JLineupRunStatus registerImportedBeforeRun(String runId, JobConfig jobConfig) {
+        Instant now = Instant.now();
+        JLineupRunStatus status = runStatusBuilder()
+                .withId(runId)
+                .withJobConfig(jobConfig)
+                .withState(State.BEFORE_DONE)
+                .withStartTime(now)
+                .withPauseTime(now)
+                .withReports(JLineupRunStatus.Reports.reportsBuilder()
+                        .withLogUrl("/reports/report-" + runId + "/jlineup.log")
+                        .withHtmlUrl("/reports/report-" + runId + "/report_before.html")
+                        .build())
+                .build();
+        runs.put(runId, status);
+        runPersistenceService.persistRuns(runs);
+        LOG.info("Registered imported 'before' run {}", runId);
+        return status;
+    }
+
+    /**
      * Copies the source run's report directory (including subdirectories with
      * before screenshots and files.json) to a new directory for the rerun.
      * Existing after screenshots will simply be overwritten by the new after step.

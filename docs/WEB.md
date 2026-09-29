@@ -60,6 +60,28 @@ JLineup has a small set of methods, which live in one context:
     * The created *runId* is returned in the location header.
     * The content type is `application/json` or `application/yaml`
 
+* ***POST*** `/runs` with content type `multipart/form-data`
+    * Uploads an already completed 'before' run (e.g. made with the JLineup CLI in CI, or checked in
+      as reference screenshots) instead of letting the server take the 'before' screenshots.
+    * Parts:
+        * `before` (required): archive (`tar.gz`, `tar` or `zip`) of the directory containing `files.json`
+          and the before screenshots. Both the CLI layout (`files.json` + `screenshots/{hash}/…`) and the
+          web server layout (`files.json` + `{hash}/…`) are accepted. Other files (after screenshots,
+          reports, logs) are ignored.
+        * `config` (optional): the JLineup config as JSON or YAML. If omitted, the `job-config` from the
+          uploaded `files.json` is used. It must produce the same screenshot contexts (urls, paths,
+          window widths/devices, browser) as the config that created the screenshots.
+    * Query parameter `startAfter=true` (optional) starts the 'after' step right away.
+    * Returns `201 Created` (or `202 Accepted` with `startAfter=true`) with the *runId* in body and location header.
+      The run is in state `BEFORE_DONE` and can be continued with ***POST*** `/runs/{runId}`.
+    * Returns `400` for broken archives and `422` if the screenshots don't match the config.
+    * The browser version of the uploaded screenshots (`browsers.before` in `files.json`) is shown in the report.
+      If it differs from the one used for the 'after' step, a warning is logged, because differences may be
+      caused by the browser's rendering.
+    * Example: `tar -czf before.tar.gz -C report . && curl -F "before=@before.tar.gz;type=application/gzip" -F "config=@lineup.json;type=application/json" http://localhost:8080/runs`
+    * Limits: `spring.servlet.multipart.max-file-size`/`max-request-size` (default 1GB) and
+      `jlineup.import.max-uncompressed-size-bytes` (default 2GiB) / `jlineup.import.max-entries` (default 50000).
+
 * ***POST*** `/runs/{runId}`
     * Starts an 'after' run for the given *runId*.
     * The content type is `application/json` or `application/yaml`

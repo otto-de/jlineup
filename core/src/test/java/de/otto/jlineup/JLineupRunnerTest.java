@@ -19,6 +19,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class JLineupRunnerTest {
 
     @Test
+    void shouldDetectDifferentBrowserVersionsBetweenBeforeAndAfter() {
+        assertThat(JLineupRunner.warnIfBrowserVersionsDiffer(Map.of(
+                BrowserStep.before, Set.of("Chrome 146.0.7680.80"),
+                BrowserStep.after, Set.of("Chrome 147.0.7727.138"))), is(true));
+    }
+
+    @Test
+    void shouldNotWarnIfBrowserVersionsAreEqualOrUnknown() {
+        assertThat(JLineupRunner.warnIfBrowserVersionsDiffer(Map.of(
+                BrowserStep.before, Set.of("Chrome 147.0.7727.138"),
+                BrowserStep.after, Set.of("Chrome 147.0.7727.138"))), is(false));
+        assertThat(JLineupRunner.warnIfBrowserVersionsDiffer(Map.of(
+                BrowserStep.after, Set.of("Chrome 147.0.7727.138"))), is(false));
+        assertThat(JLineupRunner.warnIfBrowserVersionsDiffer(null), is(false));
+    }
+
+    @Test
     void shouldNotFailIfMaxDiffIsSameAsDetectedDiff() {
 
         UrlReport urlReport = new UrlReport("abc", "abc", new Summary(false, 0, 15.1234567890123456, 0), Collections.emptyList());
