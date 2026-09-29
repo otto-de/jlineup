@@ -9,7 +9,7 @@ RUN apt-get update \
            webkit2gtk-driver epiphany-browser \
            gstreamer1.0-plugins-base gstreamer1.0-plugins-good \
            libgl1-mesa-dri \
-    && wget -U "jlineup-docker" -O jlineup-web.jar https://repo1.maven.org/maven2/de/otto/jlineup-web/5.3.0/jlineup-web-5.3.0.jar
+    && wget -U "jlineup-docker" -O jlineup-web.jar https://repo1.maven.org/maven2/de/otto/jlineup-web/6.2.0/jlineup-web-6.2.0.jar
 ADD docker/application.yml application.yml
 RUN apt-get remove --auto-remove perl -yf && apt-get purge --auto-remove perl -yf
 EXPOSE 8080

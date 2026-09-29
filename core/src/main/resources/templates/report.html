@@ -467,6 +467,11 @@
             white-space: nowrap;
         }
 
+        button.expand-all-toggle {
+            font-family: inherit;
+            line-height: inherit;
+        }
+
         #filter-browsers,
         #filter-viewports {
             display: inline-flex;
@@ -1208,6 +1213,34 @@
         }
 
         // Focus mode: full-width, no TOC
+        // Expand / collapse all (currently visible) context reports
+        function visibleContextDetails() {
+            return [...document.querySelectorAll('details.urlReport:not(.filter-hidden)')];
+        }
+
+        function syncExpandAllButton() {
+            const dets = visibleContextDetails();
+            const allOpen = dets.length > 0 && dets.every(d => d.open);
+            document.querySelectorAll('.expand-all-toggle').forEach(btn => {
+                btn.textContent = allOpen ? '\u25B4 Collapse all' : '\u25BE Expand all';
+                btn.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
+            });
+        }
+
+        function toggleExpandAll() {
+            const dets = visibleContextDetails();
+            const open = !(dets.length > 0 && dets.every(d => d.open));
+            dets.forEach(d => { d.open = open; });
+            syncExpandAllButton();
+        }
+
+        // Keep the button label in sync when single contexts are toggled or filters change
+        document.addEventListener('toggle', (e) => {
+            if (e.target.matches && e.target.matches('details.urlReport')) syncExpandAllButton();
+        }, true);
+        document.addEventListener('jlineup-filters-changed', syncExpandAllButton);
+        document.addEventListener('DOMContentLoaded', syncExpandAllButton);
+
         function toggleFocusMode() {
             document.body.classList.toggle('focus-mode');
             const active = document.body.classList.contains('focus-mode');
@@ -1863,6 +1896,7 @@
         <span id="filter-browsers"></span>
         <span id="filter-viewports"></span>
         <span class="filter-count" id="filter-count"></span>
+        <button type="button" class="filter-chip expand-all-toggle" onclick="toggleExpandAll()" title="Expand / collapse all visible contexts" aria-pressed="false">&#x25BE; Expand all</button>
     </div>
 
     <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}"
