@@ -114,6 +114,64 @@ class JobConfigTest {
     }
 
     @Test
+    public void shouldUseDefaultReportLabelsIfNotConfigured() {
+        JobConfig jobConfig = JobConfig.defaultConfig();
+
+        assertThat(jobConfig.beforeLabel, is(nullValue()));
+        assertThat(jobConfig.afterLabel, is(nullValue()));
+        assertThat(jobConfig.getEffectiveBeforeLabel(), is("Before"));
+        assertThat(jobConfig.getEffectiveAfterLabel(), is("After"));
+    }
+
+    @Test
+    public void shouldUseDefaultReportLabelsIfConfiguredLabelsAreBlank() {
+        JobConfig jobConfig = JobConfig.copyOfBuilder(JobConfig.defaultConfig()).withBeforeLabel("").withAfterLabel("  ").build();
+
+        assertThat(jobConfig.getEffectiveBeforeLabel(), is("Before"));
+        assertThat(jobConfig.getEffectiveAfterLabel(), is("After"));
+    }
+
+    @Test
+    public void shouldReadReportLabelsFromYamlAndJsonConfig() {
+        JobConfig fromYaml = JacksonWrapper.deserializeConfig(new StringReader("""
+                urls: https://www.example.com
+                before-label: Reference (local)
+                after-label: Current (dev)
+                """), JacksonWrapper.ConfigFormat.YAML);
+        JobConfig fromJson = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": {} }, "before-label": "Reference (local)", "after-label": "Current (dev)" }
+                """), JacksonWrapper.ConfigFormat.JSON);
+
+        for (JobConfig jobConfig : new JobConfig[]{fromYaml, fromJson}) {
+            assertThat(jobConfig.beforeLabel, is("Reference (local)"));
+            assertThat(jobConfig.afterLabel, is("Current (dev)"));
+            assertThat(jobConfig.getEffectiveBeforeLabel(), is("Reference (local)"));
+            assertThat(jobConfig.getEffectiveAfterLabel(), is("Current (dev)"));
+        }
+    }
+
+    @Test
+    public void shouldKeepReportLabelsWhenInsertingDefaultsAndSanitizing() {
+        JobConfig jobConfig = JobConfig.copyOfBuilder(JobConfig.defaultConfig()).withBeforeLabel("Reference").withAfterLabel("Current").build();
+
+        JobConfig processed = jobConfig.insertDefaults().sanitize();
+
+        assertThat(processed.beforeLabel, is("Reference"));
+        assertThat(processed.afterLabel, is("Current"));
+    }
+
+    @Test
+    public void shouldSerializeReportLabelsOnlyIfConfigured() {
+        String withoutLabels = JobConfig.prettyPrint(JobConfig.defaultConfig());
+        String withLabels = JobConfig.prettyPrint(JobConfig.copyOfBuilder(JobConfig.defaultConfig()).withBeforeLabel("Reference").withAfterLabel("Current").build());
+
+        assertThat(withoutLabels, not(containsString("before-label")));
+        assertThat(withoutLabels, not(containsString("after-label")));
+        assertThat(withLabels, containsString("\"before-label\" : \"Reference\""));
+        assertThat(withLabels, containsString("\"after-label\" : \"Current\""));
+    }
+
+    @Test
     public void shouldDetectFormatFromFilename() {
         assertThat(JacksonWrapper.ConfigFormat.fromFilename("lineup.json"), is(JacksonWrapper.ConfigFormat.JSON));
         assertThat(JacksonWrapper.ConfigFormat.fromFilename("lineup.yaml"), is(JacksonWrapper.ConfigFormat.YAML));

@@ -65,6 +65,8 @@ public final class JobConfig  {
     static final int DEFAULT_GLOBAL_TIMEOUT = 1800;
     public static final float DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT = 10.0f;
     public static final int DEFAULT_FLAKY_TOLERANCE = 0;
+    public static final String DEFAULT_BEFORE_LABEL = "Before";
+    public static final String DEFAULT_AFTER_LABEL = "After";
 
     public static final HttpCheckConfig DEFAULT_HTTP_CHECK_CONFIG = new HttpCheckConfig();
 
@@ -81,6 +83,13 @@ public final class JobConfig  {
 
     @JsonInclude(Include.NON_DEFAULT)
     public final String approvalLink;
+
+    // Labels of the 'before' and 'after' screenshots in the reports, 'Before' and 'After' if not set
+    @JsonInclude(Include.NON_DEFAULT)
+    public final String beforeLabel;
+
+    @JsonInclude(Include.NON_DEFAULT)
+    public final String afterLabel;
 
     @JsonProperty("wait-after-page-load")
     @JsonAlias({"async-wait"})
@@ -114,6 +123,8 @@ public final class JobConfig  {
         name = builder.name;
         message = builder.message;
         approvalLink = builder.approvalLink;
+        beforeLabel = builder.beforeLabel;
+        afterLabel = builder.afterLabel;
         urls = builder.urls;
         // Resolve browsers vs browser: browsers wins if set, otherwise derive from browser
         if (builder.browsers != null && !builder.browsers.isEmpty()) {
@@ -252,6 +263,34 @@ public final class JobConfig  {
         return approvalLink;
     }
 
+    public String getBeforeLabel() {
+        return beforeLabel;
+    }
+
+    public String getAfterLabel() {
+        return afterLabel;
+    }
+
+    /**
+     * @return the label of the 'before' screenshots in the reports, 'Before' if none is configured
+     */
+    @JsonIgnore
+    public String getEffectiveBeforeLabel() {
+        return isBlank(beforeLabel) ? DEFAULT_BEFORE_LABEL : beforeLabel;
+    }
+
+    /**
+     * @return the label of the 'after' screenshots in the reports, 'After' if none is configured
+     */
+    @JsonIgnore
+    public String getEffectiveAfterLabel() {
+        return isBlank(afterLabel) ? DEFAULT_AFTER_LABEL : afterLabel;
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
     public Float getGlobalWaitAfterPageLoad() {
         return globalWaitAfterPageLoad;
     }
@@ -317,6 +356,8 @@ public final class JobConfig  {
                 .withName(jobConfig.name)
                 .withMessage(jobConfig.message)
                 .withApprovalLink(jobConfig.approvalLink)
+                .withBeforeLabel(jobConfig.beforeLabel)
+                .withAfterLabel(jobConfig.afterLabel)
                 .withUrls(jobConfig.urls)
                 .withHttpCheck(jobConfig.httpCheck)
                 .withBrowser(jobConfig.browser)
@@ -339,12 +380,12 @@ public final class JobConfig  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JobConfig jobConfig = (JobConfig) o;
-        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && flakyTolerance == jobConfig.flakyTolerance && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(browsers, jobConfig.browsers) && Objects.equals(name, jobConfig.name) && Objects.equals(message, jobConfig.message) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
+        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && flakyTolerance == jobConfig.flakyTolerance && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(browsers, jobConfig.browsers) && Objects.equals(name, jobConfig.name) && Objects.equals(message, jobConfig.message) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(beforeLabel, jobConfig.beforeLabel) && Objects.equals(afterLabel, jobConfig.afterLabel) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(urls, browser, browsers, name, message, approvalLink, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, screenshotRetries, threads, globalTimeout, flakyTolerance, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
+        return Objects.hash(urls, browser, browsers, name, message, approvalLink, beforeLabel, afterLabel, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, screenshotRetries, threads, globalTimeout, flakyTolerance, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
     }
 
     @Override
@@ -356,6 +397,8 @@ public final class JobConfig  {
                 ", name='" + name + '\'' +
                 ", message='" + message + '\'' +
                 ", approvalLink='" + approvalLink + '\'' +
+                ", beforeLabel='" + beforeLabel + '\'' +
+                ", afterLabel='" + afterLabel + '\'' +
                 ", globalWaitAfterPageLoad=" + globalWaitAfterPageLoad +
                 ", pageLoadTimeout=" + pageLoadTimeout +
                 ", windowHeight=" + windowHeight +
@@ -391,6 +434,8 @@ public final class JobConfig  {
         return jobConfigBuilder()
                 .withName("Example")
                 .withMessage("This is an example message, which will be shown in the report.")
+                .withBeforeLabel(DEFAULT_BEFORE_LABEL)
+                .withAfterLabel(DEFAULT_AFTER_LABEL)
                 .withCheckForErrorsInLog(true)
                 .withUrls(ImmutableMap.of("https://www.example.com",
 
@@ -498,6 +543,8 @@ public final class JobConfig  {
         private String name = null;
         private String message = null;
         private String approvalLink = null;
+        private String beforeLabel = null;
+        private String afterLabel = null;
         private Map<String, UrlConfig> urls = null;
         private Browser.Type browser = DEFAULT_BROWSER;
         private List<Browser.Type> browsers = null;
@@ -529,6 +576,16 @@ public final class JobConfig  {
 
         public Builder withApprovalLink(String val) {
             approvalLink = val;
+            return this;
+        }
+
+        public Builder withBeforeLabel(String val) {
+            beforeLabel = val;
+            return this;
+        }
+
+        public Builder withAfterLabel(String val) {
+            afterLabel = val;
             return this;
         }
 

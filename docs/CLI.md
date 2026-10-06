@@ -281,6 +281,14 @@ Possible Values: `Chrome`, `Firefox`, `Chrome-Headless`, `Firefox-Headless`
 
 ---
 
+### `--before-label`, `--after-label`
+
+These options set the labels of the 'before' and 'after' screenshots in the HTML reports (default: `Before` and `After`).
+They override [`before-label` and `after-label`](CONFIGURATION.md#before-label-and-after-label) of the job config.
+Example: `--before-label "Reference" --after-label "Current"`
+
+---
+
 ### `--merge-config, -m` (Experimental feature)
 
 With this option, you can specify a base config that will be merged with the job config file.

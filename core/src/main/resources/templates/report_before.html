@@ -1125,7 +1125,7 @@
     </script>
 </head>
 
-<body>
+<body th:with="beforeLabel=${report.config.effectiveBeforeLabel}">
 
 <button type="button" class="focus-fab dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" style="right:110px;">&#x25D1; Auto</button>
 <button type="button" id="focus-fab" class="focus-fab" onclick="toggleFocusMode()" title="Toggle focus mode">&#x26F6; Focus</button>
@@ -1236,7 +1236,7 @@
                 <div class="compare-grid">
                     <div class="compare-row compare-head">
                         <div class="compare-cell">Info</div>
-                        <div class="compare-cell">Before</div>
+                        <div class="compare-cell">[[${beforeLabel}]]</div>
                     </div>
                     <div class="compare-row" th:each="result,iterationStatus : ${contextReport.results}">
                         <div class="compare-cell">
@@ -1245,9 +1245,9 @@
                                 <div th:switch="${result.screenshotBeforeFileName!=null}">
                                     <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}"
                                        target="_blank">
-                                        &#8599;&nbsp;Before
+                                        &#8599;&nbsp;[[${beforeLabel}]]
                                     </a>
-                                    <span th:case="${false}">No&nbsp;before&nbsp;image</span>
+                                    <span th:case="${false}">No&nbsp;[[${beforeLabel == 'Before' ? 'before' : beforeLabel}]]&nbsp;image</span>
                                 </div>
                                 <div>
                                     <a th:href="${contextReport.url}" target="_blank" th:title="${contextReport.url}">&#8599;&nbsp;Open&nbsp;page</a>
@@ -1296,7 +1296,7 @@
 
 <p class="footer">Generated with JLineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
     [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]].
-    <span>The 'before' step was rendered with "[[${report.getBrowser("before")}]]".</span>
+    <span>The 'before' step<th:block th:if="${beforeLabel != 'Before'}"> ([[${beforeLabel}]])</th:block> was rendered with "[[${report.getBrowser("before")}]]".</span>
 </p>
 
 </div>

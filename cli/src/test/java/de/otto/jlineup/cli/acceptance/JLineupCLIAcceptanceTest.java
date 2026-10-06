@@ -375,6 +375,27 @@ class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    void shouldSetReportLabelsFromCommandLine() throws Exception {
+        int status = catchSystemExit(() ->
+            Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--url", "https://www.example.com", "--print-config",
+                    "--before-label", "Reference (local)", "--after-label", "Current (dev)"}));
+        assertEquals(0, status);
+        assertThat(systemOutCaptor.toString(), containsString("before-label: Reference (local)"));
+        assertThat(systemOutCaptor.toString(), containsString("after-label: Current (dev)"));
+    }
+
+    @Test
+    void shouldOverrideReportLabelsOfConfigFromCommandLine() throws Exception {
+        int status = catchSystemExit(() ->
+            Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_labels.lineup.yaml", "--print-config",
+                    "--after-label", "Current (dev)"}));
+        assertEquals(0, status);
+        assertThat(systemOutCaptor.toString(), containsString("before-label: Reference from config"));
+        assertThat(systemOutCaptor.toString(), containsString("after-label: Current (dev)"));
+        assertThat(systemOutCaptor.toString(), not(containsString("After from config")));
+    }
+
+    @Test
     void shouldPrintExampleConfig() throws Exception {
         int status = catchSystemExit(() ->
             Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--print-example"}));

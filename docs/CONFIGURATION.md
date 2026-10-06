@@ -186,6 +186,8 @@ urls:
     - "#remove-id"
     flaky-tolerance: 0
 browser: Chrome
+before-label: Before
+after-label: After
 wait-after-page-load: 0.0
 page-load-timeout: 120
 report-format: 2
@@ -269,6 +271,8 @@ http-check:
     }
   },
   "browser": "Chrome",
+  "before-label": "Before",
+  "after-label": "After",
   "wait-after-page-load": 0.0,
   "page-load-timeout": 120,
   "report-format": 2,
@@ -1282,6 +1286,30 @@ Since: 4.2.0
    `"name": "Cool name for my JLineup Job"`
    </details>
  
+---
+
+### `before-label` and `after-label`
+
+ The labels of the 'before' and 'after' screenshots in the HTML reports: column header, image links, slider, zoom view
+ and the click-through view. Useful if the screenshots of both steps aren't simply "before" and "after" a change, e.g.
+ if a stored reference is compared with the current state of a website.
+ Blank values fall back to the defaults. The command line parameters [`--before-label` and `--after-label`](CLI.md)
+ override the values of the config.
+
+ * Scope: Global
+ * Type: String
+ * Default: `Before` and `After`
+ * Example:
+   ```yaml
+   before-label: Reference
+   after-label: Current
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"before-label": "Reference", "after-label": "Current"`
+   </details>
+
 --- 
  
 ### `window-height` *(deprecated)*

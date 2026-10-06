@@ -27,4 +27,19 @@ class ConfigMergerTest {
         assertThat(resultingConfig, is(expectedConfig));
 
     }
+
+    @Test
+    void shouldMergeReportLabelsWithPrecedenceOfLocalConfig() {
+
+        //Given
+        JobConfig jobConfig = JobConfig.copyOfBuilder(JobConfig.exampleConfig()).withBeforeLabel("Local before").withAfterLabel(null).build();
+        JobConfig mergeConfig = JobConfig.copyOfBuilder(JobConfig.exampleConfig()).withBeforeLabel("Merged before").withAfterLabel("Merged after").build();
+
+        //When
+        JobConfig resultingConfig = ConfigMerger.mergeJobConfigWithMergeConfig(jobConfig, mergeConfig);
+
+        //Then
+        assertThat(resultingConfig.beforeLabel, is("Local before"));
+        assertThat(resultingConfig.afterLabel, is("Merged after"));
+    }
 }

@@ -1,0 +1,6 @@
+urls:
+  https://www.example.com:
+    paths:
+      - /
+before-label: Reference from config
+after-label: After from config

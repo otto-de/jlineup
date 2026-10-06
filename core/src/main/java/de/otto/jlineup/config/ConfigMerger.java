@@ -104,6 +104,8 @@ public class ConfigMerger {
         mergedJobConfigBuilder.withName(originalConfig.name != null ? originalConfig.name : mergeConfig.name);
         mergedJobConfigBuilder.withMessage(originalConfig.message != null ? originalConfig.message : mergeConfig.message);
         mergedJobConfigBuilder.withApprovalLink(originalConfig.approvalLink != null ? originalConfig.approvalLink : mergeConfig.approvalLink);
+        mergedJobConfigBuilder.withBeforeLabel(originalConfig.beforeLabel != null ? originalConfig.beforeLabel : mergeConfig.beforeLabel);
+        mergedJobConfigBuilder.withAfterLabel(originalConfig.afterLabel != null ? originalConfig.afterLabel : mergeConfig.afterLabel);
         mergedJobConfigBuilder.withGlobalWaitAfterPageLoad(originalConfig.globalWaitAfterPageLoad != DEFAULT_GLOBAL_WAIT_AFTER_PAGE_LOAD ? originalConfig.globalWaitAfterPageLoad : mergeConfig.globalWaitAfterPageLoad);
         mergedJobConfigBuilder.withPageLoadTimeout(originalConfig.pageLoadTimeout != DEFAULT_PAGELOAD_TIMEOUT ? originalConfig.pageLoadTimeout : mergeConfig.pageLoadTimeout);
         mergedJobConfigBuilder.withWindowHeight(originalConfig.windowHeight != null ? originalConfig.windowHeight : mergeConfig.windowHeight);

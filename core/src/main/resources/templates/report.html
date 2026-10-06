@@ -1153,6 +1153,13 @@
             --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
         }
     </style>
+    <script th:inline="javascript">
+        // Labels of the 'before' and 'after' screenshots, configurable with 'before-label' and 'after-label'
+        const JLINEUP_LABELS = {
+            before: /*[[${report.config.effectiveBeforeLabel}]]*/ "Before",
+            after: /*[[${report.config.effectiveAfterLabel}]]*/ "After"
+        };
+    </script>
     <script type="application/javascript">
 
         function initClickImage(file1, file2, file3) {
@@ -1161,7 +1168,7 @@
                     setDifference();
                 } else {
                     document.getElementById("clickimage").src = file2;
-                    document.getElementById("clickimagelabel").innerText = "After";
+                    document.getElementById("clickimagelabel").innerText = JLINEUP_LABELS.after;
                 }
             }
 
@@ -1179,7 +1186,7 @@
                     setAfter();
                 } else {
                     document.getElementById("clickimage").src = file1;
-                    document.getElementById("clickimagelabel").innerText = "Before";
+                    document.getElementById("clickimagelabel").innerText = JLINEUP_LABELS.before;
                 }
             }
 
@@ -1427,8 +1434,8 @@
 
             showLabels: true,
             labelOptions: {
-                before: 'Before',
-                after: 'After',
+                before: JLINEUP_LABELS.before,
+                after: JLINEUP_LABELS.after,
                 onHover: true
             },
 
@@ -1811,7 +1818,7 @@
     </script>
 </head>
 
-<body>
+<body th:with="beforeLabel=${report.config.effectiveBeforeLabel},afterLabel=${report.config.effectiveAfterLabel}">
 
 <button type="button" class="focus-fab dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" style="right:110px;">&#x25D1; Auto</button>
 <button type="button" id="focus-fab" class="focus-fab" onclick="toggleFocusMode()" title="Toggle focus mode">&#x26F6; Focus</button>
@@ -1958,7 +1965,7 @@
                 <div class="compare-grid">
                     <div class="compare-row compare-head">
                         <div class="compare-cell">Info</div>
-                        <div class="compare-cell">Before | After</div>
+                        <div class="compare-cell">[[${beforeLabel}]] | [[${afterLabel}]]</div>
                         <div class="compare-cell result-col-header"></div>
                         <div class="compare-cell">Difference</div>
                     </div>
@@ -1973,16 +1980,16 @@
                                 <div th:switch="${result.screenshotBeforeFileName!=null}">
                                     <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}"
                                        target="_blank">
-                                        &#8599;&nbsp;Before
+                                        &#8599;&nbsp;[[${beforeLabel}]]
                                     </a>
-                                    <span th:case="${false}">No&nbsp;before&nbsp;image</span>
+                                    <span th:case="${false}">No&nbsp;[[${beforeLabel == 'Before' ? 'before' : beforeLabel}]]&nbsp;image</span>
                                 </div>
                                 <div th:switch="${result.screenshotAfterFileName!=null}">
                                     <a th:case="${true}" th:href="${result.screenshotAfterFileNameForHTML}"
                                        target="_blank">
-                                        &#8599;&nbsp;After
+                                        &#8599;&nbsp;[[${afterLabel}]]
                                     </a>
-                                    <span th:case="${false}">No&nbsp;after&nbsp;image</span>
+                                    <span th:case="${false}">No&nbsp;[[${afterLabel == 'After' ? 'after' : afterLabel}]]&nbsp;image</span>
                                 </div>
                                 <div th:switch="${result.differenceImageFileName!=null}">
                                     <a th:case="${true}" th:href="${result.differenceImageFileNameForHTML}"
@@ -2049,14 +2056,14 @@
                                 <img class="screenshot-difference" width="100%" loading="lazy"
                                      th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
-                                <span class="icv__label icv__label-after keep on-hover">Before (only)</span>
+                                <span class="icv__label icv__label-after keep on-hover">[[${beforeLabel}]] (only)</span>
                             </div>
                             <div th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML == null}"
                                  class="icv">
                                 <img class="screenshot-difference" width="100%" loading="lazy"
                                      th:id="${'after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
-                                <span class="icv__label icv__label-after keep on-hover">After (only)</span>
+                                <span class="icv__label icv__label-after keep on-hover">[[${afterLabel}]] (only)</span>
                             </div>
                         </div>
                         <div th:switch="${result.difference > 0}" class="compare-cell result-col">
@@ -2141,8 +2148,8 @@
 <div id="zoombox" class="invisible">
     <div id="zoomfix">
         <div class="zoom-grid">
-            <div class="zoom-head">Before</div>
-            <div class="zoom-head">After</div>
+            <div class="zoom-head">[[${beforeLabel}]]</div>
+            <div class="zoom-head">[[${afterLabel}]]</div>
             <div class="zoom-head">Difference</div>
             <div class="zoom-cell">
                 <div id="zoom_before" class="zoom"></div>
@@ -2162,15 +2169,15 @@
 <div id="clickdiff">
     <div id="imagediv">
         <img id="clickimage"/>
-        <div id="clickimagelabel">Before</div>
+        <div id="clickimagelabel">[[${beforeLabel}]]</div>
         <div id="clickclose" onclick="closeClickDiff()">&#10006;</div>
     </div>
 </div>
 
 <p class="footer">Generated with JLineup [[${jlineup_version}]] - [[${jlineup_commit}]] on
     [[${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}]]. <span
-            th:unless="${#strings.equals(report.getBrowser('before'), report.getBrowser('after'))}">The 'before' step was rendered with
-        "[[${report.getBrowser("before")}]]" and the 'after' step was rendered with "[[${report.getBrowser("after")}]]".</span><span
+            th:unless="${#strings.equals(report.getBrowser('before'), report.getBrowser('after'))}">The 'before' step<th:block th:if="${beforeLabel != 'Before'}"> ([[${beforeLabel}]])</th:block> was rendered with
+        "[[${report.getBrowser("before")}]]" and the 'after' step<th:block th:if="${afterLabel != 'After'}"> ([[${afterLabel}]])</th:block> was rendered with "[[${report.getBrowser("after")}]]".</span><span
             th:if="${#strings.equals(report.getBrowser('before'), report.getBrowser('after'))}">Both steps were rendered with "[[${report.getBrowser("after")}]]".</span>
 </p>
 
