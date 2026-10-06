@@ -3,8 +3,21 @@
 # Fetches the latest Chrome for Testing and Amazon Linux 2023 versions
 # and prints them for easy updating of .chrome-version and .al2023-version
 #
+# Usage: check-latest-versions.sh [--update]
+#   --update  write the latest versions to .chrome-version and .al2023-version
+#
 
 set -euo pipefail
+
+UPDATE=false
+for arg in "$@"; do
+    case "$arg" in
+        --update) UPDATE=true ;;
+        *) echo "Unknown parameter: $arg" >&2; echo "Usage: $0 [--update]" >&2; exit 1 ;;
+    esac
+done
+
+PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 echo "Fetching latest versions..."
 echo ""
@@ -27,5 +40,17 @@ echo "Amazon Linux 2023:           $AL2023_VERSION"
 
 echo ""
 echo "Current versions in project:"
-echo "  .chrome-version:  $(cat "$(dirname "$0")/../.chrome-version" 2>/dev/null || echo 'not found')"
-echo "  .al2023-version:  $(cat "$(dirname "$0")/../.al2023-version" 2>/dev/null || echo 'not found')"
+echo "  .chrome-version:  $(cat "$PROJECT_DIR/.chrome-version" 2>/dev/null || echo 'not found')"
+echo "  .al2023-version:  $(cat "$PROJECT_DIR/.al2023-version" 2>/dev/null || echo 'not found')"
+
+if [ "$UPDATE" = true ]; then
+    if [ -z "$CHROME_VERSION" ] || [ -z "$AL2023_VERSION" ]; then
+        echo "" >&2
+        echo "Could not determine latest versions, not updating." >&2
+        exit 1
+    fi
+    printf '%s' "$CHROME_VERSION" > "$PROJECT_DIR/.chrome-version"
+    printf '%s' "$AL2023_VERSION" > "$PROJECT_DIR/.al2023-version"
+    echo ""
+    echo "Updated .chrome-version and .al2023-version to the latest versions."
+fi
