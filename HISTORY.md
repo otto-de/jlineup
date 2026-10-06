@@ -5,7 +5,8 @@
            "After"), e.g. "Reference" and "Current" if a stored reference is compared with the current state.
            Set with `before-label` and `after-label` in the job config or with `--before-label` and `--after-label`
            on the command line, which override the config.
-* Update: Dependency updates (Chrome 154.0.8037.92 in Lambda, Amazon Linux 2023.12.20260930)
+* Update: Dependency updates (Selenium 4.50.0 with Chrome 154 support, Chrome 154.0.8037.92 in Lambda,
+          Amazon Linux 2023.12.20260930)
 
 ## Release 6.2.0 - 2026-09-29
 * Feature: Web server accepts completed 'before' runs as upload (`POST /runs` as `multipart/form-data` with a
