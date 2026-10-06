@@ -1,5 +1,12 @@
 # JLineup Release History
 
+## Release 6.2.1 - 2026-10-06
+* Feature: Configurable labels for the 'before' and 'after' screenshots in the HTML reports (default: "Before" and
+           "After"), e.g. "Reference" and "Current" if a stored reference is compared with the current state.
+           Set with `before-label` and `after-label` in the job config or with `--before-label` and `--after-label`
+           on the command line, which override the config.
+* Update: Dependency updates (Chrome 154.0.8037.92 in Lambda, Amazon Linux 2023.12.20260930)
+
 ## Release 6.2.0 - 2026-09-29
 * Feature: Web server accepts completed 'before' runs as upload (`POST /runs` as `multipart/form-data` with a
            tar.gz/zip archive of the run directory and an optional config). The imported run is in state
