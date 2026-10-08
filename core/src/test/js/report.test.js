@@ -23,6 +23,10 @@ const scriptMatch = html.match(
 if (!scriptMatch) throw new Error('Could not find application/javascript script in report.html');
 const scriptSrc = scriptMatch[1];
 
+// report.html defines JLINEUP_LABELS in a separate Thymeleaf-inlined script block,
+// which is not part of the extracted script, so provide it here.
+globalThis.JLINEUP_LABELS = { before: 'Before', after: 'After' };
+
 // Run in this context so the function declarations land on the Jest global.
 // We wrap them in an IIFE that assigns to globalThis so they're reachable.
 const wrappedSrc = `(function(global) { ${scriptSrc}
