@@ -1,9 +1,11 @@
 # JLineup Release History
 
-## Release 6.2.2-SNAPSHOT
+## Release 6.3.0 - 2026-10-26
 * Feature: Direct upload of 'before' runs to the lambda S3 bucket (`POST /uploads`, then `POST /runs` with
            `beforeUploadId`), only in `jlineup-web-lambda`. Bypasses slow connections to the web server (e.g. SSM
            tunnels). With an optional `referenceHash`, an unchanged reference is uploaded only once and reused.
+* Update: Dependency updates (Selenium 4.51.0, Spring Boot 4.1.2, Netty 4.2.18.Final, AWS SDK, Chrome
+          156.0.8078.47 in Lambda, Amazon Linux 2023.12.20261026)
 
 ## Release 6.2.1 - 2026-10-06
 * Feature: Configurable labels for the 'before' and 'after' screenshots in the HTML reports (default: "Before" and
