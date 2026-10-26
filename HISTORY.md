@@ -1,5 +1,10 @@
 # JLineup Release History
 
+## Release 6.2.2-SNAPSHOT
+* Feature: Direct upload of 'before' runs to the lambda S3 bucket (`POST /uploads`, then `POST /runs` with
+           `beforeUploadId`), only in `jlineup-web-lambda`. Bypasses slow connections to the web server (e.g. SSM
+           tunnels). With an optional `referenceHash`, an unchanged reference is uploaded only once and reused.
+
 ## Release 6.2.1 - 2026-10-06
 * Feature: Configurable labels for the 'before' and 'after' screenshots in the HTML reports (default: "Before" and
            "After"), e.g. "Reference" and "Current" if a stored reference is compared with the current state.

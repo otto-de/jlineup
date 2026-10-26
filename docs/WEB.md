@@ -64,23 +64,45 @@ JLineup has a small set of methods, which live in one context:
     * Uploads an already completed 'before' run (e.g. made with the JLineup CLI in CI, or checked in
       as reference screenshots) instead of letting the server take the 'before' screenshots.
     * Parts:
-        * `before` (required): archive (`tar.gz`, `tar` or `zip`) of the directory containing `files.json`
+        * `before` (required unless `beforeUploadId` is given): archive (`tar.gz`, `tar` or `zip`) of the directory containing `files.json`
           and the before screenshots. Both the CLI layout (`files.json` + `screenshots/{hash}/…`) and the
           web server layout (`files.json` + `{hash}/…`) are accepted. Other files (after screenshots,
           reports, logs) are ignored.
+        * `beforeUploadId` (alternative to `before`): id of an archive uploaded directly to S3 before, see ***POST*** `/uploads`.
         * `config` (optional): the JLineup config as JSON or YAML. If omitted, the `job-config` from the
           uploaded `files.json` is used. It must produce the same screenshot contexts (urls, paths,
           window widths/devices, browser) as the config that created the screenshots.
     * Query parameter `startAfter=true` (optional) starts the 'after' step right away.
     * Returns `201 Created` (or `202 Accepted` with `startAfter=true`) with the *runId* in body and location header.
       The run is in state `BEFORE_DONE` and can be continued with ***POST*** `/runs/{runId}`.
-    * Returns `400` for broken archives and `422` if the screenshots don't match the config.
+    * Returns `400` for broken archives and `422` if the screenshots don't match the config or the upload doesn't exist.
     * The browser version of the uploaded screenshots (`browsers.before` in `files.json`) is shown in the report.
       If it differs from the one used for the 'after' step, a warning is logged, because differences may be
       caused by the browser's rendering.
     * Example: `tar -czf before.tar.gz -C report . && curl -F "before=@before.tar.gz;type=application/gzip" -F "config=@lineup.json;type=application/json" http://localhost:8080/runs`
     * Limits: `spring.servlet.multipart.max-file-size`/`max-request-size` (default 1GB) and
       `jlineup.import.max-uncompressed-size-bytes` (default 2GiB) / `jlineup.import.max-entries` (default 50000).
+
+* ***POST*** `/uploads` (only with `jlineup-web-lambda`)
+    * Prepares a direct upload of a 'before' run archive to the S3 bucket that is used for the exchange with the
+      lambdas (`JLINEUP_LAMBDA_S3_BUCKET`/`JLINEUP_LAMBDA_S3_PREFIX` of the lambda function, key
+      `{prefix}jlineup-before-uploads/{uploadId}`). Use this if the connection to the server is slow, e.g.
+      through an SSM tunnel.
+    * Query parameter `referenceHash` (optional): a hash of the archive's content, e.g. the git tree hash of a
+      checked-in reference (`git rev-parse HEAD:ci/jlineup/reference`). If an upload with this hash exists
+      already, `exists` is `true` and nothing has to be uploaded. Reference uploads are kept, one-time uploads
+      (without hash) are deleted after the import. Configure a lifecycle rule for the prefix to remove old uploads.
+    * Response: `{"uploadId": "...", "exists": false, "uploadUrl": "https://...", "uploadMethod": "PUT", "expiresAt": "..."}`.
+      The pre-signed `uploadUrl` needs no AWS credentials and is valid for `jlineup.import.upload-url-validity` (default 15m).
+    * Returns `501` if the server runs without the lambda module.
+    * Example:
+      ```bash
+      tar -cf before.tar -C report .
+      UPLOAD=$(curl -sf -X POST "http://localhost:8080/uploads?referenceHash=$(git rev-parse HEAD:report)")
+      [ "$(echo "$UPLOAD" | jq -r .exists)" == "true" ] || curl -sf -T before.tar "$(echo "$UPLOAD" | jq -r .uploadUrl)"
+      curl -F "beforeUploadId=$(echo "$UPLOAD" | jq -r .uploadId)" -F "config=@lineup.json;type=application/json" http://localhost:8080/runs
+      ```
+    * The server's role needs `s3:PutObject`, `s3:GetObject` and `s3:DeleteObject` on the prefix (and `lambda:GetFunction`).
 
 * ***POST*** `/runs/{runId}`
     * Starts an 'after' run for the given *runId*.

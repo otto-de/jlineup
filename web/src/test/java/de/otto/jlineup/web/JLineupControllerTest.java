@@ -4,6 +4,9 @@ import de.otto.jlineup.JacksonWrapper;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.service.BeforeRunImportService;
+import de.otto.jlineup.service.BeforeRunUploadService;
+import de.otto.jlineup.service.BeforeUploadNotFoundException;
+import de.otto.jlineup.service.CloudUploadsNotAvailableException;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidBeforeRunArchiveException;
 import de.otto.jlineup.service.InvalidRunStateException;
@@ -22,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Optional;
@@ -51,6 +55,9 @@ class JLineupControllerTest {
     @Mock
     private BeforeRunImportService beforeRunImportService;
 
+    @Mock
+    private BeforeRunUploadService beforeRunUploadService;
+
     private JsonMapper jsonMapper;
 
     private AutoCloseable autoCloseable;
@@ -60,7 +67,7 @@ class JLineupControllerTest {
     @BeforeEach
     void setUp() {
         jsonMapper = JacksonWrapper.jsonMapper();
-        JLineupController jLineupController = new JLineupController(jLineupService, beforeRunImportService, new JLineupWebProperties());
+        JLineupController jLineupController = new JLineupController(jLineupService, beforeRunImportService, beforeRunUploadService, new JLineupWebProperties());
         mvc = standaloneSetup(jLineupController).setMessageConverters(new JacksonJsonHttpMessageConverter(jsonMapper)).build();
     }
 
@@ -545,6 +552,87 @@ class JLineupControllerTest {
 
         // then
         result.andExpect(status().isUnprocessableContent());
+    }
+
+    @Test
+    public void shouldCreateDirectUpload() throws Exception {
+
+        // given
+        when(beforeRunUploadService.createUpload("abc1234"))
+                .thenReturn(new BeforeUploadResponse("ref-abc1234", false, "https://bucket.s3.amazonaws.com/key?sig", "PUT", "2026-10-26T12:00:00Z"));
+
+        // when
+        ResultActions result = mvc.perform(post("/uploads").param("referenceHash", "abc1234"));
+
+        // then
+        result
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"uploadId\":\"ref-abc1234\",\"exists\":false,\"uploadUrl\":\"https://bucket.s3.amazonaws.com/key?sig\",\"uploadMethod\":\"PUT\",\"expiresAt\":\"2026-10-26T12:00:00Z\"}"));
+    }
+
+    @Test
+    public void shouldReturn501IfDirectUploadsAreNotAvailable() throws Exception {
+
+        // given
+        when(beforeRunUploadService.createUpload(null)).thenThrow(new CloudUploadsNotAvailableException("not available"));
+
+        // when
+        ResultActions result = mvc.perform(post("/uploads"));
+
+        // then
+        result.andExpect(status().isNotImplemented());
+    }
+
+    @Test
+    public void shouldImportBeforeRunFromDirectUpload() throws Exception {
+
+        // given
+        String newRunId = UUID.randomUUID().toString();
+        InputStream archive = new java.io.ByteArrayInputStream(new byte[]{1, 2, 3});
+        when(beforeRunUploadService.openUpload("ref-abc1234")).thenReturn(archive);
+        when(beforeRunImportService.importBeforeRun(eq(archive), isNull()))
+                .thenReturn(runStatusBuilder().withId(newRunId).withJobConfig(exampleConfig()).withState(State.BEFORE_DONE).build());
+
+        // when
+        ResultActions result = mvc
+                .perform(multipart("/runs")
+                        .param("beforeUploadId", "ref-abc1234"));
+
+        // then
+        result
+                .andExpect(status().isCreated())
+                .andExpect(content().json("{\"id\":\"" + newRunId + "\"}"));
+        verify(beforeRunUploadService).discardUpload("ref-abc1234");
+    }
+
+    @Test
+    public void shouldReturn422IfDirectUploadDoesNotExist() throws Exception {
+
+        // given
+        when(beforeRunUploadService.openUpload("ref-abc1234")).thenThrow(new BeforeUploadNotFoundException("ref-abc1234"));
+
+        // when
+        ResultActions result = mvc
+                .perform(multipart("/runs")
+                        .param("beforeUploadId", "ref-abc1234"));
+
+        // then
+        result
+                .andExpect(status().isUnprocessableContent())
+                .andExpect(content().string(containsString("ref-abc1234")));
+    }
+
+    @Test
+    public void shouldReturn400IfNeitherOrBothArchiveAndUploadIdAreGiven() throws Exception {
+
+        mvc.perform(multipart("/runs")
+                        .file(new MockMultipartFile("config", "lineup.json", "application/json", JobConfig.prettyPrint(exampleConfig()).getBytes(StandardCharsets.UTF_8))))
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(multipart("/runs")
+                        .file(new MockMultipartFile("before", "before.tar", "application/x-tar", new byte[]{1, 2, 3}))
+                        .param("beforeUploadId", "ref-abc1234"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

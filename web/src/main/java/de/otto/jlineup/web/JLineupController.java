@@ -8,6 +8,9 @@ import de.otto.jlineup.config.ConfigMerger;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.exceptions.ValidationError;
 import de.otto.jlineup.service.BeforeRunImportService;
+import de.otto.jlineup.service.BeforeRunUploadService;
+import de.otto.jlineup.service.BeforeUploadNotFoundException;
+import de.otto.jlineup.service.CloudUploadsNotAvailableException;
 import de.otto.jlineup.service.BrowserNotInstalledException;
 import de.otto.jlineup.service.InvalidBeforeRunArchiveException;
 import de.otto.jlineup.service.InvalidRunStateException;
@@ -44,14 +47,17 @@ public class JLineupController {
 
     private final BeforeRunImportService beforeRunImportService;
 
+    private final BeforeRunUploadService beforeRunUploadService;
+
     private final JLineupWebProperties properties;
 
     private final AtomicReference<String> currentExampleRun = new AtomicReference<>();
 
     @Autowired
-    public JLineupController(JLineupService jLineupService, BeforeRunImportService beforeRunImportService, JLineupWebProperties properties) {
+    public JLineupController(JLineupService jLineupService, BeforeRunImportService beforeRunImportService, BeforeRunUploadService beforeRunUploadService, JLineupWebProperties properties) {
         this.jLineupService = jLineupService;
         this.beforeRunImportService = beforeRunImportService;
+        this.beforeRunUploadService = beforeRunUploadService;
         this.properties = properties;
     }
 
@@ -78,22 +84,37 @@ public class JLineupController {
      * instead of being taken by this server. The resulting run is in state BEFORE_DONE and behaves exactly
      * like a regular run after its 'before' step.
      *
-     * @param before     archive (tar.gz, tar or zip) of the directory containing files.json and the before screenshots
-     * @param config     optional job config (JSON or YAML). If omitted, the job-config from the uploaded files.json is used.
-     * @param startAfter if true, the 'after' step is started right away
+     * @param before         archive (tar.gz, tar or zip) of the directory containing files.json and the before screenshots
+     * @param beforeUploadId alternative to 'before': id of an archive uploaded to cloud storage before (see POST /uploads)
+     * @param config         optional job config (JSON or YAML). If omitted, the job-config from the uploaded files.json is used.
+     * @param startAfter     if true, the 'after' step is started right away
      * @return 201 with the new run id, or 202 if the 'after' step was started
      */
     @PostMapping(value = "/runs", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<RunBeforeResponse> importBeforeRun(@RequestPart("before") MultipartFile before,
+    public ResponseEntity<RunBeforeResponse> importBeforeRun(@RequestPart(value = "before", required = false) MultipartFile before,
+                                                             @RequestParam(value = "beforeUploadId", required = false) String beforeUploadId,
                                                              @RequestPart(value = "config", required = false) MultipartFile config,
                                                              @RequestParam(value = "startAfter", defaultValue = "false") boolean startAfter,
                                                              HttpServletRequest request) throws Exception {
 
+        boolean hasArchive = before != null && !before.isEmpty();
+        boolean hasUploadId = beforeUploadId != null && !beforeUploadId.isBlank();
+        if (hasArchive == hasUploadId) {
+            throw new InvalidBeforeRunArchiveException("Either the 'before' archive or a 'beforeUploadId' (see POST /uploads) has to be given, but not both.");
+        }
+
         JobConfig jobConfig = config != null && !config.isEmpty() ? prepareJobConfig(parseConfigPart(config)) : null;
 
         String id;
-        try (InputStream archive = before.getInputStream()) {
-            id = beforeRunImportService.importBeforeRun(archive, jobConfig).getId();
+        if (hasArchive) {
+            try (InputStream archive = before.getInputStream()) {
+                id = beforeRunImportService.importBeforeRun(archive, jobConfig).getId();
+            }
+        } else {
+            try (InputStream archive = beforeRunUploadService.openUpload(beforeUploadId.trim())) {
+                id = beforeRunImportService.importBeforeRun(archive, jobConfig).getId();
+            }
+            beforeRunUploadService.discardUpload(beforeUploadId.trim());
         }
 
         HttpHeaders headers = new HttpHeaders();
@@ -104,6 +125,19 @@ public class JLineupController {
             return ResponseEntity.accepted().headers(headers).body(new RunBeforeResponse(id));
         }
         return ResponseEntity.status(HttpStatus.CREATED).headers(headers).body(new RunBeforeResponse(id));
+    }
+
+    /**
+     * Prepares a direct upload of a 'before' run archive to cloud storage (the S3 bucket shared with the lambdas),
+     * bypassing the web server. Upload the archive to the returned URL, then create the run with
+     * POST /runs (multipart) and 'beforeUploadId'.
+     *
+     * @param referenceHash optional content hash (e.g. git tree hash of the reference directory). If an upload
+     *                      with this hash exists already, 'exists' is true and no upload is necessary.
+     */
+    @PostMapping("/uploads")
+    public ResponseEntity<BeforeUploadResponse> createBeforeUpload(@RequestParam(value = "referenceHash", required = false) String referenceHash) throws Exception {
+        return ResponseEntity.ok(beforeRunUploadService.createUpload(referenceHash));
     }
 
     private static JobConfig prepareJobConfig(JobConfig jobConfig) {
@@ -221,6 +255,16 @@ public class JLineupController {
         } catch (IllegalArgumentException e) {
             throw new RunNotFoundException(runId);
         }
+    }
+
+    @ExceptionHandler(CloudUploadsNotAvailableException.class)
+    public ResponseEntity<String> exceptionHandler(final CloudUploadsNotAvailableException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @ExceptionHandler(BeforeUploadNotFoundException.class)
+    public ResponseEntity<String> exceptionHandler(final BeforeUploadNotFoundException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(InvalidBeforeRunArchiveException.class)

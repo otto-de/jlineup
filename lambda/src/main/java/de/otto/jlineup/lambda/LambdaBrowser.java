@@ -86,7 +86,7 @@ public class LambdaBrowser implements CloudBrowser {
      * @param browserType the browser type to resolve the function name for
      * @return the Lambda function name, or {@code null} if none is configured
      */
-    String resolveLambdaFunctionName(Browser.Type browserType) {
+    static String resolveLambdaFunctionName(Browser.Type browserType) {
         // 1. Per-browser explicit override
         GlobalOption perBrowserOption = perBrowserGlobalOption(browserType);
         if (perBrowserOption != null) {
