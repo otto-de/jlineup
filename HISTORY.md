@@ -1,5 +1,11 @@
 # JLineup Release History
 
+## Release 6.3.1-SNAPSHOT
+* Bugfix: The Lambda Dockerfiles fell back to outdated defaults (Chrome 150, older Amazon Linux) if the
+          build didn't pass `CHROME_MAJOR_VERSION`/`AMI_LINUX_2023_VERSION`. `scripts/check-latest-versions.sh`
+          now keeps the defaults in sync with `.chrome-version` and `.al2023-version` (`--update` and new
+          `--sync`), and `--check` reports differences.
+
 ## Release 6.3.0 - 2026-10-26
 * Feature: Direct upload of 'before' runs to the lambda S3 bucket (`POST /uploads`, then `POST /runs` with
            `beforeUploadId`), only in `jlineup-web-lambda`. Bypasses slow connections to the web server (e.g. SSM

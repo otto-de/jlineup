@@ -1,7 +1,8 @@
 FROM public.ecr.aws/lambda/java:21-x86_64
 
-# This sets the specific version of the AMI Linux 2023 release
-ARG AMI_LINUX_2023_VERSION="2023.11.20260514"
+# Amazon Linux 2023 release version for dnf repositories.
+# Default is synced with /.al2023-version by scripts/check-latest-versions.sh, override with --build-arg AMI_LINUX_2023_VERSION=...
+ARG AMI_LINUX_2023_VERSION="2023.12.20261026"
 
 USER root
 
