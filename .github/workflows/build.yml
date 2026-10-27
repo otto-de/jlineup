@@ -67,6 +67,8 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check lambda Dockerfile defaults against .chrome-version and .al2023-version
+        run: scripts/check-latest-versions.sh --check
       - name: Read Chrome version
         run: echo "CHROME_VERSION=$(cat .chrome-version)" >> $GITHUB_ENV
       - name: Set up JDK
