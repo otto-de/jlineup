@@ -55,6 +55,14 @@ public class FileService {
         return fileTracker.getScreenshotContextFileTracker(hash).screenshotContext;
     }
 
+    public ScreenshotContextFileTracker getRecordedContextFileTracker(String hash) {
+        return fileTracker.getScreenshotContextFileTracker(hash);
+    }
+
+    public void setScreenshotDimensions(ScreenshotContext screenshotContext, double devicePixelRatio, int screenshotWidth) {
+        fileTracker.setScreenshotDimensions(screenshotContext, devicePixelRatio, screenshotWidth);
+    }
+
     public FileService(RunStepConfig runStepConfig, JobConfig jobConfig) {
         this(runStepConfig, jobConfig, DEFAULT_FILETRACKER_FILENAME);
     }
@@ -294,6 +302,8 @@ public class FileService {
                     .withScreenshotContext(existingContext.screenshotContext)
                     .withScreenshots(existingContext.screenshots)
                     .addScreenshots(newContext.screenshots)
+                    .withDevicePixelRatio(newContext.getDevicePixelRatio() != null ? newContext.getDevicePixelRatio() : existingContext.getDevicePixelRatio())
+                    .withScreenshotWidth(newContext.getScreenshotWidth() != null ? newContext.getScreenshotWidth() : existingContext.getScreenshotWidth())
                     .build());
             });
             part.browsers.forEach((step, browserSet) ->

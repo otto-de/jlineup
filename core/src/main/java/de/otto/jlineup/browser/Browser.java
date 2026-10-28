@@ -486,6 +486,9 @@ public class Browser implements AutoCloseable {
         viewportHeight = validateViewportHeight(viewportHeight);
         LOG.debug("Viewport height of browser window: {}", viewportHeight);
 
+        final double devicePixelRatio = getDevicePixelRatio();
+        boolean screenshotDimensionsRecorded = false;
+
         //Calculate scroll distance
         int scrollDistance = viewportHeight;
         if (screenshotContext.urlConfig.scrollDistanceFactor != DEFAULT_SCROLL_DISTANCE_FACTOR) {
@@ -511,12 +514,16 @@ public class Browser implements AutoCloseable {
                 g.setColor(getBodyColor());
                 g.fillRect(0, 0, currentScreenshot.getWidth(), currentScreenshot.getHeight());
                 // Draw shifted image
-                g.drawImage(currentScreenshot, 0, -(int)((yPosition + viewportHeight - pageHeight) * getDevicePixelRatio()), null);
+                g.drawImage(currentScreenshot, 0, -(int)((yPosition + viewportHeight - pageHeight) * devicePixelRatio), null);
                 currentScreenshot = croppedAndFilledScreenshot;
             }
 
             fileService.writeScreenshot(screenshotContext,
                     currentScreenshot, yPosition);
+            if (!screenshotDimensionsRecorded) {
+                fileService.setScreenshotDimensions(screenshotContext, devicePixelRatio, currentScreenshot.getWidth());
+                screenshotDimensionsRecorded = true;
+            }
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
             scrollTo(yPosition + scrollDistance);
             LOG.debug("Scroll by {} done", scrollDistance);

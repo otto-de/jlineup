@@ -1,5 +1,7 @@
 package de.otto.jlineup.report;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.otto.jlineup.browser.Browser;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
@@ -14,8 +16,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * @param devicePixelRatio the window.devicePixelRatio measured while taking the screenshots (null if unknown)
+ * @param screenshotWidth  the width of the screenshots in image pixels (null if unknown)
+ */
 public record ContextReport(String contextHash, ScreenshotContext screenshotContext, Summary summary,
-                            List<ScreenshotComparisonResult> results, boolean flakyAccepted) {
+                            List<ScreenshotComparisonResult> results, boolean flakyAccepted,
+                            @JsonInclude(JsonInclude.Include.NON_NULL) Double devicePixelRatio,
+                            @JsonInclude(JsonInclude.Include.NON_NULL) Integer screenshotWidth) {
+
+    /**
+     * Convenience constructor for backwards compatibility — no measured screenshot dimensions.
+     */
+    public ContextReport(String contextHash, ScreenshotContext screenshotContext, Summary summary,
+                         List<ScreenshotComparisonResult> results, boolean flakyAccepted) {
+        this(contextHash, screenshotContext, summary, results, flakyAccepted, null, null);
+    }
 
     /**
      * Convenience constructor for backwards compatibility — defaults flakyAccepted to false.
@@ -54,6 +70,36 @@ public record ContextReport(String contextHash, ScreenshotContext screenshotCont
     @UsedInTemplate
     public int getWidth() {
         return screenshotContext.deviceConfig.width;
+    }
+
+    /**
+     * The width of the screenshots in CSS pixels, i.e. the width of the page as it was rendered in the browser.
+     * Calculated from the measured screenshot width and device pixel ratio, falls back to the configured width.
+     * Null if unknown (specific mobile devices without measured values).
+     */
+    @UsedInTemplate
+    @JsonIgnore
+    public Integer getScreenshotDisplayWidth() {
+        if (screenshotWidth != null && screenshotWidth > 0 && devicePixelRatio != null && devicePixelRatio > 0) {
+            return (int) Math.round(screenshotWidth / devicePixelRatio);
+        }
+        DeviceConfig dc = screenshotContext.deviceConfig;
+        if (dc.isSpecificMobile() || dc.width <= 0) {
+            return null;
+        }
+        return dc.width;
+    }
+
+    /**
+     * CSS style that caps the displayed screenshot width at the width the page was rendered with, so that
+     * screenshots (e.g. mobile ones, or ones with a high device pixel ratio) are not upscaled to the full
+     * column width on large screens.
+     */
+    @UsedInTemplate
+    @JsonIgnore
+    public String getScreenshotMaxWidthStyle() {
+        Integer displayWidth = getScreenshotDisplayWidth();
+        return displayWidth != null ? "--screenshot-max-width: " + displayWidth + "px" : null;
     }
 
     @UsedInTemplate

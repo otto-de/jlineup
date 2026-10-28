@@ -638,6 +638,11 @@
             position: relative;
         }
 
+        /* Don't upscale screenshots beyond the viewport width they were taken with */
+        .urlReport .compare-grid > .compare-row > .compare-cell.screenshot-cell > div {
+            max-width: var(--screenshot-max-width, none);
+        }
+
         .deviceinfo {
             font-size: 12px;
         }
@@ -1233,7 +1238,7 @@
                         </h4>
                     </div>
                 </summary>
-                <div class="compare-grid">
+                <div class="compare-grid" th:style="${contextReport.screenshotMaxWidthStyle}">
                     <div class="compare-row compare-head">
                         <div class="compare-cell">Info</div>
                         <div class="compare-cell">[[${beforeLabel}]]</div>
@@ -1280,7 +1285,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="compare-cell">
+                        <div class="compare-cell screenshot-cell">
                             <div th:if="${result.screenshotBeforeFileNameForHTML != null}">
                                 <img class="screenshot-difference" width="100%" loading="lazy"
                                      th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"

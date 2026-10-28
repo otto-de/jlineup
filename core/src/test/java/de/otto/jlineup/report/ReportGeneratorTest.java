@@ -77,6 +77,26 @@ class ReportGeneratorTest {
     }
 
     @Test
+    void shouldKeepScreenshotDimensionsWhenAcceptingFlakyContext() {
+        UrlConfig urlConfig = UrlConfig.urlConfigBuilder().build();
+
+        ScreenshotContext ctx1 = ScreenshotContext.of("https://example.com", "/page", deviceConfig(800, 600), BrowserStep.before, urlConfig, Collections.emptyList(), "https://example.com");
+        ScreenshotContext ctx2 = ScreenshotContext.of("https://example.com", "/page", deviceConfig(1024, 768), BrowserStep.before, urlConfig, Collections.emptyList(), "https://example.com");
+
+        ContextReport cr1 = new ContextReport(ctx1.contextHash(), ctx1,
+                new Summary(true, 0.05, 0.05, 0), Collections.emptyList(), false, 2d, 1600);
+        ContextReport cr2 = new ContextReport(ctx2.contextHash(), ctx2,
+                new Summary(false, 0, 0, 0), Collections.emptyList());
+
+        ArrayList<ContextReport> result = ReportGenerator.applyFlakyTolerance(new ArrayList<>(List.of(cr1, cr2)), 1);
+
+        ContextReport flakyResult = result.stream().filter(cr -> cr.contextHash().equals(ctx1.contextHash())).findFirst().orElseThrow();
+        assertThat(flakyResult.flakyAccepted(), is(true));
+        assertThat(flakyResult.devicePixelRatio(), is(2d));
+        assertThat(flakyResult.screenshotWidth(), is(1600));
+    }
+
+    @Test
     void shouldNotAcceptFlakyContextWhenNotEnoughSiblingsPass() {
         // Setup: 3 contexts, 2 fail, 1 passes
         // With flakyTolerance=2, failing contexts should NOT be accepted (only 1 passing sibling)

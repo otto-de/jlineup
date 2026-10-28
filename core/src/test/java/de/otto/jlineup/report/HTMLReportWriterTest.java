@@ -145,7 +145,28 @@ class HTMLReportWriterTest {
         assertThat(html, containsString("The 'before' step was rendered with"));
     }
 
+    @Test
+    void shouldCapScreenshotsAtDisplayWidthInReport() throws FileNotFoundException {
+        String html = renderReport(JobConfig.exampleConfig(), false, 2d, 640);
+
+        assertThat(html, containsString("<div class=\"compare-grid\" style=\"--screenshot-max-width: 320px\">"));
+        assertThat(html, containsString("<div class=\"compare-cell screenshot-cell\">"));
+        assertThat(html, containsString("&#39;differenceSum&#39;,&#39;320&#39;)"));
+    }
+
+    @Test
+    void shouldCapScreenshotsAtDisplayWidthInReportAfterBeforeStep() throws FileNotFoundException {
+        String html = renderReport(JobConfig.exampleConfig(), true, 2d, 640);
+
+        assertThat(html, containsString("<div class=\"compare-grid\" style=\"--screenshot-max-width: 320px\">"));
+        assertThat(html, containsString("<div class=\"compare-cell screenshot-cell\">"));
+    }
+
     private String renderReport(JobConfig jobConfig, boolean afterBeforeStep) throws FileNotFoundException {
+        return renderReport(jobConfig, afterBeforeStep, null, null);
+    }
+
+    private String renderReport(JobConfig jobConfig, boolean afterBeforeStep, Double devicePixelRatio, Integer screenshotWidth) throws FileNotFoundException {
         DeviceConfig deviceConfig = DeviceConfig.deviceConfig(1337, 200);
         List<ScreenshotComparisonResult> results = List.of(
                 screenshotComparisonResult,
@@ -153,7 +174,7 @@ class HTMLReportWriterTest {
                 ScreenshotComparisonResult.noAfterImageComparisonResult("1887", "someurl/somepath", deviceConfig, 1600, "before3"));
         ContextReport labelContextReport = new ContextReport("1887",
                 ScreenshotContext.of("someurl", "somepath", deviceConfig, before, UrlConfig.urlConfigBuilder().build()),
-                localSummary, results);
+                localSummary, results, false, devicePixelRatio, screenshotWidth);
         UrlReport labelUrlReport = new UrlReport("someurl/somepath", "someurl/somepath", localSummary, singletonList(labelContextReport));
         Report labelReport = new Report(globalSummary, jobConfig, singletonList(labelUrlReport), Map.of(before, Set.of("SomeBrowser 1.2.3"), after, Set.of("SomeBrowser 4.5.6")));
 

@@ -122,6 +122,14 @@ public class FileTracker {
         screenshotContextFileTracker.addScreenshot(screenshotContext, path, yPosition);
     }
 
+    public void setScreenshotDimensions(final ScreenshotContext screenshotContext, final double devicePixelRatio, final int screenshotWidth) {
+        assert contexts != null;
+        ScreenshotContextFileTracker screenshotContextFileTracker = contexts.get(screenshotContext.contextHash());
+        if (screenshotContextFileTracker != null) {
+            screenshotContextFileTracker.setScreenshotDimensions(devicePixelRatio, screenshotWidth);
+        }
+    }
+
     public boolean isContextAlreadyThere(final ScreenshotContext screenshotContext) {
         assert contexts != null;
         return contexts.get(screenshotContext.contextHash()) != null;

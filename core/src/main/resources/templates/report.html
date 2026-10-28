@@ -768,6 +768,11 @@
             position: relative;
         }
 
+        /* Don't upscale screenshots beyond the viewport width they were taken with */
+        .urlReport .compare-grid > .compare-row > .compare-cell.screenshot-cell > div {
+            max-width: var(--screenshot-max-width, none);
+        }
+
         .urlReport .compare-grid > .compare-row > .compare-cell.result-col {
             display: flex;
             align-items: center;
@@ -1086,7 +1091,7 @@
         }
 
         #clickimage {
-            max-width: 90%;
+            max-width: min(90%, var(--clickimage-max-width, 100%));
             max-height: 90%;
             border-radius: var(--radius-sm);
             box-shadow: var(--shadow-lg);
@@ -1162,7 +1167,7 @@
     </script>
     <script type="application/javascript">
 
-        function initClickImage(file1, file2, file3) {
+        function initClickImage(file1, file2, file3, maxWidth) {
             function setAfter() {
                 if (file2 === "null") {
                     setDifference();
@@ -1206,7 +1211,16 @@
                 setDifference();
             }
 
-            document.getElementById("clickimage").onclick = () => initClickImage(file1, file2, file3);
+            document.getElementById("clickimage").onclick = () => initClickImage(file1, file2, file3, maxWidth);
+
+            // Show the screenshots at the width the page was rendered with (image pixels / device pixel ratio)
+            const maxWidthPx = parseInt(maxWidth, 10);
+            const clickImageStyle = document.getElementById("clickimage").style;
+            if (maxWidthPx > 0) {
+                clickImageStyle.setProperty("--clickimage-max-width", maxWidthPx + "px");
+            } else {
+                clickImageStyle.removeProperty("--clickimage-max-width");
+            }
 
             document.getElementById("clickdiff").style.display = "block";
             document.getElementById("black").style.display = "block";
@@ -1962,7 +1976,7 @@
                               class="status-pill failure">different</span>
                     </div>
                 </summary>
-                <div class="compare-grid">
+                <div class="compare-grid" th:style="${contextReport.screenshotMaxWidthStyle}">
                     <div class="compare-row compare-head">
                         <div class="compare-cell">Info</div>
                         <div class="compare-cell">[[${beforeLabel}]] | [[${afterLabel}]]</div>
@@ -2003,7 +2017,7 @@
                                 </div>
                                 <div style="margin-top: 2em;">
                                     <a href="#"
-                                       th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">Diff
+                                       th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}','${contextReport.screenshotDisplayWidth}')|">Diff
                                         clicker</a>
                                 </div>
                                 <div th:if="${contextReport.browserInfo != null}" style="margin-top: var(--space-3);"
@@ -2034,7 +2048,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="compare-cell">
+                        <div class="compare-cell screenshot-cell">
                             <div class="image-compare"
                                  th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML != null}">
                                 <div class="zoom-lens invisible keep" th:classappend="${'lens-' + contextReport.contextHash + '-' +
@@ -2071,12 +2085,12 @@
                                                                                               class="success">match</span>
                             </h5>
                         </div>
-                        <div th:switch="${result.differenceImageFileName!=null}" class="compare-cell">
+                        <div th:switch="${result.differenceImageFileName!=null}" class="compare-cell screenshot-cell">
                             <div th:case="${true}"
                                  th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  onmouseenter="initZoom(this)"
                                  onmouseleave="stopZoom()"
-                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">
+                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}','${contextReport.screenshotDisplayWidth}')|">
                                 <div class="zoom-lens invisible keep"
                                      th:classappend="${'lens-' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:id="${'lens-difference_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"></div>
@@ -2087,7 +2101,7 @@
                             </div>
                             <div th:case="${false}"
                                  th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}')|">
+                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}','${contextReport.screenshotDisplayWidth}')|">
                                 <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}"
                                      th:style="${'background-color: ' + legend_different_size_rgb}">
                                     <img class="screenshot-difference screenshot-transparent" width="100%"

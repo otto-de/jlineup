@@ -1,5 +1,6 @@
 package de.otto.jlineup.file;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import tools.jackson.databind.annotation.JsonDeserialize;
 import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.ScreenshotContext;
@@ -14,6 +15,10 @@ public class ScreenshotContextFileTracker {
     public final ScreenshotContext screenshotContext;
     public final ConcurrentSkipListMap<Integer, Map<BrowserStep, String>> screenshots;
 
+    // Measured while taking the screenshots: window.devicePixelRatio and the screenshot width in image pixels
+    private volatile Double devicePixelRatio;
+    private volatile Integer screenshotWidth;
+
     ScreenshotContextFileTracker(ScreenshotContext screenshotContext) {
         this.screenshotContext = screenshotContext;
         this.screenshots = new ConcurrentSkipListMap<>();
@@ -22,6 +27,8 @@ public class ScreenshotContextFileTracker {
     private ScreenshotContextFileTracker(Builder builder) {
         screenshotContext = builder.screenshotContext;
         screenshots = builder.screenshots;
+        devicePixelRatio = builder.devicePixelRatio;
+        screenshotWidth = builder.screenshotWidth;
     }
 
     public static Builder screenshotContextFileTrackerBuilder() {
@@ -32,6 +39,8 @@ public class ScreenshotContextFileTracker {
         Builder builder = new Builder();
         builder.screenshotContext = copy.getScreenshotContext();
         builder.screenshots = copy.getScreenshots();
+        builder.devicePixelRatio = copy.getDevicePixelRatio();
+        builder.screenshotWidth = copy.getScreenshotWidth();
         return builder;
     }
 
@@ -53,6 +62,16 @@ public class ScreenshotContextFileTracker {
 
     public ConcurrentSkipListMap<Integer, Map<BrowserStep, String>> getScreenshots() {
         return screenshots;
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Double getDevicePixelRatio() {
+        return devicePixelRatio;
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Integer getScreenshotWidth() {
+        return screenshotWidth;
     }
 
     /*
@@ -79,10 +98,17 @@ public class ScreenshotContextFileTracker {
         stepsToPathsMap.put(screenshotContext.step, path);
     }
 
+    void setScreenshotDimensions(double devicePixelRatio, int screenshotWidth) {
+        this.devicePixelRatio = devicePixelRatio;
+        this.screenshotWidth = screenshotWidth;
+    }
+
 
     public static final class Builder {
         private ScreenshotContext screenshotContext;
         private ConcurrentSkipListMap<Integer, Map<BrowserStep, String>> screenshots;
+        private Double devicePixelRatio;
+        private Integer screenshotWidth;
 
         private Builder() {
         }
@@ -94,6 +120,16 @@ public class ScreenshotContextFileTracker {
 
         public Builder withScreenshots(ConcurrentSkipListMap<Integer, Map<BrowserStep, String>> val) {
             screenshots = val;
+            return this;
+        }
+
+        public Builder withDevicePixelRatio(Double val) {
+            devicePixelRatio = val;
+            return this;
+        }
+
+        public Builder withScreenshotWidth(Integer val) {
+            screenshotWidth = val;
             return this;
         }
 
@@ -121,6 +157,8 @@ public class ScreenshotContextFileTracker {
         return "ScreenshotContextFileTracker{" +
                 "screenshotContext=" + screenshotContext +
                 ", screenshots=" + screenshots +
+                ", devicePixelRatio=" + devicePixelRatio +
+                ", screenshotWidth=" + screenshotWidth +
                 '}';
     }
 }

@@ -375,6 +375,8 @@ public class BeforeRunImportService {
             contexts.put(hash, ScreenshotContextFileTracker.screenshotContextFileTrackerBuilder()
                     .withScreenshotContext(uploadedContext.screenshotContext)
                     .withScreenshots(beforeScreenshots)
+                    .withDevicePixelRatio(uploadedContext.getDevicePixelRatio())
+                    .withScreenshotWidth(uploadedContext.getScreenshotWidth())
                     .build());
         }
 

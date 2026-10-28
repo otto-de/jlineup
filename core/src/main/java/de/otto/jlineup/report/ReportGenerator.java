@@ -4,6 +4,7 @@ import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.file.ScreenshotContextFileTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,9 @@ public class ReportGenerator {
             ArrayList<ContextReport> contextReports = new ArrayList<>();
             for (Map.Entry<String, List<ScreenshotComparisonResult>> resultPerHash : resultsPerContextHash.entrySet()) {
                 Summary contextSummary = getSummary(resultPerHash.getValue());
-                ContextReport contextReport = new ContextReport(resultPerHash.getKey(), fileService.getRecordedContext(resultPerHash.getKey()), contextSummary, resultPerHash.getValue());
+                ScreenshotContextFileTracker contextFileTracker = fileService.getRecordedContextFileTracker(resultPerHash.getKey());
+                ContextReport contextReport = new ContextReport(resultPerHash.getKey(), contextFileTracker.screenshotContext, contextSummary, resultPerHash.getValue(),
+                        false, contextFileTracker.getDevicePixelRatio(), contextFileTracker.getScreenshotWidth());
                 contextReports.add(contextReport);
             }
 
@@ -103,7 +106,8 @@ public class ReportGenerator {
                         contextReport.getUrl() + " " + contextReport.screenshotContext().deviceConfig,
                         passingSiblingCount, flakyTolerance);
                 result.add(new ContextReport(contextReport.contextHash(), contextReport.screenshotContext(),
-                        contextReport.summary(), contextReport.results(), true));
+                        contextReport.summary(), contextReport.results(), true,
+                        contextReport.devicePixelRatio(), contextReport.screenshotWidth()));
             } else {
                 result.add(contextReport);
             }

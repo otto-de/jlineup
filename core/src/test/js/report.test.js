@@ -144,6 +144,24 @@ describe('initClickImage', () => {
         initClickImage(FILE1, FILE2, FILE3);
         expect(document.getElementById('clickimage').onclick).toBeInstanceOf(Function);
     });
+
+    test('caps the image at the screenshot display width', () => {
+        initClickImage(FILE1, FILE2, FILE3, '320');
+        expect(document.getElementById('clickimage').style.getPropertyValue('--clickimage-max-width')).toBe('320px');
+    });
+
+    test('keeps the display width when cycling through the images', () => {
+        initClickImage(FILE1, FILE2, FILE3, '320');
+        document.getElementById('clickimage').style.removeProperty('--clickimage-max-width');
+        document.getElementById('clickimage').onclick();
+        expect(document.getElementById('clickimage').style.getPropertyValue('--clickimage-max-width')).toBe('320px');
+    });
+
+    test('removes the cap when the display width is unknown', () => {
+        initClickImage(FILE1, FILE2, FILE3, '320');
+        initClickImage(FILE1, FILE2, FILE3, '');
+        expect(document.getElementById('clickimage').style.getPropertyValue('--clickimage-max-width')).toBe('');
+    });
 });
 
 describe('closeClickDiff', () => {
