@@ -311,7 +311,45 @@
       ]
     },
     {
+      "type": "com.sun.crypto.provider.DHParameters",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "com.sun.crypto.provider.GaloisCounterMode$AESGCM",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.HKDFKeyDerivation$HKDFSHA256",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "javax.crypto.KDFParameters"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.HmacCore$HmacSHA256",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.TlsMasterSecretGenerator",
       "methods": [
         {
           "name": "<init>",
@@ -329,10 +367,100 @@
       ]
     },
     {
+      "type": "com.sun.xml.internal.stream.XMLInputFactoryImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "de.otto.jlineup.browser.Browser$Type",
       "methods": [
         {
           "name": "forValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.browser.BrowserStep"
+    },
+    {
+      "type": "de.otto.jlineup.browser.ScreenshotContext",
+      "methods": [
+        {
+          "name": "getBrowserType",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCookies",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDeviceConfig",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUrl",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUrlSubPath",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUrlSubPathTitle",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.browser.ScreenshotContext$Builder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "build",
+          "parameterTypes": []
+        },
+        {
+          "name": "withBrowserType",
+          "parameterTypes": [
+            "de.otto.jlineup.browser.Browser$Type"
+          ]
+        },
+        {
+          "name": "withCookies",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "withDeviceConfig",
+          "parameterTypes": [
+            "de.otto.jlineup.config.DeviceConfig"
+          ]
+        },
+        {
+          "name": "withUrl",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "withUrlSubPath",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "withUrlSubPathTitle",
           "parameterTypes": [
             "java.lang.String"
           ]
@@ -472,7 +600,65 @@
       ]
     },
     {
-      "type": "de.otto.jlineup.config.Cookie$Builder"
+      "type": "de.otto.jlineup.config.Cookie$Builder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "build",
+          "parameterTypes": []
+        },
+        {
+          "name": "withDomain",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "withExpiry",
+          "parameterTypes": [
+            "java.util.Date"
+          ]
+        },
+        {
+          "name": "withName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "withPath",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "withScreenshotContextGiving",
+          "parameterTypes": [
+            "java.lang.Boolean"
+          ]
+        },
+        {
+          "name": "withSecure",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "withShowInReport",
+          "parameterTypes": [
+            "java.lang.Boolean"
+          ]
+        },
+        {
+          "name": "withValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
     },
     {
       "type": "de.otto.jlineup.config.CustomDateDeserializer",
@@ -517,7 +703,47 @@
       ]
     },
     {
-      "type": "de.otto.jlineup.config.DeviceConfig$Builder"
+      "type": "de.otto.jlineup.config.DeviceConfig$Builder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "build",
+          "parameterTypes": []
+        },
+        {
+          "name": "withDeviceName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "withHeight",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "withPixelRatio",
+          "parameterTypes": [
+            "float"
+          ]
+        },
+        {
+          "name": "withTouch",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "withWidth",
+          "parameterTypes": [
+            "int"
+          ]
+        }
+      ]
     },
     {
       "type": "de.otto.jlineup.config.HttpCheckConfig",
@@ -588,6 +814,14 @@
           "parameterTypes": []
         },
         {
+          "name": "getEffectiveAfterLabel",
+          "parameterTypes": []
+        },
+        {
+          "name": "getEffectiveBeforeLabel",
+          "parameterTypes": []
+        },
+        {
           "name": "getFlakyTolerance",
           "parameterTypes": []
         },
@@ -617,6 +851,10 @@
         },
         {
           "name": "getPageLoadTimeout",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSanitizedMessage",
           "parameterTypes": []
         },
         {
@@ -709,6 +947,12 @@
           ]
         },
         {
+          "name": "withScreenshotRetries",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
           "name": "withUrls",
           "parameterTypes": [
             "java.util.Map"
@@ -738,6 +982,9 @@
       "type": "de.otto.jlineup.config.JobConfigCustomizer"
     },
     {
+      "type": "de.otto.jlineup.config.JobConfigMixIn"
+    },
+    {
       "type": "de.otto.jlineup.config.PathConfig$PathConfigListDeserializer",
       "methods": [
         {
@@ -754,6 +1001,9 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "de.otto.jlineup.config.RunStep"
     },
     {
       "type": "de.otto.jlineup.config.UrlConfig",
@@ -908,9 +1158,39 @@
           "parameterTypes": []
         },
         {
+          "name": "withAlternatingCookies",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "withCookies",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "withDevices",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "withFailIfSelectorsNotFound",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
           "name": "withIgnoreAntiAliasing",
           "parameterTypes": [
             "boolean"
+          ]
+        },
+        {
+          "name": "withMaxAntiAliasColorDistance",
+          "parameterTypes": [
+            "double"
           ]
         },
         {
@@ -938,9 +1218,21 @@
           ]
         },
         {
+          "name": "withScrollDistanceFactor",
+          "parameterTypes": [
+            "float"
+          ]
+        },
+        {
           "name": "withStrictColorComparison",
           "parameterTypes": [
             "boolean"
+          ]
+        },
+        {
+          "name": "withUrl",
+          "parameterTypes": [
+            "java.lang.String"
           ]
         },
         {
@@ -956,9 +1248,101 @@
           ]
         },
         {
+          "name": "withWaitForSelectorsTimeout",
+          "parameterTypes": [
+            "float"
+          ]
+        },
+        {
           "name": "withWindowWidths",
           "parameterTypes": [
             "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.UrlConfigMixIn"
+    },
+    {
+      "type": "de.otto.jlineup.file.FileTracker",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "de.otto.jlineup.config.JobConfig",
+            "java.util.concurrent.ConcurrentHashMap",
+            "java.util.concurrent.ConcurrentHashMap"
+          ]
+        },
+        {
+          "name": "getBrowsers",
+          "parameterTypes": []
+        },
+        {
+          "name": "getContexts",
+          "parameterTypes": []
+        },
+        {
+          "name": "getJobConfig",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.file.ScreenshotContextFileTracker",
+      "methods": [
+        {
+          "name": "getDevicePixelRatio",
+          "parameterTypes": []
+        },
+        {
+          "name": "getScreenshotContext",
+          "parameterTypes": []
+        },
+        {
+          "name": "getScreenshotWidth",
+          "parameterTypes": []
+        },
+        {
+          "name": "getScreenshots",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.file.ScreenshotContextFileTracker$Builder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "build",
+          "parameterTypes": []
+        },
+        {
+          "name": "withDevicePixelRatio",
+          "parameterTypes": [
+            "java.lang.Double"
+          ]
+        },
+        {
+          "name": "withScreenshotContext",
+          "parameterTypes": [
+            "de.otto.jlineup.browser.ScreenshotContext"
+          ]
+        },
+        {
+          "name": "withScreenshotWidth",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "withScreenshots",
+          "parameterTypes": [
+            "java.util.concurrent.ConcurrentSkipListMap"
           ]
         }
       ]
@@ -977,10 +1361,473 @@
       ]
     },
     {
+      "type": "de.otto.jlineup.lambda.LambdaRequestPayload",
+      "methods": [
+        {
+          "name": "jobConfig",
+          "parameterTypes": []
+        },
+        {
+          "name": "runId",
+          "parameterTypes": []
+        },
+        {
+          "name": "screenshotContext",
+          "parameterTypes": []
+        },
+        {
+          "name": "step",
+          "parameterTypes": []
+        },
+        {
+          "name": "urlKey",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.report.ContextReport",
+      "methods": [
+        {
+          "name": "contextHash",
+          "parameterTypes": []
+        },
+        {
+          "name": "devicePixelRatio",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBrowserInfo",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDeviceInfo",
+          "parameterTypes": []
+        },
+        {
+          "name": "getScreenshotDisplayWidth",
+          "parameterTypes": []
+        },
+        {
+          "name": "getScreenshotMaxWidthStyle",
+          "parameterTypes": []
+        },
+        {
+          "name": "getShortenedUrl",
+          "parameterTypes": []
+        },
+        {
+          "name": "getShownCookies",
+          "parameterTypes": []
+        },
+        {
+          "name": "getShownCookiesString",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSubPathTitle",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUrl",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWidth",
+          "parameterTypes": []
+        },
+        {
+          "name": "isFlakyAccepted",
+          "parameterTypes": []
+        },
+        {
+          "name": "isSuccess",
+          "parameterTypes": []
+        },
+        {
+          "name": "results",
+          "parameterTypes": []
+        },
+        {
+          "name": "screenshotContext",
+          "parameterTypes": []
+        },
+        {
+          "name": "screenshotWidth",
+          "parameterTypes": []
+        },
+        {
+          "name": "summary",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.report.ContextReportBeanInfo"
+    },
+    {
+      "type": "de.otto.jlineup.report.ContextReportCustomizer"
+    },
+    {
+      "type": "de.otto.jlineup.report.Report",
+      "methods": [
+        {
+          "name": "browsers",
+          "parameterTypes": []
+        },
+        {
+          "name": "config",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBrowser",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "isOnlyFlakyDifferences",
+          "parameterTypes": []
+        },
+        {
+          "name": "summary",
+          "parameterTypes": []
+        },
+        {
+          "name": "urlReports",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.report.ReportBeanInfo"
+    },
+    {
+      "type": "de.otto.jlineup.report.ReportCustomizer"
+    },
+    {
+      "type": "de.otto.jlineup.report.ScreenshotComparisonResult",
+      "methods": [
+        {
+          "name": "acceptedDifferentPixels",
+          "parameterTypes": []
+        },
+        {
+          "name": "contextHash",
+          "parameterTypes": []
+        },
+        {
+          "name": "deviceConfig",
+          "parameterTypes": []
+        },
+        {
+          "name": "difference",
+          "parameterTypes": []
+        },
+        {
+          "name": "differenceImageFileName",
+          "parameterTypes": []
+        },
+        {
+          "name": "fullUrlWithPath",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDifferenceImageFileNameForHtml",
+          "parameterTypes": []
+        },
+        {
+          "name": "getScreenshotAfterFileNameForHTML",
+          "parameterTypes": []
+        },
+        {
+          "name": "getScreenshotBeforeFileNameForHTML",
+          "parameterTypes": []
+        },
+        {
+          "name": "maxDetectedColorDifference",
+          "parameterTypes": []
+        },
+        {
+          "name": "screenshotAfterFileName",
+          "parameterTypes": []
+        },
+        {
+          "name": "screenshotBeforeFileName",
+          "parameterTypes": []
+        },
+        {
+          "name": "verticalScrollPosition",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.report.ScreenshotComparisonResultBeanInfo"
+    },
+    {
+      "type": "de.otto.jlineup.report.ScreenshotComparisonResultCustomizer"
+    },
+    {
+      "type": "de.otto.jlineup.report.Summary",
+      "methods": [
+        {
+          "name": "acceptedDifferentPixels",
+          "parameterTypes": []
+        },
+        {
+          "name": "differenceMax",
+          "parameterTypes": []
+        },
+        {
+          "name": "differenceSum",
+          "parameterTypes": []
+        },
+        {
+          "name": "error",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.report.UrlReport",
+      "methods": [
+        {
+          "name": "contextReports",
+          "parameterTypes": []
+        },
+        {
+          "name": "getContextReportsBySubPath",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSubPathTitles",
+          "parameterTypes": []
+        },
+        {
+          "name": "summary",
+          "parameterTypes": []
+        },
+        {
+          "name": "url",
+          "parameterTypes": []
+        },
+        {
+          "name": "urlKey",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.report.UrlReportBeanInfo"
+    },
+    {
+      "type": "de.otto.jlineup.report.UrlReportCustomizer"
+    },
+    {
       "type": "groovy.lang.Closure"
     },
     {
+      "type": "java.awt.GraphicsEnvironment",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "isHeadless",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.awt.image.BufferedImage",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "colorModel"
+        },
+        {
+          "name": "imageType"
+        },
+        {
+          "name": "raster"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getRGB",
+          "parameterTypes": [
+            "int",
+            "int",
+            "int",
+            "int",
+            "int[]",
+            "int",
+            "int"
+          ]
+        },
+        {
+          "name": "setRGB",
+          "parameterTypes": [
+            "int",
+            "int",
+            "int",
+            "int",
+            "int[]",
+            "int",
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.awt.image.ColorModel",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "colorSpace"
+        },
+        {
+          "name": "colorSpaceType"
+        },
+        {
+          "name": "isAlphaPremultiplied"
+        },
+        {
+          "name": "is_sRGB"
+        },
+        {
+          "name": "nBits"
+        },
+        {
+          "name": "numComponents"
+        },
+        {
+          "name": "supportsAlpha"
+        },
+        {
+          "name": "transparency"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getRGBdefault",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.awt.image.Raster",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "dataBuffer"
+        },
+        {
+          "name": "height"
+        },
+        {
+          "name": "minX"
+        },
+        {
+          "name": "minY"
+        },
+        {
+          "name": "numBands"
+        },
+        {
+          "name": "numDataElements"
+        },
+        {
+          "name": "sampleModel"
+        },
+        {
+          "name": "sampleModelTranslateX"
+        },
+        {
+          "name": "sampleModelTranslateY"
+        },
+        {
+          "name": "width"
+        }
+      ]
+    },
+    {
+      "type": "java.awt.image.SampleModel",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "height"
+        },
+        {
+          "name": "width"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getPixels",
+          "parameterTypes": [
+            "int",
+            "int",
+            "int",
+            "int",
+            "int[]",
+            "java.awt.image.DataBuffer"
+          ]
+        },
+        {
+          "name": "setPixels",
+          "parameterTypes": [
+            "int",
+            "int",
+            "int",
+            "int",
+            "int[]",
+            "java.awt.image.DataBuffer"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.awt.image.SinglePixelPackedSampleModel",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "bitMasks"
+        },
+        {
+          "name": "bitOffsets"
+        },
+        {
+          "name": "bitSizes"
+        },
+        {
+          "name": "maxBitSize"
+        }
+      ]
+    },
+    {
       "type": "java.beans.PropertyVetoException"
+    },
+    {
+      "type": "java.io.FileNotFoundException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.io.IOException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
     },
     {
       "type": "java.io.Serializable"
@@ -1004,6 +1851,9 @@
       "type": "java.lang.ClassLoader"
     },
     {
+      "type": "java.lang.Cloneable"
+    },
+    {
       "type": "java.lang.Integer[]"
     },
     {
@@ -1022,16 +1872,35 @@
       "type": "java.lang.Object[]"
     },
     {
+      "type": "java.lang.Record"
+    },
+    {
+      "type": "java.lang.RecordBeanInfo"
+    },
+    {
+      "type": "java.lang.RecordCustomizer"
+    },
+    {
       "type": "java.lang.System",
+      "jniAccessible": true,
       "methods": [
         {
           "name": "console",
           "parameterTypes": []
+        },
+        {
+          "name": "load",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         }
       ]
     },
     {
       "type": "java.lang.reflect.AccessibleObject"
+    },
+    {
+      "type": "java.net.UnixDomainSocketAddress"
     },
     {
       "type": "java.nio.file.Path"
@@ -1044,6 +1913,18 @@
     },
     {
       "type": "java.security.KeyStoreSpi"
+    },
+    {
+      "type": "java.security.interfaces.ECPrivateKey"
+    },
+    {
+      "type": "java.security.interfaces.ECPublicKey"
+    },
+    {
+      "type": "java.security.interfaces.RSAPrivateKey"
+    },
+    {
+      "type": "java.security.interfaces.RSAPublicKey"
     },
     {
       "type": "java.sql.Connection"
@@ -1109,6 +1990,9 @@
       "type": "java.util.AbstractList"
     },
     {
+      "type": "java.util.AbstractMap"
+    },
+    {
       "type": "java.util.Arrays$ArrayList"
     },
     {
@@ -1118,19 +2002,88 @@
       "type": "java.util.Collections$EmptyList"
     },
     {
+      "type": "java.util.HashMap",
+      "methods": [
+        {
+          "name": "containsKey",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.util.HashMap$Node"
+    },
+    {
+      "type": "java.util.HashMap$NodeBeanInfo"
+    },
+    {
+      "type": "java.util.HashMap$NodeCustomizer"
+    },
+    {
+      "type": "java.util.LinkedHashMap"
+    },
+    {
+      "type": "java.util.LinkedHashMap$Entry"
+    },
+    {
+      "type": "java.util.LinkedHashMap$EntryBeanInfo"
+    },
+    {
+      "type": "java.util.LinkedHashMap$EntryCustomizer"
+    },
+    {
       "type": "java.util.List"
     },
     {
       "type": "java.util.Map"
     },
     {
+      "type": "java.util.Map$Entry",
+      "methods": [
+        {
+          "name": "getKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "java.util.RandomAccess"
+    },
+    {
+      "type": "java.util.SequencedMap"
     },
     {
       "type": "java.util.Set"
     },
     {
+      "type": "java.util.concurrent.ConcurrentHashMap$CollectionView"
+    },
+    {
+      "type": "java.util.concurrent.ConcurrentHashMap$KeySetView"
+    },
+    {
+      "type": "java.util.concurrent.ConcurrentSkipListMap",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "javassist.ClassPool"
+    },
+    {
+      "type": "javax.imageio.spi.ImageReaderSpi"
+    },
+    {
+      "type": "javax.imageio.spi.ImageWriterSpi"
     },
     {
       "type": "kotlin.Unit"
@@ -1163,6 +2116,17 @@
       ]
     },
     {
+      "type": "org.apache.http.client.config.RequestConfig$Builder",
+      "methods": [
+        {
+          "name": "setNormalizeUri",
+          "parameterTypes": [
+            "boolean"
+          ]
+        }
+      ]
+    },
+    {
       "type": "org.apache.logging.slf4j.SLF4JProvider"
     },
     {
@@ -1173,6 +2137,36 @@
     },
     {
       "type": "org.springframework.web.servlet.support.RequestContext"
+    },
+    {
+      "type": "org.thymeleaf.context.AbstractEngineContext"
+    },
+    {
+      "type": "org.thymeleaf.context.AbstractEngineContextBeanInfo"
+    },
+    {
+      "type": "org.thymeleaf.context.AbstractEngineContextCustomizer"
+    },
+    {
+      "type": "org.thymeleaf.context.IContext"
+    },
+    {
+      "type": "org.thymeleaf.context.IEngineContext"
+    },
+    {
+      "type": "org.thymeleaf.context.IExpressionContext"
+    },
+    {
+      "type": "org.thymeleaf.context.ITemplateContext"
+    },
+    {
+      "type": "org.thymeleaf.engine.IterationStatusVar",
+      "methods": [
+        {
+          "name": "getIndex",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "org.thymeleaf.expression.Calendars",
@@ -1191,6 +2185,69 @@
       ]
     },
     {
+      "type": "org.thymeleaf.expression.Maps",
+      "methods": [
+        {
+          "name": "size",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.thymeleaf.expression.Numbers",
+      "methods": [
+        {
+          "name": "formatDecimal",
+          "parameterTypes": [
+            "java.lang.Number",
+            "java.lang.Integer",
+            "java.lang.Integer"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.thymeleaf.expression.Strings",
+      "methods": [
+        {
+          "name": "contains",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "equals",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "isEmpty",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "replace",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "toLowerCase",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
       "type": "org.thymeleaf.spring5.context.IThymeleafRequestContext"
     },
     {
@@ -1201,6 +2258,35 @@
     },
     {
       "type": "org.thymeleaf.spring6.expression.IThymeleafEvaluationContext"
+    },
+    {
+      "type": "org.thymeleaf.standard.expression.AdditionExpression",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.thymeleaf.standard.expression.IStandardExpression",
+            "org.thymeleaf.standard.expression.IStandardExpression"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.thymeleaf.standard.expression.AdditionSubtractionExpression",
+      "methods": [
+        {
+          "name": "isLeftAllowed",
+          "parameterTypes": [
+            "org.thymeleaf.standard.expression.IStandardExpression"
+          ]
+        },
+        {
+          "name": "isRightAllowed",
+          "parameterTypes": [
+            "org.thymeleaf.standard.expression.IStandardExpression"
+          ]
+        }
+      ]
     },
     {
       "type": "org.thymeleaf.standard.expression.AndExpression"
@@ -1230,6 +2316,74 @@
       "type": "scala.util.Properties"
     },
     {
+      "type": "software.amazon.awssdk.http.apache.ApacheSdkHttpService"
+    },
+    {
+      "type": "software.amazon.awssdk.http.apache5.Apache5SdkHttpService"
+    },
+    {
+      "type": "software.amazon.awssdk.services.sso.auth.SsoProfileCredentialsProviderFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.services.ssooidc.SsoOidcProfileTokenProviderFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.transfer.s3.internal.ApplyUserAgentInterceptor",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.awt.image.ByteComponentRaster",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "data"
+        },
+        {
+          "name": "dataOffsets"
+        },
+        {
+          "name": "pixelStride"
+        },
+        {
+          "name": "scanlineStride"
+        },
+        {
+          "name": "type"
+        }
+      ]
+    },
+    {
+      "type": "sun.java2d.Disposer",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "addRecord",
+          "parameterTypes": [
+            "java.lang.Object",
+            "long",
+            "long"
+          ]
+        }
+      ]
+    },
+    {
       "type": "sun.misc.Unsafe",
       "fields": [
         {
@@ -1248,6 +2402,33 @@
     },
     {
       "type": "sun.security.pkcs12.PKCS12KeyStore$DualFormatPKCS12",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.DSA$SHA224withDSA",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.DSA$SHA256withDSA",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.MD5",
       "methods": [
         {
           "name": "<init>",
@@ -1276,6 +2457,42 @@
       ]
     },
     {
+      "type": "sun.security.provider.SHA2$SHA224",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.SHA2$SHA256",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.SHA5$SHA384",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.SHA5$SHA512",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "sun.security.provider.X509Factory",
       "methods": [
         {
@@ -1285,7 +2502,52 @@
       ]
     },
     {
+      "type": "sun.security.provider.certpath.PKIXCertPathValidator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.rsa.PSSParameters",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "sun.security.rsa.RSAKeyFactory$Legacy",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.rsa.RSAPSSSignature",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.rsa.RSASignature$SHA224withRSA",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.rsa.RSASignature$SHA256withRSA",
       "methods": [
         {
           "name": "<init>",
@@ -1420,6 +2682,18 @@
       ]
     },
     {
+      "type": "sun.security.x509.SubjectAlternativeNameExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
       "type": "sun.security.x509.SubjectKeyIdentifierExtension",
       "methods": [
         {
@@ -1444,6 +2718,18 @@
       "type": "sun.text.resources.BreakIteratorResources_en_US"
     },
     {
+      "type": "sun.text.resources.FormatData"
+    },
+    {
+      "type": "sun.text.resources.FormatData_en"
+    },
+    {
+      "type": "sun.text.resources.FormatData_en_US"
+    },
+    {
+      "type": "sun.text.resources.JavaTimeSupplementary"
+    },
+    {
       "type": "sun.text.resources.cldr.FormatData"
     },
     {
@@ -1459,7 +2745,16 @@
       "type": "tools.jackson.core.json.JsonWriteFeature"
     },
     {
-      "type": "tools.jackson.databind.ObjectMapper"
+      "type": "tools.jackson.databind.ObjectMapper",
+      "methods": [
+        {
+          "name": "writeValue",
+          "parameterTypes": [
+            "java.io.Writer",
+            "java.lang.Object"
+          ]
+        }
+      ]
     },
     {
       "type": "tools.jackson.databind.SerializationFeature"
@@ -1515,19 +2810,43 @@
       "glob": "META-INF/services/ch.qos.logback.classic.spi.Configurator"
     },
     {
+      "glob": "META-INF/services/java.net.spi.InetAddressResolverProvider"
+    },
+    {
       "glob": "META-INF/services/java.net.spi.URLStreamHandlerProvider"
     },
     {
       "glob": "META-INF/services/java.time.zone.ZoneRulesProvider"
     },
     {
+      "glob": "META-INF/services/javax.imageio.spi.ImageInputStreamSpi"
+    },
+    {
+      "glob": "META-INF/services/javax.imageio.spi.ImageOutputStreamSpi"
+    },
+    {
+      "glob": "META-INF/services/javax.imageio.spi.ImageReaderSpi"
+    },
+    {
+      "glob": "META-INF/services/javax.imageio.spi.ImageTranscoderSpi"
+    },
+    {
+      "glob": "META-INF/services/javax.imageio.spi.ImageWriterSpi"
+    },
+    {
       "glob": "META-INF/services/javax.xml.parsers.SAXParserFactory"
+    },
+    {
+      "glob": "META-INF/services/javax.xml.stream.XMLInputFactory"
     },
     {
       "glob": "META-INF/services/org.apache.commons.logging.LogFactory"
     },
     {
       "glob": "META-INF/services/org.slf4j.spi.SLF4JServiceProvider"
+    },
+    {
+      "glob": "META-INF/services/software.amazon.awssdk.http.SdkHttpService"
     },
     {
       "glob": "META-INF/services/tools.jackson.databind.JacksonModule"
@@ -1551,6 +2870,9 @@
       "glob": "mozilla/public-suffix-list.txt"
     },
     {
+      "glob": "org/publicsuffix/list/effective_tld_names.dat"
+    },
+    {
       "glob": "org/thymeleaf/thymeleaf.properties"
     },
     {
@@ -1566,6 +2888,21 @@
       "glob": "software/amazon/awssdk/services/lambda/execution.interceptors"
     },
     {
+      "glob": "software/amazon/awssdk/services/s3/execution.interceptors"
+    },
+    {
+      "glob": "software/amazon/awssdk/services/sso/execution.interceptors"
+    },
+    {
+      "glob": "software/amazon/awssdk/services/ssooidc/execution.interceptors"
+    },
+    {
+      "glob": "templates/report.html"
+    },
+    {
+      "glob": "templates/report_before.html"
+    },
+    {
       "glob": "templates/report_not_finished.html"
     },
     {
@@ -1573,7 +2910,26 @@
     },
     {
       "module": "java.base",
+      "glob": "jdk/internal/icu/impl/data/icudt76b/nfkc.nrm"
+    },
+    {
+      "module": "java.base",
+      "glob": "jdk/internal/icu/impl/data/icudt76b/uprops.icu"
+    },
+    {
+      "module": "java.base",
+      "glob": "sun/net/idn/uidna.spp"
+    },
+    {
+      "module": "java.base",
       "glob": "sun/text/resources/LineBreakIteratorData"
+    },
+    {
+      "module": "java.desktop",
+      "glob": "sun/awt/resources/awt_en.properties"
+    },
+    {
+      "bundle": "sun.awt.resources.awt"
     }
   ]
 }
