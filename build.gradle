@@ -3,7 +3,7 @@ buildscript {
         springBootVersion = '4.1.2'
         seleniumVersion = '4.51.0'
         nettyVersion = '4.2.18.Final'
-        graalvmVersion = '25.0.5.0.2'
+        graalvmVersion = '25.0.5.0.3'
         picoCliVersion = '4.7.7'
         awsSdkVersion = '2.57.3'
         awsCdkVersion = '2.274.0'
