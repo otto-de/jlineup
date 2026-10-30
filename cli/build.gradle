@@ -9,7 +9,6 @@ dependencies {
     implementation project(":jlineup-core")
     implementation "info.picocli:picocli:${picoCliVersion}"
     annotationProcessor "info.picocli:picocli-codegen:${picoCliVersion}"
-    compileOnly "org.graalvm.nativeimage:svm:${graalvmVersion}"
 
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testImplementation "org.junit.jupiter:junit-jupiter"

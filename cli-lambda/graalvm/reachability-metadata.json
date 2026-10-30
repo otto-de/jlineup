@@ -1,0 +1,1579 @@
+{
+  "reflection": [
+    {
+      "type": "ch.qos.logback.classic.Level",
+      "methods": [
+        {
+          "name": "valueOf",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.classic.PatternLayout",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.classic.encoder.PatternLayoutEncoder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.classic.filter.LevelFilter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setLevel",
+          "parameterTypes": [
+            "ch.qos.logback.classic.Level"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.classic.sift.MDCBasedDiscriminator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setDefaultValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setKey",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.classic.sift.SiftingAppender",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setDiscriminator",
+          "parameterTypes": [
+            "ch.qos.logback.core.sift.Discriminator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.classic.spi.LogbackServiceProvider"
+    },
+    {
+      "type": "ch.qos.logback.classic.util.DefaultJoranConfigurator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.AppenderBase",
+      "methods": [
+        {
+          "name": "addFilter",
+          "parameterTypes": [
+            "ch.qos.logback.core.filter.Filter"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.ConsoleAppender",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setTarget",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.FileAppender",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setFile",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.Layout"
+    },
+    {
+      "type": "ch.qos.logback.core.OutputStreamAppender",
+      "methods": [
+        {
+          "name": "setEncoder",
+          "parameterTypes": [
+            "ch.qos.logback.core.encoder.Encoder"
+          ]
+        },
+        {
+          "name": "setLayout",
+          "parameterTypes": [
+            "ch.qos.logback.core.Layout"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.UnsynchronizedAppenderBase",
+      "methods": [
+        {
+          "name": "addFilter",
+          "parameterTypes": [
+            "ch.qos.logback.core.filter.Filter"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.encoder.Encoder"
+    },
+    {
+      "type": "ch.qos.logback.core.encoder.LayoutWrappingEncoder",
+      "methods": [
+        {
+          "name": "setParent",
+          "parameterTypes": [
+            "ch.qos.logback.core.spi.ContextAware"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.filter.AbstractMatcherFilter",
+      "methods": [
+        {
+          "name": "setOnMatch",
+          "parameterTypes": [
+            "ch.qos.logback.core.spi.FilterReply"
+          ]
+        },
+        {
+          "name": "setOnMismatch",
+          "parameterTypes": [
+            "ch.qos.logback.core.spi.FilterReply"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.filter.Filter"
+    },
+    {
+      "type": "ch.qos.logback.core.pattern.PatternLayoutBase",
+      "methods": [
+        {
+          "name": "setPattern",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.pattern.PatternLayoutEncoderBase",
+      "methods": [
+        {
+          "name": "setPattern",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ch.qos.logback.core.sift.Discriminator"
+    },
+    {
+      "type": "ch.qos.logback.core.spi.ContextAware"
+    },
+    {
+      "type": "ch.qos.logback.core.spi.FilterReply"
+    },
+    {
+      "type": "com.google.common.collect.BiMap"
+    },
+    {
+      "type": "com.google.common.collect.ImmutableBiMap"
+    },
+    {
+      "type": "com.google.common.collect.ImmutableCollection"
+    },
+    {
+      "type": "com.google.common.collect.ImmutableList"
+    },
+    {
+      "type": "com.google.common.collect.ImmutableMap"
+    },
+    {
+      "type": "com.google.common.collect.ImmutableSet"
+    },
+    {
+      "type": "com.google.common.collect.ImmutableSet$CachingAsList"
+    },
+    {
+      "type": "com.google.common.collect.RegularImmutableList"
+    },
+    {
+      "type": "com.google.common.collect.RegularImmutableSet"
+    },
+    {
+      "type": "com.google.common.collect.SingletonImmutableBiMap"
+    },
+    {
+      "type": "com.google.common.collect.SingletonImmutableList"
+    },
+    {
+      "type": "com.google.common.collect.SingletonImmutableSet"
+    },
+    {
+      "type": "com.sun.crypto.provider.AESCipher$General",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.ARCFOURCipher",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.ChaCha20Cipher$ChaCha20Poly1305",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.DESCipher",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.DESedeCipher",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.GaloisCounterMode$AESGCM",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.browser.Browser$Type",
+      "methods": [
+        {
+          "name": "forValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.cli.JLineup",
+      "fields": [
+        {
+          "name": "afterLabel"
+        },
+        {
+          "name": "beforeLabel"
+        },
+        {
+          "name": "browserOverride"
+        },
+        {
+          "name": "chromeParameters"
+        },
+        {
+          "name": "cleanupProfile"
+        },
+        {
+          "name": "configFile"
+        },
+        {
+          "name": "debug"
+        },
+        {
+          "name": "firefoxParameters"
+        },
+        {
+          "name": "format"
+        },
+        {
+          "name": "help"
+        },
+        {
+          "name": "keepExisting"
+        },
+        {
+          "name": "logToFile"
+        },
+        {
+          "name": "mergeConfigFile"
+        },
+        {
+          "name": "openReport"
+        },
+        {
+          "name": "printConfig"
+        },
+        {
+          "name": "printExample"
+        },
+        {
+          "name": "refreshUrl"
+        },
+        {
+          "name": "reportDirectory"
+        },
+        {
+          "name": "screenshotDirectory"
+        },
+        {
+          "name": "step"
+        },
+        {
+          "name": "url"
+        },
+        {
+          "name": "urlReplacements"
+        },
+        {
+          "name": "version"
+        },
+        {
+          "name": "workingDirectory"
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.cli.JLineup$OptionsFilter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.cli.LogToFileFilter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.Cookie",
+      "methods": [
+        {
+          "name": "getDomain",
+          "parameterTypes": []
+        },
+        {
+          "name": "getExpiry",
+          "parameterTypes": []
+        },
+        {
+          "name": "getName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPath",
+          "parameterTypes": []
+        },
+        {
+          "name": "getShowInReport",
+          "parameterTypes": []
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        },
+        {
+          "name": "isScreenshotContextGiving",
+          "parameterTypes": []
+        },
+        {
+          "name": "isSecure",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.Cookie$Builder"
+    },
+    {
+      "type": "de.otto.jlineup.config.CustomDateDeserializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.DeviceConfig",
+      "methods": [
+        {
+          "name": "getBrowsers",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDeviceName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getHeight",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPixelRatio",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUserAgent",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWidth",
+          "parameterTypes": []
+        },
+        {
+          "name": "isTouch",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.DeviceConfig$Builder"
+    },
+    {
+      "type": "de.otto.jlineup.config.HttpCheckConfig",
+      "methods": [
+        {
+          "name": "getAllowedCodes",
+          "parameterTypes": []
+        },
+        {
+          "name": "getErrorSignals",
+          "parameterTypes": []
+        },
+        {
+          "name": "isEnabled",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.HttpCheckConfig$Builder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "build",
+          "parameterTypes": []
+        },
+        {
+          "name": "withEnabled",
+          "parameterTypes": [
+            "boolean"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.HttpCheckFilter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.JobConfig",
+      "methods": [
+        {
+          "name": "getAfterLabel",
+          "parameterTypes": []
+        },
+        {
+          "name": "getApprovalLink",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBeforeLabel",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBrowser",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBrowsers",
+          "parameterTypes": []
+        },
+        {
+          "name": "getFlakyTolerance",
+          "parameterTypes": []
+        },
+        {
+          "name": "getGlobalTimeout",
+          "parameterTypes": []
+        },
+        {
+          "name": "getGlobalWaitAfterPageLoad",
+          "parameterTypes": []
+        },
+        {
+          "name": "getHttpCheck",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMergeConfig",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMessage",
+          "parameterTypes": []
+        },
+        {
+          "name": "getName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPageLoadTimeout",
+          "parameterTypes": []
+        },
+        {
+          "name": "getScreenshotRetries",
+          "parameterTypes": []
+        },
+        {
+          "name": "getThreads",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUrls",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWindowHeight",
+          "parameterTypes": []
+        },
+        {
+          "name": "isCheckForErrorsInLog",
+          "parameterTypes": []
+        },
+        {
+          "name": "isDebug",
+          "parameterTypes": []
+        },
+        {
+          "name": "isLogToFile",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.JobConfig$Builder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "build",
+          "parameterTypes": []
+        },
+        {
+          "name": "withBrowser",
+          "parameterTypes": [
+            "de.otto.jlineup.browser.Browser$Type"
+          ]
+        },
+        {
+          "name": "withCheckForErrorsInLog",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "withDebug",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "withGlobalTimeout",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "withGlobalWaitAfterPageLoad",
+          "parameterTypes": [
+            "float"
+          ]
+        },
+        {
+          "name": "withHttpCheck",
+          "parameterTypes": [
+            "de.otto.jlineup.config.HttpCheckConfig"
+          ]
+        },
+        {
+          "name": "withName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "withPageLoadTimeout",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "withUrls",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        },
+        {
+          "name": "withWindowHeight",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.JobConfig$UrlsDeserializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.JobConfigBeanInfo"
+    },
+    {
+      "type": "de.otto.jlineup.config.JobConfigCustomizer"
+    },
+    {
+      "type": "de.otto.jlineup.config.PathConfig$PathConfigListDeserializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.PathConfig$PathConfigSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.UrlConfig",
+      "methods": [
+        {
+          "name": "getAlternatingCookies",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBrowsers",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCleanupPaths",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCookies",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDevices",
+          "parameterTypes": []
+        },
+        {
+          "name": "getEnvMapping",
+          "parameterTypes": []
+        },
+        {
+          "name": "getFlakyTolerance",
+          "parameterTypes": []
+        },
+        {
+          "name": "getHttpCheck",
+          "parameterTypes": []
+        },
+        {
+          "name": "getJavaScript",
+          "parameterTypes": []
+        },
+        {
+          "name": "getLocalStorage",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMaxAntiAliasColorDistance",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMaxColorDistance",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMaxDiff",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMaxScrollHeight",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPathStrings",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPaths",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRemoveSelectors",
+          "parameterTypes": []
+        },
+        {
+          "name": "getScrollDistanceFactor",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSessionStorage",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSetupPaths",
+          "parameterTypes": []
+        },
+        {
+          "name": "getStyle",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUrl",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWaitAfterPageLoad",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWaitAfterScroll",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWaitForFontsTime",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWaitForNoAnimationAfterScroll",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWaitForSelectors",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWaitForSelectorsTimeout",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWarmupBrowserCacheTime",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWindowWidths",
+          "parameterTypes": []
+        },
+        {
+          "name": "isFailIfSelectorsNotFound",
+          "parameterTypes": []
+        },
+        {
+          "name": "isHideImages",
+          "parameterTypes": []
+        },
+        {
+          "name": "isIgnoreAntiAliasing",
+          "parameterTypes": []
+        },
+        {
+          "name": "isStrictColorComparison",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.UrlConfig$Builder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "build",
+          "parameterTypes": []
+        },
+        {
+          "name": "withIgnoreAntiAliasing",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "withMaxColorDistance",
+          "parameterTypes": [
+            "double"
+          ]
+        },
+        {
+          "name": "withMaxDiff",
+          "parameterTypes": [
+            "double"
+          ]
+        },
+        {
+          "name": "withMaxScrollHeight",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "withPaths",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "withStrictColorComparison",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "withWaitAfterPageLoad",
+          "parameterTypes": [
+            "float"
+          ]
+        },
+        {
+          "name": "withWaitAfterScroll",
+          "parameterTypes": [
+            "float"
+          ]
+        },
+        {
+          "name": "withWindowWidths",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.lambda.LambdaBrowser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "de.otto.jlineup.RunStepConfig",
+            "de.otto.jlineup.config.JobConfig",
+            "de.otto.jlineup.file.FileService"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "groovy.lang.Closure"
+    },
+    {
+      "type": "java.beans.PropertyVetoException"
+    },
+    {
+      "type": "java.io.Serializable"
+    },
+    {
+      "type": "java.lang.Boolean",
+      "jniAccessible": true,
+      "methods": [
+        {
+          "name": "getBoolean",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "java.lang.Class"
+    },
+    {
+      "type": "java.lang.ClassLoader"
+    },
+    {
+      "type": "java.lang.Integer[]"
+    },
+    {
+      "type": "java.lang.Iterable"
+    },
+    {
+      "type": "java.lang.Object"
+    },
+    {
+      "type": "java.lang.ObjectBeanInfo"
+    },
+    {
+      "type": "java.lang.ObjectCustomizer"
+    },
+    {
+      "type": "java.lang.Object[]"
+    },
+    {
+      "type": "java.lang.System",
+      "methods": [
+        {
+          "name": "console",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.reflect.AccessibleObject"
+    },
+    {
+      "type": "java.nio.file.Path"
+    },
+    {
+      "type": "java.nio.file.Paths"
+    },
+    {
+      "type": "java.security.AlgorithmParametersSpi"
+    },
+    {
+      "type": "java.security.KeyStoreSpi"
+    },
+    {
+      "type": "java.sql.Connection"
+    },
+    {
+      "type": "java.sql.Driver"
+    },
+    {
+      "type": "java.sql.DriverManager"
+    },
+    {
+      "type": "java.sql.Time"
+    },
+    {
+      "type": "java.sql.Timestamp"
+    },
+    {
+      "type": "java.time.Duration"
+    },
+    {
+      "type": "java.time.Instant"
+    },
+    {
+      "type": "java.time.LocalDate"
+    },
+    {
+      "type": "java.time.LocalDateTime"
+    },
+    {
+      "type": "java.time.LocalTime"
+    },
+    {
+      "type": "java.time.MonthDay"
+    },
+    {
+      "type": "java.time.OffsetDateTime"
+    },
+    {
+      "type": "java.time.OffsetTime"
+    },
+    {
+      "type": "java.time.Period"
+    },
+    {
+      "type": "java.time.Year"
+    },
+    {
+      "type": "java.time.YearMonth"
+    },
+    {
+      "type": "java.time.ZoneId"
+    },
+    {
+      "type": "java.time.ZoneOffset"
+    },
+    {
+      "type": "java.time.ZonedDateTime"
+    },
+    {
+      "type": "java.util.AbstractCollection"
+    },
+    {
+      "type": "java.util.AbstractList"
+    },
+    {
+      "type": "java.util.Arrays$ArrayList"
+    },
+    {
+      "type": "java.util.Collection"
+    },
+    {
+      "type": "java.util.Collections$EmptyList"
+    },
+    {
+      "type": "java.util.List"
+    },
+    {
+      "type": "java.util.Map"
+    },
+    {
+      "type": "java.util.RandomAccess"
+    },
+    {
+      "type": "java.util.Set"
+    },
+    {
+      "type": "javassist.ClassPool"
+    },
+    {
+      "type": "kotlin.Unit"
+    },
+    {
+      "type": "ognl.OgnlRuntime$ClassPropertyMethodCache"
+    },
+    {
+      "type": "org.apache.commons.logging.LogFactory"
+    },
+    {
+      "type": "org.apache.commons.logging.impl.Log4jApiLogFactory"
+    },
+    {
+      "type": "org.apache.commons.logging.impl.Slf4jLogFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.apache.commons.logging.impl.WeakHashtable",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.apache.logging.slf4j.SLF4JProvider"
+    },
+    {
+      "type": "org.springframework.core.io.ResourceLoader"
+    },
+    {
+      "type": "org.springframework.web.reactive.result.view.RequestContext"
+    },
+    {
+      "type": "org.springframework.web.servlet.support.RequestContext"
+    },
+    {
+      "type": "org.thymeleaf.expression.Calendars",
+      "methods": [
+        {
+          "name": "createNow",
+          "parameterTypes": []
+        },
+        {
+          "name": "format",
+          "parameterTypes": [
+            "java.util.Calendar",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.thymeleaf.spring5.context.IThymeleafRequestContext"
+    },
+    {
+      "type": "org.thymeleaf.spring5.expression.IThymeleafEvaluationContext"
+    },
+    {
+      "type": "org.thymeleaf.spring6.context.IThymeleafRequestContext"
+    },
+    {
+      "type": "org.thymeleaf.spring6.expression.IThymeleafEvaluationContext"
+    },
+    {
+      "type": "org.thymeleaf.standard.expression.AndExpression"
+    },
+    {
+      "type": "org.thymeleaf.standard.expression.EqualsNotEqualsExpression"
+    },
+    {
+      "type": "org.thymeleaf.standard.expression.GreaterLesserExpression"
+    },
+    {
+      "type": "org.thymeleaf.standard.expression.IStandardConversionService"
+    },
+    {
+      "type": "org.thymeleaf.standard.expression.IStandardExpressionParser"
+    },
+    {
+      "type": "org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator"
+    },
+    {
+      "type": "org.thymeleaf.standard.expression.MultiplicationDivisionRemainderExpression"
+    },
+    {
+      "type": "org.thymeleaf.standard.expression.OrExpression"
+    },
+    {
+      "type": "scala.util.Properties"
+    },
+    {
+      "type": "sun.misc.Unsafe",
+      "fields": [
+        {
+          "name": "theUnsafe"
+        }
+      ]
+    },
+    {
+      "type": "sun.security.pkcs12.PKCS12KeyStore",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.pkcs12.PKCS12KeyStore$DualFormatPKCS12",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.NativePRNG",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.security.SecureRandomParameters"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.SHA",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.X509Factory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.rsa.RSAKeyFactory$Legacy",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.ssl.SSLContextImpl$TLSContext",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.ssl.TrustManagerFactoryImpl$PKIXFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.x509.AuthorityInfoAccessExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.x509.AuthorityKeyIdentifierExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.x509.BasicConstraintsExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.x509.CRLDistributionPointsExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.x509.CertificatePoliciesExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.x509.ExtendedKeyUsageExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.x509.KeyUsageExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.x509.NetscapeCertTypeExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.x509.PrivateKeyUsageExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.x509.SubjectKeyIdentifierExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Boolean",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.text.resources.BreakIteratorInfo"
+    },
+    {
+      "type": "sun.text.resources.BreakIteratorResources"
+    },
+    {
+      "type": "sun.text.resources.BreakIteratorResources_en"
+    },
+    {
+      "type": "sun.text.resources.BreakIteratorResources_en_US"
+    },
+    {
+      "type": "sun.text.resources.cldr.FormatData"
+    },
+    {
+      "type": "sun.text.resources.cldr.FormatData_en"
+    },
+    {
+      "type": "sun.text.resources.cldr.FormatData_en_US"
+    },
+    {
+      "type": "sun.util.resources.cldr.CalendarData"
+    },
+    {
+      "type": "tools.jackson.core.json.JsonWriteFeature"
+    },
+    {
+      "type": "tools.jackson.databind.ObjectMapper"
+    },
+    {
+      "type": "tools.jackson.databind.SerializationFeature"
+    },
+    {
+      "type": "tools.jackson.databind.cfg.MapperBuilder",
+      "methods": [
+        {
+          "name": "defaultDateFormat",
+          "parameterTypes": [
+            "java.text.DateFormat"
+          ]
+        },
+        {
+          "name": "findAndAddModules",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "tools.jackson.databind.deser.Deserializers[]"
+    },
+    {
+      "type": "tools.jackson.databind.deser.KeyDeserializers[]"
+    },
+    {
+      "type": "tools.jackson.databind.deser.ValueInstantiators[]"
+    },
+    {
+      "type": "tools.jackson.databind.json.JsonMapper",
+      "methods": [
+        {
+          "name": "builder",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "tools.jackson.databind.json.JsonMapper$Builder",
+      "methods": [
+        {
+          "name": "build",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "tools.jackson.databind.ser.Serializers[]"
+    }
+  ],
+  "resources": [
+    {
+      "glob": "META-INF/services/ch.qos.logback.classic.spi.Configurator"
+    },
+    {
+      "glob": "META-INF/services/java.net.spi.URLStreamHandlerProvider"
+    },
+    {
+      "glob": "META-INF/services/java.time.zone.ZoneRulesProvider"
+    },
+    {
+      "glob": "META-INF/services/javax.xml.parsers.SAXParserFactory"
+    },
+    {
+      "glob": "META-INF/services/org.apache.commons.logging.LogFactory"
+    },
+    {
+      "glob": "META-INF/services/org.slf4j.spi.SLF4JServiceProvider"
+    },
+    {
+      "glob": "META-INF/services/tools.jackson.databind.JacksonModule"
+    },
+    {
+      "glob": "ch/qos/logback/classic/logback-classic-version.properties"
+    },
+    {
+      "glob": "ch/qos/logback/core/logback-core-version.properties"
+    },
+    {
+      "glob": "commons-logging.properties"
+    },
+    {
+      "glob": "logback-test.xml"
+    },
+    {
+      "glob": "logback.xml"
+    },
+    {
+      "glob": "mozilla/public-suffix-list.txt"
+    },
+    {
+      "glob": "org/thymeleaf/thymeleaf.properties"
+    },
+    {
+      "glob": "settings.properties"
+    },
+    {
+      "glob": "software/amazon/awssdk/global/handlers/execution.interceptors"
+    },
+    {
+      "glob": "software/amazon/awssdk/global/partitions.json"
+    },
+    {
+      "glob": "software/amazon/awssdk/services/lambda/execution.interceptors"
+    },
+    {
+      "glob": "templates/report_not_finished.html"
+    },
+    {
+      "glob": "version.properties"
+    },
+    {
+      "module": "java.base",
+      "glob": "sun/text/resources/LineBreakIteratorData"
+    }
+  ]
+}

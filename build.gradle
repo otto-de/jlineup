@@ -70,6 +70,12 @@ jreleaser {
         }
     }
     gitRootSearch = true
+    // Native binaries built by the native-binaries job in release.yml, only attached to the GitHub release
+    files {
+        glob {
+            pattern = 'build/native-binaries/*.tar.gz'
+        }
+    }
     signing {
         active = 'ALWAYS'
         armored = true

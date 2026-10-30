@@ -48,6 +48,7 @@ jobs:
       - name: Add node_modules/.bin to PATH
         run: echo "$GITHUB_WORKSPACE/node_modules/.bin" >> $GITHUB_PATH
       - name: AWS Lambda acceptance tests
+        id: acceptance
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
@@ -60,6 +61,73 @@ jobs:
           ./gradlew build assemble -x test
           ./gradlew :jlineup-lambda:test --tests '*LambdaAcceptanceTest*'
           JLINEUP_LAMBDA_ACCEPTANCE_FORCE_DEPLOY=false ./gradlew :jlineup-cli-lambda:test --tests '*CliLambdaAcceptanceTest*'
+
+      # The native jlineup-cli-lambda binary needs reachability metadata from real Lambda runs, which can
+      # only be traced here. The binary is first tested with the committed metadata (as it would be
+      # released), then the metadata is traced again and uploaded, so changes can be committed.
+      - name: Set up mise
+        if: ${{ always() && steps.acceptance.outcome == 'success' }}
+        uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # v5.2.4
+        with:
+          install: false
+
+      - name: Read Lambda function name of the acceptance test stack
+        id: lambda
+        if: ${{ always() && steps.acceptance.outcome == 'success' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-central-1
+          AWS_DEFAULT_REGION: eu-central-1
+        run: |
+          FUNCTION_NAME=$(aws cloudformation describe-stacks --stack-name jlineup-lambda-acc-test \
+            --query "Stacks[0].Outputs[?OutputKey=='FunctionName'].OutputValue" --output text)
+          echo "Lambda function: ${FUNCTION_NAME}"
+          echo "function-name=${FUNCTION_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Native jlineup-cli-lambda acceptance test
+        if: ${{ always() && steps.lambda.outcome == 'success' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-central-1
+          AWS_DEFAULT_REGION: eu-central-1
+          FUNCTION_NAME: ${{ steps.lambda.outputs.function-name }}
+        run: |
+          cli/graalvm/build-native-image.sh cli-lambda
+          JLINEUP=cli-lambda/build/native/jlineup-cli-lambda-linux-amd64/jlineup
+          ARGS=(--working-dir "$RUNNER_TEMP/native"
+                --config cli-lambda/src/test/resources/acceptance/acceptance_cli_lambda.lineup.json
+                -F "$FUNCTION_NAME" -L "$AWS_REGION")
+          "$JLINEUP" "${ARGS[@]}" --step before
+          "$JLINEUP" "${ARGS[@]}" --step after
+          test -f "$RUNNER_TEMP/native/report/report.json"
+
+      - name: Trace native image metadata of jlineup-cli-lambda
+        id: trace
+        if: ${{ always() && steps.lambda.outcome == 'success' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-central-1
+          AWS_DEFAULT_REGION: eu-central-1
+          JLINEUP_LAMBDA_FUNCTION_NAME: ${{ steps.lambda.outputs.function-name }}
+          JLINEUP_LAMBDA_AWS_REGION: eu-central-1
+        run: |
+          cli/graalvm/prepare-native-image-build.sh cli-lambda
+          if git diff --quiet -- cli-lambda/graalvm; then
+            echo "Native image metadata of jlineup-cli-lambda is up to date." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::Native image metadata of jlineup-cli-lambda changed, commit cli-lambda/graalvm/reachability-metadata.json from the artifact."
+            echo "Native image metadata of jlineup-cli-lambda changed, see the artifact cli-lambda-reachability-metadata." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload native image metadata of jlineup-cli-lambda
+        if: ${{ always() && steps.trace.outcome == 'success' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: cli-lambda-reachability-metadata
+          path: cli-lambda/graalvm/reachability-metadata.json
 
       # The Lambda container images are pushed into the CDK bootstrap ECR repository
       # (cdk-hnb659fds-container-assets-<account>-<region>), which is NOT part of the

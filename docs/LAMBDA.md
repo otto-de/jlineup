@@ -168,6 +168,10 @@ Download the CLI Lambda variant, which bundles both the CLI and the Lambda clien
 
 `wget https://repo1.maven.org/maven2/de/otto/jlineup-cli-lambda/6.3.0/jlineup-cli-lambda-6.3.0.jar -O jlineup.jar`
 
+On Linux (x86_64 and arm64), there is also a native binary that doesn't need Java,
+`jlineup-cli-lambda-linux-amd64.tar.gz` or `jlineup-cli-lambda-linux-arm64.tar.gz` in the
+[GitHub releases](https://github.com/otto-de/jlineup/releases). Keep the bundled libraries next to the `jlineup` binary.
+
 The CLI Lambda variant works exactly like the regular CLI, with these additional flags:
 
 | Flag                     | Short | Default          | Description                                      |

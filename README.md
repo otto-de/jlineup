@@ -79,6 +79,14 @@ to see the command line help.
 
 See the [CLI documentation](docs/CLI.md) for more details and a small tutorial.
 
+On Linux (x86_64 and arm64), you can also use the native binary, which doesn't need Java. Download it from the
+[GitHub releases](https://github.com/otto-de/jlineup/releases) (`jlineup-cli-linux-amd64.tar.gz` or
+`jlineup-cli-linux-arm64.tar.gz`) and keep the bundled libraries next to it:
+
+    wget https://github.com/otto-de/jlineup/releases/latest/download/jlineup-cli-linux-amd64.tar.gz
+    tar -xzf jlineup-cli-linux-amd64.tar.gz
+    ./jlineup-cli-linux-amd64/jlineup --help
+
 ## Integration example
 
 This is an example, how JLineup can be helpful in your automated build and deploy pipeline.

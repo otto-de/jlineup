@@ -1,0 +1,85 @@
+# Builds the native Linux binaries of jlineup-cli and jlineup-cli-lambda with GraalVM Community Edition
+# and smoke-tests them. Runs daily, can be started manually and is called by release.yml, which attaches
+# the archives to the GitHub release.
+#
+# jlineup-cli-lambda is tested against the real Lambda function in aws_lambda_acceptance_test.yml.
+
+name: Native binaries
+
+on:
+  workflow_dispatch:
+  workflow_call:
+  schedule:
+    - cron: '0 10 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    name: jlineup-${{ matrix.variant }} (linux-${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [ cli, cli-lambda ]
+        arch: [ amd64, arm64 ]
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+            browser: chrome-headless
+          # There is no Chrome for Linux arm64
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            browser: firefox-headless
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up JDK
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: gradle
+
+      # build-native-image.sh installs GraalVM Community Edition via mise
+      - name: Set up mise
+        uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # v5.2.4
+        with:
+          install: false
+
+      - name: Build native binary
+        run: cli/graalvm/build-native-image.sh ${{ matrix.variant }}
+
+      - name: Smoke test (screenshots with ${{ matrix.browser }})
+        if: matrix.variant == 'cli'
+        run: |
+          JLINEUP="$PWD/cli/build/native/jlineup-cli-linux-${{ matrix.arch }}/jlineup"
+          ARGS=(--working-dir "$RUNNER_TEMP/smoke"
+                --config "$PWD/cli/src/test/resources/acceptance/acceptance_chrome-headless.lineup.json"
+                --replace-in-url="###CWD###=$PWD/cli"
+                --override-browser ${{ matrix.browser }})
+          "$JLINEUP" "${ARGS[@]}" --step before
+          "$JLINEUP" "${ARGS[@]}" --step after
+          test -f "$RUNNER_TEMP/smoke/report/report.json"
+
+      - name: Smoke test (Lambda options)
+        if: matrix.variant == 'cli-lambda'
+        run: |
+          cli-lambda/build/native/jlineup-cli-lambda-linux-${{ matrix.arch }}/jlineup --help | tee "$RUNNER_TEMP/help.txt"
+          grep -q -- "--lambda-function-name" "$RUNNER_TEMP/help.txt"
+
+      - name: Upload native binary
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: native-${{ matrix.variant }}-linux-${{ matrix.arch }}
+          path: ${{ matrix.variant }}/build/native/*.tar.gz
+          if-no-files-found: error
+          retention-days: 7

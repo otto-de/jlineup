@@ -1,4 +1,5 @@
 # Publishes a release to GitHub Packages and Maven Central using JReleaser.
+# The native Linux binaries of jlineup-cli and jlineup-cli-lambda are only attached to the GitHub release.
 #
 # HOW TO TRIGGER A RELEASE
 # -------------------------
@@ -27,8 +28,15 @@ on:
         type: string
 
 jobs:
+  native-binaries:
+    name: Native binaries
+    uses: ./.github/workflows/native.yml
+    permissions:
+      contents: read
+
   release:
     name: Release ${{ inputs.version }}
+    needs: native-binaries
     runs-on: ubuntu-24.04
 
     env:
@@ -168,6 +176,14 @@ jobs:
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.GPG_SECRET_KEY }}
           JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.MAVENCENTRAL_USERNAME }}
           JRELEASER_MAVENCENTRAL_PASSWORD: ${{ secrets.MAVENCENTRAL_PASSWORD }}
+
+      # Attached to the GitHub release by JReleaser (see files in build.gradle), not deployed to Maven Central
+      - name: Download native binaries
+        uses: actions/download-artifact@v8.0.2
+        with:
+          pattern: native-*
+          path: build/native-binaries
+          merge-multiple: true
 
       - name: Full release (GitHub + Maven Central)
         run: ./gradlew jreleaserFullRelease
