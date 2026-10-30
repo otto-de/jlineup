@@ -3625,6 +3625,9 @@
       "glob": "org/openqa/selenium/manager/linux-arm64/selenium-manager"
     },
     {
+      "glob": "org/openqa/selenium/manager/linux-x86_64/selenium-manager"
+    },
+    {
       "glob": "org/publicsuffix/list/effective_tld_names.dat"
     },
     {
