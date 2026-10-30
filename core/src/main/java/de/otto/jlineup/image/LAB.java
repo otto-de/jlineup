@@ -129,6 +129,21 @@ public class LAB
      * Binning is done by <i>flooring</i> LAB values.
      */
     public static LAB fromRGB(int ri, int gi, int bi, double binSize) {
+        LAB lab = fromRGB((double) ri, (double) gi, (double) bi);
+        double L = lab.L, A = lab.a, B = lab.b;
+
+        if (binSize > 0) {
+            L = binSize * Math.floor(L / binSize);
+            A = binSize * Math.floor(A / binSize);
+            B = binSize * Math.floor(B / binSize);
+        }
+        return new LAB(L,A,B);
+    }
+
+    /**
+     * Maps an RGB triple with fractional channel values (0-255), i.e. an averaged color, to LAB space (D65).
+     */
+    public static LAB fromRGB(double ri, double gi, double bi) {
         // first, normalize RGB values
         double r = ri / 255.0;
         double g = gi / 255.0;
@@ -150,16 +165,7 @@ public class LAB
         y = y > 0.008856 ? Math.pow(y, 1.0/3) : 7.787037*y + 4.0/29;
         z = z > 0.008856 ? Math.pow(z, 1.0/3) : 7.787037*z + 4.0/29;
 
-        double L = 116*y - 16,
-                A = 500*(x-y),
-                B = 200*(y-z);
-
-        if (binSize > 0) {
-            L = binSize * Math.floor(L / binSize);
-            A = binSize * Math.floor(A / binSize);
-            B = binSize * Math.floor(B / binSize);
-        }
-        return new LAB(L,A,B);
+        return new LAB(116*y - 16, 500*(x-y), 200*(y-z));
     }
 
     /**

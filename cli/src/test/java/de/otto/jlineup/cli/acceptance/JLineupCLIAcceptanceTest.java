@@ -241,6 +241,29 @@ class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    void shouldDetectCdnCompressionArtifactsAsDifferenceByDefault() throws Exception {
+        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_compression_artifacts_not_ignored.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--replace-in-url=###NUM###=1", "--step", "before"});
+        int status = catchSystemExit(() ->
+                Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_compression_artifacts_not_ignored.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--replace-in-url=###NUM###=2", "--step", "after"}));
+        assertEquals(1, status);
+
+        final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
+        final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
+        assertThat(report.summary().differenceSum() > 0, is(true));
+    }
+
+    @Test
+    void shouldIgnoreCdnCompressionArtifacts() throws Exception {
+        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_compression_artifacts.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--replace-in-url=###NUM###=1", "--step", "before"});
+        Main.main(new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome_compression_artifacts.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--replace-in-url=###NUM###=2", "--step", "after"});
+
+        final Path reportJson = Paths.get(tempDirectory.toString(), "report", "report.json");
+        final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
+        assertThat(report.summary().differenceSum(), is(0.0d));
+        assertThat(report.summary().acceptedDifferentPixels() > 0, is(true));
+    }
+
+    @Test
     void shouldFailBecauseSelectorNotFound() throws Exception {
         int status = catchSystemExit(() ->
             Main.main(new String[]{"--working-dir", tempDirectory.toString(), "--config", "src/test/resources/acceptance/acceptance_chrome-wait_for_selectors_fails_with_error.lineup.json", "--replace-in-url=###CWD###=" + CWD, "--step", "before"}));

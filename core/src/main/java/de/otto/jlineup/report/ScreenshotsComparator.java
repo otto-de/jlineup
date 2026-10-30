@@ -8,6 +8,7 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.image.CompressionArtifactDetector;
 import de.otto.jlineup.image.ImageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,8 +115,12 @@ public class ScreenshotsComparator {
                         continue;
                     }
 
+                    UrlConfig urlConfig = screenshotContext.urlConfig;
+                    CompressionArtifactDetector compressionArtifactDetector = urlConfig.ignoreCompressionArtifacts
+                            ? new CompressionArtifactDetector(urlConfig.compressionArtifactRadius, urlConfig.maxCompressionArtifactColorDistance, urlConfig.compressionArtifactTextureTolerance)
+                            : null;
                     ImageService.ImageComparisonResult imageComparisonResult = imageService
-                            .compareImages(imageBefore, imageAfter, screenshotContext.deviceConfig.height, screenshotContext.urlConfig.ignoreAntiAliasing, screenshotContext.urlConfig.maxAntiAliasColorDistance, screenshotContext.urlConfig.strictColorComparison, screenshotContext.urlConfig.maxColorDistance);
+                            .compareImages(imageBefore, imageAfter, screenshotContext.deviceConfig.height, urlConfig.ignoreAntiAliasing, urlConfig.maxAntiAliasColorDistance, urlConfig.strictColorComparison, urlConfig.maxColorDistance, compressionArtifactDetector);
                     String differenceImageFileName = null;
                     if (imageComparisonResult.getAcceptedDifferentPixels() > 0 && imageComparisonResult.getDifferenceImage().isEmpty()) {
                         LOG.warn("Accepted different pixels but no difference image available. This should not happen.");

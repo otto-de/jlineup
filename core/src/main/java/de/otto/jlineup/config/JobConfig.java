@@ -59,6 +59,9 @@ public final class JobConfig  {
     static final float DEFAULT_WAIT_FOR_FONTS_TIME = 0;
     public static final double DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE = 2.3d;
     public static final double DEFAULT_MAX_COLOR_DISTANCE = 2.3d;
+    public static final int DEFAULT_COMPRESSION_ARTIFACT_RADIUS = 20;
+    public static final double DEFAULT_MAX_COMPRESSION_ARTIFACT_COLOR_DISTANCE = 20d;
+    public static final double DEFAULT_COMPRESSION_ARTIFACT_TEXTURE_TOLERANCE = 0d;
     static final int DEFAULT_THREADS = 0; // '0' means not set which is transformed to '1' when creating the threadpool
     static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;

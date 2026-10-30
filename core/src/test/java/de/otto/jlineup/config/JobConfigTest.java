@@ -151,6 +151,43 @@ class JobConfigTest {
     }
 
     @Test
+    public void shouldReadCompressionArtifactOptionsFromYamlAndJsonConfig() {
+        JobConfig fromYaml = JacksonWrapper.deserializeConfig(new StringReader("""
+                urls:
+                  https://www.example.com:
+                    ignore-compression-artifacts: true
+                    compression-artifact-radius: 7
+                    max-compression-artifact-color-distance: 15
+                    compression-artifact-texture-tolerance: 0.15
+                """), JacksonWrapper.ConfigFormat.YAML);
+        JobConfig fromJson = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": { "ignore-compression-artifacts": true, "compression-artifact-radius": 7, "max-compression-artifact-color-distance": 15, "compression-artifact-texture-tolerance": 0.15 } } }
+                """), JacksonWrapper.ConfigFormat.JSON);
+
+        for (JobConfig jobConfig : new JobConfig[]{fromYaml, fromJson}) {
+            UrlConfig urlConfig = jobConfig.urls.get("https://www.example.com");
+            assertThat(urlConfig.ignoreCompressionArtifacts, is(true));
+            assertThat(urlConfig.compressionArtifactRadius, is(7));
+            assertThat(urlConfig.maxCompressionArtifactColorDistance, is(15d));
+            assertThat(urlConfig.compressionArtifactTextureTolerance, is(0.15d));
+        }
+    }
+
+    @Test
+    public void shouldUseCompressionArtifactDefaultsAndExcludeThemFromSerializedConfig() {
+        JobConfig jobConfig = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": {} } }
+                """), JacksonWrapper.ConfigFormat.JSON);
+        UrlConfig urlConfig = jobConfig.urls.get("https://www.example.com");
+
+        assertThat(urlConfig.ignoreCompressionArtifacts, is(false));
+        assertThat(urlConfig.compressionArtifactRadius, is(DEFAULT_COMPRESSION_ARTIFACT_RADIUS));
+        assertThat(urlConfig.maxCompressionArtifactColorDistance, is(DEFAULT_MAX_COMPRESSION_ARTIFACT_COLOR_DISTANCE));
+        assertThat(urlConfig.compressionArtifactTextureTolerance, is(DEFAULT_COMPRESSION_ARTIFACT_TEXTURE_TOLERANCE));
+        assertThat(JobConfig.prettyPrint(jobConfig), not(containsString("compression-artifact")));
+    }
+
+    @Test
     public void shouldKeepReportLabelsWhenInsertingDefaultsAndSanitizing() {
         JobConfig jobConfig = JobConfig.copyOfBuilder(JobConfig.defaultConfig()).withBeforeLabel("Reference").withAfterLabel("Current").build();
 

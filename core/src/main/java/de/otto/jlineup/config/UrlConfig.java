@@ -65,6 +65,14 @@ public class UrlConfig {
     public final double maxColorDistance;
 
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    public final boolean ignoreCompressionArtifacts;
+    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = CompressionArtifactRadiusFilter.class)
+    public final int compressionArtifactRadius;
+    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = MaxCompressionArtifactColorDistanceFilter.class)
+    public final double maxCompressionArtifactColorDistance;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    public final double compressionArtifactTextureTolerance;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public final int flakyTolerance;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -98,6 +106,10 @@ public class UrlConfig {
         maxAntiAliasColorDistance = builder.maxAntiAliasColorDistance;
         strictColorComparison = builder.strictColorComparison;
         maxColorDistance = builder.maxColorDistance;
+        ignoreCompressionArtifacts = builder.ignoreCompressionArtifacts;
+        compressionArtifactRadius = builder.compressionArtifactRadius;
+        maxCompressionArtifactColorDistance = builder.maxCompressionArtifactColorDistance;
+        compressionArtifactTextureTolerance = builder.compressionArtifactTextureTolerance;
         removeSelectors = builder.removeSelectors;
         waitForSelectors = builder.waitForSelectors;
         waitForSelectorsTimeout = builder.waitForSelectorsTimeout;
@@ -232,6 +244,22 @@ public class UrlConfig {
         return maxColorDistance;
     }
 
+    public boolean isIgnoreCompressionArtifacts() {
+        return ignoreCompressionArtifacts;
+    }
+
+    public int getCompressionArtifactRadius() {
+        return compressionArtifactRadius;
+    }
+
+    public double getMaxCompressionArtifactColorDistance() {
+        return maxCompressionArtifactColorDistance;
+    }
+
+    public double getCompressionArtifactTextureTolerance() {
+        return compressionArtifactTextureTolerance;
+    }
+
     public Set<String> getRemoveSelectors() {
         return removeSelectors;
     }
@@ -301,6 +329,10 @@ public class UrlConfig {
         builder.maxAntiAliasColorDistance = copy.maxAntiAliasColorDistance;
         builder.strictColorComparison = copy.strictColorComparison;
         builder.maxColorDistance = copy.maxColorDistance;
+        builder.ignoreCompressionArtifacts = copy.ignoreCompressionArtifacts;
+        builder.compressionArtifactRadius = copy.compressionArtifactRadius;
+        builder.maxCompressionArtifactColorDistance = copy.maxCompressionArtifactColorDistance;
+        builder.compressionArtifactTextureTolerance = copy.compressionArtifactTextureTolerance;
         builder.removeSelectors = copy.removeSelectors;
         builder.waitForSelectors = copy.waitForSelectors;
         builder.waitForSelectorsTimeout = copy.waitForSelectorsTimeout;
@@ -353,6 +385,10 @@ public class UrlConfig {
         private double maxAntiAliasColorDistance = DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE;
         private boolean strictColorComparison;
         private double maxColorDistance = DEFAULT_MAX_COLOR_DISTANCE;
+        private boolean ignoreCompressionArtifacts;
+        private int compressionArtifactRadius = DEFAULT_COMPRESSION_ARTIFACT_RADIUS;
+        private double maxCompressionArtifactColorDistance = DEFAULT_MAX_COMPRESSION_ARTIFACT_COLOR_DISTANCE;
+        private double compressionArtifactTextureTolerance = DEFAULT_COMPRESSION_ARTIFACT_TEXTURE_TOLERANCE;
         private Set<String> removeSelectors;
         private Set<String> waitForSelectors;
         private float waitForSelectorsTimeout = DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT;
@@ -526,6 +562,26 @@ public class UrlConfig {
             return this;
         }
 
+        public Builder withIgnoreCompressionArtifacts(boolean val) {
+            ignoreCompressionArtifacts = val;
+            return this;
+        }
+
+        public Builder withCompressionArtifactRadius(int val) {
+            compressionArtifactRadius = val;
+            return this;
+        }
+
+        public Builder withMaxCompressionArtifactColorDistance(double val) {
+            maxCompressionArtifactColorDistance = val;
+            return this;
+        }
+
+        public Builder withCompressionArtifactTextureTolerance(double val) {
+            compressionArtifactTextureTolerance = val;
+            return this;
+        }
+
         public Builder withRemoveSelectors(Set<String> val) {
             removeSelectors = val;
             return this;
@@ -595,6 +651,10 @@ public class UrlConfig {
                 ", maxAntiAliasColorDistance=" + maxAntiAliasColorDistance +
                 ", strictColorComparison=" + strictColorComparison +
                 ", maxColorDistance=" + maxColorDistance +
+                ", ignoreCompressionArtifacts=" + ignoreCompressionArtifacts +
+                ", compressionArtifactRadius=" + compressionArtifactRadius +
+                ", maxCompressionArtifactColorDistance=" + maxCompressionArtifactColorDistance +
+                ", compressionArtifactTextureTolerance=" + compressionArtifactTextureTolerance +
                 ", flakyTolerance=" + flakyTolerance +
                 ", browsers=" + browsers +
                 '}';
@@ -604,12 +664,12 @@ public class UrlConfig {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UrlConfig urlConfig = (UrlConfig) o;
-        return Double.compare(maxDiff, urlConfig.maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(waitAfterPageLoad, urlConfig.waitAfterPageLoad) == 0 && Float.compare(waitAfterScroll, urlConfig.waitAfterScroll) == 0 && Float.compare(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) == 0 && Float.compare(scrollDistanceFactor, urlConfig.scrollDistanceFactor) == 0 && Float.compare(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime) == 0 && Float.compare(waitForFontsTime, urlConfig.waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(waitForSelectorsTimeout, urlConfig.waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && Double.compare(maxAntiAliasColorDistance, urlConfig.maxAntiAliasColorDistance) == 0 && strictColorComparison == urlConfig.strictColorComparison && Double.compare(maxColorDistance, urlConfig.maxColorDistance) == 0 && flakyTolerance == urlConfig.flakyTolerance && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(style, urlConfig.style) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors) && Objects.equals(browsers, urlConfig.browsers);
+        return Double.compare(maxDiff, urlConfig.maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(waitAfterPageLoad, urlConfig.waitAfterPageLoad) == 0 && Float.compare(waitAfterScroll, urlConfig.waitAfterScroll) == 0 && Float.compare(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) == 0 && Float.compare(scrollDistanceFactor, urlConfig.scrollDistanceFactor) == 0 && Float.compare(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime) == 0 && Float.compare(waitForFontsTime, urlConfig.waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(waitForSelectorsTimeout, urlConfig.waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && Double.compare(maxAntiAliasColorDistance, urlConfig.maxAntiAliasColorDistance) == 0 && strictColorComparison == urlConfig.strictColorComparison && Double.compare(maxColorDistance, urlConfig.maxColorDistance) == 0 && ignoreCompressionArtifacts == urlConfig.ignoreCompressionArtifacts && compressionArtifactRadius == urlConfig.compressionArtifactRadius && Double.compare(maxCompressionArtifactColorDistance, urlConfig.maxCompressionArtifactColorDistance) == 0 && Double.compare(compressionArtifactTextureTolerance, urlConfig.compressionArtifactTextureTolerance) == 0 && flakyTolerance == urlConfig.flakyTolerance && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(style, urlConfig.style) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors) && Objects.equals(browsers, urlConfig.browsers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, scrollDistanceFactor, warmupBrowserCacheTime, waitForFontsTime, javaScript, style, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, maxAntiAliasColorDistance, strictColorComparison, maxColorDistance, flakyTolerance, browsers);
+        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, scrollDistanceFactor, warmupBrowserCacheTime, waitForFontsTime, javaScript, style, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, maxAntiAliasColorDistance, strictColorComparison, maxColorDistance, ignoreCompressionArtifacts, compressionArtifactRadius, maxCompressionArtifactColorDistance, compressionArtifactTextureTolerance, flakyTolerance, browsers);
     }
 
 }

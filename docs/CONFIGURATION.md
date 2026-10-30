@@ -177,6 +177,7 @@ urls:
     http-check:
       enabled: false
     ignore-anti-aliasing: false
+    ignore-compression-artifacts: false
     strict-color-comparison: false
     wait-for-selectors:
     - .wait-for-class
@@ -258,6 +259,7 @@ http-check:
         "enabled": false
       },
       "ignore-anti-aliasing": false,
+      "ignore-compression-artifacts": false,
       "strict-color-comparison": false,
       "wait-for-selectors": [
         ".wait-for-class"
@@ -1076,6 +1078,110 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  
  Since: 4.0.0
  
+---
+
+### `ignore-compression-artifacts`
+
+ Lossy image formats (JPEG, WebP, AVIF) produce small, noisy pixel differences if the same source image is encoded
+ twice. This happens i.e. if an image CDN serves the same image from different nodes or providers, which encode it
+ independently. The difference is invisible for the human eye, but JLineup detects it, so the comparison becomes flaky.
+
+ With this option, JLineup accepts a different pixel as compression artifact if its own color distance is at most
+ [`max-compression-artifact-color-distance`](#max-compression-artifact-color-distance) and the average colors of the
+ surrounding square (see [`compression-artifact-radius`](#compression-artifact-radius)) are closer than the
+ maximum color distance. Compression noise cancels out in the average, real changes like text, shifted content or
+ changed colors don't. Accepted pixels are shown in cyan in the difference image.
+
+ Very faint changes (i.e. a 1px line in nearly the same color) may be accepted as well.
+
+ * Scope: Site
+ * Type: Boolean
+ * Default: `false`
+ * Example:
+   ```yaml
+   ignore-compression-artifacts: true
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"ignore-compression-artifacts": true`
+   </details>
+
+ Since: 6.3.1
+
+---
+
+### `compression-artifact-radius`
+
+ The radius (in pixels) of the square around a different pixel, whose average colors are compared if
+ [`ignore-compression-artifacts`](#ignore-compression-artifacts) is enabled. A radius of 20 means a 41x41 pixel square.
+ Bigger values accept stronger noise (i.e. in photos with hair or fabric), but also average out more of small real changes.
+ At the screenshot borders, the square is shifted inward, so it always has the full size.
+
+ * Scope: Site
+ * Type: Integer
+ * Default: `20`
+ * Example:
+   ```yaml
+   compression-artifact-radius: 12
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"compression-artifact-radius": 12`
+   </details>
+
+ Since: 6.3.1
+
+---
+
+### `max-compression-artifact-color-distance`
+
+ Different pixels with a higher color distance (CIEDE2000) than this are never accepted as compression artifacts.
+ Only used if [`ignore-compression-artifacts`](#ignore-compression-artifacts) is enabled.
+
+ * Scope: Site
+ * Type: Float
+ * Default: `20`
+ * Example:
+   ```yaml
+   max-compression-artifact-color-distance: 12
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"max-compression-artifact-color-distance": 12`
+   </details>
+
+ Since: 6.3.1
+
+---
+
+### `compression-artifact-texture-tolerance`
+
+ Busy image areas (hair, fabric, faces) contain stronger compression noise, and changes there are harder to see.
+ With a value greater than 0, the accepted color distance of the averages grows with the local lightness variation:
+ `max-color-distance + compression-artifact-texture-tolerance * lightness standard deviation`. It can be combined with
+ a smaller [`compression-artifact-radius`](#compression-artifact-radius), i.e. `7` with a tolerance of `0.15`, but it
+ also lowers the sensitivity for real color changes in busy areas. On real reports, the default radius without texture
+ tolerance worked better.
+ Only used if [`ignore-compression-artifacts`](#ignore-compression-artifacts) is enabled.
+
+ * Scope: Site
+ * Type: Float
+ * Default: `0`
+ * Example:
+   ```yaml
+   compression-artifact-texture-tolerance: 0.15
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"compression-artifact-texture-tolerance": 0.15`
+   </details>
+
+ Since: 6.3.1
+
 ---
 
 ### `strict-color-comparison`

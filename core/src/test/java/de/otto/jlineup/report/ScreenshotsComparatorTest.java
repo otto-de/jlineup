@@ -31,6 +31,8 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.when;
 
@@ -148,11 +150,11 @@ class ScreenshotsComparatorTest {
                 afterBuffer2);
 
         BufferedImage differenceBuffer = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
-        when(imageService.compareImages(beforeBuffer, afterBuffer, WINDOW_HEIGHT, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10, 0d));
+        when(imageService.compareImages(eq(beforeBuffer), eq(afterBuffer), eq(WINDOW_HEIGHT), eq(false), eq(DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE), eq(false), eq(DEFAULT_MAX_COLOR_DISTANCE), isNull())).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer, 0.1337d, 10, 0d));
         when(fileService.writeScreenshot(screenshotContext, differenceBuffer, 2002)).thenReturn("http_url_root_ff3c40c_1001_02002_compare.png");
 
         BufferedImage differenceBuffer2 = ImageIO.read(new File("src/test/resources/screenshots/http_url_root_ff3c40c_1001_02002_DIFFERENCE_reference.png"));
-        when(imageService.compareImages(beforeBuffer2, afterBuffer2, WINDOW_HEIGHT, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE)).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer2, 0.1337d, 10, 0d));
+        when(imageService.compareImages(eq(beforeBuffer2), eq(afterBuffer2), eq(WINDOW_HEIGHT), eq(false), eq(DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE), eq(false), eq(DEFAULT_MAX_COLOR_DISTANCE), isNull())).thenReturn(new ImageService.ImageComparisonResult(differenceBuffer2, 0.1337d, 10, 0d));
         when(fileService.writeScreenshot(screenshotContext2, differenceBuffer2, 2002)).thenReturn("http_url2_root_ff3c40c_1001_02002_compare.png");
 
         //when

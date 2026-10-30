@@ -772,6 +772,24 @@
       ]
     },
     {
+      "type": "de.otto.jlineup.config.CompressionArtifactRadiusFilter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.config.MaxCompressionArtifactColorDistanceFilter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "de.otto.jlineup.config.JobConfig",
       "methods": [
         {
@@ -1047,6 +1065,18 @@
           "parameterTypes": []
         },
         {
+          "name": "getCompressionArtifactRadius",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCompressionArtifactTextureTolerance",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMaxCompressionArtifactColorDistance",
+          "parameterTypes": []
+        },
+        {
           "name": "getMaxDiff",
           "parameterTypes": []
         },
@@ -1131,6 +1161,10 @@
           "parameterTypes": []
         },
         {
+          "name": "isIgnoreCompressionArtifacts",
+          "parameterTypes": []
+        },
+        {
           "name": "isStrictColorComparison",
           "parameterTypes": []
         }
@@ -1179,6 +1213,30 @@
         },
         {
           "name": "withMaxColorDistance",
+          "parameterTypes": [
+            "double"
+          ]
+        },
+        {
+          "name": "withCompressionArtifactRadius",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "withCompressionArtifactTextureTolerance",
+          "parameterTypes": [
+            "double"
+          ]
+        },
+        {
+          "name": "withIgnoreCompressionArtifacts",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "withMaxCompressionArtifactColorDistance",
           "parameterTypes": [
             "double"
           ]

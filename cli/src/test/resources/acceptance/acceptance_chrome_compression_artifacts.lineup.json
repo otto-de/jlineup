@@ -1,0 +1,16 @@
+{
+  "urls": {
+    "file://###CWD###/src/test/resources/acceptance/webpage/cdn_compression_###NUM###.html": {
+      "devices": [
+        {
+          "width": 800,
+          "height": 600
+        }
+      ],
+      "ignore-anti-aliasing": true,
+      "ignore-compression-artifacts": true
+    }
+  },
+  "report-format" : 2,
+  "browser" : "chrome-headless"
+}

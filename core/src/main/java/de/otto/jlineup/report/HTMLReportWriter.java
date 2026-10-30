@@ -59,6 +59,7 @@ public class HTMLReportWriter {
         variables.put("legend_same_rgb", "#" + Integer.toHexString(ImageService.SAME_COLOR).substring(2));
         variables.put("legend_look_same_rgb", "#" + Integer.toHexString(ImageService.LOOK_SAME_COLOR).substring(2));
         variables.put("legend_anti_alias_rgb", "#" + Integer.toHexString(ImageService.ANTI_ALIAS_DETECTED_COLOR).substring(2));
+        variables.put("legend_compression_artifact_rgb", "#" + Integer.toHexString(ImageService.COMPRESSION_ARTIFACT_DETECTED_COLOR).substring(2));
         variables.put("legend_different_rgb", "#" + Integer.toHexString(ImageService.HIGHLIGHT_COLOR).substring(2));
         variables.put("legend_different_size_rgb", "#" + Integer.toHexString(ImageService.DIFFERENT_SIZE_COLOR).substring(2));
     }
