@@ -19,6 +19,14 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
         classpath("org.owasp:dependency-check-gradle:12.2.0")
+        // Override vulnerable transitive dependencies of the dependency-check plugin.
+        // They are only on the build classpath, but GitHub's Gradle dependency submission reports them.
+        constraints {
+            classpath("com.fasterxml.jackson.core:jackson-core:2.22.3")
+            classpath("com.fasterxml.jackson.core:jackson-databind:2.22.3")
+            classpath("org.jsoup:jsoup:1.23.2")
+            classpath("com.google.guava:guava:33.7.2-jre")
+        }
     }
 }
 
@@ -48,6 +56,8 @@ apply plugin: 'io.spring.dependency-management'
 
 ext['selenium.version'] = "${seleniumVersion}"
 ext['netty.version'] = "${nettyVersion}"
+// Override Spring Boot managed OpenTelemetry: fixes GHSA-ccrj-gw8r-854m, fixed in 1.67.0
+ext['opentelemetry.version'] = "1.67.0"
 
 group = 'de.otto'
 version = jlineup_version
