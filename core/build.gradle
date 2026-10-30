@@ -21,16 +21,6 @@ dependencies {
     api "ch.qos.logback:logback-classic"
     api "com.google.guava:guava:33.7.2-jre"
 
-    //Update netty (selenium has older version)
-    implementation "io.netty:netty-codec"
-    implementation "io.netty:netty-codec-http"
-    implementation "io.netty:netty-codec-http2"
-    implementation "io.netty:netty-handler"
-    implementation "io.netty:netty-codec-socks"
-    implementation "io.netty:netty-handler-proxy"
-    implementation "io.netty:netty-transport-native-epoll"
-    implementation "io.netty:netty-transport-native-kqueue"
-
     implementation 'org.apache.httpcomponents.client5:httpclient5'
 
     implementation "org.slf4j:slf4j-api"
