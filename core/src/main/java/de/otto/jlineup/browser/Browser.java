@@ -34,10 +34,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -470,6 +473,14 @@ public class Browser implements AutoCloseable {
             wait.until(fontsLoaded);
         }
 
+        final boolean captureImageless = screenshotContext.urlConfig.ignoreImageContent && !screenshotContext.urlConfig.hideImages;
+        if (screenshotContext.urlConfig.ignoreImageContent && screenshotContext.urlConfig.hideImages) {
+            LOG.warn("'ignore-image-content' has no effect together with 'hide-images'.");
+        }
+        if (captureImageless) {
+            injectStyle(ImageContentScripts.HIDE_SCROLLBARS_STYLE);
+        }
+
         Long pageHeight = getPageHeight();
         int viewportHeight = Math.toIntExact(getViewportHeight());
 
@@ -505,24 +516,16 @@ public class Browser implements AutoCloseable {
 
             BufferedImage currentScreenshot = takeScreenshot();
             currentScreenshot = waitForNoAnimation(screenshotContext, currentScreenshot);
-
-            if (scrollDistance == viewportHeight && yPosition + viewportHeight > pageHeight && GlobalOptions.getOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT).equalsIgnoreCase("true")) {
-                LOG.debug("Last screenshot. Will crop image. Page height: {}, yPosition: {}, viewportHeight: {}", pageHeight, yPosition, viewportHeight);
-
-                BufferedImage croppedAndFilledScreenshot = new BufferedImage(currentScreenshot.getWidth(), currentScreenshot.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-                Graphics2D g = croppedAndFilledScreenshot.createGraphics();
-                g.setColor(getBodyColor());
-                g.fillRect(0, 0, currentScreenshot.getWidth(), currentScreenshot.getHeight());
-                // Draw shifted image
-                g.drawImage(currentScreenshot, 0, -(int)((yPosition + viewportHeight - pageHeight) * devicePixelRatio), null);
-                currentScreenshot = croppedAndFilledScreenshot;
-            }
+            currentScreenshot = cropLastScreenshotIfNecessary(currentScreenshot, yPosition, pageHeight, viewportHeight, scrollDistance, devicePixelRatio);
 
             fileService.writeScreenshot(screenshotContext,
                     currentScreenshot, yPosition);
             if (!screenshotDimensionsRecorded) {
                 fileService.setScreenshotDimensions(screenshotContext, devicePixelRatio, currentScreenshot.getWidth());
                 screenshotDimensionsRecorded = true;
+            }
+            if (captureImageless) {
+                takeImagelessScreenshot(screenshotContext, currentScreenshot, yPosition, pageHeight, viewportHeight, scrollDistance, devicePixelRatio);
             }
             LOG.debug("topOfViewport: {}, pageHeight: {}", yPosition, pageHeight);
             scrollTo(yPosition + scrollDistance);
@@ -547,6 +550,10 @@ public class Browser implements AutoCloseable {
             LOG.debug("Page height is {}", pageHeight);
         }
 
+        if (captureImageless) {
+            recordImageUrls(screenshotContext);
+        }
+
         if (hideScrollbars) {
             LOG.debug("Restoring overflow for WebKit");
             ((JavascriptExecutor) getWebDriver()).executeScript(
@@ -569,6 +576,118 @@ public class Browser implements AutoCloseable {
         //fileService.writeHtml(dom, screenshotContext.step);
         fileService.writeFileTrackerData();
         fileService.writeFileTrackerDataForScreenshotContextOnly(screenshotContext);
+    }
+
+    private static boolean isLastScreenshotToCrop(int yPosition, long pageHeight, int viewportHeight, int scrollDistance) {
+        return scrollDistance == viewportHeight && yPosition + viewportHeight > pageHeight && GlobalOptions.getOption(GlobalOption.JLINEUP_CROP_LAST_SCREENSHOT).equalsIgnoreCase("true");
+    }
+
+    // The last screenshot is shifted upwards by this many image pixels when it is cropped
+    private static int lastScreenshotShift(int yPosition, long pageHeight, int viewportHeight, int scrollDistance, double devicePixelRatio) {
+        return isLastScreenshotToCrop(yPosition, pageHeight, viewportHeight, scrollDistance) ? (int) ((yPosition + viewportHeight - pageHeight) * devicePixelRatio) : 0;
+    }
+
+    private BufferedImage cropLastScreenshotIfNecessary(BufferedImage screenshot, int yPosition, long pageHeight, int viewportHeight, int scrollDistance, double devicePixelRatio) {
+        if (isLastScreenshotToCrop(yPosition, pageHeight, viewportHeight, scrollDistance)) {
+            LOG.debug("Last screenshot. Will crop image. Page height: {}, yPosition: {}, viewportHeight: {}", pageHeight, yPosition, viewportHeight);
+
+            BufferedImage croppedAndFilledScreenshot = new BufferedImage(screenshot.getWidth(), screenshot.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+            Graphics2D g = croppedAndFilledScreenshot.createGraphics();
+            g.setColor(getBodyColor());
+            g.fillRect(0, 0, screenshot.getWidth(), screenshot.getHeight());
+            // Draw shifted image
+            g.drawImage(screenshot, 0, -lastScreenshotShift(yPosition, pageHeight, viewportHeight, scrollDistance, devicePixelRatio), null);
+            return croppedAndFilledScreenshot;
+        }
+        return screenshot;
+    }
+
+    /**
+     * Takes a second screenshot with all images hidden (for 'ignore-image-content'). The page is restored afterwards
+     * and screenshotted again: if this third screenshot differs from the regular one, the page changed in between
+     * (i.e. an animation) and the screenshot without images is not used, so nothing can be accepted wrongly.
+     */
+    private void takeImagelessScreenshot(ScreenshotContext screenshotContext, BufferedImage screenshot, int yPosition, long pageHeight, int viewportHeight, int scrollDistance, double devicePixelRatio) throws IOException {
+        JavascriptExecutor jse = (JavascriptExecutor) getWebDriver();
+        try {
+            List<int[]> imageAreas = toScreenshotAreas(jse.executeScript(ImageContentScripts.COLLECT_IMAGE_AREAS), devicePixelRatio,
+                    lastScreenshotShift(yPosition, pageHeight, viewportHeight, scrollDistance, devicePixelRatio), screenshot.getWidth(), screenshot.getHeight());
+            BufferedImage imageless;
+            try {
+                jse.executeScript(ImageContentScripts.HIDE_IMAGES);
+                waitForRepaint();
+                imageless = cropLastScreenshotIfNecessary(takeScreenshot(), yPosition, pageHeight, viewportHeight, scrollDistance, devicePixelRatio);
+            } finally {
+                jse.executeScript(ImageContentScripts.RESTORE_IMAGES);
+                waitForRepaint();
+            }
+            BufferedImage restored = cropLastScreenshotIfNecessary(takeScreenshot(), yPosition, pageHeight, viewportHeight, scrollDistance, devicePixelRatio);
+            if (!samePixels(restored, screenshot)) {
+                LOG.info("Page changed while taking the screenshot without images at position {}, it is not used for 'ignore-image-content'.", yPosition);
+                return;
+            }
+            fileService.writeImagelessScreenshot(screenshotContext, imageless, yPosition);
+            fileService.setImageAreas(screenshotContext, yPosition, imageAreas);
+        } catch (WebDriverException e) {
+            LOG.warn("Could not take screenshot without images at position {}: {}", yPosition, e.getMessage());
+        }
+    }
+
+    /**
+     * Converts image element areas from CSS pixels relative to the viewport to screenshot pixels. Rounded outwards,
+     * clipped to the screenshot.
+     */
+    static List<int[]> toScreenshotAreas(Object areasFromBrowser, double devicePixelRatio, int shift, int width, int height) {
+        List<int[]> areas = new java.util.ArrayList<>();
+        if (!(areasFromBrowser instanceof List<?> list)) {
+            return areas;
+        }
+        for (Object area : list) {
+            if (!(area instanceof List<?> coordinates) || coordinates.size() != 4) {
+                continue;
+            }
+            double[] c = new double[4];
+            for (int i = 0; i < 4; i++) {
+                c[i] = coordinates.get(i) instanceof Number number ? number.doubleValue() : Double.NaN;
+            }
+            if (Double.isNaN(c[0]) || Double.isNaN(c[1]) || Double.isNaN(c[2]) || Double.isNaN(c[3])) {
+                continue;
+            }
+            int x1 = Math.max(0, (int) Math.floor(c[0] * devicePixelRatio));
+            int y1 = Math.max(0, (int) Math.floor(c[1] * devicePixelRatio) - shift);
+            int x2 = Math.min(width, (int) Math.ceil(c[2] * devicePixelRatio));
+            int y2 = Math.min(height, (int) Math.ceil(c[3] * devicePixelRatio) - shift);
+            if (x2 > x1 && y2 > y1) {
+                areas.add(new int[]{x1, y1, x2, y2});
+            }
+        }
+        return areas;
+    }
+
+    private void recordImageUrls(ScreenshotContext screenshotContext) {
+        try {
+            Object result = ((JavascriptExecutor) getWebDriver()).executeScript(ImageContentScripts.COLLECT_IMAGE_URLS);
+            Set<String> imageUrls = new TreeSet<>();
+            if (result instanceof List<?> list) {
+                list.stream().filter(Objects::nonNull).map(Object::toString).forEach(imageUrls::add);
+            }
+            LOG.debug("Found {} image urls.", imageUrls.size());
+            fileService.setImageUrls(screenshotContext, imageUrls);
+        } catch (WebDriverException e) {
+            LOG.warn("Could not collect image urls for 'ignore-image-content': {}", e.getMessage());
+        }
+    }
+
+    private void waitForRepaint() {
+        ((JavascriptExecutor) getWebDriver()).executeAsyncScript(ImageContentScripts.WAIT_FOR_REPAINT);
+    }
+
+    private static boolean samePixels(BufferedImage image1, BufferedImage image2) {
+        if (image1.getWidth() != image2.getWidth() || image1.getHeight() != image2.getHeight()) {
+            return false;
+        }
+        int width = image1.getWidth(), height = image1.getHeight();
+        return Arrays.equals(image1.getRGB(0, 0, width, height, null, 0, width), image2.getRGB(0, 0, width, height, null, 0, width));
     }
 
     private int validateViewportHeight(int viewportHeight) throws IOException {

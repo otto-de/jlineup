@@ -8,6 +8,7 @@ import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -110,6 +111,22 @@ public class FileTracker {
     }
 
     public void addScreenshot(final ScreenshotContext screenshotContext, final String path, final int yPosition) {
+        getOrCreateScreenshotContextFileTracker(screenshotContext).addScreenshot(screenshotContext, path, yPosition);
+    }
+
+    public void addImagelessScreenshot(final ScreenshotContext screenshotContext, final String path, final int yPosition) {
+        getOrCreateScreenshotContextFileTracker(screenshotContext).addImagelessScreenshot(screenshotContext, path, yPosition);
+    }
+
+    public void setImageAreas(final ScreenshotContext screenshotContext, final int yPosition, final List<int[]> imageAreas) {
+        getOrCreateScreenshotContextFileTracker(screenshotContext).setImageAreas(screenshotContext.step, yPosition, imageAreas);
+    }
+
+    public void setImageUrls(final ScreenshotContext screenshotContext, final Set<String> imageUrls) {
+        getOrCreateScreenshotContextFileTracker(screenshotContext).setImageUrls(screenshotContext.step, imageUrls);
+    }
+
+    private ScreenshotContextFileTracker getOrCreateScreenshotContextFileTracker(final ScreenshotContext screenshotContext) {
         assert contexts != null;
         ScreenshotContextFileTracker screenshotContextFileTracker = contexts.get(screenshotContext.contextHash());
         if (screenshotContextFileTracker == null) {
@@ -119,7 +136,7 @@ public class FileTracker {
                 screenshotContextFileTracker = fileTrackerToPut;
             }
         }
-        screenshotContextFileTracker.addScreenshot(screenshotContext, path, yPosition);
+        return screenshotContextFileTracker;
     }
 
     public void setScreenshotDimensions(final ScreenshotContext screenshotContext, final double devicePixelRatio, final int screenshotWidth) {

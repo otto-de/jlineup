@@ -39,6 +39,7 @@ public class HTMLReportWriter {
     private String renderReport(String templateName, Report report) {
         final Map<String, Object> variables = new HashMap<>();
         variables.put("report", report);
+        variables.put("has_imageless_screenshots", hasImagelessScreenshots(report));
         enrichVariables(variables);
         return templateEngine.process(templateName, new Context(Locale.US, variables));
     }
@@ -60,11 +61,19 @@ public class HTMLReportWriter {
         variables.put("legend_look_same_rgb", "#" + Integer.toHexString(ImageService.LOOK_SAME_COLOR).substring(2));
         variables.put("legend_anti_alias_rgb", "#" + Integer.toHexString(ImageService.ANTI_ALIAS_DETECTED_COLOR).substring(2));
         variables.put("legend_compression_artifact_rgb", "#" + Integer.toHexString(ImageService.COMPRESSION_ARTIFACT_DETECTED_COLOR).substring(2));
+        variables.put("legend_image_content_rgb", "#" + Integer.toHexString(ImageService.IMAGE_CONTENT_ACCEPTED_COLOR).substring(2));
         variables.put("legend_different_rgb", "#" + Integer.toHexString(ImageService.HIGHLIGHT_COLOR).substring(2));
         variables.put("legend_different_size_rgb", "#" + Integer.toHexString(ImageService.DIFFERENT_SIZE_COLOR).substring(2));
     }
 
-    public void writeReportAfterBeforeStep(Report reportBefore) throws FileNotFoundException {
+    private static boolean hasImagelessScreenshots(Report report) {
+        return report != null && report.urlReports() != null && report.urlReports().stream()
+                .filter(urlReport -> urlReport.contextReports() != null)
+                .flatMap(urlReport -> urlReport.contextReports().stream())
+                .anyMatch(ContextReport::hasImagelessScreenshots);
+    }
+
+        public void writeReportAfterBeforeStep(Report reportBefore) throws FileNotFoundException {
         fileService.writeHtmlReport(renderReport("report_before", reportBefore), FileService.REPORT_BEFORE_HTML_FILENAME);
     }
 

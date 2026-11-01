@@ -40,6 +40,10 @@ const wrappedSrc = `(function(global) { ${scriptSrc}
     global.moveLens          = moveLens;
     global.getCursorPosition = getCursorPosition;
     global.openPicturesInTabs = openPicturesInTabs;
+    global.setGlobalImageMode = setGlobalImageMode;
+    global.setContextImageMode = setContextImageMode;
+    global.applyImageMode    = applyImageMode;
+    global.imageModeFile     = imageModeFile;
 }(globalThis));`;
 // eslint-disable-next-line no-eval
 eval(wrappedSrc);
@@ -250,5 +254,93 @@ describe('openPicturesInTabs', () => {
         expect(spy).toHaveBeenCalledWith('after.png',  'after');
         expect(spy).toHaveBeenCalledWith('diff.png',   'difference');
         spy.mockRestore();
+    });
+});
+
+// ── Screenshots with / without images (ignore-image-content) ─────────────────
+
+function buildImageModeDom() {
+    delete document.body.dataset.imageMode;
+    document.body.innerHTML = `
+        <div id="black"></div>
+        <div id="clickdiff" style="display:none">
+            <img id="clickimage" />
+            <div id="clickimagelabel">Before</div>
+        </div>
+        <div class="legend" style="display:none"></div>
+        <span class="image-mode-toggle global-image-mode">
+            <button class="image-mode-chip active" data-image-mode="images"></button>
+            <button class="image-mode-chip" data-image-mode="noimages"></button>
+        </span>
+        <details class="urlReport" id="ctx1">
+            <span class="image-mode-toggle context-image-mode">
+                <button class="image-mode-chip active" data-image-mode="images" id="ctx1-images"></button>
+                <button class="image-mode-chip" data-image-mode="noimages" id="ctx1-noimages"></button>
+            </span>
+            <a id="link1" href="b1.png" data-href-images="b1.png" data-href-noimages="b1_noimages.png">Before</a>
+            <img id="before1" src="b1.png" data-src-images="b1.png" data-src-noimages="b1_noimages.png"/>
+            <img id="after1" src="a1.png" data-src-images="a1.png" data-src-noimages="a1_noimages.png"/>
+            <img id="diff1" src="d1.png" data-src-images="d1.png" data-src-noimages="d1_noimages.png" data-diff-images="d1.png" data-diff-noimages="d1_noimages.png"/>
+        </details>
+        <details class="urlReport" id="ctx2">
+            <img id="before2" src="b2.png" data-src-images="b2.png" data-src-noimages="b2_noimages.png"/>
+            <img id="plain2" src="p2.png"/>
+        </details>
+    `;
+}
+
+describe('image mode', () => {
+    beforeEach(() => {
+        buildImageModeDom();
+        localStorage.clear();
+    });
+
+    test('switches all screenshots and links globally and remembers it', () => {
+        setGlobalImageMode('noimages');
+        expect(document.getElementById('before1').getAttribute('src')).toBe('b1_noimages.png');
+        expect(document.getElementById('after1').getAttribute('src')).toBe('a1_noimages.png');
+        expect(document.getElementById('before2').getAttribute('src')).toBe('b2_noimages.png');
+        expect(document.getElementById('link1').getAttribute('href')).toBe('b1_noimages.png');
+        expect(document.getElementById('plain2').getAttribute('src')).toBe('p2.png');
+        expect(localStorage.getItem('jlineup-image-mode')).toBe('noimages');
+        expect(document.querySelector('.global-image-mode [data-image-mode="noimages"]').classList.contains('active')).toBe(true);
+        expect(document.getElementById('ctx1-noimages').classList.contains('active')).toBe(true);
+
+        setGlobalImageMode('images');
+        expect(document.getElementById('before1').getAttribute('src')).toBe('b1.png');
+        expect(document.getElementById('link1').getAttribute('href')).toBe('b1.png');
+        expect(localStorage.getItem('jlineup-image-mode')).toBe('');
+    });
+
+    test('switches a single context only', () => {
+        setContextImageMode(document.getElementById('ctx1-noimages'), 'noimages');
+        expect(document.getElementById('before1').getAttribute('src')).toBe('b1_noimages.png');
+        expect(document.getElementById('before2').getAttribute('src')).toBe('b2.png');
+        expect(document.getElementById('ctx1-noimages').classList.contains('active')).toBe(true);
+        expect(document.getElementById('ctx1-images').classList.contains('active')).toBe(false);
+    });
+
+    test('global switch resets single contexts', () => {
+        setContextImageMode(document.getElementById('ctx1-noimages'), 'noimages');
+        setGlobalImageMode('images');
+        expect(document.getElementById('before1').getAttribute('src')).toBe('b1.png');
+        expect(document.getElementById('ctx1').dataset.imageMode).toBeUndefined();
+    });
+
+    test('diff clicker shows the screenshots of the current mode', () => {
+        setGlobalImageMode('noimages');
+        initClickImage('b1.png', 'a1.png', 'd1.png', '0');
+        expect(document.getElementById('clickimage').getAttribute('src')).toBe('d1_noimages.png');
+        initClickImage('b1.png', 'a1.png', 'd1.png', '0');
+        expect(document.getElementById('clickimage').getAttribute('src')).toBe('b1_noimages.png');
+    });
+
+    test('maps files only in no-images mode', () => {
+        expect(imageModeFile('b1.png', false)).toBe('b1.png');
+        setContextImageMode(document.getElementById('ctx1-noimages'), 'noimages');
+        expect(imageModeFile('b1.png', false)).toBe('b1_noimages.png');
+        expect(imageModeFile('d1.png', true)).toBe('d1_noimages.png');
+        expect(imageModeFile('unknown.png', false)).toBe('unknown.png');
+        expect(imageModeFile('null', false)).toBe('null');
     });
 });

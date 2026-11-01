@@ -178,6 +178,7 @@ urls:
       enabled: false
     ignore-anti-aliasing: false
     ignore-compression-artifacts: false
+    ignore-image-content: false
     strict-color-comparison: false
     wait-for-selectors:
     - .wait-for-class
@@ -260,6 +261,7 @@ http-check:
       },
       "ignore-anti-aliasing": false,
       "ignore-compression-artifacts": false,
+      "ignore-image-content": false,
       "strict-color-comparison": false,
       "wait-for-selectors": [
         ".wait-for-class"
@@ -1178,6 +1180,55 @@ If you want to see the different cookies in the HTML report, you can specify `sh
    <summary>JSON</summary>
 
    `"compression-artifact-texture-tolerance": 0.15`
+   </details>
+
+ Since: 6.3.1
+
+---
+
+### `ignore-image-content`
+
+ Accepts differences inside images whose URL and position didn't change, i.e. images that were re-encoded by a CDN
+ or exchanged in a CMS under the same URL. Layout, text and everything on top of images is still compared. Use it if
+ your test is about the page and not about the content of its images.
+
+ For every screenshot, JLineup takes a second screenshot in which all images are replaced by a fine black and white
+ checkerboard (without changing the layout), and records the URLs and areas of all images of the page. A different
+ pixel is only accepted if all of the following is true:
+
+ * The screenshots without images are identical in both runs (with the usual comparison settings, inside of image
+   areas even pixel by pixel). So changed layout, text, badges or other overlays on images are always reported.
+ * The pixel lies inside an image element in both runs.
+ * The page has the same set of image URLs in both runs. If they differ, nothing is accepted and the report shows a
+   neutral note with the changed URLs. If the page looks identical anyway (i.e. after a refactoring), it passes.
+
+ The result with this option never contains more differences than without it. Accepted pixels are shown in orange in
+ the difference image. The report has a switch between the screenshots with and without images, for all contexts in
+ the filter bar and for a single context in its header.
+
+ Covered are `img`, `input type=image`, SVG `image` and CSS `background-image` and `border-image` (also on `::before`
+ and `::after` and in open shadow roots). Videos, canvas, iframes, `content: url()`, `list-style-image` and
+ `mask-image` are compared as usual.
+
+ Both steps have to run with the option. It takes two more screenshots per scroll position: the one without images,
+ and one after restoring the images. If the page changed in between (i.e. by an animation), the screenshot without
+ images isn't used for this position. The option has no effect together with [`hide-images`](#hide-images).
+
+ While the option is active, the page scrollbar is hidden during the whole capture, because Chrome's overlay
+ scrollbar fades out about a second after scrolling and would otherwise differ between the screenshots with and
+ without images.
+
+ * Scope: Site
+ * Type: Boolean
+ * Default: `false`
+ * Example:
+   ```yaml
+   ignore-image-content: true
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"ignore-image-content": true`
    </details>
 
  Since: 6.3.1

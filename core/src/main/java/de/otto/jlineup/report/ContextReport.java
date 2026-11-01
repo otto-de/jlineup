@@ -19,11 +19,23 @@ import java.util.stream.Collectors;
 /**
  * @param devicePixelRatio the window.devicePixelRatio measured while taking the screenshots (null if unknown)
  * @param screenshotWidth  the width of the screenshots in image pixels (null if unknown)
+ * @param imageUrlChanges  image URLs of the page that differ between before and after (only recorded with
+ *                         'ignore-image-content', null if unknown or unchanged)
  */
 public record ContextReport(String contextHash, ScreenshotContext screenshotContext, Summary summary,
                             List<ScreenshotComparisonResult> results, boolean flakyAccepted,
                             @JsonInclude(JsonInclude.Include.NON_NULL) Double devicePixelRatio,
-                            @JsonInclude(JsonInclude.Include.NON_NULL) Integer screenshotWidth) {
+                            @JsonInclude(JsonInclude.Include.NON_NULL) Integer screenshotWidth,
+                            @JsonInclude(JsonInclude.Include.NON_NULL) ImageUrlChanges imageUrlChanges) {
+
+    /**
+     * Convenience constructor for backwards compatibility — no image URL changes.
+     */
+    public ContextReport(String contextHash, ScreenshotContext screenshotContext, Summary summary,
+                         List<ScreenshotComparisonResult> results, boolean flakyAccepted,
+                         Double devicePixelRatio, Integer screenshotWidth) {
+        this(contextHash, screenshotContext, summary, results, flakyAccepted, devicePixelRatio, screenshotWidth, null);
+    }
 
     /**
      * Convenience constructor for backwards compatibility — no measured screenshot dimensions.
@@ -177,6 +189,15 @@ public record ContextReport(String contextHash, ScreenshotContext screenshotCont
         }
 
         return true;
+    }
+
+    /**
+     * True if at least one screenshot of this context has a counterpart without images, so the report can switch.
+     */
+    @UsedInTemplate
+    @JsonIgnore
+    public boolean hasImagelessScreenshots() {
+        return results != null && results.stream().anyMatch(ScreenshotComparisonResult::hasImagelessScreenshots);
     }
 
     @UsedInTemplate

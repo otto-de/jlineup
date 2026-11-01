@@ -13,6 +13,7 @@ import de.otto.jlineup.config.PathConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.file.FileService;
 import de.otto.jlineup.file.FileTracker;
+import de.otto.jlineup.file.ScreenshotContextFileTracker;
 import de.otto.jlineup.web.JLineupRunStatus;
 import de.otto.jlineup.web.JLineupRunnerFactory;
 import de.otto.jlineup.web.State;
@@ -189,6 +190,42 @@ class BeforeRunImportServiceTest {
                 () -> testee.importBeforeRun(new ByteArrayInputStream(bytes.toByteArray()), null));
         assertThat(exception.getMessage(), containsString("Illegal path"));
         assertFalse(Files.exists(workingDir.getParent().resolve("evil_before.png")));
+    }
+
+    @Test
+    void shouldImportDataOfIgnoreImageContent() throws Exception {
+        JobConfig jobConfig = JobConfig.copyOfBuilder(config(List.of(600)))
+                .withUrls(ImmutableMap.of(URL, urlConfigBuilder()
+                        .withPaths(ImmutableList.of(PathConfig.of("/")))
+                        .withWindowWidths(List.of(600))
+                        .withIgnoreImageContent(true)
+                        .build()))
+                .build().insertDefaults();
+        FileTracker tracker = createBeforeRun(sourceDir, "screenshots", jobConfig, false);
+        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        for (ScreenshotContextFileTracker contextFileTracker : tracker.contexts.values()) {
+            ScreenshotContext context = contextFileTracker.screenshotContext;
+            String beforeName = contextFileTracker.screenshots.get(0).get(BrowserStep.before);
+            String imagelessName = beforeName.replace("_before.png", "_before_noimages.png");
+            ImageIO.write(image, "png", sourceDir.resolve("screenshots").resolve(imagelessName).toFile());
+            tracker.addImagelessScreenshot(context, imagelessName, 0);
+            tracker.setImageAreas(context, 0, List.<int[]>of(new int[]{1, 2, 3, 4}));
+            tracker.setImageUrls(context, Set.of("https://i.example.com/a.webp"));
+        }
+        Files.writeString(sourceDir.resolve("files.json"), JacksonWrapper.serializeObject(tracker));
+
+        JLineupRunStatus status = testee.importBeforeRun(new ByteArrayInputStream(tarGz(sourceDir)), null);
+
+        Path runDir = workingDir.resolve("report-" + status.getId());
+        FileTracker imported = JacksonWrapper.readFileTrackerFile(runDir.resolve("files.json").toFile());
+        for (ScreenshotContextFileTracker contextFileTracker : imported.contexts.values()) {
+            String imagelessName = contextFileTracker.imagelessScreenshots.get(0).get(BrowserStep.before);
+            assertTrue(Files.isRegularFile(runDir.resolve(imagelessName)), "missing " + imagelessName);
+            assertFalse(contextFileTracker.imagelessScreenshots.containsKey(800));
+            assertThat(contextFileTracker.imageAreas.get(0).get(BrowserStep.before).get(0), is(new int[]{1, 2, 3, 4}));
+            assertThat(contextFileTracker.imageUrls.get(BrowserStep.before), is(Set.of("https://i.example.com/a.webp")));
+        }
+        assertThat(Files.readString(runDir.resolve("report_before.html")), containsString("class=\"image-mode-toggle global-image-mode\""));
     }
 
     @Test

@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static de.otto.jlineup.config.JobConfig.DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE;
 import static de.otto.jlineup.config.JobConfig.DEFAULT_COMPRESSION_ARTIFACT_RADIUS;
@@ -19,6 +20,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.nullValue;
 
 class ImageServiceTest {
 
@@ -542,6 +544,92 @@ class ImageServiceTest {
         //then
         assertThat(result.getDifference(), greaterThan(0d));
         assertThat(resultWithAntiAliasDetection.getDifference(), greaterThan(0d));
+    }
+
+    private static BufferedImage filled(int width, int height, Color color) {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = image.createGraphics();
+        graphics.setColor(color);
+        graphics.fillRect(0, 0, width, height);
+        graphics.dispose();
+        return image;
+    }
+
+    @Test
+    void shouldAcceptDifferencesOnlyInsideTheImageContentMask() {
+        //given
+        final BufferedImage beforeImageBuffer = filled(10, 10, Color.WHITE);
+        final BufferedImage afterImageBuffer = filled(10, 10, Color.WHITE);
+        afterImageBuffer.setRGB(2, 2, Color.RED.getRGB());
+        afterImageBuffer.setRGB(7, 7, Color.RED.getRGB());
+        final boolean[] mask = new boolean[100];
+        mask[2 * 10 + 2] = true;
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, 800, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE, null, mask);
+
+        //then
+        assertThat(result.getAcceptedDifferentPixels(), is(1));
+        assertThat(result.getDifference(), is(0.01));
+        assertThat(result.getDifferenceImage().orElseThrow().getRGB(2, 2), is(ImageService.IMAGE_CONTENT_ACCEPTED_COLOR));
+        assertThat(result.getDifferenceImage().orElseThrow().getRGB(7, 7), is(ImageService.HIGHLIGHT_COLOR));
+    }
+
+    @Test
+    void shouldIgnoreImageContentMaskOfWrongSize() {
+        //given
+        final BufferedImage beforeImageBuffer = filled(10, 10, Color.WHITE);
+        final BufferedImage afterImageBuffer = filled(10, 10, Color.RED);
+
+        //when
+        ImageService.ImageComparisonResult result = testee.compareImages(beforeImageBuffer, afterImageBuffer, 800, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, DEFAULT_MAX_COLOR_DISTANCE, null, new boolean[]{true, true});
+
+        //then
+        assertThat(result.getDifference(), is(1.0));
+    }
+
+    @Test
+    void shouldBuildImageContentMaskFromImageAreasOfBothRuns() {
+        //given: an image at x 0-4 in both runs, and one at x 5-9 only before
+        final BufferedImage before = filled(10, 1, Color.BLUE);
+        final BufferedImage beforeImageless = filled(10, 1, Color.WHITE);
+        final BufferedImage after = filled(10, 1, Color.WHITE);
+        after.setRGB(1, 0, Color.GREEN.getRGB());
+        final BufferedImage afterImageless = filled(10, 1, Color.WHITE);
+
+        //when
+        boolean[] mask = ImageService.buildImageContentMask(before, beforeImageless, after, afterImageless,
+                List.of(new int[]{0, 0, 5, 1}, new int[]{5, 0, 10, 1}), List.<int[]>of(new int[]{0, 0, 5, 1}));
+
+        //then
+        //x 0-4: inside both image areas, an image paints the pixel at least in one run (also if it has the background color after)
+        for (int x = 0; x < 5; x++) {
+            assertThat("x=" + x, mask[x], is(true));
+        }
+        //x 5-9: no image area after
+        for (int x = 5; x < 10; x++) {
+            assertThat("x=" + x, mask[x], is(false));
+        }
+    }
+
+    @Test
+    void shouldNotBuildImageContentMaskForDifferentSizes() {
+        assertThat(ImageService.buildImageContentMask(filled(10, 10, Color.WHITE), filled(10, 11, Color.WHITE), filled(10, 10, Color.WHITE), filled(10, 10, Color.WHITE),
+                List.of(), List.of()), is(nullValue()));
+    }
+
+    @Test
+    void shouldCompareExactlyInsideImageAreas() {
+        final BufferedImage image1 = filled(10, 10, Color.WHITE);
+        final BufferedImage image2 = filled(10, 10, Color.WHITE);
+        //a tiny difference outside of the areas is not checked here
+        image2.setRGB(9, 9, new Color(254, 255, 255).getRGB());
+        assertThat(ImageService.equalInAreas(image1, image2, List.<int[]>of(new int[]{0, 0, 5, 5}), List.of()), is(true));
+
+        image2.setRGB(4, 4, new Color(254, 255, 255).getRGB());
+        assertThat(ImageService.equalInAreas(image1, image2, List.<int[]>of(new int[]{0, 0, 5, 5}), List.of()), is(false));
+        assertThat(ImageService.equalInAreas(image1, image2, List.of(), List.<int[]>of(new int[]{4, 4, 5, 5})), is(false));
+        assertThat(ImageService.equalInAreas(image1, filled(10, 11, Color.WHITE), List.of(), List.of()), is(false));
     }
 
 }

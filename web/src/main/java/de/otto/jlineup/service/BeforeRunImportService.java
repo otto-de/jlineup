@@ -76,6 +76,7 @@ public class BeforeRunImportService {
     static final String METADATA_BEFORE_FILENAME = "metadata_before.json";
     static final String CLI_SCREENSHOTS_SUBDIRECTORY = "screenshots";
     private static final String BEFORE_SCREENSHOT_SUFFIX = "_" + BrowserStep.before.name() + FileService.PNG_EXTENSION;
+    private static final String BEFORE_IMAGELESS_SCREENSHOT_SUFFIX = "_" + BrowserStep.before.name() + FileService.IMAGELESS_SUFFIX + FileService.PNG_EXTENSION;
     private static final int MAX_REPORTED_PROBLEMS = 20;
 
     private final JLineupService jLineupService;
@@ -250,7 +251,8 @@ public class BeforeRunImportService {
         String fileName = name.substring(name.lastIndexOf('/') + 1);
         return fileName.equals(FileService.DEFAULT_FILETRACKER_FILENAME)
                 || fileName.equals(METADATA_BEFORE_FILENAME)
-                || fileName.endsWith(BEFORE_SCREENSHOT_SUFFIX);
+                || fileName.endsWith(BEFORE_SCREENSHOT_SUFFIX)
+                || fileName.endsWith(BEFORE_IMAGELESS_SCREENSHOT_SUFFIX);
     }
 
     private static long copyLimited(InputStream in, Path destination, long remainingBytes, long maxBytes) throws IOException, InvalidBeforeRunArchiveException {
@@ -372,9 +374,39 @@ public class BeforeRunImportService {
                 problems.add("No 'before' screenshots for " + describe(expected) + " (context hash " + hash + ")");
                 continue;
             }
+            // Optional data of 'ignore-image-content'. Missing files are skipped, the option then just doesn't apply.
+            final ConcurrentSkipListMap<Integer, Map<BrowserStep, String>> beforeImagelessScreenshots = new ConcurrentSkipListMap<>();
+            final ConcurrentSkipListMap<Integer, Map<BrowserStep, List<int[]>>> beforeImageAreas = new ConcurrentSkipListMap<>();
+            if (uploadedContext.imagelessScreenshots != null) {
+                for (Map.Entry<Integer, Map<BrowserStep, String>> positionEntry : uploadedContext.imagelessScreenshots.entrySet()) {
+                    String imagelessPath = positionEntry.getValue() != null ? positionEntry.getValue().get(BrowserStep.before) : null;
+                    List<int[]> areas = uploadedContext.imageAreas != null && uploadedContext.imageAreas.get(positionEntry.getKey()) != null
+                            ? uploadedContext.imageAreas.get(positionEntry.getKey()).get(BrowserStep.before) : null;
+                    if (imagelessPath == null || areas == null || !beforeScreenshots.containsKey(positionEntry.getKey())) {
+                        continue;
+                    }
+                    imagelessPath = imagelessPath.replace('\\', '/');
+                    if (!Files.isRegularFile(resolveSafely(screenshotsRoot, imagelessPath))) {
+                        continue;
+                    }
+                    Map<BrowserStep, String> stepMap = new EnumMap<>(BrowserStep.class);
+                    stepMap.put(BrowserStep.before, imagelessPath);
+                    beforeImagelessScreenshots.put(positionEntry.getKey(), stepMap);
+                    Map<BrowserStep, List<int[]>> areasMap = new ConcurrentHashMap<>();
+                    areasMap.put(BrowserStep.before, areas);
+                    beforeImageAreas.put(positionEntry.getKey(), areasMap);
+                }
+            }
+            final ConcurrentHashMap<BrowserStep, Set<String>> beforeImageUrls = new ConcurrentHashMap<>();
+            if (uploadedContext.imageUrls != null && uploadedContext.imageUrls.get(BrowserStep.before) != null) {
+                beforeImageUrls.put(BrowserStep.before, uploadedContext.imageUrls.get(BrowserStep.before));
+            }
             contexts.put(hash, ScreenshotContextFileTracker.screenshotContextFileTrackerBuilder()
                     .withScreenshotContext(uploadedContext.screenshotContext)
                     .withScreenshots(beforeScreenshots)
+                    .withImagelessScreenshots(beforeImagelessScreenshots)
+                    .withImageAreas(beforeImageAreas)
+                    .withImageUrls(beforeImageUrls)
                     .withDevicePixelRatio(uploadedContext.getDevicePixelRatio())
                     .withScreenshotWidth(uploadedContext.getScreenshotWidth())
                     .build());
@@ -413,7 +445,11 @@ public class BeforeRunImportService {
 
     private static void copyScreenshots(FileTracker fileTracker, Path sourceRoot, Path targetRoot) throws IOException, InvalidBeforeRunArchiveException {
         for (Map.Entry<String, ScreenshotContextFileTracker> contextEntry : fileTracker.contexts.entrySet()) {
-            for (Map<BrowserStep, String> stepMap : contextEntry.getValue().screenshots.values()) {
+            List<Map<BrowserStep, String>> stepMaps = new ArrayList<>(contextEntry.getValue().screenshots.values());
+            if (contextEntry.getValue().imagelessScreenshots != null) {
+                stepMaps.addAll(contextEntry.getValue().imagelessScreenshots.values());
+            }
+            for (Map<BrowserStep, String> stepMap : stepMaps) {
                 String relativePath = stepMap.get(BrowserStep.before);
                 Path target = resolveSafely(targetRoot, relativePath);
                 Files.createDirectories(target.getParent());

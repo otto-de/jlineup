@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static java.lang.Math.max;
@@ -23,6 +24,7 @@ public class ImageService {
     public static final int ANTI_ALIAS_DETECTED_COLOR = Color.GREEN.getRGB();
     public static final int PIXELMATCH_ANTI_ALIAS_DETECTED_COLOR = new Color(180, 255, 180).getRGB();
     public static final int COMPRESSION_ARTIFACT_DETECTED_COLOR = Color.CYAN.getRGB();
+    public static final int IMAGE_CONTENT_ACCEPTED_COLOR = new Color(255, 160, 0).getRGB();
 
     public static class ImageComparisonResult {
         private final BufferedImage differenceImage;
@@ -62,6 +64,15 @@ public class ImageService {
      * @param compressionArtifactDetector accepts different pixels caused by lossy image compression, null disables it
      */
     public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight, boolean ignoreAntiAliased, double maxAntiAliasColorDistance, boolean strictColorComparison, double maxColorDistance, CompressionArtifactDetector compressionArtifactDetector) {
+        return compareImages(image1, image2, viewportHeight, ignoreAntiAliased, maxAntiAliasColorDistance, strictColorComparison, maxColorDistance, compressionArtifactDetector, null);
+    }
+
+    /**
+     * @param imageContentMask pixels (index y * width + x) that are painted by unchanged image elements in both
+     *                         screenshots (see 'ignore-image-content'). Differences there are accepted. Only used if
+     *                         both images have the same size as the mask, null disables it.
+     */
+    public ImageComparisonResult compareImages(BufferedImage image1, BufferedImage image2, int viewportHeight, boolean ignoreAntiAliased, double maxAntiAliasColorDistance, boolean strictColorComparison, double maxColorDistance, CompressionArtifactDetector compressionArtifactDetector, boolean[] imageContentMask) {
 
         if (image1 == null || image2 == null) throw new NullPointerException("Can't compare null imagebuffers");
 
@@ -112,6 +123,8 @@ public class ImageService {
         int antiAliasedDiffPixelCounter = 0;
         int lookSameDiffPixelCounter = 0;
         int compressionArtifactDiffPixelCounter = 0;
+        int imageContentDiffPixelCounter = 0;
+        final boolean useImageContentMask = imageContentMask != null && width1 == width2 && height1 == height2 && imageContentMask.length == pixelCount1;
         double maxDetectedColorDistance = 0f;
 
         final int[] differenceImagePixels = new int[maxPixelCount];
@@ -135,6 +148,12 @@ public class ImageService {
                         lookSameDiffPixelCounter++;
                         acceptableDifferenceDetected = true;
                     }
+                }
+
+                if (!acceptableDifferenceDetected && useImageContentMask && imageContentMask[i1]) {
+                    differenceImagePixels[iD] = IMAGE_CONTENT_ACCEPTED_COLOR;
+                    imageContentDiffPixelCounter++;
+                    acceptableDifferenceDetected = true;
                 }
 
                 if (!acceptableDifferenceDetected && ignoreAntiAliased && AntiAliasingIgnoringComparator.checkIsAntialiased(image1, image2, x, y, maxAntiAliasColorDistance)) {
@@ -228,9 +247,77 @@ public class ImageService {
         final BufferedImage out = new BufferedImage(maxWidth, maxHeight, BufferedImage.TYPE_INT_RGB);
         out.setRGB(0, 0, maxWidth, maxHeight, differenceImagePixels, 0, maxWidth);
 
-        LOG.debug("checkedPixelCounter: {}, diffPixelCounter: {}, lookSameDiffPixelCounter: {}, antiAliasedDiffPixelCounter: {}, compressionArtifactDiffPixelCounter: {}, maxDetectedColorDistance: {}", checkedPixelCounter, diffPixelCounter, lookSameDiffPixelCounter, antiAliasedDiffPixelCounter, compressionArtifactDiffPixelCounter, maxDetectedColorDistance);
+        LOG.debug("checkedPixelCounter: {}, diffPixelCounter: {}, lookSameDiffPixelCounter: {}, antiAliasedDiffPixelCounter: {}, compressionArtifactDiffPixelCounter: {}, imageContentDiffPixelCounter: {}, maxDetectedColorDistance: {}", checkedPixelCounter, diffPixelCounter, lookSameDiffPixelCounter, antiAliasedDiffPixelCounter, compressionArtifactDiffPixelCounter, imageContentDiffPixelCounter, maxDetectedColorDistance);
 
-        return new ImageComparisonResult(out, difference, lookSameDiffPixelCounter + antiAliasedDiffPixelCounter + compressionArtifactDiffPixelCounter, maxDetectedColorDistance);
+        return new ImageComparisonResult(out, difference, lookSameDiffPixelCounter + antiAliasedDiffPixelCounter + compressionArtifactDiffPixelCounter + imageContentDiffPixelCounter, maxDetectedColorDistance);
+    }
+
+    /**
+     * Returns the pixels whose differences can be accepted as image content: they lie inside image elements in both
+     * runs, and an image paints them in at least one run (the regular screenshot differs from the one without images).
+     * Requiring the image areas of both runs keeps images that were added or removed (without a layout change) visible.
+     * Null if the four screenshots don't have the same size.
+     *
+     * @param imageAreasBefore areas of the image elements as [x1, y1, x2, y2] in screenshot pixels (exclusive end)
+     */
+    public static boolean[] buildImageContentMask(BufferedImage before, BufferedImage beforeImageless, BufferedImage after, BufferedImage afterImageless,
+                                                  List<int[]> imageAreasBefore, List<int[]> imageAreasAfter) {
+        int width = before.getWidth(), height = before.getHeight();
+        for (BufferedImage image : new BufferedImage[]{beforeImageless, after, afterImageless}) {
+            if (image.getWidth() != width || image.getHeight() != height) {
+                return null;
+            }
+        }
+        boolean[] inImageAreaBefore = areaMask(imageAreasBefore, width, height);
+        boolean[] inImageAreaAfter = areaMask(imageAreasAfter, width, height);
+        int[] b = before.getRGB(0, 0, width, height, null, 0, width);
+        int[] b0 = beforeImageless.getRGB(0, 0, width, height, null, 0, width);
+        int[] a = after.getRGB(0, 0, width, height, null, 0, width);
+        int[] a0 = afterImageless.getRGB(0, 0, width, height, null, 0, width);
+        boolean[] mask = new boolean[width * height];
+        for (int i = 0; i < mask.length; i++) {
+            mask[i] = inImageAreaBefore[i] && inImageAreaAfter[i] && (b[i] != b0[i] || a[i] != a0[i]);
+        }
+        return mask;
+    }
+
+    /**
+     * True if both images have exactly the same pixels inside the given areas (of both runs). Used for the
+     * screenshots without images: there, image areas show a high-contrast checkerboard, so tolerant comparisons like
+     * anti-aliasing detection could accept changed overlays (text, badges) on top of images.
+     */
+    public static boolean equalInAreas(BufferedImage image1, BufferedImage image2, List<int[]> areas1, List<int[]> areas2) {
+        int width = image1.getWidth(), height = image1.getHeight();
+        if (image2.getWidth() != width || image2.getHeight() != height) {
+            return false;
+        }
+        boolean[] inArea1 = areaMask(areas1, width, height);
+        boolean[] inArea2 = areaMask(areas2, width, height);
+        int[] pixels1 = image1.getRGB(0, 0, width, height, null, 0, width);
+        int[] pixels2 = image2.getRGB(0, 0, width, height, null, 0, width);
+        for (int i = 0; i < pixels1.length; i++) {
+            if ((inArea1[i] || inArea2[i]) && pixels1[i] != pixels2[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean[] areaMask(List<int[]> areas, int width, int height) {
+        boolean[] mask = new boolean[width * height];
+        if (areas == null) {
+            return mask;
+        }
+        for (int[] area : areas) {
+            if (area == null || area.length != 4) {
+                continue;
+            }
+            int x1 = max(0, area[0]), y1 = max(0, area[1]), x2 = min(width, area[2]), y2 = min(height, area[3]);
+            for (int y = y1; y < y2; y++) {
+                Arrays.fill(mask, y * width + x1, y * width + max(x1, x2), true);
+            }
+        }
+        return mask;
     }
 
     private static int[] getARGB(int pixel) {

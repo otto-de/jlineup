@@ -411,6 +411,35 @@
             line-height: inherit;
         }
 
+        /* ---------- Screenshots with / without images (ignore-image-content) ---------- */
+        .image-mode-toggle {
+            display: inline-flex;
+            gap: 2px;
+        }
+        button.image-mode-chip {
+            font-family: inherit;
+            line-height: inherit;
+        }
+        .context-image-mode {
+            margin-left: var(--space-3);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+        .context-image-mode .image-mode-chip {
+            padding: 1px 8px;
+            border: 1px solid var(--color-border);
+            border-radius: 999px;
+            background: var(--color-bg);
+            color: var(--color-text-muted);
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .context-image-mode .image-mode-chip.active {
+            background: var(--color-text);
+            color: var(--color-bg);
+            border-color: var(--color-text);
+        }
+
         #filter-browsers,
         #filter-viewports {
             display: inline-flex;
@@ -776,6 +805,65 @@
     </style>
     <script type="application/javascript">
 
+        // ---------- Screenshots with / without images (ignore-image-content) ----------
+        // Elements that can switch carry data-src-images / data-src-noimages (img) or
+        // data-href-images / data-href-noimages (links). The global mode is set on <body>,
+        // a context (details.urlReport) can override it with its own data-image-mode.
+        const IMAGE_MODE_STORAGE_KEY = 'jlineup-image-mode';
+
+        function getGlobalImageMode() {
+            return document.body.dataset.imageMode === 'noimages' ? 'noimages' : 'images';
+        }
+
+        function effectiveImageMode(element) {
+            const context = element && element.closest ? element.closest('details.urlReport') : null;
+            if (context && context.dataset.imageMode) {
+                return context.dataset.imageMode;
+            }
+            return getGlobalImageMode();
+        }
+
+        function applyImageMode(root) {
+            const scope = root || document;
+            scope.querySelectorAll('[data-src-noimages]').forEach(img => {
+                const src = effectiveImageMode(img) === 'noimages' ? img.dataset.srcNoimages : img.dataset.srcImages;
+                if (src && img.getAttribute('src') !== src) {
+                    img.setAttribute('src', src);
+                }
+            });
+            scope.querySelectorAll('[data-href-noimages]').forEach(link => {
+                const href = effectiveImageMode(link) === 'noimages' ? link.dataset.hrefNoimages : link.dataset.hrefImages;
+                if (href) {
+                    link.setAttribute('href', href);
+                }
+            });
+            document.querySelectorAll('.global-image-mode .image-mode-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.imageMode === getGlobalImageMode());
+            });
+            document.querySelectorAll('.context-image-mode .image-mode-chip').forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.imageMode === effectiveImageMode(chip));
+            });
+        }
+
+        // Switches all contexts, overrides of single contexts are reset
+        function setGlobalImageMode(mode) {
+            document.body.dataset.imageMode = mode === 'noimages' ? 'noimages' : 'images';
+            document.querySelectorAll('details.urlReport[data-image-mode]').forEach(context => delete context.dataset.imageMode);
+            try { localStorage.setItem(IMAGE_MODE_STORAGE_KEY, mode === 'noimages' ? 'noimages' : ''); } catch(e) {}
+            applyImageMode(document);
+        }
+
+        function setContextImageMode(button, mode) {
+            const context = button.closest('details.urlReport');
+            if (!context) return;
+            if (mode === getGlobalImageMode()) {
+                delete context.dataset.imageMode;
+            } else {
+                context.dataset.imageMode = mode;
+            }
+            applyImageMode(context);
+        }
+
         // Focus mode: full-width, no TOC
         // Expand / collapse all (currently visible) context reports
         function visibleContextDetails() {
@@ -861,6 +949,13 @@
             if (dm === 'dark') document.documentElement.classList.add('dark-mode');
             else if (dm === 'light') document.documentElement.classList.add('light-mode');
             syncDarkButtons(dm || '');
+        } catch(e) {}
+
+        // Restore screenshots with / without images from localStorage
+        try {
+            if (document.querySelector('.global-image-mode') && localStorage.getItem(IMAGE_MODE_STORAGE_KEY) === 'noimages') {
+                setGlobalImageMode('noimages');
+            }
         } catch(e) {}
 
         // Toggle sticky top bar when the summary header scrolls out of view.
@@ -1188,6 +1283,10 @@
         <span id="filter-viewports"></span>
         <span class="filter-count" id="filter-count"></span>
         <button type="button" class="filter-chip expand-all-toggle" onclick="toggleExpandAll()" title="Expand / collapse all visible contexts" aria-pressed="false">&#x25BE; Expand all</button>
+        <span th:if="${has_imageless_screenshots}" class="image-mode-toggle global-image-mode" role="group" aria-label="Screenshots with or without images">
+            <button type="button" class="filter-chip image-mode-chip active" data-image-mode="images" onclick="setGlobalImageMode('images')" title="Show the regular screenshots">&#x1F5BC; With images</button>
+            <button type="button" class="filter-chip image-mode-chip" data-image-mode="noimages" onclick="setGlobalImageMode('noimages')" title="Show the screenshots taken with all images hidden (ignore-image-content)">&#x25A2; Without images</button>
+        </span>
     </div>
 
     <div class="url" th:each="urlReport,iterationStatus : ${report.urlReports}"
@@ -1241,7 +1340,11 @@
                 <div class="compare-grid" th:style="${contextReport.screenshotMaxWidthStyle}">
                     <div class="compare-row compare-head">
                         <div class="compare-cell">Info</div>
-                        <div class="compare-cell">[[${beforeLabel}]]</div>
+                        <div class="compare-cell" th:if="${!contextReport.hasImagelessScreenshots()}">[[${beforeLabel}]]</div>
+                        <div class="compare-cell" th:if="${contextReport.hasImagelessScreenshots()}"><span>[[${beforeLabel}]]</span><span class="image-mode-toggle context-image-mode" role="group" aria-label="Screenshots of this context with or without images">
+                                <button type="button" class="image-mode-chip active" data-image-mode="images" onclick="setContextImageMode(this, 'images')" title="Show the regular screenshots of this context">With images</button>
+                                <button type="button" class="image-mode-chip" data-image-mode="noimages" onclick="setContextImageMode(this, 'noimages')" title="Show the screenshots of this context taken with all images hidden">Without images</button>
+                            </span></div>
                     </div>
                     <div class="compare-row" th:each="result,iterationStatus : ${contextReport.results}">
                         <div class="compare-cell">
@@ -1249,6 +1352,7 @@
                             <div class="infotext">
                                 <div th:switch="${result.screenshotBeforeFileName!=null}">
                                     <a th:case="${true}" th:href="${result.screenshotBeforeFileNameForHTML}"
+                                       th:attr="data-href-images=${result.hasImagelessScreenshots() ? result.screenshotBeforeFileNameForHTML : null},data-href-noimages=${result.hasImagelessScreenshots() ? result.imagelessScreenshotBeforeFileNameForHTML : null}"
                                        target="_blank">
                                         &#8599;&nbsp;[[${beforeLabel}]]
                                     </a>
@@ -1289,6 +1393,7 @@
                             <div th:if="${result.screenshotBeforeFileNameForHTML != null}">
                                 <img class="screenshot-difference" width="100%" loading="lazy"
                                      th:id="${'before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                     th:attr="data-src-images=${result.hasImagelessScreenshots() ? result.screenshotBeforeFileNameForHTML : null},data-src-noimages=${result.hasImagelessScreenshots() ? result.imagelessScreenshotBeforeFileNameForHTML : null}"
                                      th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
                             </div>
                         </div>

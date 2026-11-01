@@ -19,8 +19,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 
 import static de.otto.jlineup.RunStepConfig.runStepConfigBuilder;
+import static de.otto.jlineup.browser.BrowserStep.after;
 import static de.otto.jlineup.browser.BrowserStep.before;
 import static de.otto.jlineup.file.FileService.FILE_SEPARATOR;
 import static de.otto.jlineup.file.FileService.generateScreenshotFileName;
@@ -181,5 +183,74 @@ class FileServiceTest {
         ScreenshotContextFileTracker ctxTracker = deserialized.getScreenshotContextFileTracker(contextHash);
         assertThat("Context should be found by hash " + contextHash, ctxTracker, is(notNullValue()));
         assertThat("browserType should survive round-trip", ctxTracker.screenshotContext.browserType, is(Browser.Type.CHROME_HEADLESS));
+    }
+
+    @Test
+    void shouldWriteImagelessScreenshot() throws IOException {
+        ScreenshotContext context = ScreenshotContext.of("someUrl", "somePath", DeviceConfig.deviceConfig(1000, 1001), before, UrlConfig.urlConfigBuilder().build());
+
+        String fileName = testee.writeImagelessScreenshot(context, new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB), 600);
+
+        assertThat(fileName.endsWith("_1000_00600_before_noimages.png"), is(true));
+        assertThat(Files.exists(Paths.get(testee.getScreenshotDirectory().toString(), fileName)), is(true));
+        assertThat(testee.getRecordedContextFileTracker(context.contextHash()).imagelessScreenshots.get(600).get(before), is(fileName));
+    }
+
+    @Test
+    void shouldMergeDataOfIgnoreImageContentFromContextFileTrackers() throws Exception {
+        ScreenshotContext beforeContext = ScreenshotContext.of("https://example.com", "/", DeviceConfig.deviceConfig(1000, 1001), before, UrlConfig.urlConfigBuilder().build());
+        ScreenshotContext afterContext = ScreenshotContext.of("https://example.com", "/", DeviceConfig.deviceConfig(1000, 1001), after, UrlConfig.urlConfigBuilder().build());
+        testee.writeScreenshot(beforeContext, new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB), 0);
+        testee.writeImagelessScreenshot(beforeContext, new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB), 0);
+        testee.setImageAreas(beforeContext, 0, List.<int[]>of(new int[]{0, 0, 5, 5}));
+        testee.setImageUrls(beforeContext, Set.of("a.webp"));
+
+        //a part as written by a lambda for the after step
+        FileTracker part = FileTracker.create(jobConfig);
+        part.addScreenshot(afterContext, "after.png", 0);
+        part.addImagelessScreenshot(afterContext, "after_noimages.png", 0);
+        part.setImageAreas(afterContext, 0, List.<int[]>of(new int[]{1, 1, 5, 5}));
+        part.setImageUrls(afterContext, Set.of("b.webp"));
+        Path partsDirectory = Files.createDirectories(tempDir.resolve("parts"));
+        Files.writeString(partsDirectory.resolve("part_files.json"), JacksonWrapper.serializeObject(part));
+
+        testee.mergeContextFileTrackersIntoFileTracker(partsDirectory, (dir, name) -> name.endsWith("_files.json"));
+
+        ScreenshotContextFileTracker merged = testee.getRecordedContextFileTracker(beforeContext.contextHash());
+        assertThat(merged.imagelessScreenshots.get(0).get(after), is("after_noimages.png"));
+        assertThat(merged.imagelessScreenshots.get(0).get(before).endsWith("before_noimages.png"), is(true));
+        assertThat(merged.imageAreas.get(0).get(before).get(0), is(new int[]{0, 0, 5, 5}));
+        assertThat(merged.imageAreas.get(0).get(after).get(0), is(new int[]{1, 1, 5, 5}));
+        assertThat(merged.imageUrls.get(before), is(Set.of("a.webp")));
+        assertThat(merged.imageUrls.get(after), is(Set.of("b.webp")));
+    }
+
+    @Test
+    void shouldCleanAfterArtifactsOfIgnoreImageContent() throws Exception {
+        //the web server keeps screenshots and files.json in the same report directory
+        RunStepConfig webLayout = runStepConfigBuilder().withWorkingDirectory(writeScreenshotTestPath).withScreenshotsDirectory("run").withReportDirectory("run").withStep(RunStep.before).build();
+        FileService fileService = new FileService(webLayout, jobConfig);
+        ScreenshotContext beforeContext = ScreenshotContext.of("https://example.com", "/", DeviceConfig.deviceConfig(1000, 1001), before, UrlConfig.urlConfigBuilder().build());
+        ScreenshotContext afterContext = ScreenshotContext.of("https://example.com", "/", DeviceConfig.deviceConfig(1000, 1001), after, UrlConfig.urlConfigBuilder().build());
+        Path reportDirectory = Files.createDirectories(Paths.get(writeScreenshotTestPath, "run"));
+        fileService.writeScreenshot(beforeContext, new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB), 0);
+        String beforeImageless = fileService.writeImagelessScreenshot(beforeContext, new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB), 0);
+        String afterImageless = fileService.writeImagelessScreenshot(afterContext, new BufferedImage(10, 20, BufferedImage.TYPE_INT_RGB), 0);
+        fileService.setImageAreas(beforeContext, 0, List.<int[]>of(new int[]{0, 0, 5, 5}));
+        fileService.setImageAreas(afterContext, 0, List.<int[]>of(new int[]{0, 0, 5, 5}));
+        fileService.setImageUrls(beforeContext, Set.of("a.webp"));
+        fileService.setImageUrls(afterContext, Set.of("a.webp"));
+        fileService.writeFileTrackerData();
+
+        FileService.cleanAfterArtifacts(reportDirectory);
+
+        assertThat(Files.exists(reportDirectory.resolve(afterImageless)), is(false));
+        assertThat(Files.exists(reportDirectory.resolve(beforeImageless)), is(true));
+        FileTracker cleaned = JacksonWrapper.readFileTrackerFile(reportDirectory.resolve("files.json").toFile());
+        ScreenshotContextFileTracker contextFileTracker = cleaned.getScreenshotContextFileTracker(beforeContext.contextHash());
+        assertThat(contextFileTracker.imagelessScreenshots.get(0).containsKey(after), is(false));
+        assertThat(contextFileTracker.imagelessScreenshots.get(0).containsKey(before), is(true));
+        assertThat(contextFileTracker.imageAreas.get(0).containsKey(after), is(false));
+        assertThat(contextFileTracker.imageUrls.containsKey(after), is(false));
     }
 }

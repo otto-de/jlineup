@@ -8,6 +8,7 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
 import de.otto.jlineup.file.FileService;
+import de.otto.jlineup.file.ScreenshotContextFileTracker;
 import de.otto.jlineup.image.CompressionArtifactDetector;
 import de.otto.jlineup.image.ImageService;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ public class ScreenshotsComparator {
                         }
                     }
                     if (error) {
-                        screenshotComparisonResults.add(ScreenshotComparisonResult.noBeforeImageComparisonResult(screenshotContext.contextHash(), fullUrlWithPath, screenshotContext.deviceConfig, yPosition, buildRelativePathFromReportDir(afterFileName)));
+                        screenshotComparisonResults.add(withImagelessScreenshots(ScreenshotComparisonResult.noBeforeImageComparisonResult(screenshotContext.contextHash(), fullUrlWithPath, screenshotContext.deviceConfig, yPosition, buildRelativePathFromReportDir(afterFileName)), screenshotContext, yPosition));
                         continue;
                     }
 
@@ -110,8 +111,8 @@ public class ScreenshotsComparator {
                     }
 
                     if (error) {
-                        screenshotComparisonResults.add(ScreenshotComparisonResult
-                                .noAfterImageComparisonResult(screenshotContext.contextHash(), fullUrlWithPath, screenshotContext.deviceConfig, yPosition, buildRelativePathFromReportDir(beforeFileName)));
+                        screenshotComparisonResults.add(withImagelessScreenshots(ScreenshotComparisonResult
+                                .noAfterImageComparisonResult(screenshotContext.contextHash(), fullUrlWithPath, screenshotContext.deviceConfig, yPosition, buildRelativePathFromReportDir(beforeFileName)), screenshotContext, yPosition));
                         continue;
                     }
 
@@ -121,6 +122,15 @@ public class ScreenshotsComparator {
                             : null;
                     ImageService.ImageComparisonResult imageComparisonResult = imageService
                             .compareImages(imageBefore, imageAfter, screenshotContext.deviceConfig.height, urlConfig.ignoreAntiAliasing, urlConfig.maxAntiAliasColorDistance, urlConfig.strictColorComparison, urlConfig.maxColorDistance, compressionArtifactDetector);
+
+                    ImageContentComparison imageContentComparison = ImageContentComparison.NONE;
+                    if (urlConfig.ignoreImageContent) {
+                        imageContentComparison = compareImageContent(screenshotContext, yPosition, imageBefore, imageAfter, imageComparisonResult, compressionArtifactDetector);
+                        if (imageContentComparison.result() != null) {
+                            imageComparisonResult = imageContentComparison.result();
+                        }
+                    }
+
                     String differenceImageFileName = null;
                     if (imageComparisonResult.getAcceptedDifferentPixels() > 0 && imageComparisonResult.getDifferenceImage().isEmpty()) {
                         LOG.warn("Accepted different pixels but no difference image available. This should not happen.");
@@ -138,7 +148,11 @@ public class ScreenshotsComparator {
                             buildRelativePathFromReportDir(beforeFileName),
                             buildRelativePathFromReportDir(afterFileName),
                             buildRelativePathFromReportDir(differenceImageFileName),
-                            imageComparisonResult.getAcceptedDifferentPixels()));
+                            imageComparisonResult.getAcceptedDifferentPixels(),
+                            buildRelativePathFromReportDir(imageContentComparison.imagelessBeforeFileName()),
+                            buildRelativePathFromReportDir(imageContentComparison.imagelessAfterFileName()),
+                            buildRelativePathFromReportDir(imageContentComparison.imagelessDifferenceImageFileName()),
+                            imageContentComparison.hint()));
                 }
             }
             screenshotComparisonResults.sort(Comparator.<ScreenshotComparisonResult, String>
@@ -154,5 +168,119 @@ public class ScreenshotsComparator {
 
     private String buildRelativePathFromReportDir(String imageFileName) {
         return imageFileName != null ? fileService.getRelativePathFromReportDirToScreenshotsDir() + imageFileName : null;
+    }
+
+    /**
+     * Adds the screenshots without images (if there are any) to a result that has only a before or only an after
+     * screenshot, i.e. in the report of the before step.
+     */
+    private ScreenshotComparisonResult withImagelessScreenshots(ScreenshotComparisonResult result, ScreenshotContext screenshotContext, int yPosition) {
+        if (!screenshotContext.urlConfig.ignoreImageContent) {
+            return result;
+        }
+        ScreenshotContextFileTracker contextFileTracker = fileService.getRecordedContextFileTracker(screenshotContext.contextHash());
+        Map<BrowserStep, String> imagelessScreenshots = contextFileTracker != null && contextFileTracker.imagelessScreenshots != null ? contextFileTracker.imagelessScreenshots.get(yPosition) : null;
+        if (imagelessScreenshots == null) {
+            return result;
+        }
+        String imagelessBefore = result.screenshotBeforeFileName() != null ? imagelessScreenshots.get(BrowserStep.before) : null;
+        String imagelessAfter = result.screenshotAfterFileName() != null ? imagelessScreenshots.get(BrowserStep.after) : null;
+        return new ScreenshotComparisonResult(result.contextHash(), result.fullUrlWithPath(), result.deviceConfig(), result.verticalScrollPosition(),
+                result.difference(), result.maxDetectedColorDifference(), result.screenshotBeforeFileName(), result.screenshotAfterFileName(),
+                result.differenceImageFileName(), result.acceptedDifferentPixels(),
+                buildRelativePathFromReportDir(imagelessBefore), buildRelativePathFromReportDir(imagelessAfter), null, null);
+    }
+
+    /**
+     * @param result the comparison result with accepted image content, null if the regular result stays
+     */
+    private record ImageContentComparison(ImageService.ImageComparisonResult result, String imagelessBeforeFileName,
+                                          String imagelessAfterFileName, String imagelessDifferenceImageFileName,
+                                          ImageContentHint hint) {
+        static final ImageContentComparison NONE = new ImageContentComparison(null, null, null, null, null);
+    }
+
+    /**
+     * 'ignore-image-content': differences are accepted only where both runs paint image pixels, if the screenshots
+     * without images are identical (so layout, text and overlays didn't change) and the page has the same image URLs.
+     * The result can only contain fewer differences than the regular one, never more.
+     */
+    private ImageContentComparison compareImageContent(ScreenshotContext screenshotContext, int yPosition, BufferedImage imageBefore, BufferedImage imageAfter,
+                                                       ImageService.ImageComparisonResult regularResult, CompressionArtifactDetector compressionArtifactDetector) throws IOException {
+        ScreenshotContextFileTracker contextFileTracker = fileService.getRecordedContextFileTracker(screenshotContext.contextHash());
+        if (contextFileTracker == null) {
+            return ImageContentComparison.NONE;
+        }
+        Map<BrowserStep, String> imagelessScreenshots = contextFileTracker.imagelessScreenshots != null ? contextFileTracker.imagelessScreenshots.get(yPosition) : null;
+        String imagelessBeforeFileName = imagelessScreenshots != null ? imagelessScreenshots.get(BrowserStep.before) : null;
+        String imagelessAfterFileName = imagelessScreenshots != null ? imagelessScreenshots.get(BrowserStep.after) : null;
+
+        if (regularResult.getDifference() == 0) {
+            return new ImageContentComparison(null, imagelessBeforeFileName, imagelessAfterFileName, null, null);
+        }
+
+        if (imagelessBeforeFileName == null || imagelessAfterFileName == null) {
+            return new ImageContentComparison(null, imagelessBeforeFileName, imagelessAfterFileName, null, ImageContentHint.NO_IMAGE_DATA);
+        }
+
+        BufferedImage imagelessBefore;
+        BufferedImage imagelessAfter;
+        try {
+            imagelessBefore = fileService.readScreenshot(imagelessBeforeFileName);
+            imagelessAfter = fileService.readScreenshot(imagelessAfterFileName);
+        } catch (IIOException e) {
+            LOG.warn("Could not read screenshots without images '{}' and '{}'.", imagelessBeforeFileName, imagelessAfterFileName);
+            return new ImageContentComparison(null, null, null, null, ImageContentHint.NO_IMAGE_DATA);
+        }
+        if (imagelessBefore == null || imagelessAfter == null) {
+            return new ImageContentComparison(null, null, null, null, ImageContentHint.NO_IMAGE_DATA);
+        }
+
+        Map<BrowserStep, List<int[]>> imageAreas = contextFileTracker.imageAreas != null ? contextFileTracker.imageAreas.get(yPosition) : null;
+        List<int[]> imageAreasBefore = imageAreas != null ? imageAreas.get(BrowserStep.before) : null;
+        List<int[]> imageAreasAfter = imageAreas != null ? imageAreas.get(BrowserStep.after) : null;
+
+        //The screenshots without images are always compared, so the report can show what changed outside of the images,
+        //also if differences inside of images can't be accepted anyway (i.e. because image URLs changed)
+        UrlConfig urlConfig = screenshotContext.urlConfig;
+        ImageService.ImageComparisonResult imagelessResult = imageService.compareImages(imagelessBefore, imagelessAfter, screenshotContext.deviceConfig.height,
+                urlConfig.ignoreAntiAliasing, urlConfig.maxAntiAliasColorDistance, urlConfig.strictColorComparison, urlConfig.maxColorDistance, compressionArtifactDetector);
+        boolean layoutChanged = imagelessResult.getDifference() > 0;
+        if (!layoutChanged && imageAreasBefore != null && imageAreasAfter != null
+                && !ImageService.equalInAreas(imagelessBefore, imagelessAfter, imageAreasBefore, imageAreasAfter)) {
+            //Anything on top of the checkerboard has to be exactly the same, see ImageService.equalInAreas
+            imagelessResult = imageService.compareImages(imagelessBefore, imagelessAfter, screenshotContext.deviceConfig.height,
+                    false, urlConfig.maxAntiAliasColorDistance, true, urlConfig.maxColorDistance);
+            layoutChanged = true;
+        }
+        String imagelessDifferenceImageFileName = layoutChanged && imagelessResult.getDifferenceImage().isPresent()
+                ? fileService.writeImagelessScreenshot(screenshotContext, imagelessResult.getDifferenceImage().get(), yPosition)
+                : null;
+
+        Set<String> imageUrlsBefore = contextFileTracker.imageUrls != null ? contextFileTracker.imageUrls.get(BrowserStep.before) : null;
+        Set<String> imageUrlsAfter = contextFileTracker.imageUrls != null ? contextFileTracker.imageUrls.get(BrowserStep.after) : null;
+        if (imageUrlsBefore == null || imageUrlsAfter == null) {
+            return new ImageContentComparison(null, imagelessBeforeFileName, imagelessAfterFileName, imagelessDifferenceImageFileName, ImageContentHint.NO_IMAGE_DATA);
+        }
+        if (!imageUrlsBefore.equals(imageUrlsAfter)) {
+            return new ImageContentComparison(null, imagelessBeforeFileName, imagelessAfterFileName, imagelessDifferenceImageFileName, ImageContentHint.IMAGE_URLS_CHANGED);
+        }
+        if (layoutChanged) {
+            return new ImageContentComparison(null, imagelessBeforeFileName, imagelessAfterFileName, imagelessDifferenceImageFileName, ImageContentHint.LAYOUT_CHANGED);
+        }
+        if (imageAreasBefore == null || imageAreasAfter == null) {
+            return new ImageContentComparison(null, imagelessBeforeFileName, imagelessAfterFileName, null, ImageContentHint.NO_IMAGE_DATA);
+        }
+
+        boolean[] imageContentMask = ImageService.buildImageContentMask(imageBefore, imagelessBefore, imageAfter, imagelessAfter, imageAreasBefore, imageAreasAfter);
+        if (imageContentMask == null) {
+            return new ImageContentComparison(null, imagelessBeforeFileName, imagelessAfterFileName, null, ImageContentHint.NO_IMAGE_DATA);
+        }
+        ImageService.ImageComparisonResult maskedResult = imageService.compareImages(imageBefore, imageAfter, screenshotContext.deviceConfig.height,
+                urlConfig.ignoreAntiAliasing, urlConfig.maxAntiAliasColorDistance, urlConfig.strictColorComparison, urlConfig.maxColorDistance, compressionArtifactDetector, imageContentMask);
+        if (maskedResult.getDifference() >= regularResult.getDifference()) {
+            return new ImageContentComparison(null, imagelessBeforeFileName, imagelessAfterFileName, null, null);
+        }
+        return new ImageContentComparison(maskedResult, imagelessBeforeFileName, imagelessAfterFileName, null, ImageContentHint.IMAGE_CONTENT_ACCEPTED);
     }
 }

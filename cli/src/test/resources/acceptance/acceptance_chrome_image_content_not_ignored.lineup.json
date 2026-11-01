@@ -1,0 +1,15 @@
+{
+  "urls": {
+    "file://###DIR###/page.html": {
+      "devices": [
+        {
+          "width": 800,
+          "height": 600
+        }
+      ],
+      "ignore-anti-aliasing": true
+    }
+  },
+  "report-format" : 2,
+  "browser" : "chrome-headless"
+}

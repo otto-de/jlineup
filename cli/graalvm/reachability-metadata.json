@@ -1165,6 +1165,10 @@
           "parameterTypes": []
         },
         {
+          "name": "isIgnoreImageContent",
+          "parameterTypes": []
+        },
+        {
           "name": "isStrictColorComparison",
           "parameterTypes": []
         }
@@ -1231,6 +1235,12 @@
         },
         {
           "name": "withIgnoreCompressionArtifacts",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "withIgnoreImageContent",
           "parameterTypes": [
             "boolean"
           ]
@@ -1357,6 +1367,18 @@
           "parameterTypes": []
         },
         {
+          "name": "getImageAreas",
+          "parameterTypes": []
+        },
+        {
+          "name": "getImageUrls",
+          "parameterTypes": []
+        },
+        {
+          "name": "getImagelessScreenshots",
+          "parameterTypes": []
+        },
+        {
           "name": "getScreenshotContext",
           "parameterTypes": []
         },
@@ -1385,6 +1407,24 @@
           "name": "withDevicePixelRatio",
           "parameterTypes": [
             "java.lang.Double"
+          ]
+        },
+        {
+          "name": "withImageAreas",
+          "parameterTypes": [
+            "java.util.concurrent.ConcurrentSkipListMap"
+          ]
+        },
+        {
+          "name": "withImageUrls",
+          "parameterTypes": [
+            "java.util.concurrent.ConcurrentHashMap"
+          ]
+        },
+        {
+          "name": "withImagelessScreenshots",
+          "parameterTypes": [
+            "java.util.concurrent.ConcurrentSkipListMap"
           ]
         },
         {
@@ -1462,6 +1502,14 @@
           "parameterTypes": []
         },
         {
+          "name": "hasImagelessScreenshots",
+          "parameterTypes": []
+        },
+        {
+          "name": "imageUrlChanges",
+          "parameterTypes": []
+        },
+        {
           "name": "isFlakyAccepted",
           "parameterTypes": []
         },
@@ -1492,6 +1540,28 @@
     },
     {
       "type": "de.otto.jlineup.report.ContextReportCustomizer"
+    },
+    {
+      "type": "de.otto.jlineup.report.ImageContentHint",
+      "methods": [
+        {
+          "name": "getDescription",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "de.otto.jlineup.report.ImageUrlChanges",
+      "methods": [
+        {
+          "name": "added",
+          "parameterTypes": []
+        },
+        {
+          "name": "removed",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "de.otto.jlineup.report.Report",
@@ -1567,6 +1637,38 @@
         },
         {
           "name": "getScreenshotBeforeFileNameForHTML",
+          "parameterTypes": []
+        },
+        {
+          "name": "getImagelessDifferenceImageFileNameForHTML",
+          "parameterTypes": []
+        },
+        {
+          "name": "getImagelessScreenshotAfterFileNameForHTML",
+          "parameterTypes": []
+        },
+        {
+          "name": "getImagelessScreenshotBeforeFileNameForHTML",
+          "parameterTypes": []
+        },
+        {
+          "name": "hasImagelessScreenshots",
+          "parameterTypes": []
+        },
+        {
+          "name": "imageContentHint",
+          "parameterTypes": []
+        },
+        {
+          "name": "imagelessDifferenceImageFileName",
+          "parameterTypes": []
+        },
+        {
+          "name": "imagelessScreenshotAfterFileName",
+          "parameterTypes": []
+        },
+        {
+          "name": "imagelessScreenshotBeforeFileName",
           "parameterTypes": []
         },
         {

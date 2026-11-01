@@ -7,11 +7,17 @@ import de.otto.jlineup.config.DeviceConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.file.FileTracker;
 import de.otto.jlineup.file.ScreenshotContextFileTracker;
+import de.otto.jlineup.report.ContextReport;
+import de.otto.jlineup.report.ImageContentHint;
+import de.otto.jlineup.report.ImageUrlChanges;
 import de.otto.jlineup.report.Report;
+import de.otto.jlineup.report.ScreenshotComparisonResult;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -23,6 +29,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.FileTime;
 import java.util.*;
 import java.util.stream.Stream;
@@ -261,6 +268,236 @@ class JLineupCLIAcceptanceTest {
         final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
         assertThat(report.summary().differenceSum(), is(0.0d));
         assertThat(report.summary().acceptedDifferentPixels() > 0, is(true));
+    }
+
+    /*
+     * ignore-image-content: the page lives in a temp directory, so the image files can be swapped between the
+     * before and the after step while their URLs stay the same.
+     */
+
+    private static final String IMAGE_CONTENT_CONFIG = "src/test/resources/acceptance/acceptance_chrome_image_content.lineup.json";
+    private static final String IMAGE_CONTENT_NOT_IGNORED_CONFIG = "src/test/resources/acceptance/acceptance_chrome_image_content_not_ignored.lineup.json";
+
+    private void prepareImageContentPage(Path pageDirectory, String page, String promoImage, String teaserImage, String promoV2Image) throws IOException {
+        Files.copy(Paths.get("src/test/resources/acceptance/image_content", page), pageDirectory.resolve("page.html"), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(Paths.get("src/test/resources/acceptance/webpage", promoImage), pageDirectory.resolve("promo.webp"), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(Paths.get("src/test/resources/acceptance/webpage", teaserImage), pageDirectory.resolve("teaser.avif"), StandardCopyOption.REPLACE_EXISTING);
+        if (promoV2Image != null) {
+            Files.copy(Paths.get("src/test/resources/acceptance/webpage", promoV2Image), pageDirectory.resolve("promo_v2.webp"), StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private String[] imageContentArguments(String config, Path pageDirectory, String step) {
+        return new String[]{"--chrome-parameter", "--force-device-scale-factor=1", "--working-dir", tempDirectory.toString(), "--config", config, "--replace-in-url=###DIR###=" + pageDirectory, "--step", step};
+    }
+
+    private Report readReport() throws IOException {
+        return JacksonWrapper.jsonMapper().readValue(Paths.get(tempDirectory.toString(), "report", "report.json").toFile(), Report.class);
+    }
+
+    //The image content config for another browser engine
+    private String imageContentConfigFor(String browser) throws IOException {
+        Path config = Files.createTempFile(tempDirectory, "image_content_" + browser, ".lineup.json");
+        Files.writeString(config, Files.readString(Paths.get(IMAGE_CONTENT_CONFIG)).replace("\"chrome-headless\"", "\"" + browser + "\""));
+        return config.toString();
+    }
+
+    private void shouldAcceptChangedImageContentAndDetectChangedLetter(String browser) throws Exception {
+        String config = imageContentConfigFor(browser);
+        Path pageDirectory = Files.createTempDirectory("jlineup-image-content-");
+        try {
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            Main.main(imageContentArguments(config, pageDirectory, "before"));
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_2.webp", "cdn_kamp_20_2.avif", null);
+            Main.main(imageContentArguments(config, pageDirectory, "after"));
+            final Report report = readReport();
+            assertThat(report.summary().differenceSum(), is(0.0d));
+            assertThat(allResults(report).stream().anyMatch(r -> r.imageContentHint() == ImageContentHint.IMAGE_CONTENT_ACCEPTED), is(true));
+
+            prepareImageContentPage(pageDirectory, "page_letter_changed.html", "cdn_app_promo_2.webp", "cdn_kamp_20_2.avif", null);
+            int status = catchSystemExit(() -> Main.main(imageContentArguments(config, pageDirectory, "after")));
+            assertEquals(1, status);
+            assertThat(allResults(readReport()).stream().anyMatch(r -> r.imageContentHint() == ImageContentHint.LAYOUT_CHANGED), is(true));
+        } finally {
+            deleteDir(pageDirectory);
+        }
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
+    void shouldIgnoreImageContentWithFirefox() throws Exception {
+        shouldAcceptChangedImageContentAndDetectChangedLetter("firefox-headless");
+    }
+
+    @Test
+    @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
+    @EnabledOnOs(OS.LINUX)
+    void shouldIgnoreImageContentWithWebkit() throws Exception {
+        shouldAcceptChangedImageContentAndDetectChangedLetter("webkit-headless");
+    }
+
+    private List<ScreenshotComparisonResult> allResults(Report report) {
+        return report.urlReports().stream().flatMap(u -> u.contextReports().stream()).flatMap(c -> c.results().stream()).toList();
+    }
+
+    private List<ContextReport> allContextReports(Report report) {
+        return report.urlReports().stream().flatMap(u -> u.contextReports().stream()).toList();
+    }
+
+    @Test
+    void shouldAcceptChangedImageContentWithIgnoreImageContent() throws Exception {
+        Path pageDirectory = Files.createTempDirectory("jlineup-image-content-");
+        try {
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "before"));
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_2.webp", "cdn_kamp_20_2.avif", null);
+            Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "after"));
+
+            final Report report = readReport();
+            assertThat(report.summary().differenceSum(), is(0.0d));
+            assertThat(report.summary().acceptedDifferentPixels() > 0, is(true));
+            List<ScreenshotComparisonResult> results = allResults(report);
+            assertThat(results.stream().anyMatch(r -> r.imageContentHint() == ImageContentHint.IMAGE_CONTENT_ACCEPTED), is(true));
+            assertThat(results.stream().allMatch(ScreenshotComparisonResult::hasImagelessScreenshots), is(true));
+            assertThat(allContextReports(report).stream().allMatch(c -> c.imageUrlChanges() == null), is(true));
+            for (ScreenshotComparisonResult result : results) {
+                assertThat(Files.exists(Paths.get(tempDirectory.toString(), "report", result.imagelessScreenshotBeforeFileName())), is(true));
+                assertThat(Files.exists(Paths.get(tempDirectory.toString(), "report", result.imagelessScreenshotAfterFileName())), is(true));
+            }
+            final String htmlReport = Files.readString(Paths.get(tempDirectory.toString(), "report", "report.html"));
+            assertThat(htmlReport, containsString("Without images"));
+            final String htmlReportBefore = Files.readString(Paths.get(tempDirectory.toString(), "report", "report_before.html"));
+            assertThat(htmlReportBefore, containsString("class=\"image-mode-toggle global-image-mode\""));
+            assertThat(htmlReportBefore, containsString("_before_noimages.png"));
+        } finally {
+            deleteDir(pageDirectory);
+        }
+    }
+
+    @Test
+    void shouldDetectChangedImageContentWithoutIgnoreImageContent() throws Exception {
+        Path pageDirectory = Files.createTempDirectory("jlineup-image-content-");
+        try {
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            Main.main(imageContentArguments(IMAGE_CONTENT_NOT_IGNORED_CONFIG, pageDirectory, "before"));
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_2.webp", "cdn_kamp_20_2.avif", null);
+            int status = catchSystemExit(() -> Main.main(imageContentArguments(IMAGE_CONTENT_NOT_IGNORED_CONFIG, pageDirectory, "after")));
+            assertEquals(1, status);
+
+            final Report report = readReport();
+            assertThat(report.summary().differenceSum() > 0, is(true));
+            assertThat(allResults(report).stream().noneMatch(ScreenshotComparisonResult::hasImagelessScreenshots), is(true));
+        } finally {
+            deleteDir(pageDirectory);
+        }
+    }
+
+    @Test
+    void shouldDetectChangedTextOverImageDespiteIgnoreImageContent() throws Exception {
+        Path pageDirectory = Files.createTempDirectory("jlineup-image-content-");
+        try {
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "before"));
+            prepareImageContentPage(pageDirectory, "page_text_changed.html", "cdn_app_promo_2.webp", "cdn_kamp_20_2.avif", null);
+            int status = catchSystemExit(() -> Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "after")));
+            assertEquals(1, status);
+
+            final Report report = readReport();
+            assertThat(report.summary().differenceSum() > 0, is(true));
+            assertThat(allResults(report).stream().anyMatch(r -> r.imageContentHint() == ImageContentHint.LAYOUT_CHANGED && r.imagelessDifferenceImageFileName() != null), is(true));
+        } finally {
+            deleteDir(pageDirectory);
+        }
+    }
+
+    @Test
+    void shouldDetectSingleChangedLetterOverImageDespiteIgnoreImageContent() throws Exception {
+        Path pageDirectory = Files.createTempDirectory("jlineup-image-content-");
+        try {
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "before"));
+            prepareImageContentPage(pageDirectory, "page_letter_changed.html", "cdn_app_promo_2.webp", "cdn_kamp_20_2.avif", null);
+            int status = catchSystemExit(() -> Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "after")));
+            assertEquals(1, status);
+
+            assertThat(allResults(readReport()).stream().anyMatch(r -> r.imageContentHint() == ImageContentHint.LAYOUT_CHANGED), is(true));
+        } finally {
+            deleteDir(pageDirectory);
+        }
+    }
+
+    @Test
+    void shouldDetectChangedGradientDespiteIgnoreImageContent() throws Exception {
+        Path pageDirectory = Files.createTempDirectory("jlineup-image-content-");
+        try {
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "before"));
+            prepareImageContentPage(pageDirectory, "page_gradient_changed.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            int status = catchSystemExit(() -> Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "after")));
+            assertEquals(1, status);
+
+            final Report report = readReport();
+            assertThat(allResults(report).stream().anyMatch(r -> r.imageContentHint() == ImageContentHint.LAYOUT_CHANGED), is(true));
+        } finally {
+            deleteDir(pageDirectory);
+        }
+    }
+
+    @Test
+    void shouldDetectMovedImageDespiteIgnoreImageContent() throws Exception {
+        Path pageDirectory = Files.createTempDirectory("jlineup-image-content-");
+        try {
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "before"));
+            prepareImageContentPage(pageDirectory, "page_moved.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            int status = catchSystemExit(() -> Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "after")));
+            assertEquals(1, status);
+
+            assertThat(readReport().summary().differenceSum() > 0, is(true));
+        } finally {
+            deleteDir(pageDirectory);
+        }
+    }
+
+    @Test
+    void shouldDetectChangedImageWithOtherUrlDespiteIgnoreImageContent() throws Exception {
+        Path pageDirectory = Files.createTempDirectory("jlineup-image-content-");
+        try {
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "before"));
+            prepareImageContentPage(pageDirectory, "page_other_url.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", "cdn_app_promo_2.webp");
+            int status = catchSystemExit(() -> Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "after")));
+            assertEquals(1, status);
+
+            final Report report = readReport();
+            assertThat(report.summary().differenceSum() > 0, is(true));
+            assertThat(allResults(report).stream().anyMatch(r -> r.imageContentHint() == ImageContentHint.IMAGE_URLS_CHANGED), is(true));
+            ImageUrlChanges imageUrlChanges = allContextReports(report).get(0).imageUrlChanges();
+            assertThat(imageUrlChanges.added().get(0), endsWith("/promo_v2.webp"));
+            assertThat(imageUrlChanges.removed().get(0), endsWith("/promo.webp"));
+        } finally {
+            deleteDir(pageDirectory);
+        }
+    }
+
+    @Test
+    void shouldPassWithNoteIfOnlyImageUrlsChangedWithIgnoreImageContent() throws Exception {
+        Path pageDirectory = Files.createTempDirectory("jlineup-image-content-");
+        try {
+            prepareImageContentPage(pageDirectory, "page.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", null);
+            Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "before"));
+            //same file under a new URL, i.e. after a refactoring
+            prepareImageContentPage(pageDirectory, "page_other_url.html", "cdn_app_promo_1.webp", "cdn_kamp_20_1.avif", "cdn_app_promo_1.webp");
+            Main.main(imageContentArguments(IMAGE_CONTENT_CONFIG, pageDirectory, "after"));
+
+            final Report report = readReport();
+            assertThat(report.summary().differenceSum(), is(0.0d));
+            assertThat(allContextReports(report).get(0).imageUrlChanges().added().get(0), endsWith("/promo_v2.webp"));
+            final String htmlReport = Files.readString(Paths.get(tempDirectory.toString(), "report", "report.html"));
+            assertThat(htmlReport, containsString("image URLs changed"));
+        } finally {
+            deleteDir(pageDirectory);
+        }
     }
 
     @Test

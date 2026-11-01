@@ -34,6 +34,7 @@ public class FileService {
 
     public static final String DIVIDER = "_";
     public static final String PNG_EXTENSION = ".png";
+    public static final String IMAGELESS_SUFFIX = "_noimages";
     private static final int MAX_URL_TO_FILENAME_LENGTH = 180;
 
     public static final String DEFAULT_FILETRACKER_FILENAME = "files.json";
@@ -213,6 +214,27 @@ public class FileService {
         return fileName;
     }
 
+    /**
+     * Writes a screenshot that was taken with all images hidden (see 'ignore-image-content').
+     */
+    public String writeImagelessScreenshot(ScreenshotContext screenshotContext, BufferedImage image,
+                                           int yPosition) throws IOException {
+
+        createDirIfNotExists(getScreenshotDirectory().toString() + FILE_SEPARATOR + screenshotContext.contextHash());
+        String fileName = screenshotContext.contextHash() + FILE_SEPARATOR + generateScreenshotFileName(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.deviceConfig.width, yPosition, screenshotContext.step.name() + IMAGELESS_SUFFIX);
+        writeScreenshot(Paths.get(getScreenshotDirectory().toString(), fileName).toString(), image);
+        fileTracker.addImagelessScreenshot(screenshotContext, fileName, yPosition);
+        return fileName;
+    }
+
+    public void setImageAreas(ScreenshotContext screenshotContext, int yPosition, java.util.List<int[]> imageAreas) {
+        fileTracker.setImageAreas(screenshotContext, yPosition, imageAreas);
+    }
+
+    public void setImageUrls(ScreenshotContext screenshotContext, Set<String> imageUrls) {
+        fileTracker.setImageUrls(screenshotContext, imageUrls);
+    }
+
     private String getScreenshotFilenameBelowScreenshotsDir(ScreenshotContext screenshotContext, int yPosition) {
         return screenshotContext.contextHash() + FILE_SEPARATOR + generateScreenshotFileName(screenshotContext.url, screenshotContext.urlSubPath, screenshotContext.deviceConfig.width, yPosition, screenshotContext.step.name());
     }
@@ -302,6 +324,12 @@ public class FileService {
                     .withScreenshotContext(existingContext.screenshotContext)
                     .withScreenshots(existingContext.screenshots)
                     .addScreenshots(newContext.screenshots)
+                    .withImagelessScreenshots(existingContext.imagelessScreenshots)
+                    .addImagelessScreenshots(newContext.imagelessScreenshots)
+                    .withImageUrls(existingContext.imageUrls)
+                    .addImageUrls(newContext.imageUrls)
+                    .withImageAreas(existingContext.imageAreas)
+                    .addImageAreas(newContext.imageAreas)
                     .withDevicePixelRatio(newContext.getDevicePixelRatio() != null ? newContext.getDevicePixelRatio() : existingContext.getDevicePixelRatio())
                     .withScreenshotWidth(newContext.getScreenshotWidth() != null ? newContext.getScreenshotWidth() : existingContext.getScreenshotWidth())
                     .build());
@@ -335,6 +363,22 @@ public class FileService {
                                 stepMap.remove(BrowserStep.compare);
                             }
                         }
+                        if (ctxTracker.getImagelessScreenshots() != null) {
+                            for (Map<BrowserStep, String> stepMap : ctxTracker.getImagelessScreenshots().values()) {
+                                stepMap.remove(BrowserStep.after);
+                                stepMap.remove(BrowserStep.compare);
+                            }
+                        }
+                        if (ctxTracker.getImageAreas() != null) {
+                            for (Map<BrowserStep, ?> stepMap : ctxTracker.getImageAreas().values()) {
+                                stepMap.remove(BrowserStep.after);
+                                stepMap.remove(BrowserStep.compare);
+                            }
+                        }
+                        if (ctxTracker.getImageUrls() != null) {
+                            ctxTracker.getImageUrls().remove(BrowserStep.after);
+                            ctxTracker.getImageUrls().remove(BrowserStep.compare);
+                        }
                     }
                 }
                 if (fileTracker.getBrowsers() != null) {
@@ -354,6 +398,8 @@ public class FileService {
                         String name = p.getFileName().toString();
                         return name.contains("_after.png") || name.contains("_after.json")
                                 || name.contains("_compare.png")
+                                || name.contains("_after" + IMAGELESS_SUFFIX + PNG_EXTENSION)
+                                || name.contains("_compare" + IMAGELESS_SUFFIX + PNG_EXTENSION)
                                 || name.startsWith("metadata_after");
                     })
                     .forEach(p -> {

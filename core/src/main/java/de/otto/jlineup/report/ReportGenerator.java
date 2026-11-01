@@ -1,5 +1,6 @@
 package de.otto.jlineup.report;
 
+import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
@@ -37,7 +38,7 @@ public class ReportGenerator {
                 Summary contextSummary = getSummary(resultPerHash.getValue());
                 ScreenshotContextFileTracker contextFileTracker = fileService.getRecordedContextFileTracker(resultPerHash.getKey());
                 ContextReport contextReport = new ContextReport(resultPerHash.getKey(), contextFileTracker.screenshotContext, contextSummary, resultPerHash.getValue(),
-                        false, contextFileTracker.getDevicePixelRatio(), contextFileTracker.getScreenshotWidth());
+                        false, contextFileTracker.getDevicePixelRatio(), contextFileTracker.getScreenshotWidth(), getImageUrlChanges(contextFileTracker));
                 contextReports.add(contextReport);
             }
 
@@ -107,12 +108,19 @@ public class ReportGenerator {
                         passingSiblingCount, flakyTolerance);
                 result.add(new ContextReport(contextReport.contextHash(), contextReport.screenshotContext(),
                         contextReport.summary(), contextReport.results(), true,
-                        contextReport.devicePixelRatio(), contextReport.screenshotWidth()));
+                        contextReport.devicePixelRatio(), contextReport.screenshotWidth(), contextReport.imageUrlChanges()));
             } else {
                 result.add(contextReport);
             }
         }
         return result;
+    }
+
+    private static ImageUrlChanges getImageUrlChanges(ScreenshotContextFileTracker contextFileTracker) {
+        if (contextFileTracker.imageUrls == null) {
+            return null;
+        }
+        return ImageUrlChanges.between(contextFileTracker.imageUrls.get(BrowserStep.before), contextFileTracker.imageUrls.get(BrowserStep.after));
     }
 
     private Summary getSummary(List<ScreenshotComparisonResult> resultList) {

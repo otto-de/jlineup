@@ -174,6 +174,27 @@ class JobConfigTest {
     }
 
     @Test
+    public void shouldReadIgnoreImageContentFromYamlAndJsonConfigAndExcludeTheDefault() {
+        JobConfig fromYaml = JacksonWrapper.deserializeConfig(new StringReader("""
+                urls:
+                  https://www.example.com:
+                    ignore-image-content: true
+                """), JacksonWrapper.ConfigFormat.YAML);
+        JobConfig fromJson = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": { "ignore-image-content": true } } }
+                """), JacksonWrapper.ConfigFormat.JSON);
+        JobConfig withDefault = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": {} } }
+                """), JacksonWrapper.ConfigFormat.JSON);
+
+        assertThat(fromYaml.urls.get("https://www.example.com").ignoreImageContent, is(true));
+        assertThat(fromJson.urls.get("https://www.example.com").ignoreImageContent, is(true));
+        assertThat(JobConfig.prettyPrint(fromJson), containsString("ignore-image-content"));
+        assertThat(withDefault.urls.get("https://www.example.com").ignoreImageContent, is(false));
+        assertThat(JobConfig.prettyPrint(withDefault), not(containsString("ignore-image-content")));
+    }
+
+    @Test
     public void shouldUseCompressionArtifactDefaultsAndExcludeThemFromSerializedConfig() {
         JobConfig jobConfig = JacksonWrapper.deserializeConfig(new StringReader("""
                 { "urls": { "https://www.example.com": {} } }

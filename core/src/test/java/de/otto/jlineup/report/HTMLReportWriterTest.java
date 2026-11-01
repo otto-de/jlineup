@@ -22,6 +22,7 @@ import static de.otto.jlineup.browser.BrowserStep.before;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -160,6 +161,84 @@ class HTMLReportWriterTest {
 
         assertThat(html, containsString("<div class=\"compare-grid\" style=\"--screenshot-max-width: 320px\">"));
         assertThat(html, containsString("<div class=\"compare-cell screenshot-cell\">"));
+    }
+
+    private String renderImageContentReport(boolean afterBeforeStep, ImageUrlChanges imageUrlChanges) throws FileNotFoundException {
+        DeviceConfig deviceConfig = DeviceConfig.deviceConfig(1337, 200);
+        ScreenshotComparisonResult result = afterBeforeStep
+                ? new ScreenshotComparisonResult("1887", "someurl/somepath", deviceConfig, 0, 1d, 0d, "before.png", null, null, 0,
+                "before_noimages.png", null, null, null)
+                : new ScreenshotComparisonResult("1887", "someurl/somepath", deviceConfig, 0, 0d, 0d, "before.png", "after.png", "compare.png", 42,
+                "before_noimages.png", "after_noimages.png", null, ImageContentHint.IMAGE_CONTENT_ACCEPTED);
+        ContextReport imageContentContextReport = new ContextReport("1887",
+                ScreenshotContext.of("someurl", "somepath", deviceConfig, before, UrlConfig.urlConfigBuilder().build()),
+                localSummary, List.of(result), false, null, null, imageUrlChanges);
+        UrlReport imageContentUrlReport = new UrlReport("someurl/somepath", "someurl/somepath", localSummary, singletonList(imageContentContextReport));
+        Report imageContentReport = new Report(globalSummary, JobConfig.exampleConfig(), singletonList(imageContentUrlReport), Map.of(before, Set.of("SomeBrowser 1.2.3"), after, Set.of("SomeBrowser 4.5.6")));
+
+        ArgumentCaptor<String> htmlCaptor = ArgumentCaptor.forClass(String.class);
+        if (afterBeforeStep) {
+            testee.writeReportAfterBeforeStep(imageContentReport);
+        } else {
+            testee.writeReport(imageContentReport);
+        }
+        verify(fileServiceMock).writeHtmlReport(htmlCaptor.capture(), anyString());
+        return htmlCaptor.getValue();
+    }
+
+    @Test
+    void shouldRenderSwitchBetweenScreenshotsWithAndWithoutImagesInReport() throws FileNotFoundException {
+        String html = renderImageContentReport(false, null);
+
+        assertThat(html, containsString("class=\"image-mode-toggle global-image-mode\""));
+        assertThat(html, containsString("class=\"image-mode-toggle context-image-mode\""));
+        assertThat(html, containsString("data-src-images=\"before.png\" data-src-noimages=\"before_noimages.png\""));
+        assertThat(html, containsString("data-src-images=\"after.png\" data-src-noimages=\"after_noimages.png\""));
+        assertThat(html, containsString("data-href-images=\"before.png\" data-href-noimages=\"before_noimages.png\""));
+        //without a difference image of the screenshots without images, the one without images after is shown
+        assertThat(html, containsString("data-src-images=\"compare.png\" data-src-noimages=\"after_noimages.png\" data-diff-images=\"compare.png\" data-diff-noimages=\"null\""));
+        assertThat(html, containsString(ImageContentHint.IMAGE_CONTENT_ACCEPTED.getDescription()));
+        //the hint is shown in the info box on the left, below the links
+        assertThat(html.indexOf("clicker</a>"), lessThan(html.indexOf("class=\"image-content-hint\"")));
+        assertThat(html.indexOf("class=\"image-content-hint\""), lessThan(html.indexOf("class=\"compare-cell screenshot-cell\"", html.indexOf("clicker</a>"))));
+        assertThat(html, containsString("<div class=\"label\">Image content</div>"));
+        assertThat(html, not(containsString("image URLs changed</span>")));
+    }
+
+    @Test
+    void shouldRenderNoteForChangedImageUrlsInReport() throws FileNotFoundException {
+        String html = renderImageContentReport(false, new ImageUrlChanges(List.of("https://i.example.com/new.webp"), List.of("https://i.example.com/old.webp")));
+
+        assertThat(html, containsString("class=\"status-pill info\""));
+        assertThat(html, containsString("image URLs changed</span>"));
+        assertThat(html, containsString("<li title=\"https://i.example.com/new.webp\">https://i.example.com/new.webp</li>"));
+        assertThat(html, containsString("<li title=\"https://i.example.com/old.webp\">https://i.example.com/old.webp</li>"));
+    }
+
+    @Test
+    void shouldRenderSwitchBetweenScreenshotsWithAndWithoutImagesInReportAfterBeforeStep() throws FileNotFoundException {
+        String html = renderImageContentReport(true, null);
+
+        assertThat(html, containsString("class=\"image-mode-toggle global-image-mode\""));
+        assertThat(html, containsString("class=\"image-mode-toggle context-image-mode\""));
+        assertThat(html, containsString("data-src-images=\"before.png\" data-src-noimages=\"before_noimages.png\""));
+        assertThat(html, containsString("data-href-images=\"before.png\" data-href-noimages=\"before_noimages.png\""));
+        assertThat(html, containsString("function setGlobalImageMode"));
+    }
+
+    @Test
+    void shouldNotRenderSwitchWithoutScreenshotsWithoutImages() throws FileNotFoundException {
+        String html = renderReport(JobConfig.exampleConfig(), false);
+        String htmlAfterBeforeStep = renderReportAfterBeforeStepAgain();
+
+        assertThat(html, not(containsString("class=\"image-mode-toggle")));
+        assertThat(html, not(containsString("data-src-noimages=\"")));
+        assertThat(htmlAfterBeforeStep, not(containsString("class=\"image-mode-toggle")));
+    }
+
+    private String renderReportAfterBeforeStepAgain() throws FileNotFoundException {
+        org.mockito.Mockito.clearInvocations(fileServiceMock);
+        return renderReport(JobConfig.exampleConfig(), true);
     }
 
     private String renderReport(JobConfig jobConfig, boolean afterBeforeStep) throws FileNotFoundException {

@@ -52,6 +52,7 @@ public class ConfigMerger {
                     .withIgnoreCompressionArtifacts(mainUrlConfig.ignoreCompressionArtifacts || mergeUrlConfig.ignoreCompressionArtifacts)
                     .withCompressionArtifactRadius(mainUrlConfig.compressionArtifactRadius != DEFAULT_COMPRESSION_ARTIFACT_RADIUS ? mainUrlConfig.compressionArtifactRadius : mergeUrlConfig.compressionArtifactRadius)
                     .withMaxCompressionArtifactColorDistance(mainUrlConfig.maxCompressionArtifactColorDistance != DEFAULT_MAX_COMPRESSION_ARTIFACT_COLOR_DISTANCE ? mainUrlConfig.maxCompressionArtifactColorDistance : mergeUrlConfig.maxCompressionArtifactColorDistance)
+                    .withIgnoreImageContent(mainUrlConfig.ignoreImageContent || mergeUrlConfig.ignoreImageContent)
                     .withCompressionArtifactTextureTolerance(mainUrlConfig.compressionArtifactTextureTolerance != DEFAULT_COMPRESSION_ARTIFACT_TEXTURE_TOLERANCE ? mainUrlConfig.compressionArtifactTextureTolerance : mergeUrlConfig.compressionArtifactTextureTolerance)
                     .withMaxDiff(mainUrlConfig.maxDiff != DEFAULT_MAX_DIFF ? mainUrlConfig.maxDiff : mergeUrlConfig.maxDiff)
                     .withMaxScrollHeight(mainUrlConfig.maxScrollHeight != DEFAULT_MAX_SCROLL_HEIGHT ? mainUrlConfig.maxScrollHeight : mergeUrlConfig.maxScrollHeight)
