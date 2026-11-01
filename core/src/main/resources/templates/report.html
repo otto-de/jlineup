@@ -13,170 +13,17 @@
     <link type="text/css" href="https://unpkg.com/image-compare-viewer/dist/image-compare-viewer.min.css"
           rel="stylesheet">
 
+    <th:block th:replace="~{report_common :: commonStyle}"></th:block>
     <style>
-
-        /* ---------- Design tokens ---------- */
-        :root {
-            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-                "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-            --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-            --color-bg: #f5f6f8;
-            --color-surface: #ffffff;
-            --color-surface-2: #f9fafb;
-            --color-surface-3: #f1f3f5;
-            --color-border: #e4e7eb;
-            --color-border-strong: #d1d5db;
-            --color-text: #1f2937;
-            --color-text-muted: #6b7280;
-            --color-text-soft: #9ca3af;
-
-            --color-success: #15803d;
-            --color-success-bg: #dcfce7;
-            --color-success-border: #86efac;
-            --color-failure: #b91c1c;
-            --color-failure-bg: #fee2e2;
-            --color-failure-border: #fca5a5;
-            --color-flaky: #b45309;
-            --color-flaky-bg: #fef3c7;
-            --color-flaky-border: #fcd34d;
-            --color-info: #1d4ed8;
-            --color-info-bg: #dbeafe;
-
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 14px;
-
-            --shadow-xs: 0 1px 2px rgba(16, 24, 40, .04);
-            --shadow-sm: 0 1px 3px rgba(16, 24, 40, .06), 0 1px 2px rgba(16, 24, 40, .04);
-            --shadow-md: 0 4px 12px rgba(16, 24, 40, .08), 0 2px 4px rgba(16, 24, 40, .04);
-            --shadow-lg: 0 12px 32px rgba(16, 24, 40, .12);
-
-            --space-1: 4px;
-            --space-2: 8px;
-            --space-3: 12px;
-            --space-4: 16px;
-            --space-5: 20px;
-            --space-6: 24px;
-            --space-8: 32px;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html {
-            font-family: var(--font-sans);
-            color: var(--color-text);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            /* Always reserve scrollbar space so that libraries that toggle
-               overflow:hidden on <body> (image-compare-viewer while dragging)
-               don't cause a horizontal layout shift. */
-            scrollbar-gutter: stable;
-            overflow-y: scroll;
-        }
 
         /* Neutralize image-compare-viewer's body style hack that adds
            padding-right and overflow:hidden while the user drags the slider.
            With scrollbar-gutter:stable on <html> we don't need this compensation,
            and keeping it causes a visible horizontal shift. */
+
         body.icv__body {
             padding-right: 0 !important;
             overflow: visible !important;
-        }
-
-        body {
-            background-color: var(--color-bg);
-            font-weight: 400;
-            font-size: 14px;
-            line-height: 1.5;
-            margin: 0;
-            /* No padding/max-width/centering here on purpose: image-compare-viewer
-               mutates <body> (adds padding-right + overflow:hidden) while the user
-               drags the slider. If <body> is the centered element, those mutations
-               cause a visible horizontal jump. Centering happens on .page-wrapper. */
-        }
-
-        .page-wrapper {
-            max-width: 1600px;
-            margin-inline: auto;
-            padding: var(--space-6) var(--space-5) var(--space-8);
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0;
-        }
-
-        .page-wrapper.has-toc {
-            grid-template-columns: 220px 1fr;
-            gap: var(--space-5);
-        }
-
-        /* ---------- TOC sidebar ---------- */
-        .toc-sidebar {
-            display: none;
-        }
-
-        .has-toc .toc-sidebar {
-            display: block;
-            position: sticky;
-            top: var(--space-5);
-            align-self: start;
-            max-height: calc(100vh - var(--space-8));
-            overflow-y: auto;
-            font-size: 12px;
-            padding-right: var(--space-3);
-        }
-
-        .toc-sidebar::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .toc-sidebar::-webkit-scrollbar-thumb {
-            background: var(--color-border);
-            border-radius: 4px;
-        }
-
-        .toc-title {
-            font-size: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--color-text-muted);
-            margin: 0 0 var(--space-3) 0;
-        }
-
-        .toc-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .toc-entry {
-            margin: 0;
-        }
-
-        .toc-link {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            padding: 5px 8px;
-            border-radius: var(--radius-sm);
-            color: var(--color-text-muted);
-            text-decoration: none;
-            line-height: 1.4;
-            transition: background 100ms, color 100ms;
-        }
-
-        .toc-link:hover {
-            background: var(--color-surface-2);
-            color: var(--color-text);
-            text-decoration: none;
-        }
-
-        .toc-link.active {
-            background: var(--color-surface-3);
-            color: var(--color-text);
         }
 
         .toc-dot {
@@ -199,163 +46,11 @@
             background: var(--color-flaky);
         }
 
-        .toc-label {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
         .toc-diff {
             flex-shrink: 0;
             font-size: 10px;
             color: var(--color-text-muted);
             font-variant-numeric: tabular-nums;
-        }
-
-        .toc-sub {
-            list-style: none;
-            margin: 0;
-            padding: 0 0 0 15px;
-        }
-
-        .toc-entry.filter-hidden {
-            display: none;
-        }
-
-        /* ---------- Focus mode ---------- */
-        .focus-mode .page-wrapper {
-            max-width: none;
-            padding-left: var(--space-4);
-            padding-right: var(--space-4);
-        }
-
-        .focus-mode .page-wrapper.has-toc {
-            grid-template-columns: 1fr;
-        }
-
-        .focus-mode .toc-sidebar {
-            display: none !important;
-        }
-
-        .focus-mode .sticky-bar-inner {
-            max-width: none;
-        }
-
-        .focus-mode .report-header {
-            max-width: 1200px;
-        }
-
-        .focus-mode .filter-bar {
-            max-width: none;
-        }
-
-        .sticky-bar-focus {
-            border: 1px solid var(--color-border);
-            background: transparent;
-            color: var(--color-text-muted);
-            border-radius: var(--radius-sm);
-            padding: 4px 10px;
-            font-size: 0.8em;
-            cursor: pointer;
-            font-family: inherit;
-            white-space: nowrap;
-        }
-
-        .sticky-bar-focus:hover {
-            color: var(--color-text);
-            border-color: var(--color-text-muted);
-        }
-
-        .sticky-bar-focus.active {
-            background: var(--color-text);
-            color: var(--color-bg);
-            border-color: var(--color-text);
-        }
-
-        .focus-fab {
-            position: fixed;
-            top: 12px;
-            right: 16px;
-            z-index: 50;
-            border: 1px solid var(--color-border);
-            background: color-mix(in srgb, var(--color-surface) 90%, transparent);
-            backdrop-filter: saturate(180%) blur(8px);
-            -webkit-backdrop-filter: saturate(180%) blur(8px);
-            color: var(--color-text-muted);
-            border-radius: var(--radius-sm);
-            padding: 5px 12px;
-            font-size: 0.8em;
-            cursor: pointer;
-            font-family: inherit;
-            white-space: nowrap;
-            transition: opacity 160ms ease, color 120ms ease, border-color 120ms ease;
-        }
-
-        .focus-fab:hover {
-            color: var(--color-text);
-            border-color: var(--color-text-muted);
-        }
-
-        .focus-fab.active {
-            background: var(--color-text);
-            color: var(--color-bg);
-            border-color: var(--color-text);
-        }
-
-        .focus-fab.is-hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* Sticky top dashboard bar */
-        .sticky-bar {
-            position: sticky;
-            top: 0;
-            z-index: 40;
-            background: color-mix(in srgb, var(--color-surface) 90%, transparent);
-            backdrop-filter: saturate(180%) blur(8px);
-            -webkit-backdrop-filter: saturate(180%) blur(8px);
-            border-bottom: 1px solid var(--color-border);
-            opacity: 0;
-            transform: translateY(-4px);
-            pointer-events: none;
-            transition: opacity 160ms ease, transform 160ms ease;
-        }
-
-        .sticky-bar.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        .sticky-bar-inner {
-            max-width: 1600px;
-            margin-inline: auto;
-            padding: 10px var(--space-5);
-            display: flex;
-            align-items: center;
-            gap: var(--space-4);
-            flex-wrap: wrap;
-        }
-
-        .sticky-bar-title {
-            font-weight: 600;
-            font-size: 0.95em;
-            color: var(--color-text);
-            margin-right: auto;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            min-width: 0;
-        }
-
-        .sticky-bar-title .eyebrow {
-            color: var(--color-text-muted);
-            font-weight: 500;
-            font-size: 0.85em;
-            letter-spacing: 0.02em;
         }
 
         .sticky-bar-stats {
@@ -375,183 +70,6 @@
             color: var(--color-text);
             font-weight: 600;
             font-variant-numeric: tabular-nums;
-        }
-
-        .sticky-bar-top {
-            border: 1px solid var(--color-border);
-            background: transparent;
-            color: var(--color-text-muted);
-            border-radius: var(--radius-sm);
-            padding: 4px 10px;
-            font-size: 0.8em;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .sticky-bar-top:hover {
-            color: var(--color-text);
-            border-color: var(--color-text-muted);
-        }
-
-        /* ---------- Filter bar ---------- */
-        .filter-bar {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            padding: var(--space-3) var(--space-4);
-            margin-bottom: var(--space-4);
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            flex-wrap: wrap;
-            font-size: 12px;
-        }
-
-        .filter-bar-search {
-            flex: 0 1 220px;
-            min-width: 120px;
-            padding: 5px 10px;
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-sm);
-            background: var(--color-bg);
-            color: var(--color-text);
-            font-size: 12px;
-            font-family: inherit;
-            outline: none;
-        }
-
-        .filter-bar-search:focus {
-            border-color: var(--color-accent, #2563eb);
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-        }
-
-        .filter-bar-sep {
-            width: 1px;
-            height: 20px;
-            background: var(--color-border);
-            flex-shrink: 0;
-        }
-
-        .filter-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 3px 10px;
-            border: 1px solid var(--color-border);
-            border-radius: 999px;
-            background: var(--color-bg);
-            color: var(--color-text-muted);
-            font-size: 11px;
-            font-weight: 500;
-            cursor: pointer;
-            user-select: none;
-            white-space: nowrap;
-            transition: background 100ms, color 100ms, border-color 100ms;
-        }
-
-        .filter-chip:hover {
-            border-color: var(--color-text-muted);
-            color: var(--color-text);
-        }
-
-        .filter-chip.active {
-            background: var(--color-text);
-            color: var(--color-bg);
-            border-color: var(--color-text);
-        }
-
-        .filter-count {
-            margin-left: auto;
-            color: var(--color-text-muted);
-            font-size: 11px;
-            white-space: nowrap;
-        }
-
-        button.expand-all-toggle {
-            font-family: inherit;
-            line-height: inherit;
-        }
-
-        #filter-browsers,
-        #filter-viewports {
-            display: inline-flex;
-            flex-wrap: wrap;
-            gap: var(--space-3);
-        }
-
-        /* Hidden state for filtered-out items */
-        .url.filter-hidden,
-        .urlSubPath.filter-hidden,
-        .urlReport.filter-hidden {
-            display: none !important;
-        }
-
-        h1 {
-            font-weight: 700;
-            font-size: 2em;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
-            margin: 0 0 var(--space-4) 0;
-        }
-
-        h2 {
-            font-weight: 700;
-            font-size: 1.5em;
-            line-height: 1.25;
-            letter-spacing: -0.01em;
-            margin: 0 0 var(--space-3) 0;
-        }
-
-        h3 {
-            font-weight: 600;
-            font-size: 1.15em;
-            line-height: 1.3;
-            margin: 0 0 var(--space-2) 0;
-            color: var(--color-text);
-            word-break: break-all;
-        }
-
-        h4 {
-            font-weight: 600;
-            font-size: 1em;
-            line-height: 1.35;
-            margin: 0;
-        }
-
-        h5 {
-            font-weight: 600;
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--color-text-muted);
-            margin: 0 0 var(--space-2) 0;
-        }
-
-        .footer {
-            margin-top: var(--space-8);
-            padding-top: var(--space-4);
-            border-top: 1px solid var(--color-border);
-            font-size: 12px;
-            color: var(--color-text-soft);
-        }
-
-        /* ---------- Header / summary card ---------- */
-        .report-header {
-            background-color: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            padding: var(--space-5);
-            margin-bottom: var(--space-5);
-        }
-
-        .report-header .report-eyebrow {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--color-text-soft);
-            margin: 0 0 var(--space-2) 0;
         }
 
         .summary-grid {
@@ -584,6 +102,7 @@
         }
 
         /* ---------- Status pills ---------- */
+
         .status-pill {
             display: inline-flex;
             align-items: center;
@@ -595,6 +114,7 @@
             border: 1px solid transparent;
             line-height: 1.2;
         }
+
         .status-pill::before {
             content: "";
             display: inline-block;
@@ -603,56 +123,33 @@
             border-radius: 50%;
             background: currentColor;
         }
+
         .status-pill.success {
             color: var(--color-success);
             background-color: var(--color-success-bg);
             border-color: var(--color-success-border);
         }
+
         .status-pill.failure {
             color: var(--color-failure);
             background-color: var(--color-failure-bg);
             border-color: var(--color-failure-border);
         }
+
         .status-pill.flaky-accepted {
             color: var(--color-flaky);
             background-color: var(--color-flaky-bg);
             border-color: var(--color-flaky-border);
         }
+
         /* Neutral note, i.e. changed image URLs (doesn't affect the result) */
+
         .status-pill.info {
             color: var(--color-text-muted);
             background-color: var(--color-bg);
             border-color: var(--color-border);
         }
 
-        /* ---------- Screenshots with / without images (ignore-image-content) ---------- */
-        .image-mode-toggle {
-            display: inline-flex;
-            gap: 2px;
-        }
-        button.image-mode-chip {
-            font-family: inherit;
-            line-height: inherit;
-        }
-        .context-image-mode {
-            margin-left: var(--space-3);
-            text-transform: none;
-            letter-spacing: normal;
-        }
-        .context-image-mode .image-mode-chip {
-            padding: 1px 8px;
-            border: 1px solid var(--color-border);
-            border-radius: 999px;
-            background: var(--color-bg);
-            color: var(--color-text-muted);
-            font-size: 11px;
-            cursor: pointer;
-        }
-        .context-image-mode .image-mode-chip.active {
-            background: var(--color-text);
-            color: var(--color-bg);
-            border-color: var(--color-text);
-        }
         .image-url-changes {
             margin: var(--space-2) var(--space-3);
             padding: var(--space-2) var(--space-3);
@@ -661,133 +158,38 @@
             font-size: 12px;
             color: var(--color-text-muted);
         }
+
         .image-url-columns {
             display: grid;
             grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
             gap: var(--space-3);
             margin-top: var(--space-2);
         }
+
         .image-url-changes ul {
             margin: 2px 0 var(--space-2) 0;
             padding-left: 1.2em;
         }
+
         .image-url-none {
             margin-left: 1.2em;
             font-style: italic;
         }
+
         .image-url-changes li {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .image-url-changes-note {
             margin-left: 4px;
         }
+
         .image-content-hint {
             margin-top: var(--space-2);
             font-size: 11px;
             color: var(--color-text-muted);
-        }
-
-        .message-block {
-            margin-top: var(--space-4);
-            padding: var(--space-3) var(--space-4);
-            background-color: var(--color-surface-3);
-            border-left: 3px solid var(--color-border-strong);
-            border-radius: var(--radius-sm);
-            white-space: pre;
-            font-family: var(--font-mono);
-            font-size: 13px;
-            overflow-x: auto;
-        }
-
-        /* ---------- Nested cards ---------- */
-        .url {
-            background-color: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-xs);
-            padding: var(--space-5);
-            margin-bottom: var(--space-4);
-            scroll-margin-top: 80px;
-        }
-
-        .urlSubPath {
-            background-color: var(--color-surface-2);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            padding: var(--space-4);
-            margin-top: var(--space-3);
-            scroll-margin-top: 80px;
-        }
-
-        .urlSubPath:first-of-type {
-            margin-top: var(--space-3);
-        }
-
-        h3.url-base {
-            color: var(--color-text);
-        }
-
-        h3.sub-path {
-            color: var(--color-text);
-            font-size: 1em;
-            margin: 0 0 var(--space-2) 0;
-        }
-
-        .urlReport {
-            background-color: var(--color-surface);
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            margin-top: var(--space-3);
-            overflow: hidden;
-            transition: box-shadow .15s ease, border-color .15s ease;
-        }
-
-        .urlReport[open] {
-            box-shadow: var(--shadow-sm);
-            border-color: var(--color-border-strong);
-        }
-
-        .urlReport > summary {
-            list-style: none;
-            cursor: pointer;
-            padding: var(--space-3) var(--space-4);
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            user-select: none;
-        }
-        .urlReport > summary::-webkit-details-marker {
-            display: none;
-        }
-        .urlReport > summary:hover {
-            background-color: var(--color-surface-2);
-        }
-        .urlReport > summary:focus-visible {
-            outline: 2px solid var(--color-info);
-            outline-offset: -2px;
-        }
-
-        .urlReport > summary .chevron {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            flex-shrink: 0;
-            color: var(--color-text-muted);
-            transition: transform .15s ease;
-        }
-        .urlReport[open] > summary .chevron {
-            transform: rotate(90deg);
-        }
-
-        .urlReport > summary .summary-title {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: var(--space-2);
-            min-width: 0;
         }
 
         .urlReport .compare-grid {
@@ -799,48 +201,6 @@
                 minmax(0, 1fr);         /* difference */
             background-color: var(--color-surface-2);
             border-top: 1px solid var(--color-border);
-        }
-
-        .urlReport .compare-grid > .compare-row {
-            display: contents;
-        }
-
-        /* Header row */
-        .urlReport .compare-grid > .compare-head > .compare-cell {
-            position: sticky;
-            top: 0;
-            z-index: 4;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-weight: 600;
-            color: var(--color-text-muted);
-            background-color: var(--color-surface-3);
-            border-bottom: 1px solid var(--color-border);
-            padding: var(--space-2) var(--space-3);
-            text-align: left;
-        }
-
-        /* Data cells */
-        .urlReport .compare-grid > .compare-row > .compare-cell {
-            padding: var(--space-3);
-            vertical-align: top;
-            position: relative;
-            background-color: var(--color-surface-2);
-        }
-
-        /* Row separators */
-        .urlReport .compare-grid > .compare-row + .compare-row > .compare-cell {
-            border-top: 1px solid var(--color-border);
-        }
-
-        .urlReport .compare-grid > .compare-row > .compare-cell > div {
-            position: relative;
-        }
-
-        /* Don't upscale screenshots beyond the viewport width they were taken with */
-        .urlReport .compare-grid > .compare-row > .compare-cell.screenshot-cell > div {
-            max-width: var(--screenshot-max-width, none);
         }
 
         .urlReport .compare-grid > .compare-row > .compare-cell.result-col {
@@ -907,38 +267,6 @@
         .legend-grid .label {
             align-self: center;
             color: var(--color-text);
-        }
-
-        .deviceinfo {
-            font-size: 12px;
-        }
-
-        .infotext {
-            font-size: 12px;
-            line-height: 1.6;
-            color: var(--color-text);
-        }
-
-        .infotext a {
-            color: var(--color-info);
-            text-decoration: none;
-        }
-
-        .infotext a:hover {
-            text-decoration: underline;
-        }
-
-        p {
-            padding: 0;
-            margin: 0;
-        }
-
-        .success {
-            color: var(--color-success);
-        }
-
-        .failure {
-            color: var(--color-failure);
         }
 
         .flaky-accepted {
@@ -1014,19 +342,6 @@
             transition-delay: 1s;
         }
 
-        a, a:visited, a:hover, a:active {
-            color: inherit;
-        }
-
-        .screenshot-difference {
-            display: block;
-            cursor: pointer;
-        }
-
-        .screenshot-transparent {
-            opacity: 0;
-        }
-
         .info {
             max-width: 10vw;
         }
@@ -1054,24 +369,9 @@
             border: 1px solid var(--color-border);
         }
 
-        .inline-size .browser-logo {
-            width: 12px;
-            height: 12px;
-            flex-shrink: 0;
-        }
-
-        .inline-size.browser-pill {
-            padding: 0 6px;
-        }
-
-        .inline-size.browser-pill .browser-logo {
-            width: 14px;
-            height: 14px;
-            display: block;
-        }
-
         /* Inside the context summary row, make status pills match the
            inline-size bubbles (resolution / browser) in footprint. */
+
         .summary-title .status-pill {
             font-size: 11px;
             font-weight: 500;
@@ -1167,66 +467,6 @@
             box-shadow: var(--shadow-lg);
         }
 
-        /* ---------- Dark mode ---------- */
-        @media (prefers-color-scheme: dark) {
-            :root:not(.light-mode) {
-                --color-bg: #0f1115;
-                --color-surface: #181b22;
-                --color-surface-2: #1f232c;
-                --color-surface-3: #272c36;
-                --color-border: #2f3643;
-                --color-border-strong: #3b4352;
-                --color-text: #e5e7eb;
-                --color-text-muted: #9ca3af;
-                --color-text-soft: #6b7280;
-
-                --color-success: #4ade80;
-                --color-success-bg: #052e16;
-                --color-success-border: #14532d;
-                --color-failure: #f87171;
-                --color-failure-bg: #450a0a;
-                --color-failure-border: #7f1d1d;
-                --color-flaky: #fbbf24;
-                --color-flaky-bg: #451a03;
-                --color-flaky-border: #78350f;
-                --color-info: #60a5fa;
-                --color-info-bg: #172554;
-
-                --shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
-                --shadow-sm: 0 1px 3px rgba(0, 0, 0, .35);
-                --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
-                --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
-            }
-        }
-
-        :root.dark-mode {
-            --color-bg: #0f1115;
-            --color-surface: #181b22;
-            --color-surface-2: #1f232c;
-            --color-surface-3: #272c36;
-            --color-border: #2f3643;
-            --color-border-strong: #3b4352;
-            --color-text: #e5e7eb;
-            --color-text-muted: #9ca3af;
-            --color-text-soft: #6b7280;
-
-            --color-success: #4ade80;
-            --color-success-bg: #052e16;
-            --color-success-border: #14532d;
-            --color-failure: #f87171;
-            --color-failure-bg: #450a0a;
-            --color-failure-border: #7f1d1d;
-            --color-flaky: #fbbf24;
-            --color-flaky-bg: #451a03;
-            --color-flaky-border: #78350f;
-            --color-info: #60a5fa;
-            --color-info-bg: #172554;
-
-            --shadow-xs: 0 1px 2px rgba(0, 0, 0, .3);
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, .35);
-            --shadow-md: 0 4px 12px rgba(0, 0, 0, .45);
-            --shadow-lg: 0 12px 32px rgba(0, 0, 0, .6);
-        }
     </style>
     <script th:inline="javascript">
         // Labels of the 'before' and 'after' screenshots, configurable with 'before-label' and 'after-label'
@@ -1235,66 +475,8 @@
             after: /*[[${report.config.effectiveAfterLabel}]]*/ "After"
         };
     </script>
+    <th:block th:replace="~{report_common :: commonScript}"></th:block>
     <script type="application/javascript">
-
-        // ---------- Screenshots with / without images (ignore-image-content) ----------
-        // Elements that can switch carry data-src-images / data-src-noimages (img) or
-        // data-href-images / data-href-noimages (links). The global mode is set on <body>,
-        // a context (details.urlReport) can override it with its own data-image-mode.
-        const IMAGE_MODE_STORAGE_KEY = 'jlineup-image-mode';
-
-        function getGlobalImageMode() {
-            return document.body.dataset.imageMode === 'noimages' ? 'noimages' : 'images';
-        }
-
-        function effectiveImageMode(element) {
-            const context = element && element.closest ? element.closest('details.urlReport') : null;
-            if (context && context.dataset.imageMode) {
-                return context.dataset.imageMode;
-            }
-            return getGlobalImageMode();
-        }
-
-        function applyImageMode(root) {
-            const scope = root || document;
-            scope.querySelectorAll('[data-src-noimages]').forEach(img => {
-                const src = effectiveImageMode(img) === 'noimages' ? img.dataset.srcNoimages : img.dataset.srcImages;
-                if (src && img.getAttribute('src') !== src) {
-                    img.setAttribute('src', src);
-                }
-            });
-            scope.querySelectorAll('[data-href-noimages]').forEach(link => {
-                const href = effectiveImageMode(link) === 'noimages' ? link.dataset.hrefNoimages : link.dataset.hrefImages;
-                if (href) {
-                    link.setAttribute('href', href);
-                }
-            });
-            document.querySelectorAll('.global-image-mode .image-mode-chip').forEach(chip => {
-                chip.classList.toggle('active', chip.dataset.imageMode === getGlobalImageMode());
-            });
-            document.querySelectorAll('.context-image-mode .image-mode-chip').forEach(chip => {
-                chip.classList.toggle('active', chip.dataset.imageMode === effectiveImageMode(chip));
-            });
-        }
-
-        // Switches all contexts, overrides of single contexts are reset
-        function setGlobalImageMode(mode) {
-            document.body.dataset.imageMode = mode === 'noimages' ? 'noimages' : 'images';
-            document.querySelectorAll('details.urlReport[data-image-mode]').forEach(context => delete context.dataset.imageMode);
-            try { localStorage.setItem(IMAGE_MODE_STORAGE_KEY, mode === 'noimages' ? 'noimages' : ''); } catch(e) {}
-            applyImageMode(document);
-        }
-
-        function setContextImageMode(button, mode) {
-            const context = button.closest('details.urlReport');
-            if (!context) return;
-            if (mode === getGlobalImageMode()) {
-                delete context.dataset.imageMode;
-            } else {
-                context.dataset.imageMode = mode;
-            }
-            applyImageMode(context);
-        }
 
         // Maps a screenshot file of the Diff clicker to the one of the current image mode
         function imageModeFile(file, isDifference) {
@@ -1380,76 +562,6 @@
             document.getElementsByClassName("legend")[0].style.display = "none";
         }
 
-        // Focus mode: full-width, no TOC
-        // Expand / collapse all (currently visible) context reports
-        function visibleContextDetails() {
-            return [...document.querySelectorAll('details.urlReport:not(.filter-hidden)')];
-        }
-
-        function syncExpandAllButton() {
-            const dets = visibleContextDetails();
-            const allOpen = dets.length > 0 && dets.every(d => d.open);
-            document.querySelectorAll('.expand-all-toggle').forEach(btn => {
-                btn.textContent = allOpen ? '\u25B4 Collapse all' : '\u25BE Expand all';
-                btn.setAttribute('aria-pressed', allOpen ? 'true' : 'false');
-            });
-        }
-
-        function toggleExpandAll() {
-            const dets = visibleContextDetails();
-            const open = !(dets.length > 0 && dets.every(d => d.open));
-            dets.forEach(d => { d.open = open; });
-            syncExpandAllButton();
-        }
-
-        // Keep the button label in sync when single contexts are toggled or filters change
-        document.addEventListener('toggle', (e) => {
-            if (e.target.matches && e.target.matches('details.urlReport')) syncExpandAllButton();
-        }, true);
-        document.addEventListener('jlineup-filters-changed', syncExpandAllButton);
-        document.addEventListener('DOMContentLoaded', syncExpandAllButton);
-
-        function toggleFocusMode() {
-            document.body.classList.toggle('focus-mode');
-            const active = document.body.classList.contains('focus-mode');
-            document.querySelectorAll('#focus-toggle, #focus-fab').forEach(btn => btn.classList.toggle('active', active));
-            try { localStorage.setItem('jlineup-focus-mode', active ? '1' : ''); } catch(e) {}
-        }
-
-        // Dark mode: cycles auto → dark → light → auto
-        function toggleDarkMode() {
-            const root = document.documentElement;
-            const isDark = root.classList.contains('dark-mode');
-            const isLight = root.classList.contains('light-mode');
-            let next;
-            if (!isDark && !isLight) {
-                // auto → dark
-                root.classList.add('dark-mode');
-                next = 'dark';
-            } else if (isDark) {
-                // dark → light
-                root.classList.remove('dark-mode');
-                root.classList.add('light-mode');
-                next = 'light';
-            } else {
-                // light → auto
-                root.classList.remove('light-mode');
-                next = '';
-            }
-            syncDarkButtons(next);
-            try { localStorage.setItem('jlineup-dark-mode', next); } catch(e) {}
-        }
-
-        function syncDarkButtons(mode) {
-            document.querySelectorAll('.dark-toggle').forEach(btn => {
-                const isDark = mode === 'dark';
-                const isLight = mode === 'light';
-                btn.classList.toggle('active', isDark || isLight);
-                if (isDark) btn.textContent = '\u263E Dark';
-                else if (isLight) btn.textContent = '\u2600 Light';
-                else btn.textContent = '\u25D1 Auto';
-            });
-        }
 
         function initZoom(element) {
             document.getElementById("zoombox").classList.remove("invisible");
@@ -1564,30 +676,8 @@
         }
 
     </script>
+    <th:block th:replace="~{report_common :: commonModule}"></th:block>
     <script type="module">
-
-        // Restore focus mode from localStorage
-        try {
-            if (localStorage.getItem('jlineup-focus-mode') === '1') {
-                document.body.classList.add('focus-mode');
-                document.querySelectorAll('#focus-toggle, #focus-fab').forEach(btn => btn.classList.add('active'));
-            }
-        } catch(e) {}
-
-        // Restore dark mode from localStorage
-        try {
-            const dm = localStorage.getItem('jlineup-dark-mode');
-            if (dm === 'dark') document.documentElement.classList.add('dark-mode');
-            else if (dm === 'light') document.documentElement.classList.add('light-mode');
-            syncDarkButtons(dm || '');
-        } catch(e) {}
-
-        // Restore screenshots with / without images from localStorage
-        try {
-            if (document.querySelector('.global-image-mode') && localStorage.getItem(IMAGE_MODE_STORAGE_KEY) === 'noimages') {
-                setGlobalImageMode('noimages');
-            }
-        } catch(e) {}
 
         const options = {
 
@@ -1642,25 +732,6 @@
                 mountViewersIn(det);
             }
         });
-
-        // Toggle sticky top bar when the summary header scrolls out of view.
-        const stickyBar = document.getElementById('sticky-bar');
-        const sentinel = document.getElementById('sticky-bar-sentinel');
-        if (stickyBar && sentinel && 'IntersectionObserver' in window) {
-            const io = new IntersectionObserver(([entry]) => {
-                const fabs = document.querySelectorAll('.focus-fab');
-                if (entry.isIntersecting) {
-                    stickyBar.classList.remove('is-visible');
-                    stickyBar.setAttribute('aria-hidden', 'true');
-                    fabs.forEach(f => f.classList.remove('is-hidden'));
-                } else {
-                    stickyBar.classList.add('is-visible');
-                    stickyBar.setAttribute('aria-hidden', 'false');
-                    fabs.forEach(f => f.classList.add('is-hidden'));
-                }
-            }, { rootMargin: '0px 0px 0px 0px', threshold: 0 });
-            io.observe(sentinel);
-        }
 
         // ---------- Filter bar logic ----------
         (function initFilterBar() {
@@ -1983,7 +1054,9 @@
             document.addEventListener('jlineup-filters-changed', syncTocWithFilters);
             syncTocWithFilters();
         })();
+
     </script>
+    <th:block th:replace="~{archive_download :: archiveHead}"></th:block>
 </head>
 
 <body th:with="beforeLabel=${report.config.effectiveBeforeLabel},afterLabel=${report.config.effectiveAfterLabel}">
@@ -2058,6 +1131,7 @@
         </div>
         <pre th:if="${report.config.sanitizedMessage}" class="message-block"
              th:utext="${report.config.sanitizedMessage}">Some Message</pre>
+        <th:block th:replace="~{archive_download :: archiveButton}"></th:block>
     </header>
 
     <div id="filter-bar" class="filter-bar">

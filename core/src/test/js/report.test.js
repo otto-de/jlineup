@@ -3,25 +3,26 @@
 const fs   = require('fs');
 const path = require('path');
 
-// ── Load and eval the inline script from report.html ─────────────────────────
+// ── Load and eval the inline scripts of report.html ──────────────────────────
 //
-// report.html is a standalone self-contained file.
-// We read its <script type="application/javascript"> block and run it in the
-// jsdom global context so its functions (initClickImage, closeClickDiff, etc.)
-// are available as globals in every test.
+// report.html is a standalone self-contained file once it is rendered, but its
+// template is made of report.html itself and the shared fragments of report_common.html.
+// We read the <script type="application/javascript"> blocks (shared first, then the
+// one of report.html) and run them in the jsdom global context so their functions
+// (initClickImage, closeClickDiff, etc.) are available as globals in every test.
 
-const htmlPath = path.resolve(
-    __dirname,
-    '../../main/resources/templates/report.html'
-);
-const html = fs.readFileSync(htmlPath, 'utf8');
+const templatesDir = path.resolve(__dirname, '../../main/resources/templates');
 
-// Extract the first <script type="application/javascript"> … </script> block
-const scriptMatch = html.match(
-    /<script\s+type="application\/javascript">([\s\S]*?)<\/script>/
-);
-if (!scriptMatch) throw new Error('Could not find application/javascript script in report.html');
-const scriptSrc = scriptMatch[1];
+function readInlineScript(fileName) {
+    const html = fs.readFileSync(path.join(templatesDir, fileName), 'utf8');
+    const scriptMatch = html.match(
+        /<script\s+type="application\/javascript">([\s\S]*?)<\/script>/
+    );
+    if (!scriptMatch) throw new Error('Could not find application/javascript script in ' + fileName);
+    return scriptMatch[1];
+}
+
+const scriptSrc = readInlineScript('report_common.html') + '\n' + readInlineScript('report.html');
 
 // report.html defines JLINEUP_LABELS in a separate Thymeleaf-inlined script block,
 // which is not part of the extracted script, so provide it here.

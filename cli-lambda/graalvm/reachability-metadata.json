@@ -3057,6 +3057,12 @@
       "glob": "software/amazon/awssdk/services/ssooidc/execution.interceptors"
     },
     {
+      "glob": "templates/archive_download.html"
+    },
+    {
+      "glob": "templates/report_common.html"
+    },
+    {
       "glob": "templates/report.html"
     },
     {

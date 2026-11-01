@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--
+    Shared by report.html and report_before.html: "Download archive" button that collects the report page,
+    report.json, jlineup.log and all screenshots in the browser (so the session of the browser is used for
+    authentication) and saves them as a zip file or into a local folder.
+-->
+<body>
+
+<th:block th:fragment="archiveHead">
+    <style>
+        .archive-download {
+            display: none;
+            align-items: center;
+            gap: var(--space-2, 8px);
+            flex-wrap: wrap;
+            margin-top: var(--space-3, 12px);
+        }
+
+        .archive-download.available {
+            display: flex;
+        }
+
+        .archive-btn {
+            border: 1px solid var(--color-border);
+            background: transparent;
+            color: var(--color-text-muted);
+            border-radius: var(--radius-sm);
+            padding: 4px 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+
+        .archive-btn:hover:not(:disabled) {
+            color: var(--color-text);
+            border-color: var(--color-text-muted);
+        }
+
+        .archive-btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .archive-btn.busy {
+            background: var(--color-text);
+            color: var(--color-bg);
+            border-color: var(--color-text);
+        }
+
+        .archive-btn.folder-only {
+            display: none;
+        }
+
+        .archive-btn.folder-only.available {
+            display: inline-block;
+        }
+
+        .archive-status {
+            font-size: 0.8em;
+            color: var(--color-text-soft);
+        }
+
+        .archive-status.error {
+            color: var(--color-failure);
+        }
+
+        @media print {
+            .archive-download {
+                display: none !important;
+            }
+        }
+    </style>
+    <script type="application/javascript" th:inline="none">
+
+        // ---------- Archive download ----------
+        // Fetches the report page, report.json, files.json, jlineup.log and every screenshot the page references
+        // (with the credentials of the browser) and writes them to a zip file or a local folder. The relative layout is
+        // kept, so the archived report.html works when opened from the extracted archive.
+        const JLineupArchive = (function () {
+
+            const MAX_CONCURRENCY = 6;
+            const MAX_ZIP_BYTES = 2 * 1024 * 1024 * 1024;
+            const IMAGE_EXTENSION = /\.(png|jpe?g|gif|webp)$/i;
+            const OPTIONAL_SIBLINGS = ['report.json', 'files.json', 'jlineup.log'];
+
+            function textBytes(text) {
+                return new TextEncoder().encode(text);
+            }
+
+            // ---------- zip (store only, screenshots are compressed png files already) ----------
+
+            let crcTable = null;
+
+            function crc32(bytes) {
+                if (crcTable === null) {
+                    crcTable = new Uint32Array(256);
+                    for (let n = 0; n < 256; n++) {
+                        let c = n;
+                        for (let k = 0; k < 8; k++) {
+                            c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+                        }
+                        crcTable[n] = c >>> 0;
+                    }
+                }
+                let crc = 0xFFFFFFFF;
+                for (let i = 0; i < bytes.length; i++) {
+                    crc = crcTable[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+                }
+                return (crc ^ 0xFFFFFFFF) >>> 0;
+            }
+
+            function ZipBuilder(now) {
+                const date = now || new Date();
+                this.dosTime = (date.getHours() << 11) | (date.getMinutes() << 5) | (date.getSeconds() >> 1);
+                this.dosDate = ((date.getFullYear() - 1980) << 9) | ((date.getMonth() + 1) << 5) | date.getDate();
+                this.parts = [];
+                this.entries = [];
+                this.offset = 0;
+            }
+
+            ZipBuilder.prototype.add = function (name, bytes) {
+                const nameBytes = textBytes(name);
+                const size = bytes.length;
+                if (this.entries.length >= 0xFFFE || this.offset + size + nameBytes.length + 30 > 0xFFFFFFF0) {
+                    throw new Error('The archive is too large for a zip file.');
+                }
+                const crc = crc32(bytes);
+                const header = new Uint8Array(30 + nameBytes.length);
+                const view = new DataView(header.buffer);
+                view.setUint32(0, 0x04034b50, true);
+                view.setUint16(4, 20, true);
+                view.setUint16(6, 0x0800, true);
+                view.setUint16(8, 0, true);
+                view.setUint16(10, this.dosTime, true);
+                view.setUint16(12, this.dosDate, true);
+                view.setUint32(14, crc, true);
+                view.setUint32(18, size, true);
+                view.setUint32(22, size, true);
+                view.setUint16(26, nameBytes.length, true);
+                view.setUint16(28, 0, true);
+                header.set(nameBytes, 30);
+                this.entries.push({nameBytes: nameBytes, crc: crc, size: size, offset: this.offset});
+                this.parts.push(header, bytes);
+                this.offset += header.length + size;
+            };
+
+            ZipBuilder.prototype.finish = function () {
+                const parts = this.parts.slice();
+                let centralSize = 0;
+                this.entries.forEach(entry => {
+                    const record = new Uint8Array(46 + entry.nameBytes.length);
+                    const view = new DataView(record.buffer);
+                    view.setUint32(0, 0x02014b50, true);
+                    view.setUint16(4, 20, true);
+                    view.setUint16(6, 20, true);
+                    view.setUint16(8, 0x0800, true);
+                    view.setUint16(10, 0, true);
+                    view.setUint16(12, this.dosTime, true);
+                    view.setUint16(14, this.dosDate, true);
+                    view.setUint32(16, entry.crc, true);
+                    view.setUint32(20, entry.size, true);
+                    view.setUint32(24, entry.size, true);
+                    view.setUint16(28, entry.nameBytes.length, true);
+                    view.setUint32(42, entry.offset, true);
+                    record.set(entry.nameBytes, 46);
+                    parts.push(record);
+                    centralSize += record.length;
+                });
+                const end = new Uint8Array(22);
+                const endView = new DataView(end.buffer);
+                endView.setUint32(0, 0x06054b50, true);
+                endView.setUint16(8, this.entries.length, true);
+                endView.setUint16(10, this.entries.length, true);
+                endView.setUint32(12, centralSize, true);
+                endView.setUint32(16, this.offset, true);
+                parts.push(end);
+                return parts;
+            };
+
+            // ---------- collecting the files of a report ----------
+
+            function stripHash(href) {
+                const url = new URL(href);
+                url.hash = '';
+                return url.href;
+            }
+
+            // All same-origin screenshots the page references, including the variants of the
+            // "with / without images" switch, which are kept in data attributes.
+            function collectResourceUrls(doc, pageUrl) {
+                const origin = new URL(pageUrl).origin;
+                const found = new Set();
+                const add = function (value) {
+                    if (!value) {
+                        return;
+                    }
+                    let url;
+                    try {
+                        url = new URL(value, pageUrl);
+                    } catch (e) {
+                        return;
+                    }
+                    if (url.origin !== origin) {
+                        return;
+                    }
+                    url.hash = '';
+                    found.add(url.href);
+                };
+                doc.querySelectorAll('img').forEach(img => {
+                    ['src', 'data-src-images', 'data-src-noimages'].forEach(attr => add(img.getAttribute(attr)));
+                });
+                doc.querySelectorAll('a').forEach(link => {
+                    add(link.getAttribute('data-href-images'));
+                    add(link.getAttribute('data-href-noimages'));
+                    const href = link.getAttribute('href');
+                    if (href) {
+                        try {
+                            if (IMAGE_EXTENSION.test(new URL(href, pageUrl).pathname)) {
+                                add(href);
+                            }
+                        } catch (e) {
+                            // not a valid url, nothing to archive
+                        }
+                    }
+                });
+                return Array.from(found);
+            }
+
+            function pathSegments(href) {
+                return new URL(href).pathname.split('/').filter(segment => segment !== '').map(segment => {
+                    try {
+                        return decodeURIComponent(segment);
+                    } catch (e) {
+                        return segment;
+                    }
+                });
+            }
+
+            // Names inside the archive: the path of each url below the deepest directory all urls share.
+            function computeEntryNames(urls) {
+                const segments = urls.map(pathSegments);
+                const maxCommon = Math.max(0, Math.min(...segments.map(s => s.length - 1)));
+                let common = 0;
+                while (common < maxCommon && segments.every(s => s[common] === segments[0][common])) {
+                    common++;
+                }
+                const names = new Map();
+                urls.forEach((url, index) => names.set(url, segments[index].slice(common).join('/')));
+                return names;
+            }
+
+            async function fetchBytes(doFetch, url, signal) {
+                const response = await doFetch(url, {signal: signal, credentials: 'same-origin'});
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                const contentType = response.headers && response.headers.get ? (response.headers.get('content-type') || '') : '';
+                if (/text\/html/i.test(contentType) && !/\.html?$/i.test(new URL(url).pathname)) {
+                    throw new Error('Unexpected HTML response (not logged in?)');
+                }
+                return new Uint8Array(await response.arrayBuffer());
+            }
+
+            function formatBytes(bytes) {
+                if (bytes < 1024) {
+                    return bytes + ' B';
+                }
+                if (bytes < 1024 * 1024) {
+                    return (bytes / 1024).toFixed(1) + ' KB';
+                }
+                if (bytes < 1024 * 1024 * 1024) {
+                    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+                }
+                return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+            }
+
+            function buildIndexMarkdown(info) {
+                const lines = [
+                    '# JLineup report archive',
+                    '',
+                    '- Report: ' + info.title,
+                    '- Archived at: ' + info.archivedAt,
+                    '- Source: ' + info.source,
+                    '- Open this file in a browser: `' + info.pageName + '`',
+                    '- Files: ' + info.files + ' (' + formatBytes(info.bytes) + ')',
+                    ''
+                ];
+                lines.push('## Layout', '',
+                    '- `' + info.pageName + '` - the HTML report. Screenshots are linked relative to it.',
+                    '- `report.json` - machine readable results of the run (if available).',
+                    '- `files.json` - the files tracked by JLineup for the run (if available).',
+                    '- `jlineup.log` - log of the run (if available).',
+                    '- screenshots (before, after and difference images) in their original directory layout.',
+                    '');
+                if (info.failed.length > 0) {
+                    lines.push('## Files that could not be downloaded', '');
+                    info.failed.slice(0, 100).forEach(f => lines.push('- `' + f.name + '`: ' + f.error));
+                    if (info.failed.length > 100) {
+                        lines.push('- ... and ' + (info.failed.length - 100) + ' more');
+                    }
+                    lines.push('');
+                }
+                return lines.join('\n');
+            }
+
+            // Fetches everything and hands it to the sink (object with add(name, bytes), finish()).
+            async function createArchive(options) {
+                const doFetch = options.fetch || global.fetch.bind(global);
+                const onProgress = options.onProgress || function () {};
+                const signal = options.signal;
+                const pageUrl = stripHash(options.pageUrl);
+                const sink = options.sink;
+
+                const tasks = [{url: pageUrl, isPage: true}];
+                OPTIONAL_SIBLINGS.forEach(file => tasks.push({url: new URL(file, pageUrl).href, optional: true}));
+                collectResourceUrls(options.doc, pageUrl).forEach(url => {
+                    if (!tasks.some(task => task.url === url)) {
+                        tasks.push({url: url});
+                    }
+                });
+                const names = computeEntryNames(tasks.map(task => task.url));
+
+                const result = {files: 0, bytes: 0, failed: [], skipped: [], pageName: names.get(pageUrl)};
+                let next = 0;
+                let done = 0;
+                let fatal = null;
+                onProgress(0, tasks.length);
+
+                async function worker() {
+                    while (fatal === null && next < tasks.length) {
+                        const task = tasks[next++];
+                        const name = names.get(task.url);
+                        let bytes = null;
+                        try {
+                            bytes = await fetchBytes(doFetch, task.url, signal);
+                        } catch (e) {
+                            if ((signal && signal.aborted) || task.isPage) {
+                                fatal = fatal || e;
+                                return;
+                            }
+                            (task.optional ? result.skipped : result.failed).push({name: name, error: e.message});
+                        }
+                        if (bytes !== null) {
+                            try {
+                                await sink.add(name, bytes);
+                            } catch (e) {
+                                fatal = fatal || e;
+                                return;
+                            }
+                            result.files++;
+                            result.bytes += bytes.length;
+                        }
+                        onProgress(++done, tasks.length);
+                    }
+                }
+
+                const workers = [];
+                for (let i = 0; i < MAX_CONCURRENCY; i++) {
+                    workers.push(worker());
+                }
+                await Promise.all(workers);
+                if (fatal !== null) {
+                    throw fatal;
+                }
+
+                await sink.add('INDEX.md', textBytes(buildIndexMarkdown({
+                    title: options.title || '',
+                    archivedAt: (options.now || new Date()).toISOString(),
+                    source: pageUrl,
+                    pageName: result.pageName,
+                    files: result.files,
+                    bytes: result.bytes,
+                    failed: result.failed
+                })));
+                return result;
+            }
+
+            // ---------- sinks ----------
+
+            function ZipSink(rootName) {
+                this.rootName = rootName;
+                this.builder = new ZipBuilder();
+                this.bytes = 0;
+            }
+
+            ZipSink.prototype.add = function (name, bytes) {
+                this.bytes += bytes.length;
+                if (this.bytes > MAX_ZIP_BYTES) {
+                    throw new Error('The archive is larger than ' + formatBytes(MAX_ZIP_BYTES)
+                        + '. Use "Save to folder" instead.');
+                }
+                this.builder.add(this.rootName + '/' + name, bytes);
+            };
+
+            ZipSink.prototype.finish = function () {
+                return new Blob(this.builder.finish(), {type: 'application/zip'});
+            };
+
+            function FolderSink(rootHandle) {
+                this.rootHandle = rootHandle;
+                this.directories = new Map();
+            }
+
+            FolderSink.prototype.directory = async function (segments) {
+                let handle = this.rootHandle;
+                let path = '';
+                for (const segment of segments) {
+                    path += '/' + segment;
+                    if (!this.directories.has(path)) {
+                        this.directories.set(path, await handle.getDirectoryHandle(segment, {create: true}));
+                    }
+                    handle = this.directories.get(path);
+                }
+                return handle;
+            };
+
+            FolderSink.prototype.add = async function (name, bytes) {
+                const segments = name.split('/');
+                const fileName = segments.pop();
+                const directory = await this.directory(segments);
+                const fileHandle = await directory.getFileHandle(fileName, {create: true});
+                const writable = await fileHandle.createWritable();
+                await writable.write(bytes);
+                await writable.close();
+            };
+
+            FolderSink.prototype.finish = function () {
+                return null;
+            };
+
+            // ---------- UI ----------
+
+            function slug(text) {
+                return String(text || '').replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').substring(0, 60);
+            }
+
+            function archiveBaseName(doc, pageUrl, now) {
+                const heading = doc.querySelector('.report-header h1');
+                const job = slug(heading ? heading.textContent.trim() : '');
+                const pageFile = pathSegments(pageUrl).pop() || 'report';
+                const kind = slug(pageFile.replace(/\.html?$/i, '')) || 'report';
+                const pad = n => String(n).padStart(2, '0');
+                const stamp = now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate())
+                    + '-' + pad(now.getHours()) + pad(now.getMinutes()) + pad(now.getSeconds());
+                return ['jlineup', job, kind, stamp].filter(part => part !== '').join('-');
+            }
+
+            let running = null;
+
+            function elements() {
+                return {
+                    zip: document.getElementById('archive-zip-btn'),
+                    folder: document.getElementById('archive-folder-btn'),
+                    status: document.getElementById('archive-status')
+                };
+            }
+
+            function setStatus(message, isError) {
+                const status = elements().status;
+                if (status) {
+                    status.textContent = message || '';
+                    status.title = message || '';
+                    status.classList.toggle('error', !!isError);
+                }
+            }
+
+            function setBusy(mode, busy) {
+                const el = elements();
+                [['zip', el.zip], ['folder', el.folder]].forEach(([buttonMode, button]) => {
+                    if (!button) {
+                        return;
+                    }
+                    if (button.dataset.label === undefined) {
+                        button.dataset.label = button.innerHTML;
+                    }
+                    if (busy && buttonMode === mode) {
+                        button.innerHTML = '&#x2716; Cancel';
+                        button.classList.add('busy');
+                    } else {
+                        button.innerHTML = button.dataset.label;
+                        button.classList.remove('busy');
+                        button.disabled = busy;
+                    }
+                });
+            }
+
+            function download(blob, fileName) {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+            }
+
+            async function start(mode) {
+                if (running !== null) {
+                    running.abort();
+                    return;
+                }
+                const controller = new AbortController();
+                running = controller;
+                setBusy(mode, true);
+                setStatus('');
+                try {
+                    const now = new Date();
+                    const rootName = archiveBaseName(document, location.href, now);
+                    let sink;
+                    if (mode === 'folder') {
+                        const parent = await global.showDirectoryPicker({mode: 'readwrite'});
+                        sink = new FolderSink(await parent.getDirectoryHandle(rootName, {create: true}));
+                    } else {
+                        sink = new ZipSink(rootName);
+                    }
+                    const result = await createArchive({
+                        doc: document,
+                        pageUrl: location.href,
+                        title: document.title,
+                        sink: sink,
+                        signal: controller.signal,
+                        now: now,
+                        onProgress: (done, total) => setStatus('Archiving ' + done + '/' + total + ' files...')
+                    });
+                    if (mode === 'zip') {
+                        download(sink.finish(), rootName + '.zip');
+                    }
+                    setStatus('Done: ' + result.files + ' files (' + formatBytes(result.bytes) + ')'
+                        + (result.failed.length > 0 ? ', ' + result.failed.length + ' could not be downloaded (see INDEX.md)' : '')
+                        + (mode === 'folder' ? ' saved to folder ' + rootName : ''), result.failed.length > 0);
+                } catch (e) {
+                    if (e && e.name === 'AbortError') {
+                        setStatus('Cancelled.');
+                    } else {
+                        setStatus('Archive failed: ' + (e && e.message ? e.message : e), true);
+                    }
+                } finally {
+                    running = null;
+                    setBusy(mode, false);
+                }
+            }
+
+            function init() {
+                if (location.protocol !== 'http:' && location.protocol !== 'https:') {
+                    return;
+                }
+                const container = document.getElementById('archive-download');
+                if (!container) {
+                    return;
+                }
+                container.classList.add('available');
+                const folder = document.getElementById('archive-folder-btn');
+                if (folder && typeof global.showDirectoryPicker === 'function' && global.isSecureContext) {
+                    folder.classList.add('available');
+                }
+            }
+
+            if (global.document && global.document.addEventListener) {
+                global.document.addEventListener('DOMContentLoaded', init);
+            }
+
+            return {
+                start: start,
+                createArchive: createArchive,
+                collectResourceUrls: collectResourceUrls,
+                computeEntryNames: computeEntryNames,
+                archiveBaseName: archiveBaseName,
+                buildIndexMarkdown: buildIndexMarkdown,
+                formatBytes: formatBytes,
+                crc32: crc32,
+                ZipBuilder: ZipBuilder,
+                ZipSink: ZipSink,
+                FolderSink: FolderSink
+            };
+        })(window);
+    </script>
+</th:block>
+
+<th:block th:fragment="archiveButton">
+    <div class="archive-download" id="archive-download">
+        <button type="button" id="archive-zip-btn" class="archive-btn" onclick="JLineupArchive.start('zip')"
+                title="Download this report with all screenshots, report.json and the log as a zip file">&#x2B07; Download archive (.zip)
+        </button>
+        <button type="button" id="archive-folder-btn" class="archive-btn folder-only" onclick="JLineupArchive.start('folder')"
+                title="Save this report with all screenshots, report.json and the log into a folder on your computer">&#x1F4C1; Save to folder
+        </button>
+        <span id="archive-status" class="archive-status" role="status" aria-live="polite"></span>
+    </div>
+</th:block>
+
+</body>
+</html>

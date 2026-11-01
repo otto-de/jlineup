@@ -79,6 +79,55 @@ class HTMLReportWriterTest {
     }
 
     @Test
+    void shouldRenderArchiveDownloadInReport() throws FileNotFoundException {
+        ArgumentCaptor<String> htmlCaptor = ArgumentCaptor.forClass(String.class);
+        testee.writeReport(report);
+        verify(fileServiceMock).writeHtmlReport(htmlCaptor.capture(), anyString());
+
+        assertArchiveDownloadRendered(htmlCaptor.getValue());
+    }
+
+    @Test
+    void shouldRenderArchiveDownloadInReportAfterBeforeStep() throws FileNotFoundException {
+        ArgumentCaptor<String> htmlCaptor = ArgumentCaptor.forClass(String.class);
+        testee.writeReportAfterBeforeStep(report);
+        verify(fileServiceMock).writeHtmlReport(htmlCaptor.capture(), anyString());
+
+        assertArchiveDownloadRendered(htmlCaptor.getValue());
+    }
+
+    @Test
+    void shouldRenderSharedStylesAndScriptsInReport() throws FileNotFoundException {
+        assertSharedStylesAndScriptsRendered(renderReport(JobConfig.exampleConfig(), false));
+    }
+
+    @Test
+    void shouldRenderSharedStylesAndScriptsInReportAfterBeforeStep() throws FileNotFoundException {
+        assertSharedStylesAndScriptsRendered(renderReport(JobConfig.exampleConfig(), true));
+    }
+
+    private static void assertSharedStylesAndScriptsRendered(String html) {
+        assertThat(html, containsString("--color-bg:"));
+        assertThat(html, containsString(":root.dark-mode"));
+        assertThat(html, containsString("function toggleDarkMode()"));
+        assertThat(html, containsString("function setGlobalImageMode(mode)"));
+        assertThat(html, containsString("// Toggle sticky top bar when the summary header scrolls out of view."));
+        assertThat(html, containsString("// ---------- Filter bar logic ----------"));
+        assertThat(html, not(containsString("th:replace")));
+        assertThat(html, not(containsString("th:fragment")));
+    }
+
+    private static void assertArchiveDownloadRendered(String html) {
+        assertThat(html, containsString("const JLineupArchive = "));
+        assertThat(html, containsString("id=\"archive-zip-btn\""));
+        assertThat(html, containsString("id=\"archive-folder-btn\""));
+        assertThat(html, containsString("onclick=\"JLineupArchive.start('zip')\""));
+        assertThat(html, not(containsString("th:fragment")));
+        assertThat(html, not(containsString("th:replace")));
+        assertThat(html, not(containsString("th:inline")));
+    }
+
+    @Test
     void shouldRenderDefaultLabelsInReport() throws FileNotFoundException {
         String html = renderReport(JobConfig.exampleConfig(), false);
 
