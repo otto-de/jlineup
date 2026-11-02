@@ -45,6 +45,8 @@ const wrappedSrc = `(function(global) { ${scriptSrc}
     global.setContextImageMode = setContextImageMode;
     global.applyImageMode    = applyImageMode;
     global.imageModeFile     = imageModeFile;
+    global.applyLayout       = applyLayout;
+    global.toggleLayout      = toggleLayout;
 }(globalThis));`;
 // eslint-disable-next-line no-eval
 eval(wrappedSrc);
@@ -343,5 +345,72 @@ describe('image mode', () => {
         expect(imageModeFile('d1.png', true)).toBe('d1_noimages.png');
         expect(imageModeFile('unknown.png', false)).toBe('unknown.png');
         expect(imageModeFile('null', false)).toBe('null');
+    });
+});
+
+// ── Layout: two columns (slider) / three columns (side by side) ──────────────
+
+describe('layout', () => {
+    beforeEach(() => {
+        document.body.className = '';
+        document.body.innerHTML = `
+            <button class="layout-toggle">2 columns</button>
+            <button class="layout-toggle">2 columns</button>
+        `;
+        localStorage.clear();
+    });
+
+    test('toggles between two and three columns and remembers it', () => {
+        toggleLayout();
+        expect(document.body.classList.contains('layout-three')).toBe(true);
+        expect(localStorage.getItem('jlineup-layout')).toBe('three');
+        document.querySelectorAll('.layout-toggle').forEach(btn => {
+            expect(btn.classList.contains('active')).toBe(true);
+            expect(btn.textContent).toContain('3 columns');
+        });
+
+        toggleLayout();
+        expect(document.body.classList.contains('layout-three')).toBe(false);
+        expect(localStorage.getItem('jlineup-layout')).toBe('');
+        document.querySelectorAll('.layout-toggle').forEach(btn => {
+            expect(btn.classList.contains('active')).toBe(false);
+            expect(btn.textContent).toContain('2 columns');
+        });
+    });
+
+    test('notifies about layout changes', () => {
+        const listener = jest.fn();
+        document.addEventListener('jlineup-layout-changed', listener);
+        applyLayout('three');
+        document.removeEventListener('jlineup-layout-changed', listener);
+        expect(listener).toHaveBeenCalledTimes(1);
+    });
+
+    test('zoom uses the side by side images in the three column layout', () => {
+        const ctx = 'ctx-0';
+        document.body.innerHTML = `
+            <div id="zoombox" class="invisible"></div>
+            <div class="legend" style="display:none"></div>
+            <div id="zoom_before" class="zoom"></div>
+            <div id="zoom_after" class="zoom"></div>
+            <div id="zoom_diff" class="zoom"></div>
+            <img id="before_${ctx}" src="before.png" width="100" height="200" />
+            <img id="after_${ctx}" src="after.png" width="100" height="200" />
+            <img id="sbs-before_${ctx}" src="before.png" width="100" height="200" />
+            <img id="sbs-after_${ctx}" src="after.png" width="100" height="200" />
+            <img id="diff_${ctx}" src="diff.png" width="100" height="200" />
+            <div id="lens-before_${ctx}" class="zoom-lens"></div>
+            <div id="lens-after_${ctx}" class="zoom-lens"></div>
+            <div id="lens-sbs-before_${ctx}" class="zoom-lens"></div>
+            <div id="lens-sbs-after_${ctx}" class="zoom-lens"></div>
+            <div id="lens-difference_${ctx}" class="zoom-lens"></div>
+        `;
+        document.body.classList.add('layout-three');
+        imageZoomForContext(ctx);
+        expect(document.getElementById('lens-sbs-before_' + ctx).classList.contains('visible')).toBe(true);
+        expect(document.getElementById('lens-sbs-after_' + ctx).classList.contains('visible')).toBe(true);
+        expect(document.getElementById('lens-before_' + ctx).classList.contains('visible')).toBe(false);
+        expect(document.getElementById('lens-after_' + ctx).classList.contains('visible')).toBe(false);
+        expect(document.getElementById('lens-difference_' + ctx).classList.contains('visible')).toBe(true);
     });
 });

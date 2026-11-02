@@ -910,6 +910,25 @@
             try { localStorage.setItem('jlineup-focus-mode', active ? '1' : ''); } catch(e) {}
         }
 
+        // Layout: 'two' (Before | After slider, Difference) or 'three' (Before, After, Difference side by side)
+        const LAYOUT_STORAGE_KEY = 'jlineup-layout';
+
+        function applyLayout(layout) {
+            const three = layout === 'three';
+            document.body.classList.toggle('layout-three', three);
+            document.querySelectorAll('.layout-toggle').forEach(btn => {
+                btn.classList.toggle('active', three);
+                btn.textContent = three ? '\u25A5 3 columns' : '\u25EB 2 columns';
+            });
+            document.dispatchEvent(new CustomEvent('jlineup-layout-changed'));
+        }
+
+        function toggleLayout() {
+            const next = document.body.classList.contains('layout-three') ? 'two' : 'three';
+            try { localStorage.setItem(LAYOUT_STORAGE_KEY, next === 'three' ? 'three' : ''); } catch(e) {}
+            applyLayout(next);
+        }
+
         // Dark mode: cycles auto → dark → light → auto
         function toggleDarkMode() {
             const root = document.documentElement;
@@ -957,6 +976,11 @@
                 document.body.classList.add('focus-mode');
                 document.querySelectorAll('#focus-toggle, #focus-fab').forEach(btn => btn.classList.add('active'));
             }
+        } catch(e) {}
+
+        // Restore layout from localStorage
+        try {
+            applyLayout(localStorage.getItem(LAYOUT_STORAGE_KEY) === 'three' ? 'three' : 'two');
         } catch(e) {}
 
         // Restore dark mode from localStorage

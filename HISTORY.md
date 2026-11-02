@@ -1,6 +1,8 @@
 # JLineup Release History
 
 ## Release 6.3.1-SNAPSHOT
+* Feature: New three column layout in the HTML report (Before | After | Difference side by side, without slider).
+           It can be switched globally with the new toggle next to the Focus button and is remembered in the browser.
 * Bugfix: The Lambda Dockerfiles fell back to outdated defaults (Chrome 150, older Amazon Linux) if the
           build didn't pass `CHROME_MAJOR_VERSION`/`AMI_LINUX_2023_VERSION`. `scripts/check-latest-versions.sh`
           now keeps the defaults in sync with `.chrome-version` and `.al2023-version` (`--update` and new

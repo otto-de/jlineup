@@ -203,6 +203,29 @@
             border-top: 1px solid var(--color-border);
         }
 
+        /* Three column layout: before | after | difference side by side, without slider */
+
+        body.layout-three .urlReport .compare-grid {
+            grid-template-columns:
+                minmax(160px, 200px)    /* info */
+                minmax(0, 1fr)          /* before */
+                minmax(0, 1fr)          /* after */
+                35px                    /* result (vertical text, no header) */
+                minmax(0, 1fr);         /* difference */
+        }
+
+        .layout-three-only {
+            display: none;
+        }
+
+        body.layout-three .layout-three-only {
+            display: block;
+        }
+
+        body.layout-three .layout-two-only {
+            display: none;
+        }
+
         .urlReport .compare-grid > .compare-row > .compare-cell.result-col {
             display: flex;
             align-items: center;
@@ -582,10 +605,12 @@
         }
 
         function imageZoomForContext(context) {
-            imageZoom(context, 'before_' + context, 'after_' + context, 'diff_' + context, 'zoom_before', 'zoom_after', 'zoom_diff');
+            // In the three column layout the side by side images (prefix 'sbs-') are the visible ones
+            const prefix = document.body.classList.contains('layout-three') ? 'sbs-' : '';
+            imageZoom(context, prefix + 'before_' + context, prefix + 'after_' + context, 'diff_' + context, 'zoom_before', 'zoom_after', 'zoom_diff', prefix);
         }
 
-        function imageZoom(context, beforeImageId, afterImageId, differenceImageId, zoomBeforeId, zoomAfterId, zoomDifferenceId) {
+        function imageZoom(context, beforeImageId, afterImageId, differenceImageId, zoomBeforeId, zoomAfterId, zoomDifferenceId, lensPrefix = '') {
             const beforeImg = document.getElementById(beforeImageId);
             const afterImg = document.getElementById(afterImageId);
             const differenceImg = document.getElementById(differenceImageId);
@@ -593,9 +618,9 @@
             const zoomAfter = document.getElementById(zoomAfterId);
             const zoomDifference = document.getElementById(zoomDifferenceId);
 
-            let lens = document.getElementById('lens-before_' + context);
+            let lens = document.getElementById('lens-' + lensPrefix + 'before_' + context);
             zoom(context, beforeImg, zoomBefore, lens);
-            lens = document.getElementById('lens-after_' + context);
+            lens = document.getElementById('lens-' + lensPrefix + 'after_' + context);
             zoom(context, afterImg, zoomAfter, lens);
             lens = document.getElementById('lens-difference_' + context);
             zoom(context, differenceImg, zoomDifference, lens);
@@ -716,10 +741,15 @@
         function mountViewersIn(root) {
             const viewers = root.querySelectorAll(".image-compare:not([data-icv-mounted])");
             viewers.forEach((element) => {
+                // Not rendered (e.g. three column layout): mounted when it becomes visible
+                if (element.getClientRects().length === 0) return;
                 element.setAttribute("data-icv-mounted", "true");
                 new ImageCompare(element, options).mount();
             });
         }
+
+        document.addEventListener("jlineup-layout-changed", () => mountViewersIn(document));
+        document.addEventListener("jlineup-filters-changed", () => mountViewersIn(document));
 
         document.querySelectorAll("details.urlReport").forEach((det) => {
             det.addEventListener("toggle", () => {
@@ -1061,6 +1091,7 @@
 
 <body th:with="beforeLabel=${report.config.effectiveBeforeLabel},afterLabel=${report.config.effectiveAfterLabel}">
 
+<button type="button" class="focus-fab layout-toggle" onclick="toggleLayout()" title="Switch between two columns (Before | After slider, Difference) and three columns (Before, After, Difference side by side)" style="right:200px;">&#x25EB; 2 columns</button>
 <button type="button" class="focus-fab dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode" style="right:110px;">&#x25D1; Auto</button>
 <button type="button" id="focus-fab" class="focus-fab" onclick="toggleFocusMode()" title="Toggle focus mode">&#x26F6; Focus</button>
 
@@ -1078,6 +1109,7 @@
             <span class="stat"><span>Total</span><span class="num">[[${#numbers.formatDecimal(report.summary.differenceSum*100,1,2)}]]&nbsp;%</span></span>
             <span class="stat"><span>Max</span><span class="num">[[${#numbers.formatDecimal(report.summary.differenceMax*100,1,2)}]]&nbsp;%</span></span>
         </div>
+        <button type="button" class="sticky-bar-focus layout-toggle" onclick="toggleLayout()" title="Switch between two columns (Before | After slider, Difference) and three columns (Before, After, Difference side by side)">&#x25EB; 2 columns</button>
         <button type="button" class="sticky-bar-focus dark-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">&#x25D1; Auto</button>
         <button type="button" id="focus-toggle" class="sticky-bar-focus" onclick="toggleFocusMode()" title="Toggle focus mode">&#x26F6; Focus</button>
         <button type="button" class="sticky-bar-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">&uarr; Top</button>
@@ -1229,11 +1261,17 @@
                 <div class="compare-grid" th:style="${contextReport.screenshotMaxWidthStyle}">
                     <div class="compare-row compare-head">
                         <div class="compare-cell">Info</div>
-                        <div class="compare-cell" th:if="${!contextReport.hasImagelessScreenshots()}">[[${beforeLabel}]] | [[${afterLabel}]]</div>
-                        <div class="compare-cell" th:if="${contextReport.hasImagelessScreenshots()}"><span>[[${beforeLabel}]] | [[${afterLabel}]]</span><span class="image-mode-toggle context-image-mode" role="group" aria-label="Screenshots of this context with or without images">
+                        <div class="compare-cell layout-two-only" th:if="${!contextReport.hasImagelessScreenshots()}">[[${beforeLabel}]] | [[${afterLabel}]]</div>
+                        <div class="compare-cell layout-two-only" th:if="${contextReport.hasImagelessScreenshots()}"><span>[[${beforeLabel}]] | [[${afterLabel}]]</span><span class="image-mode-toggle context-image-mode" role="group" aria-label="Screenshots of this context with or without images">
                                 <button type="button" class="image-mode-chip active" data-image-mode="images" onclick="setContextImageMode(this, 'images')" title="Show the regular screenshots of this context">With images</button>
                                 <button type="button" class="image-mode-chip" data-image-mode="noimages" onclick="setContextImageMode(this, 'noimages')" title="Show the screenshots of this context taken with all images hidden">Without images</button>
                             </span></div>
+                        <div class="compare-cell layout-three-only" th:if="${!contextReport.hasImagelessScreenshots()}">[[${beforeLabel}]]</div>
+                        <div class="compare-cell layout-three-only" th:if="${contextReport.hasImagelessScreenshots()}"><span>[[${beforeLabel}]]</span><span class="image-mode-toggle context-image-mode" role="group" aria-label="Screenshots of this context with or without images">
+                                <button type="button" class="image-mode-chip active" data-image-mode="images" onclick="setContextImageMode(this, 'images')" title="Show the regular screenshots of this context">With images</button>
+                                <button type="button" class="image-mode-chip" data-image-mode="noimages" onclick="setContextImageMode(this, 'noimages')" title="Show the screenshots of this context taken with all images hidden">Without images</button>
+                            </span></div>
+                        <div class="compare-cell layout-three-only">[[${afterLabel}]]</div>
                         <div class="compare-cell result-col-header"></div>
                         <div class="compare-cell">Difference</div>
                     </div>
@@ -1307,7 +1345,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="compare-cell screenshot-cell">
+                        <div class="compare-cell screenshot-cell layout-two-only">
                             <div class="image-compare"
                                  th:if="${result.screenshotAfterFileNameForHTML != null && result.screenshotBeforeFileNameForHTML != null}">
                                 <div class="zoom-lens invisible keep" th:classappend="${'lens-' + contextReport.contextHash + '-' +
@@ -1342,6 +1380,38 @@
                                      th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
                                 <span class="icv__label icv__label-after keep on-hover">[[${afterLabel}]] (only)</span>
                             </div>
+                        </div>
+                        <div class="compare-cell screenshot-cell layout-three-only">
+                            <div th:if="${result.screenshotBeforeFileNameForHTML != null}"
+                                 th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                 onmouseenter="initZoom(this)"
+                                 onmouseleave="stopZoom()"
+                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}','${contextReport.screenshotDisplayWidth}')|">
+                                <div class="zoom-lens invisible keep"
+                                     th:classappend="${'lens-' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                     th:id="${'lens-sbs-before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"></div>
+                                <img class="screenshot-difference" width="100%" loading="lazy"
+                                     th:id="${'sbs-before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                     th:attr="data-src-images=${result.hasImagelessScreenshots() ? result.screenshotBeforeFileNameForHTML : null},data-src-noimages=${result.hasImagelessScreenshots() ? result.imagelessScreenshotBeforeFileNameForHTML : null}"
+                                     th:src="${result.screenshotBeforeFileNameForHTML}" alt=""/>
+                            </div>
+                            <div class="infotext" th:if="${result.screenshotBeforeFileNameForHTML == null}">No [[${beforeLabel == 'Before' ? 'before' : beforeLabel}]] image</div>
+                        </div>
+                        <div class="compare-cell screenshot-cell layout-three-only">
+                            <div th:if="${result.screenshotAfterFileNameForHTML != null}"
+                                 th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                 onmouseenter="initZoom(this)"
+                                 onmouseleave="stopZoom()"
+                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}','${contextReport.screenshotDisplayWidth}')|">
+                                <div class="zoom-lens invisible keep"
+                                     th:classappend="${'lens-' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                     th:id="${'lens-sbs-after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"></div>
+                                <img class="screenshot-difference" width="100%" loading="lazy"
+                                     th:id="${'sbs-after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
+                                     th:attr="data-src-images=${result.hasImagelessScreenshots() ? result.screenshotAfterFileNameForHTML : null},data-src-noimages=${result.hasImagelessScreenshots() ? result.imagelessScreenshotAfterFileNameForHTML : null}"
+                                     th:src="${result.screenshotAfterFileNameForHTML}" alt=""/>
+                            </div>
+                            <div class="infotext" th:if="${result.screenshotAfterFileNameForHTML == null}">No [[${afterLabel == 'After' ? 'after' : afterLabel}]] image</div>
                         </div>
                         <div th:switch="${result.difference > 0}" class="compare-cell result-col">
                             <h5><span th:case="${true}" class="failure">different</span><span th:case="${false}"
