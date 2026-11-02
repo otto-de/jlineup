@@ -884,6 +884,10 @@
           "parameterTypes": []
         },
         {
+          "name": "getCompareThreads",
+          "parameterTypes": []
+        },
+        {
           "name": "getUrls",
           "parameterTypes": []
         },
