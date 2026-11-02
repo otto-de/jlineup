@@ -35,6 +35,17 @@ import static de.otto.jlineup.GlobalOption.*;
 import static de.otto.jlineup.JLineupRunner.LOGFILE_NAME;
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
 
+/**
+ * Entry point of the JLineup AWS Lambda functions.
+ * <p>
+ * Each invocation receives a {@link LambdaRequestPayload} for one screenshot context, takes its screenshots with a
+ * headless browser inside the Lambda container, and uploads the results (screenshots, file tracker, log) to the S3
+ * bucket given by {@code JLINEUP_LAMBDA_S3_BUCKET}, below the prefix {@code JLINEUP_LAMBDA_S3_PREFIX}.
+ * {@link LambdaBrowser} on the calling side downloads them again.
+ * <p>
+ * By default all results of an invocation are uploaded as one ZIP bundle, which can be switched off with
+ * {@code JLINEUP_LAMBDA_S3_BUNDLE=false}.
+ */
 public class JLineupHandler implements RequestStreamHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(JLineupHandler.class);
@@ -88,6 +99,15 @@ public class JLineupHandler implements RequestStreamHandler {
         return result;
     }
 
+    /**
+     * Takes the screenshots for the context in the request and uploads them to S3.
+     *
+     * @param input   the {@link LambdaRequestPayload} as JSON
+     * @param output  receives a short status message with the S3 upload status and the number of retries
+     * @param context the Lambda runtime context
+     * @throws RuntimeException if anything fails, e.g. taking the screenshots, a missing S3 bucket configuration or
+     *                          the upload; the caller recognizes transient failures and retries them
+     */
     @Override
     public void handleRequest(InputStream input, OutputStream output, Context context) {
         try {

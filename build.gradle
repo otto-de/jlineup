@@ -230,6 +230,13 @@ subprojects {
         withSourcesJar()
     }
 
+    // Fail on real Javadoc problems (broken links, malformed HTML, wrong @param names),
+    // but do not require a comment on every public member.
+    tasks.withType(Javadoc).configureEach {
+        options.addBooleanOption('Xdoclint:all,-missing', true)
+        options.addBooleanOption('Xwerror', true)
+    }
+
     test {
         useJUnitPlatform()
         // To allow monitoring System.Exit() we need to allow security manager so it can be overridden in tests

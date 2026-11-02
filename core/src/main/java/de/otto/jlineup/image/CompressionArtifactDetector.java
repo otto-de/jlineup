@@ -39,6 +39,17 @@ public class CompressionArtifactDetector {
     private final double maxPixelColorDistance;
     private final double textureTolerance;
 
+    /**
+     * Creates a detector for one set of 'ignore-compression-artifacts' settings.
+     *
+     * @param radius                the radius of the square around a pixel whose average color is compared; a radius
+     *                              of 20 means a 41x41 pixel square ('compression-artifact-radius'), at least 1
+     * @param maxPixelColorDistance different pixels with a higher CIEDE2000 color distance are never accepted
+     *                              ('max-compression-artifact-color-distance')
+     * @param textureTolerance      how much the accepted color distance of the averages grows with the local lightness
+     *                              standard deviation, 0 disables it ('compression-artifact-texture-tolerance')
+     * @throws IllegalArgumentException if the radius is smaller than 1
+     */
     public CompressionArtifactDetector(int radius, double maxPixelColorDistance, double textureTolerance) {
         if (radius < 1) throw new IllegalArgumentException("Compression artifact radius has to be at least 1, but was " + radius);
         this.radius = radius;

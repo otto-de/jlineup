@@ -23,6 +23,13 @@ import java.util.stream.Stream;
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathOfReportDir;
 import static java.lang.invoke.MethodHandles.lookup;
 
+/**
+ * Runs JLineup for a single {@link ScreenshotContext} inside a Lambda container, see {@link JLineupHandler}.
+ * <p>
+ * It works like {@link de.otto.jlineup.JLineupRunner}, but only takes the screenshots of one context with a local
+ * (headless) browser. The files of the context are tracked in their own {@code files_<step>_<contextHash>.json},
+ * which {@link LambdaBrowser} merges into the file tracker of the whole run later.
+ */
 public class LambdaRunner {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
@@ -32,6 +39,11 @@ public class LambdaRunner {
 
     private final JobConfig jobConfig;
 
+    /**
+     * Returns the run step configuration of this runner.
+     *
+     * @return the run step configuration this runner was created with
+     */
     public RunStepConfig getRunStepConfig() {
         return runStepConfig;
     }
@@ -41,6 +53,15 @@ public class LambdaRunner {
 
     private final String id;
 
+    /**
+     * Creates a runner and validates the job configuration.
+     *
+     * @param id                the id of the run, used for the temporary directories of the invocation
+     * @param jobConfig         the job configuration
+     * @param runStepConfig     the configuration of the run step, e.g. directories and browser parameters
+     * @param screenshotContext the one context to take screenshots for
+     * @throws ValidationError if the job configuration is invalid
+     */
     public LambdaRunner(String id, JobConfig jobConfig, RunStepConfig runStepConfig, ScreenshotContext screenshotContext) throws ValidationError {
         this.id = id;
         this.jobConfig = jobConfig;
@@ -49,6 +70,14 @@ public class LambdaRunner {
         validateConfig();
     }
 
+    /**
+     * Prepares the working directories and takes the screenshots for the context. Failed attempts are repeated
+     * up to {@code screenshotRetries} times of the job configuration. If the run fails, the debug output of the
+     * browser is written to the log.
+     *
+     * @return the number of retries that were needed, 0 if the first attempt succeeded
+     * @throws RuntimeException if all attempts failed
+     */
     public int run() {
         final FileService fileService = new FileService(runStepConfig, jobConfig, "files_" + runStepConfig.getStep() + "_" + screenshotContext.contextHash() + ".json");
         String debugLogDir = "/tmp/jlineup/debug-" + this.id;

@@ -17,10 +17,19 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * @param devicePixelRatio the window.devicePixelRatio measured while taking the screenshots (null if unknown)
- * @param screenshotWidth  the width of the screenshots in image pixels (null if unknown)
- * @param imageUrlChanges  image URLs of the page that differ between before and after (only recorded with
- *                         'ignore-image-content', null if unknown or unchanged)
+ * The report of one {@link ScreenshotContext}, i.e. one combination of URL, sub-path, device, browser and cookies.
+ * It contains the comparison results of all scroll positions of the page.
+ *
+ * @param contextHash       hash that identifies the screenshot context, also used in the file names of its screenshots
+ * @param screenshotContext the context the screenshots were taken for
+ * @param summary           the aggregated differences of all results of this context
+ * @param results           the comparison results, one per scroll position
+ * @param flakyAccepted     true if this context has differences, but was accepted because enough sibling contexts of
+ *                          the same page passed (see 'flaky-tolerance')
+ * @param devicePixelRatio  the window.devicePixelRatio measured while taking the screenshots (null if unknown)
+ * @param screenshotWidth   the width of the screenshots in image pixels (null if unknown)
+ * @param imageUrlChanges   image URLs of the page that differ between before and after (only recorded with
+ *                          'ignore-image-content', null if unknown or unchanged)
  */
 public record ContextReport(String contextHash, ScreenshotContext screenshotContext, Summary summary,
                             List<ScreenshotComparisonResult> results, boolean flakyAccepted,

@@ -53,9 +53,16 @@ public class LambdaS3FileStore implements CloudFileStore {
     private String prefix;
     private boolean initialized;
 
+    /**
+     * Creates a store that reads its configuration from the Lambda function and connects to AWS with the first
+     * request.
+     */
     public LambdaS3FileStore() {
     }
 
+    /**
+     * Creates an already initialized store with given clients, so tests don't need AWS.
+     */
     LambdaS3FileStore(S3Client s3Client, S3Presigner presigner, String bucket, String prefix) {
         this.s3Client = s3Client;
         this.presigner = presigner;
@@ -96,6 +103,10 @@ public class LambdaS3FileStore implements CloudFileStore {
         }
     }
 
+    /**
+     * @param key the relative key
+     * @return the key with the configured S3 prefix, separated by exactly one slash
+     */
     String fullKey(String key) {
         if (prefix == null || prefix.isEmpty()) {
             return key;

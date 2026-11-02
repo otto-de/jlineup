@@ -18,6 +18,11 @@ public class CloudFileStoreFactory {
 
     static final String LAMBDA_FILE_STORE_CLASS = "de.otto.jlineup.lambda.LambdaS3FileStore";
 
+    /**
+     * Creates a {@code de.otto.jlineup.lambda.LambdaS3FileStore} via reflection.
+     *
+     * @return the file store, or an empty Optional if the lambda module is not available
+     */
     public static Optional<CloudFileStore> createCloudFileStore() {
         try {
             Class<?> fileStoreClass = Class.forName(LAMBDA_FILE_STORE_CLASS, false, CloudFileStoreFactory.class.getClassLoader());

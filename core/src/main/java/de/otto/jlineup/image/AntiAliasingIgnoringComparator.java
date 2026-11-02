@@ -9,6 +9,13 @@ import java.awt.image.BufferedImage;
 import static java.lang.invoke.MethodHandles.lookup;
 
 /**
+ * Detects whether two different pixels of two screenshots are caused by anti-aliasing (the smoothing of edges of
+ * fonts, shapes and SVGs), which browsers do not always render identically. Used for 'ignore-anti-aliasing'.
+ * <p>
+ * A pixel counts as anti-aliased if, in one of the two images, it has both darker and brighter neighbors (it lies on
+ * a gradient between two areas) and the darkest or the brightest neighbor is not anti-aliased itself. Pixels with
+ * more than two neighbors of the same brightness lie inside a flat area and are never anti-aliased.
+ * <p>
  * This class is ported from looks-same by Yandex: <a href="https://github.com/gemini-testing/looks-same">...</a>
  * <p>
  * The MIT License (MIT)
@@ -40,6 +47,17 @@ public class AntiAliasingIgnoringComparator {
     private final static double DEFAULT_BRIGHTNESS_TOLERANCE = 0d;
     //private final static double JUST_NOTICEABLE_DIFFERENCE = 2.3d;  // Just noticeable difference if ciede2000 >= JND then colors difference is noticeable by human eye
 
+    /**
+     * Checks if the difference of one pixel in two images is caused by anti-aliasing.
+     *
+     * @param img1      the first image
+     * @param img2      the second image
+     * @param x         the x position of the different pixel
+     * @param y         the y position of the different pixel
+     * @param tolerance the brightness tolerance, used when checking if the extreme neighbors of the pixel
+     *                  are anti-aliased themselves ('max-anti-alias-color-distance')
+     * @return true if the pixel is anti-aliased in at least one of the images
+     */
     public static boolean checkIsAntialiased(BufferedImage img1, BufferedImage img2, int x, int y, double tolerance) {
         boolean isPixelAntiAliased = isAntialiased(img2, x, y, img1, tolerance)
                 || isAntialiased(img1, x, y, img2, tolerance);

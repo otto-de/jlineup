@@ -41,6 +41,14 @@ import java.util.concurrent.*;
 
 import static java.lang.invoke.MethodHandles.lookup;
 
+/**
+ * A {@link CloudBrowser} that takes screenshots in AWS Lambda functions.
+ * <p>
+ * For every screenshot context, one Lambda function is invoked in parallel with a {@link LambdaRequestPayload}. The
+ * function is chosen by browser type, see {@link #resolveLambdaFunctionName}. The Lambda functions upload their
+ * results to S3. After all calls have finished, this class downloads the results and merges them into the local
+ * file structure of the run, so the comparison and report work as if the browser had been run locally.
+ */
 public class LambdaBrowser implements CloudBrowser {
 
     private final static Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
@@ -62,11 +70,25 @@ public class LambdaBrowser implements CloudBrowser {
     @VisibleForTesting
     S3ClientFactory s3ClientFactory = LambdaBrowser::defaultS3Client;
 
+    /**
+     * Creates the S3 client for a credentials provider.
+     */
     @FunctionalInterface
     interface S3ClientFactory {
+        /**
+         * @param credentialsProvider the credentials the client has to use
+         * @return a new client, which the caller has to close
+         */
         S3Client create(AwsCredentialsProvider credentialsProvider);
     }
 
+    /**
+     * Creates a browser that takes the screenshots in AWS Lambda.
+     *
+     * @param runStepConfig the configuration of the current run step
+     * @param jobConfig     the job configuration, sent to the Lambda functions
+     * @param fileService   the file service the downloaded results are merged into
+     */
     public LambdaBrowser(RunStepConfig runStepConfig, JobConfig jobConfig, FileService fileService) {
         this.fileService = fileService;
         this.runStepConfig = runStepConfig;
@@ -131,6 +153,17 @@ public class LambdaBrowser implements CloudBrowser {
                 });
     }
 
+    /**
+     * Invokes the Lambda functions for all contexts, waits for them, then downloads and merges their results.
+     * A call that fails with a {@linkplain #isTransientLambdaError transient error} is retried once.
+     *
+     * @param screenshotContexts the contexts to take screenshots for
+     * @throws ExecutionException    if a Lambda call fails
+     * @throws InterruptedException  if the thread is interrupted while waiting for a Lambda call
+     * @throws IOException           if the results can't be downloaded or merged
+     * @throws IllegalStateException if no Lambda function name is configured for the browser type of a context
+     * @throws RuntimeException      if a Lambda function reports an error that can't be retried
+     */
     @Override
     public void takeScreenshots(List<ScreenshotContext> screenshotContexts) throws ExecutionException, InterruptedException, IOException {
         //The credentials provider is an SdkAutoCloseable that owns the http clients of the underlying provider
@@ -471,6 +504,13 @@ public class LambdaBrowser implements CloudBrowser {
         return String.format("Lambda [%s] [%s] failed: %s", indexString, functionName, answer);
     }
 
+    /**
+     * Checks if an error answer of a Lambda function was most likely caused by a crash or timeout of the
+     * browser, so that calling the function again can help.
+     *
+     * @param answer the payload of the Lambda response
+     * @return true if the error is known to be transient
+     */
     public static boolean isTransientLambdaError(String answer) {
         return answer.contains("SessionNotCreatedException")
                 || answer.contains("disconnected: Unable to receive message from renderer")
