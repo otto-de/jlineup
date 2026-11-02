@@ -198,6 +198,23 @@ public class FileService {
         return ImageIO.read(new File(getScreenshotPath(fileName)));
     }
 
+    /**
+     * Compares two screenshot files byte by byte, without decoding them. Identical files contain identical images,
+     * so this is a much cheaper way to detect the (usual) case that nothing changed.
+     *
+     * @return true if both files exist, are not empty and have exactly the same content, false in all other cases
+     */
+    public boolean areScreenshotFilesIdentical(String fileName1, String fileName2) {
+        Path path1 = Paths.get(getScreenshotPath(fileName1));
+        Path path2 = Paths.get(getScreenshotPath(fileName2));
+        try {
+            long size = Files.size(path1);
+            return size > 0 && size == Files.size(path2) && Files.mismatch(path1, path2) == -1L;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     private static void writeScreenshot(String fileName, BufferedImage image) throws IOException {
         LOG.debug("Writing screenshot to {}", fileName);
         File screenshotFile = new File(fileName);

@@ -277,6 +277,18 @@ See [jlineup.max-parallel-jobs](WEB.md#jlineupmax-parallel-jobs) also.
 
 ---
 
+### `jlineup.max-compare-threads`
+
+After the screenshots are taken, JLineup compares them using multiple threads
+(see [compare-threads configuration in job](CONFIGURATION.md#compare-threads)).
+This is the limit of screenshots that are compared at the same time by
+*all* jobs of this JLineup server instance together, so concurrent jobs don't
+use more CPU cores and memory than intended. `0` means the number of CPU cores.
+
+* Default: `0`
+
+---
+
 ### `jlineup.installed-browsers`
 
 JLineup web will deny requests for jobs that contain a browser that is

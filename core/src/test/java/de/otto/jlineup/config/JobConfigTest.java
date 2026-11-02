@@ -264,4 +264,37 @@ class JobConfigTest {
         assertThat(jobConfig.screenshotRetries, is(2));
     }
 
+    @Test
+    public void shouldNotSerializeDefaultCompareThreads() {
+        String json = JobConfig.prettyPrint(JobConfig.defaultConfig());
+        String yaml = JobConfig.prettyPrint(JobConfig.defaultConfig(), JacksonWrapper.ConfigFormat.YAML);
+
+        assertThat(JobConfig.defaultConfig().compareThreads, is(0));
+        assertThat(json, not(containsString("compare-threads")));
+        assertThat(yaml, not(containsString("compare-threads")));
+    }
+
+    @Test
+    public void shouldReadAndWriteCompareThreads() throws IOException {
+        JobConfig original = JobConfig.copyOfBuilder(JobConfig.defaultConfig()).withCompareThreads(3).build();
+
+        String json = JobConfig.prettyPrint(original);
+        String yaml = JobConfig.prettyPrint(original, JacksonWrapper.ConfigFormat.YAML);
+
+        assertThat(json, containsString("\"compare-threads\" : 3"));
+        assertThat(yaml, containsString("compare-threads: 3"));
+        assertThat(JacksonWrapper.deserializeConfig(new StringReader(json), JacksonWrapper.ConfigFormat.JSON).compareThreads, is(3));
+        assertThat(JacksonWrapper.deserializeConfig(new StringReader(yaml), JacksonWrapper.ConfigFormat.YAML).compareThreads, is(3));
+        assertThat(JobConfig.copyOfBuilder(original).build(), is(original));
+        assertThat(JobConfig.copyOfBuilder(original).withCompareThreads(0).build(), not(original));
+    }
+
+    @Test
+    public void shouldIgnoreCompareThreadsInOlderReaders() throws IOException {
+        //configs without the option (and unknown options, which is what older versions see) must still be readable
+        JobConfig jobConfig = JacksonWrapper.deserializeConfig(new StringReader("{ \"urls\": { \"https://www.example.com\": {} } }"), JacksonWrapper.ConfigFormat.JSON);
+
+        assertThat(jobConfig.compareThreads, is(0));
+    }
+
 }

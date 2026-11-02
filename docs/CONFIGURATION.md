@@ -196,6 +196,7 @@ report-format: 2
 screenshot-retries: 0
 flaky-tolerance: 0
 threads: 0
+compare-threads: 0
 timeout: 600
 debug: false
 log-to-file: false
@@ -283,6 +284,7 @@ http-check:
   "screenshot-retries": 0,
   "flaky-tolerance": 0,
   "threads": 0,
+  "compare-threads": 0,
   "timeout": 600,
   "debug": false,
   "log-to-file": false,
@@ -1613,6 +1615,36 @@ Since: 4.2.0
  
 --- 
  
+### `compare-threads`
+
+ Number of threads that compare the screenshots after they were taken (`after` and `compare` steps). Each thread
+ compares one screenshot at a time, so memory requirements grow with the number of threads and the size of the
+ screenshots. JLineup reduces the number of threads automatically if the available memory (JVM heap) is not
+ sufficient for the configured number.
+
+ This is independent of [`threads`](#threads), which sets the number of browsers. `0` (default) means one thread per
+ CPU core. The result of the comparison and the order of the report don't depend on this setting.
+
+ In the web server version, the screenshots that are compared at the same time by all jobs together are limited by
+ [`jlineup.max-compare-threads`](WEB.md#jlineupmax-compare-threads).
+
+ The CLI option `--compare-threads` overrides this setting.
+
+ * Scope: Global
+ * Type: Integer
+ * Default: `0`
+ * Example:
+   ```yaml
+   compare-threads: 4
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"compare-threads": 4`
+   </details>
+
+--- 
+
 ### `timeout`
 
  This is a *global* and *hard* timeout for the whole JLineup job. If the job isn't finished after this time, it fails.

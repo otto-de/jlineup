@@ -58,6 +58,10 @@ public class Utils {
     }
 
     public static ExecutorService createThreadPool(int threads, final String baseName) {
+        return createThreadPool(threads, baseName, "make screenshots");
+    }
+
+    public static ExecutorService createThreadPool(int threads, final String baseName, final String purpose) {
 
         if (threads < 1) {
             threads = 1;
@@ -65,7 +69,7 @@ public class Utils {
 
         final ThreadFactory factory = createThreadFactory(baseName);
 
-        LOG.info("Using a thread pool with {} thread(s) to make screenshots.", threads);
+        LOG.info("Using a thread pool with {} thread(s) to {}.", threads, purpose);
 
         return Executors.newFixedThreadPool(threads, factory);
     }

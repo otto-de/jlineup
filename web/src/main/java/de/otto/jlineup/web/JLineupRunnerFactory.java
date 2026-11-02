@@ -14,6 +14,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
 import static de.otto.jlineup.browser.BrowserUtils.RANDOM_FOLDER_PLACEHOLDER;
@@ -23,9 +24,14 @@ public class JLineupRunnerFactory {
 
     private final JLineupWebProperties properties;
 
+    //Limits the screenshots that are compared at the same time by all runs of this server
+    private final Semaphore compareSlots;
+
     @Autowired
     public JLineupRunnerFactory(JLineupWebProperties properties) {
         this.properties = properties;
+        int maxCompareThreads = properties.getMaxCompareThreads();
+        this.compareSlots = new Semaphore(maxCompareThreads > 0 ? maxCompareThreads : Math.max(1, Runtime.getRuntime().availableProcessors()));
     }
 
     public JLineupRunner createBeforeRun(String id, JobConfig jobConfig) throws Exception {
@@ -61,7 +67,7 @@ public class JLineupRunnerFactory {
                         .collect(Collectors.toList()))
                 .withCleanupProfile(properties.isCleanupProfile())
                 .withStep(step)
-                .build());
+                .build(), compareSlots);
     }
 
     JobConfig sanitizeJobConfig(final JobConfig jobConfig) throws BrowserNotInstalledException, IllegalArgumentException {

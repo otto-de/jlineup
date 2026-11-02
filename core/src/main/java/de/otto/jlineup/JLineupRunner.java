@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Semaphore;
 
 import static de.otto.jlineup.browser.BrowserUtils.getFullPathToLogFile;
 import static java.lang.invoke.MethodHandles.lookup;
@@ -32,10 +33,20 @@ public class JLineupRunner {
 
     private final JobConfig jobConfig;
     private final RunStepConfig runStepConfig;
+    private final Semaphore compareSlots;
 
     public JLineupRunner(JobConfig jobConfig, RunStepConfig runStepConfig) throws ValidationError {
+        this(jobConfig, runStepConfig, null);
+    }
+
+    /**
+     * @param compareSlots optional limit of screenshots that are compared at the same time, shared by all runners
+     *                     that use the same instance (i.e. in a web server). Null means no limit.
+     */
+    public JLineupRunner(JobConfig jobConfig, RunStepConfig runStepConfig, Semaphore compareSlots) throws ValidationError {
         this.jobConfig = jobConfig;
         this.runStepConfig = runStepConfig;
+        this.compareSlots = compareSlots;
         validateConfig();
     }
 
@@ -73,7 +84,7 @@ public class JLineupRunner {
             }
 
             if (runStepConfig.getStep() == RunStep.before) {
-                ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
+                ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService, compareSlots);
                 try {
                     Map<String, List<ScreenshotComparisonResult>> onlyBeforeScreenshotsInThisComparisonResult = screenshotsComparator.compare();
                     final Report reportAfterBeforeStep = new ReportGenerator(fileService).generateReport(onlyBeforeScreenshotsInThisComparisonResult, jobConfig);
@@ -86,7 +97,7 @@ public class JLineupRunner {
 
         try {
             if (runStepConfig.getStep() == RunStep.after || runStepConfig.getStep() == RunStep.compare) {
-                ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService);
+                ScreenshotsComparator screenshotsComparator = new ScreenshotsComparator(runStepConfig, jobConfig, fileService, imageService, compareSlots);
                 final Map<String, List<ScreenshotComparisonResult>> comparisonResults = screenshotsComparator.compare();
 
                 final ReportGenerator reportGenerator = new ReportGenerator(fileService);

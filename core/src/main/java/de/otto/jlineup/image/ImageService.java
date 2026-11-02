@@ -126,6 +126,10 @@ public class ImageService {
         int imageContentDiffPixelCounter = 0;
         final boolean useImageContentMask = imageContentMask != null && width1 == width2 && height1 == height2 && imageContentMask.length == pixelCount1;
         double maxDetectedColorDistance = 0f;
+        //Keeps the sliding window sums for this pair of pixel arrays. It must not be reused for other pairs.
+        final CompressionArtifactDetector.Comparison compressionArtifactComparison = compressionArtifactDetector != null && width1 == width2 && height1 == height2
+                ? compressionArtifactDetector.forImages(image1Pixels, image2Pixels, width1, height1)
+                : null;
 
         final int[] differenceImagePixels = new int[maxPixelCount];
         //i1 and i2 are the indices in the image pixel arrays of image1pixels and image2pixels
@@ -170,11 +174,11 @@ public class ImageService {
                     acceptableDifferenceDetected = true;
                 }
 
-                if (!acceptableDifferenceDetected && compressionArtifactDetector != null && width1 == width2 && height1 == height2) {
+                if (!acceptableDifferenceDetected && compressionArtifactComparison != null) {
                     if (colorDistance < 0) {
                         colorDistance = getColorDistance(image1Pixels[i1], image2Pixels[i2]);
                     }
-                    if (compressionArtifactDetector.isCompressionArtifact(image1Pixels, image2Pixels, width1, height1, x, y, colorDistance, maxColorDistance)) {
+                    if (compressionArtifactComparison.isCompressionArtifact(x, y, colorDistance, maxColorDistance)) {
                         differenceImagePixels[iD] = COMPRESSION_ARTIFACT_DETECTED_COLOR;
                         LOG.debug("Compression artifact detected at pixel {}|{} with a color distance of {}", x, y, colorDistance);
                         compressionArtifactDiffPixelCounter++;
@@ -361,6 +365,9 @@ public class ImageService {
 
     //A very fast byte buffer based image comparison for images containing INT or BYTE type representations
     public static boolean bufferedImagesEqualQuick(BufferedImage image1, BufferedImage image2) {
+        if (image1.getWidth() != image2.getWidth() || image1.getHeight() != image2.getHeight() || image1.getType() != image2.getType()) {
+            return false;
+        }
         DataBuffer dataBuffer1 = image1.getRaster().getDataBuffer();
         DataBuffer dataBuffer2 = image2.getRaster().getDataBuffer();
         if (dataBuffer1 instanceof DataBufferByte && dataBuffer2 instanceof DataBufferByte) {

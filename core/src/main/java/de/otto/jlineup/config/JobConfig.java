@@ -63,6 +63,7 @@ public final class JobConfig  {
     public static final double DEFAULT_MAX_COMPRESSION_ARTIFACT_COLOR_DISTANCE = 20d;
     public static final double DEFAULT_COMPRESSION_ARTIFACT_TEXTURE_TOLERANCE = 0d;
     static final int DEFAULT_THREADS = 0; // '0' means not set which is transformed to '1' when creating the threadpool
+    public static final int DEFAULT_COMPARE_THREADS = 0; // '0' means not set which is transformed to the number of CPU cores
     static final int DEFAULT_PAGELOAD_TIMEOUT = 120;
     static final int DEFAULT_SCREENSHOT_RETRIES = 0;
     static final int DEFAULT_GLOBAL_TIMEOUT = 1800;
@@ -103,6 +104,8 @@ public final class JobConfig  {
     public final int screenshotRetries;
     @JsonInclude(Include.NON_DEFAULT)
     public final int threads;
+    @JsonInclude(Include.NON_DEFAULT)
+    public final int compareThreads;
     @JsonProperty("timeout")
     public final int globalTimeout;
     public final boolean debug;
@@ -142,6 +145,7 @@ public final class JobConfig  {
         pageLoadTimeout = builder.pageLoadTimeout;
         windowHeight = builder.windowHeight;
         threads = builder.threads;
+        compareThreads = builder.compareThreads;
         screenshotRetries = builder.screenshotRetries;
         globalTimeout = builder.globalTimeout;
         debug = builder.debug;
@@ -314,6 +318,10 @@ public final class JobConfig  {
         return threads;
     }
 
+    public int getCompareThreads() {
+        return compareThreads;
+    }
+
     public int getGlobalTimeout() {
         return globalTimeout;
     }
@@ -369,6 +377,7 @@ public final class JobConfig  {
                 .withPageLoadTimeout(jobConfig.pageLoadTimeout)
                 .withWindowHeight(jobConfig.windowHeight)
                 .withThreads(jobConfig.threads)
+                .withCompareThreads(jobConfig.compareThreads)
                 .withScreenshotRetries(jobConfig.screenshotRetries)
                 .withGlobalTimeout(jobConfig.globalTimeout)
                 .withDebug(jobConfig.debug)
@@ -383,12 +392,12 @@ public final class JobConfig  {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JobConfig jobConfig = (JobConfig) o;
-        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && globalTimeout == jobConfig.globalTimeout && flakyTolerance == jobConfig.flakyTolerance && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(browsers, jobConfig.browsers) && Objects.equals(name, jobConfig.name) && Objects.equals(message, jobConfig.message) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(beforeLabel, jobConfig.beforeLabel) && Objects.equals(afterLabel, jobConfig.afterLabel) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
+        return pageLoadTimeout == jobConfig.pageLoadTimeout && screenshotRetries == jobConfig.screenshotRetries && threads == jobConfig.threads && compareThreads == jobConfig.compareThreads && globalTimeout == jobConfig.globalTimeout && flakyTolerance == jobConfig.flakyTolerance && debug == jobConfig.debug && logToFile == jobConfig.logToFile && checkForErrorsInLog == jobConfig.checkForErrorsInLog && Objects.equals(urls, jobConfig.urls) && browser == jobConfig.browser && Objects.equals(browsers, jobConfig.browsers) && Objects.equals(name, jobConfig.name) && Objects.equals(message, jobConfig.message) && Objects.equals(approvalLink, jobConfig.approvalLink) && Objects.equals(beforeLabel, jobConfig.beforeLabel) && Objects.equals(afterLabel, jobConfig.afterLabel) && Objects.equals(globalWaitAfterPageLoad, jobConfig.globalWaitAfterPageLoad) && Objects.equals(windowHeight, jobConfig.windowHeight) && Objects.equals(httpCheck, jobConfig.httpCheck) && Objects.equals(mergeConfig, jobConfig.mergeConfig);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(urls, browser, browsers, name, message, approvalLink, beforeLabel, afterLabel, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, screenshotRetries, threads, globalTimeout, flakyTolerance, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
+        return Objects.hash(urls, browser, browsers, name, message, approvalLink, beforeLabel, afterLabel, globalWaitAfterPageLoad, pageLoadTimeout, windowHeight, screenshotRetries, threads, compareThreads, globalTimeout, flakyTolerance, debug, logToFile, checkForErrorsInLog, httpCheck, mergeConfig);
     }
 
     @Override
@@ -407,6 +416,7 @@ public final class JobConfig  {
                 ", windowHeight=" + windowHeight +
                 ", screenshotRetries=" + screenshotRetries +
                 ", threads=" + threads +
+                ", compareThreads=" + compareThreads +
                 ", globalTimeout=" + globalTimeout +
                 ", debug=" + debug +
                 ", logToFile=" + logToFile +
@@ -556,6 +566,7 @@ public final class JobConfig  {
         private Integer windowHeight = null;
         private int screenshotRetries = DEFAULT_SCREENSHOT_RETRIES;
         private int threads = DEFAULT_THREADS;
+        private int compareThreads = DEFAULT_COMPARE_THREADS;
         private int globalTimeout = DEFAULT_GLOBAL_TIMEOUT;
         private boolean debug = false;
         private boolean logToFile = false;
@@ -634,6 +645,11 @@ public final class JobConfig  {
 
         public Builder withThreads(int val) {
             threads = val;
+            return this;
+        }
+
+        public Builder withCompareThreads(int val) {
+            compareThreads = val;
             return this;
         }
 

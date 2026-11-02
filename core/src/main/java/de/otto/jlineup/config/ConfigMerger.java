@@ -116,6 +116,7 @@ public class ConfigMerger {
         mergedJobConfigBuilder.withWindowHeight(originalConfig.windowHeight != null ? originalConfig.windowHeight : mergeConfig.windowHeight);
         mergedJobConfigBuilder.withScreenshotRetries(originalConfig.screenshotRetries != DEFAULT_SCREENSHOT_RETRIES ? originalConfig.screenshotRetries : mergeConfig.screenshotRetries);
         mergedJobConfigBuilder.withThreads(originalConfig.threads != DEFAULT_THREADS ? originalConfig.threads : mergeConfig.threads);
+        mergedJobConfigBuilder.withCompareThreads(originalConfig.compareThreads != DEFAULT_COMPARE_THREADS ? originalConfig.compareThreads : mergeConfig.compareThreads);
         mergedJobConfigBuilder.withGlobalTimeout(originalConfig.globalTimeout != DEFAULT_GLOBAL_TIMEOUT ? originalConfig.globalTimeout : mergeConfig.globalTimeout);
         mergedJobConfigBuilder.withDebug(originalConfig.debug || mergeConfig.debug);
         mergedJobConfigBuilder.withLogToFile(originalConfig.logToFile || mergeConfig.logToFile);

@@ -289,6 +289,14 @@ Example: `--before-label "Reference" --after-label "Current"`
 
 ---
 
+### `--compare-threads`
+
+Sets the number of threads that compare the screenshots. `0` means one thread per CPU core.
+It overrides [`compare-threads`](CONFIGURATION.md#compare-threads) of the job config.
+Example: `--compare-threads 4`
+
+---
+
 ### `--merge-config, -m` (Experimental feature)
 
 With this option, you can specify a base config that will be merged with the job config file.

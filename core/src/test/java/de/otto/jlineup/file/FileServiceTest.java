@@ -253,4 +253,23 @@ class FileServiceTest {
         assertThat(contextFileTracker.imageAreas.get(0).containsKey(after), is(false));
         assertThat(contextFileTracker.imageUrls.containsKey(after), is(false));
     }
+
+    @Test
+    void shouldDetectIdenticalScreenshotFiles() throws IOException {
+        Path screenshots = Paths.get(writeScreenshotTestPath, "screenshots");
+        Files.write(screenshots.resolve("a.png"), new byte[]{1, 2, 3, 4});
+        Files.write(screenshots.resolve("same.png"), new byte[]{1, 2, 3, 4});
+        Files.write(screenshots.resolve("changed.png"), new byte[]{1, 2, 3, 5});
+        Files.write(screenshots.resolve("longer.png"), new byte[]{1, 2, 3, 4, 5});
+        Files.write(screenshots.resolve("empty1.png"), new byte[]{});
+        Files.write(screenshots.resolve("empty2.png"), new byte[]{});
+
+        assertThat(testee.areScreenshotFilesIdentical("a.png", "same.png"), is(true));
+        assertThat(testee.areScreenshotFilesIdentical("a.png", "changed.png"), is(false));
+        assertThat(testee.areScreenshotFilesIdentical("a.png", "longer.png"), is(false));
+        assertThat(testee.areScreenshotFilesIdentical("a.png", "missing.png"), is(false));
+        assertThat(testee.areScreenshotFilesIdentical("missing.png", "a.png"), is(false));
+        assertThat(testee.areScreenshotFilesIdentical("empty1.png", "empty2.png"), is(false));
+    }
+
 }

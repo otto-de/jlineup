@@ -632,4 +632,42 @@ class ImageServiceTest {
         assertThat(ImageService.equalInAreas(image1, filled(10, 11, Color.WHITE), List.of(), List.of()), is(false));
     }
 
+    @Test
+    void shouldNotTreatImagesWithSwappedDimensionsAsEqualInQuickCheck() {
+        final BufferedImage wide = filled(20, 10, Color.WHITE);
+        final BufferedImage high = filled(10, 20, Color.WHITE);
+
+        assertThat(ImageService.bufferedImagesEqualQuick(wide, high), is(false));
+        assertThat(ImageService.bufferedImagesEqualQuick(wide, filled(20, 10, Color.WHITE)), is(true));
+    }
+
+    @Test
+    void shouldNotTreatImagesOfDifferentTypesAsEqualInQuickCheck() {
+        final BufferedImage rgb = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        final BufferedImage argb = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
+
+        assertThat(ImageService.bufferedImagesEqualQuick(rgb, argb), is(false));
+    }
+
+    @Test
+    void shouldFindSameDifferencesWithCompressionArtifactDetectionRegardlessOfPixelOrder() {
+        //the detector keeps a sliding window, so comparing the same images twice has to give the same result
+        final BufferedImage before = filled(60, 40, new Color(120, 120, 120));
+        final BufferedImage after = filled(60, 40, new Color(120, 120, 120));
+        for (int y = 0; y < 40; y += 3) {
+            for (int x = 0; x < 60; x += 2) {
+                after.setRGB(x, y, new Color(120 + (x + y) % 5, 120, 120 - (x * y) % 4).getRGB());
+            }
+        }
+        after.setRGB(30, 20, Color.RED.getRGB());
+        final CompressionArtifactDetector detector = new CompressionArtifactDetector(4, 40, 0);
+
+        ImageService.ImageComparisonResult first = testee.compareImages(before, after, 40, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, 0.5, detector);
+        ImageService.ImageComparisonResult second = testee.compareImages(before, after, 40, false, DEFAULT_MAX_ANTI_ALIAS_COLOR_DISTANCE, false, 0.5, detector);
+
+        assertThat(first.getDifference(), is(second.getDifference()));
+        assertThat(first.getAcceptedDifferentPixels(), is(second.getAcceptedDifferentPixels()));
+        assertThat(first.getAcceptedDifferentPixels(), greaterThan(0));
+    }
+
 }

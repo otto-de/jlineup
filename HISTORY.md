@@ -1,6 +1,16 @@
 # JLineup Release History
 
 ## Release 6.3.1-SNAPSHOT
+* Feature: The comparison of screenshots uses multiple threads now. The number can be set with the new job
+           config option `compare-threads` (or `--compare-threads` on the command line), default is one thread per
+           CPU core, reduced automatically if the heap is too small. The web server limits the screenshots that are
+           compared at the same time by all jobs with `jlineup.max-compare-threads`.
+* Update: Faster comparison: Screenshots with identical files are not decoded anymore, and the compression
+          artifact detection (`ignore-compression-artifacts`) doesn't sum up a whole window for every different pixel
+          anymore. With a `compression-artifact-texture-tolerance` greater than 0, the lightness values are
+          rounded to 3 decimals now, so pixels exactly at the threshold can be rated differently than before.
+* Bugfix: The quick check for identical images considered images with swapped dimensions (and the same number of
+          pixels) as equal.
 * Feature: New three column layout in the HTML report (Before | After | Difference side by side, without slider).
            It can be switched globally with the new toggle next to the Focus button and is remembered in the browser.
 * Bugfix: The Lambda Dockerfiles fell back to outdated defaults (Chrome 150, older Amazon Linux) if the

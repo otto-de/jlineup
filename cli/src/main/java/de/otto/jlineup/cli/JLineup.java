@@ -108,6 +108,9 @@ public class JLineup implements Callable<Integer> {
     @Option(names = {"--after-label"}, description = "Label of the 'after' screenshots in the reports (default: 'After'). Overrides 'after-label' of the job config.", order = 196)
     private String afterLabel = null;
 
+    @Option(names = {"--compare-threads"}, description = "Number of threads that compare the screenshots, 0 means one per CPU core. Overrides 'compare-threads' of the job config.", order = 198)
+    private Integer compareThreads = null;
+
     @Option(names = {"--cleanup-profile"}, description = "Cleanup browser profile directory after the run has finished and a profile dir was specified with the browser parameters.", order = 200)
     private boolean cleanupProfile = false;
 
@@ -304,6 +307,10 @@ public class JLineup implements Callable<Integer> {
         return afterLabel;
     }
 
+    public Integer getCompareThreads() {
+        return compareThreads;
+    }
+
     public boolean isCleanupProfile() {
         return cleanupProfile;
     }
@@ -317,12 +324,12 @@ public class JLineup implements Callable<Integer> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JLineup jLineup = (JLineup) o;
-        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && cleanupProfile == jLineup.cleanupProfile && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(mergeConfigFile, jLineup.mergeConfigFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl) && Objects.equals(browserOverride, jLineup.browserOverride) && Objects.equals(beforeLabel, jLineup.beforeLabel) && Objects.equals(afterLabel, jLineup.afterLabel) && format == jLineup.format;
+        return help == jLineup.help && printConfig == jLineup.printConfig && printExample == jLineup.printExample && debug == jLineup.debug && logToFile == jLineup.logToFile && version == jLineup.version && openReport == jLineup.openReport && keepExisting == jLineup.keepExisting && cleanupProfile == jLineup.cleanupProfile && Objects.equals(url, jLineup.url) && step == jLineup.step && Objects.equals(configFile, jLineup.configFile) && Objects.equals(mergeConfigFile, jLineup.mergeConfigFile) && Objects.equals(workingDirectory, jLineup.workingDirectory) && Objects.equals(screenshotDirectory, jLineup.screenshotDirectory) && Objects.equals(reportDirectory, jLineup.reportDirectory) && Objects.equals(chromeParameters, jLineup.chromeParameters) && Objects.equals(firefoxParameters, jLineup.firefoxParameters) && Objects.equals(urlReplacements, jLineup.urlReplacements) && Objects.equals(refreshUrl, jLineup.refreshUrl) && Objects.equals(browserOverride, jLineup.browserOverride) && Objects.equals(beforeLabel, jLineup.beforeLabel) && Objects.equals(afterLabel, jLineup.afterLabel) && Objects.equals(compareThreads, jLineup.compareThreads) && format == jLineup.format;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(help, url, step, configFile, mergeConfigFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl, browserOverride, beforeLabel, afterLabel, cleanupProfile, format);
+        return Objects.hash(help, url, step, configFile, mergeConfigFile, workingDirectory, screenshotDirectory, reportDirectory, printConfig, printExample, debug, logToFile, version, chromeParameters, firefoxParameters, urlReplacements, openReport, keepExisting, refreshUrl, browserOverride, beforeLabel, afterLabel, compareThreads, cleanupProfile, format);
     }
 
     @Override
@@ -350,6 +357,7 @@ public class JLineup implements Callable<Integer> {
                 ", browserOverride='" + browserOverride + '\'' +
                 ", beforeLabel='" + beforeLabel + '\'' +
                 ", afterLabel='" + afterLabel + '\'' +
+                ", compareThreads=" + compareThreads +
                 ", cleanupProfile=" + cleanupProfile +
                 ", format=" + format +
                 '}';
@@ -418,6 +426,10 @@ public class JLineup implements Callable<Integer> {
 
         if (afterLabel != null) {
             jobConfig = JobConfig.copyOfBuilder(jobConfig).withAfterLabel(afterLabel).build();
+        }
+
+        if (compareThreads != null) {
+            jobConfig = JobConfig.copyOfBuilder(jobConfig).withCompareThreads(compareThreads).build();
         }
 
         if (printConfig) {

@@ -42,4 +42,14 @@ class ConfigMergerTest {
         assertThat(resultingConfig.beforeLabel, is("Local before"));
         assertThat(resultingConfig.afterLabel, is("Merged after"));
     }
+
+    @Test
+    void shouldMergeCompareThreads() {
+        JobConfig local = JobConfig.copyOfBuilder(JobConfig.exampleConfig()).withCompareThreads(2).build();
+        JobConfig unset = JobConfig.copyOfBuilder(JobConfig.exampleConfig()).build();
+        JobConfig merge = JobConfig.copyOfBuilder(JobConfig.exampleConfig()).withCompareThreads(6).build();
+
+        assertThat(ConfigMerger.mergeJobConfigWithMergeConfig(local, merge).compareThreads, is(2));
+        assertThat(ConfigMerger.mergeJobConfigWithMergeConfig(unset, merge).compareThreads, is(6));
+    }
 }
