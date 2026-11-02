@@ -314,3 +314,47 @@ describe('FolderSink', () => {
         });
     });
 });
+
+describe('browser loading', () => {
+    // A fresh vm context has no Node/Jest globals like `global`, just like a browser page.
+    function loadInBareContext(protocol) {
+        const vm = require('vm');
+        const listeners = {};
+        const classes = new Set();
+        const folderClasses = new Set();
+        const elements = {
+            'archive-download': {classList: {add: c => classes.add(c)}},
+            'archive-folder-btn': {classList: {add: c => folderClasses.add(c)}}
+        };
+        const sandbox = {
+            document: {
+                addEventListener: (type, fn) => { listeners[type] = fn; },
+                getElementById: id => elements[id] || null
+            },
+            location: {protocol: protocol},
+            TextEncoder: util.TextEncoder
+        };
+        sandbox.window = sandbox;
+        vm.createContext(sandbox);
+        const archive = vm.runInContext(scriptMatch[1] + '\n;JLineupArchive', sandbox);
+        return {archive, listeners, classes, folderClasses};
+    }
+
+    test('script loads without Node globals and registers init', () => {
+        const {archive, listeners} = loadInBareContext('https:');
+        expect(typeof archive.start).toBe('function');
+        expect(typeof listeners.DOMContentLoaded).toBe('function');
+    });
+
+    test('init reveals the download button over http(s)', () => {
+        const {listeners, classes} = loadInBareContext('https:');
+        listeners.DOMContentLoaded();
+        expect(classes.has('available')).toBe(true);
+    });
+
+    test('init keeps the download button hidden for file urls', () => {
+        const {listeners, classes} = loadInBareContext('file:');
+        listeners.DOMContentLoaded();
+        expect(classes.has('available')).toBe(false);
+    });
+});

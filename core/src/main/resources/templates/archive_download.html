@@ -78,7 +78,7 @@
         // Fetches the report page, report.json, files.json, jlineup.log and every screenshot the page references
         // (with the credentials of the browser) and writes them to a zip file or a local folder. The relative layout is
         // kept, so the archived report.html works when opened from the extracted archive.
-        const JLineupArchive = (function () {
+        const JLineupArchive = (function (global) {
 
             const MAX_CONCURRENCY = 6;
             const MAX_ZIP_BYTES = 2 * 1024 * 1024 * 1024;
