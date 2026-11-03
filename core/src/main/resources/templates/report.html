@@ -1465,27 +1465,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="legend">
-                    <div class="legend-box">
-                        <h4>Difference image</h4>
-                        <div class="legend-grid">
-                            <div class="swatch" th:style="${'background-color: ' + legend_same_rgb}"></div>
-                            <div class="label">Same</div>
-                            <div class="swatch" th:style="${'background-color: ' + legend_look_same_rgb}"></div>
-                            <div class="label">Look same</div>
-                            <div class="swatch" th:style="${'background-color: ' + legend_anti_alias_rgb}"></div>
-                            <div class="label">Anti aliasing</div>
-                            <div class="swatch" th:style="${'background-color: ' + legend_compression_artifact_rgb}"></div>
-                            <div class="label">Compression artifact</div>
-                            <div class="swatch" th:style="${'background-color: ' + legend_image_content_rgb}"></div>
-                            <div class="label">Image content</div>
-                            <div class="swatch" th:style="${'background-color: ' + legend_different_rgb}"></div>
-                            <div class="label">Different</div>
-                            <div class="swatch" th:style="${'background-color: ' + legend_different_size_rgb}"></div>
-                            <div class="label">Different size</div>
-                        </div>
-                    </div>
-                </div>
             </details>
         </div>
 
@@ -1497,6 +1476,28 @@
            style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; background-color: var(--color-failure); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 600; box-shadow: var(--shadow-sm);">
             I checked the differences &mdash; <strong>approve changes</strong>
         </a>
+    </div>
+</div>
+
+<div class="legend">
+    <div class="legend-box">
+        <h4>Difference image</h4>
+        <div class="legend-grid">
+            <div class="swatch" th:style="${'background-color: ' + legend_same_rgb}"></div>
+            <div class="label">Same</div>
+            <div class="swatch" th:style="${'background-color: ' + legend_look_same_rgb}"></div>
+            <div class="label">Look same</div>
+            <div class="swatch" th:style="${'background-color: ' + legend_anti_alias_rgb}"></div>
+            <div class="label">Anti aliasing</div>
+            <div class="swatch" th:style="${'background-color: ' + legend_compression_artifact_rgb}"></div>
+            <div class="label">Compression artifact</div>
+            <div class="swatch" th:style="${'background-color: ' + legend_image_content_rgb}"></div>
+            <div class="label">Image content</div>
+            <div class="swatch" th:style="${'background-color: ' + legend_different_rgb}"></div>
+            <div class="label">Different</div>
+            <div class="swatch" th:style="${'background-color: ' + legend_different_size_rgb}"></div>
+            <div class="label">Different size</div>
+        </div>
     </div>
 </div>
 
