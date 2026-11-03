@@ -14,6 +14,7 @@ import de.otto.jlineup.report.Report;
 import de.otto.jlineup.report.ScreenshotComparisonResult;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.condition.EnabledOnOs;
@@ -330,6 +331,7 @@ class JLineupCLIAcceptanceTest {
     }
 
     @Test
+    @Disabled("WebKit is currently not installed in CI")
     @EnabledIfEnvironmentVariable(named = "JLINEUP_TEST_ALL_BROWSERS", matches = "true")
     @EnabledOnOs(OS.LINUX)
     void shouldIgnoreImageContentWithWebkit() throws Exception {
