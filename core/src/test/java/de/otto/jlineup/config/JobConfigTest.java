@@ -151,25 +151,84 @@ class JobConfigTest {
     }
 
     @Test
-    public void shouldReadCompressionArtifactOptionsFromYamlAndJsonConfig() {
+    public void shouldReadCompressionArtifactObjectFromYamlAndJsonConfig() {
+        JobConfig fromYaml = JacksonWrapper.deserializeConfig(new StringReader("""
+                urls:
+                  https://www.example.com:
+                    ignore-compression-artifacts:
+                      radius: 7
+                      max-pixel-color-distance: 15
+                      texture-tolerance: 0.15
+                """), JacksonWrapper.ConfigFormat.YAML);
+        JobConfig fromJson = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": { "ignore-compression-artifacts": { "radius": 7, "max-pixel-color-distance": 15, "texture-tolerance": 0.15 } } } }
+                """), JacksonWrapper.ConfigFormat.JSON);
+
+        for (JobConfig jobConfig : new JobConfig[]{fromYaml, fromJson}) {
+            IgnoreCompressionArtifactsConfig config = jobConfig.urls.get("https://www.example.com").ignoreCompressionArtifacts;
+            assertThat(config.enabled, is(true));
+            assertThat(config.radius, is(7));
+            assertThat(config.maxPixelColorDistance, is(15d));
+            assertThat(config.textureTolerance, is(0.15d));
+        }
+    }
+
+    @Test
+    public void shouldReadCompressionArtifactBooleanFromYamlAndJsonConfig() {
         JobConfig fromYaml = JacksonWrapper.deserializeConfig(new StringReader("""
                 urls:
                   https://www.example.com:
                     ignore-compression-artifacts: true
-                    compression-artifact-radius: 7
-                    max-compression-artifact-color-distance: 15
-                    compression-artifact-texture-tolerance: 0.15
+                  https://www.example.org:
+                    ignore-compression-artifacts: false
                 """), JacksonWrapper.ConfigFormat.YAML);
         JobConfig fromJson = JacksonWrapper.deserializeConfig(new StringReader("""
-                { "urls": { "https://www.example.com": { "ignore-compression-artifacts": true, "compression-artifact-radius": 7, "max-compression-artifact-color-distance": 15, "compression-artifact-texture-tolerance": 0.15 } } }
+                { "urls": { "https://www.example.com": { "ignore-compression-artifacts": true }, "https://www.example.org": { "ignore-compression-artifacts": false } } }
                 """), JacksonWrapper.ConfigFormat.JSON);
 
         for (JobConfig jobConfig : new JobConfig[]{fromYaml, fromJson}) {
-            UrlConfig urlConfig = jobConfig.urls.get("https://www.example.com");
-            assertThat(urlConfig.ignoreCompressionArtifacts, is(true));
-            assertThat(urlConfig.compressionArtifactRadius, is(7));
-            assertThat(urlConfig.maxCompressionArtifactColorDistance, is(15d));
-            assertThat(urlConfig.compressionArtifactTextureTolerance, is(0.15d));
+            assertThat(jobConfig.urls.get("https://www.example.com").ignoreCompressionArtifacts, is(IgnoreCompressionArtifactsConfig.ENABLED));
+            assertThat(jobConfig.urls.get("https://www.example.org").ignoreCompressionArtifacts, is(IgnoreCompressionArtifactsConfig.DISABLED));
+        }
+    }
+
+    @Test
+    public void shouldReadDisabledCompressionArtifactObjectWithValues() {
+        JobConfig jobConfig = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": { "ignore-compression-artifacts": { "enabled": false, "radius": 12 } } } }
+                """), JacksonWrapper.ConfigFormat.JSON);
+
+        assertThat(jobConfig.urls.get("https://www.example.com").ignoreCompressionArtifacts, is(new IgnoreCompressionArtifactsConfig(false, 12, DEFAULT_MAX_COMPRESSION_ARTIFACT_COLOR_DISTANCE, DEFAULT_COMPRESSION_ARTIFACT_TEXTURE_TOLERANCE)));
+    }
+
+    @Test
+    public void shouldSerializeCompressionArtifactsAsBooleanObjectOrNotAtAll() {
+        JobConfig enabled = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": { "ignore-compression-artifacts": { "enabled": true } } } }
+                """), JacksonWrapper.ConfigFormat.JSON);
+        JobConfig custom = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": { "ignore-compression-artifacts": { "radius": 12, "texture-tolerance": 0.15 } } } }
+                """), JacksonWrapper.ConfigFormat.JSON);
+        JobConfig disabledWithValues = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": { "ignore-compression-artifacts": { "enabled": false, "radius": 12 } } } }
+                """), JacksonWrapper.ConfigFormat.JSON);
+        JobConfig disabled = JacksonWrapper.deserializeConfig(new StringReader("""
+                { "urls": { "https://www.example.com": { "ignore-compression-artifacts": false } } }
+                """), JacksonWrapper.ConfigFormat.JSON);
+
+        assertThat(JobConfig.prettyPrint(enabled), containsString("\"ignore-compression-artifacts\" : true"));
+        String customPrinted = JobConfig.prettyPrint(custom);
+        assertThat(customPrinted, containsString("\"ignore-compression-artifacts\" : {"));
+        assertThat(customPrinted, containsString("\"radius\" : 12"));
+        assertThat(customPrinted, containsString("\"texture-tolerance\" : 0.15"));
+        assertThat(customPrinted, not(containsString("max-pixel-color-distance")));
+        assertThat(customPrinted, not(containsString("\"enabled\"")));
+        assertThat(JobConfig.prettyPrint(disabledWithValues), containsString("\"enabled\" : false"));
+        assertThat(JobConfig.prettyPrint(disabled), not(containsString("ignore-compression-artifacts")));
+
+        for (JobConfig jobConfig : new JobConfig[]{enabled, custom, disabledWithValues}) {
+            JobConfig roundTripped = JacksonWrapper.deserializeConfig(new StringReader(JobConfig.prettyPrint(jobConfig)), JacksonWrapper.ConfigFormat.JSON);
+            assertThat(roundTripped.urls.get("https://www.example.com").ignoreCompressionArtifacts, is(jobConfig.urls.get("https://www.example.com").ignoreCompressionArtifacts));
         }
     }
 
@@ -199,12 +258,12 @@ class JobConfigTest {
         JobConfig jobConfig = JacksonWrapper.deserializeConfig(new StringReader("""
                 { "urls": { "https://www.example.com": {} } }
                 """), JacksonWrapper.ConfigFormat.JSON);
-        UrlConfig urlConfig = jobConfig.urls.get("https://www.example.com");
+        IgnoreCompressionArtifactsConfig config = jobConfig.urls.get("https://www.example.com").ignoreCompressionArtifacts;
 
-        assertThat(urlConfig.ignoreCompressionArtifacts, is(false));
-        assertThat(urlConfig.compressionArtifactRadius, is(DEFAULT_COMPRESSION_ARTIFACT_RADIUS));
-        assertThat(urlConfig.maxCompressionArtifactColorDistance, is(DEFAULT_MAX_COMPRESSION_ARTIFACT_COLOR_DISTANCE));
-        assertThat(urlConfig.compressionArtifactTextureTolerance, is(DEFAULT_COMPRESSION_ARTIFACT_TEXTURE_TOLERANCE));
+        assertThat(config.enabled, is(false));
+        assertThat(config.radius, is(DEFAULT_COMPRESSION_ARTIFACT_RADIUS));
+        assertThat(config.maxPixelColorDistance, is(DEFAULT_MAX_COMPRESSION_ARTIFACT_COLOR_DISTANCE));
+        assertThat(config.textureTolerance, is(DEFAULT_COMPRESSION_ARTIFACT_TEXTURE_TOLERANCE));
         assertThat(JobConfig.prettyPrint(jobConfig), not(containsString("compression-artifact")));
     }
 

@@ -6,6 +6,7 @@ import de.otto.jlineup.browser.BrowserStep;
 import de.otto.jlineup.browser.BrowserUtils;
 import de.otto.jlineup.browser.ScreenshotContext;
 import de.otto.jlineup.config.Cookie;
+import de.otto.jlineup.config.IgnoreCompressionArtifactsConfig;
 import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.RunStep;
 import de.otto.jlineup.config.UrlConfig;
@@ -57,7 +58,7 @@ class ParallelScreenshotsComparatorTest {
         UrlConfig secondUrlConfig = UrlConfig.urlConfigBuilder()
                 .withPath("/")
                 .withWindowWidths(List.of(WIDTH))
-                .withIgnoreCompressionArtifacts(true)
+                .withIgnoreCompressionArtifacts(IgnoreCompressionArtifactsConfig.ENABLED)
                 .build();
         baseJobConfig = jobConfigBuilder()
                 .withUrls(ImmutableMap.of("http://one", urlConfig, "http://two", secondUrlConfig))

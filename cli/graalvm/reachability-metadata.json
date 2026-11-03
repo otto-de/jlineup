@@ -772,7 +772,7 @@
       ]
     },
     {
-      "type": "de.otto.jlineup.config.CompressionArtifactRadiusFilter",
+      "type": "de.otto.jlineup.config.IgnoreCompressionArtifactsConfig$Deserializer",
       "methods": [
         {
           "name": "<init>",
@@ -781,7 +781,7 @@
       ]
     },
     {
-      "type": "de.otto.jlineup.config.MaxCompressionArtifactColorDistanceFilter",
+      "type": "de.otto.jlineup.config.IgnoreCompressionArtifactsConfig$Serializer",
       "methods": [
         {
           "name": "<init>",
@@ -1053,6 +1053,10 @@
           "parameterTypes": []
         },
         {
+          "name": "getIgnoreCompressionArtifacts",
+          "parameterTypes": []
+        },
+        {
           "name": "getJavaScript",
           "parameterTypes": []
         },
@@ -1066,18 +1070,6 @@
         },
         {
           "name": "getMaxColorDistance",
-          "parameterTypes": []
-        },
-        {
-          "name": "getCompressionArtifactRadius",
-          "parameterTypes": []
-        },
-        {
-          "name": "getCompressionArtifactTextureTolerance",
-          "parameterTypes": []
-        },
-        {
-          "name": "getMaxCompressionArtifactColorDistance",
           "parameterTypes": []
         },
         {
@@ -1165,10 +1157,6 @@
           "parameterTypes": []
         },
         {
-          "name": "isIgnoreCompressionArtifacts",
-          "parameterTypes": []
-        },
-        {
           "name": "isIgnoreImageContent",
           "parameterTypes": []
         },
@@ -1226,33 +1214,15 @@
           ]
         },
         {
-          "name": "withCompressionArtifactRadius",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "withCompressionArtifactTextureTolerance",
-          "parameterTypes": [
-            "double"
-          ]
-        },
-        {
           "name": "withIgnoreCompressionArtifacts",
           "parameterTypes": [
-            "boolean"
+            "de.otto.jlineup.config.IgnoreCompressionArtifactsConfig"
           ]
         },
         {
           "name": "withIgnoreImageContent",
           "parameterTypes": [
             "boolean"
-          ]
-        },
-        {
-          "name": "withMaxCompressionArtifactColorDistance",
-          "parameterTypes": [
-            "double"
           ]
         },
         {

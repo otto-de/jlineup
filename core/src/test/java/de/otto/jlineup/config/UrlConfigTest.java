@@ -70,6 +70,7 @@ class UrlConfigTest {
             return map;
         }
         if (type == Cookie.class) return new Cookie(random.nextInt(5) + "_name", random.nextInt(5) + "_value");
+        if (type == IgnoreCompressionArtifactsConfig.class) return new IgnoreCompressionArtifactsConfig(true, random.nextInt(), random.nextDouble(), random.nextDouble());
         try {
             return type.getDeclaredConstructor().newInstance();
         } catch (Exception e) {

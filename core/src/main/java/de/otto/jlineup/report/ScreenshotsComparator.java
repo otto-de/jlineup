@@ -298,8 +298,8 @@ public class ScreenshotsComparator {
                     .noAfterImageComparisonResult(screenshotContext.contextHash(), fullUrlWithPath, screenshotContext.deviceConfig, yPosition, buildRelativePathFromReportDir(beforeFileName)), screenshotContext, yPosition);
         }
 
-        CompressionArtifactDetector compressionArtifactDetector = urlConfig.ignoreCompressionArtifacts
-                ? new CompressionArtifactDetector(urlConfig.compressionArtifactRadius, urlConfig.maxCompressionArtifactColorDistance, urlConfig.compressionArtifactTextureTolerance)
+        CompressionArtifactDetector compressionArtifactDetector = urlConfig.ignoreCompressionArtifacts.enabled
+                ? urlConfig.ignoreCompressionArtifacts.toDetector()
                 : null;
         ImageService.ImageComparisonResult imageComparisonResult = imageService
                 .compareImages(imageBefore, imageAfter, screenshotContext.deviceConfig.height, urlConfig.ignoreAntiAliasing, urlConfig.maxAntiAliasColorDistance, urlConfig.strictColorComparison, urlConfig.maxColorDistance, compressionArtifactDetector);
