@@ -177,9 +177,11 @@ urls:
     http-check:
       enabled: false
     ignore-anti-aliasing: false
+    max-anti-alias-color-distance: 2.3
     ignore-compression-artifacts: false
     ignore-image-content: false
     strict-color-comparison: false
+    max-color-distance: 2.3
     wait-for-selectors:
     - .wait-for-class
     wait-for-selectors-timeout: 20.0
@@ -261,9 +263,11 @@ http-check:
         "enabled": false
       },
       "ignore-anti-aliasing": false,
+      "max-anti-alias-color-distance": 2.3,
       "ignore-compression-artifacts": false,
       "ignore-image-content": false,
       "strict-color-comparison": false,
+      "max-color-distance": 2.3,
       "wait-for-selectors": [
         ".wait-for-class"
       ],
@@ -1084,6 +1088,31 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  
 ---
 
+### `max-anti-alias-color-distance`
+
+ Tolerance of the anti-aliasing detection of [`ignore-anti-aliasing`](#ignore-anti-aliasing). A different pixel only
+ counts as anti-aliased if its darkest or brightest neighbor is not anti-aliased itself. This value is the color
+ tolerance (CIEDE2000) that is used when JLineup checks if those neighbors have the same color. Higher values detect
+ more pixels as anti-aliased, `0` is the strictest setting.
+ Only used if [`ignore-anti-aliasing`](#ignore-anti-aliasing) is enabled.
+
+ * Scope: Site
+ * Type: Float
+ * Default: `2.3`
+ * Example:
+   ```yaml
+   max-anti-alias-color-distance: 3.5
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"max-anti-alias-color-distance": 3.5`
+   </details>
+
+ Since: 4.11.0
+
+---
+
 ### `ignore-compression-artifacts`
 
  Lossy image formats (JPEG, WebP, AVIF) produce small, noisy pixel differences if the same source image is encoded
@@ -1091,97 +1120,52 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  independently. The difference is invisible for the human eye, but JLineup detects it, so the comparison becomes flaky.
 
  With this option, JLineup accepts a different pixel as compression artifact if its own color distance is at most
- [`max-compression-artifact-color-distance`](#max-compression-artifact-color-distance) and the average colors of the
- surrounding square (see [`compression-artifact-radius`](#compression-artifact-radius)) are closer than the
+ `max-pixel-color-distance` and the average colors of the surrounding square (see `radius`) are closer than the
  maximum color distance. Compression noise cancels out in the average, real changes like text, shifted content or
  changed colors don't. Accepted pixels are shown in cyan in the difference image.
 
  Very faint changes (i.e. a 1px line in nearly the same color) may be accepted as well.
 
+ The option is either a boolean, which enables the detection with default values, or a document with these
+ settings. A document is enabled, unless it contains `enabled: false`.
+
+ | Setting                    | Type    | Default | Description                                                                                                                                                                                                                                                                                                                       |
+ |----------------------------|---------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+ | `enabled`                  | Boolean | `true`  | Allows to keep the settings, but switch the detection off.                                                                                                                                                                                                                                                                        |
+ | `radius`                   | Integer | `20`    | The radius (in pixels) of the square around a different pixel, whose average colors are compared. A radius of 20 means a 41x41 pixel square. Bigger values accept stronger noise (i.e. in photos with hair or fabric), but also average out more of small real changes. At the screenshot borders, the square is shifted inward, so it always has the full size. |
+ | `max-pixel-color-distance` | Float   | `20`    | Different pixels with a higher color distance (CIEDE2000) than this are never accepted as compression artifacts.                                                                                                                                                                                                                  |
+ | `texture-tolerance`        | Float   | `0`     | Busy image areas (hair, fabric, faces) contain stronger compression noise, and changes there are harder to see. With a value greater than 0, the accepted color distance of the averages grows with the local lightness variation: `max-color-distance + texture-tolerance * lightness standard deviation`. See below.            |
+
+ `texture-tolerance` can be combined with a smaller `radius`, i.e. `7` with a tolerance of `0.15`, but it also lowers
+ the sensitivity for real color changes in busy areas. On real reports, the default radius without texture
+ tolerance worked better.
+
  * Scope: Site
- * Type: Boolean
+ * Type: Boolean or Document
  * Default: `false`
  * Example:
    ```yaml
    ignore-compression-artifacts: true
    ```
-   <details>
-   <summary>JSON</summary>
-
-   `"ignore-compression-artifacts": true`
-   </details>
-
- Since: 6.3.1
-
----
-
-### `compression-artifact-radius`
-
- The radius (in pixels) of the square around a different pixel, whose average colors are compared if
- [`ignore-compression-artifacts`](#ignore-compression-artifacts) is enabled. A radius of 20 means a 41x41 pixel square.
- Bigger values accept stronger noise (i.e. in photos with hair or fabric), but also average out more of small real changes.
- At the screenshot borders, the square is shifted inward, so it always has the full size.
-
- * Scope: Site
- * Type: Integer
- * Default: `20`
- * Example:
    ```yaml
-   compression-artifact-radius: 12
+   ignore-compression-artifacts:
+     radius: 12
+     max-pixel-color-distance: 15
+     texture-tolerance: 0.15
    ```
    <details>
    <summary>JSON</summary>
 
-   `"compression-artifact-radius": 12`
-   </details>
-
- Since: 6.3.1
-
----
-
-### `max-compression-artifact-color-distance`
-
- Different pixels with a higher color distance (CIEDE2000) than this are never accepted as compression artifacts.
- Only used if [`ignore-compression-artifacts`](#ignore-compression-artifacts) is enabled.
-
- * Scope: Site
- * Type: Float
- * Default: `20`
- * Example:
-   ```yaml
-   max-compression-artifact-color-distance: 12
+   ```json
+   "ignore-compression-artifacts": true
    ```
-   <details>
-   <summary>JSON</summary>
-
-   `"max-compression-artifact-color-distance": 12`
-   </details>
-
- Since: 6.3.1
-
----
-
-### `compression-artifact-texture-tolerance`
-
- Busy image areas (hair, fabric, faces) contain stronger compression noise, and changes there are harder to see.
- With a value greater than 0, the accepted color distance of the averages grows with the local lightness variation:
- `max-color-distance + compression-artifact-texture-tolerance * lightness standard deviation`. It can be combined with
- a smaller [`compression-artifact-radius`](#compression-artifact-radius), i.e. `7` with a tolerance of `0.15`, but it
- also lowers the sensitivity for real color changes in busy areas. On real reports, the default radius without texture
- tolerance worked better.
- Only used if [`ignore-compression-artifacts`](#ignore-compression-artifacts) is enabled.
-
- * Scope: Site
- * Type: Float
- * Default: `0`
- * Example:
-   ```yaml
-   compression-artifact-texture-tolerance: 0.15
+   ```json
+   "ignore-compression-artifacts": {
+     "radius": 12,
+     "max-pixel-color-distance": 15,
+     "texture-tolerance": 0.15
+   }
    ```
-   <details>
-   <summary>JSON</summary>
-
-   `"compression-artifact-texture-tolerance": 0.15`
    </details>
 
  Since: 6.3.1
@@ -1258,6 +1242,34 @@ If you want to see the different cookies in the HTML report, you can specify `sh
    `"strict-color-comparison": true`
    </details>
  
+ Since: 4.0.0
+
+---
+
+### `max-color-distance`
+
+ The maximum color distance (CIEDE2000) of two different pixels that still look the same for the human eye. Pixels
+ with a lower distance are not reported as difference and are shown in blue in the difference image. The default of
+ `2.3` is the just noticeable difference. See https://en.wikipedia.org/wiki/Color_difference for details.
+
+ [`ignore-compression-artifacts`](#ignore-compression-artifacts) uses this value as the limit for the average colors
+ of the surrounding area.
+
+ It has no effect together with [`strict-color-comparison`](#strict-color-comparison).
+
+ * Scope: Site
+ * Type: Float
+ * Default: `2.3`
+ * Example:
+   ```yaml
+   max-color-distance: 5
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"max-color-distance": 5`
+   </details>
+
  Since: 4.0.0
 
 ---

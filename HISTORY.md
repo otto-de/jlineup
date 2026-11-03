@@ -7,7 +7,7 @@
            compared at the same time by all jobs with `jlineup.max-compare-threads`.
 * Update: Faster comparison: Screenshots with identical files are not decoded anymore, and the compression
           artifact detection (`ignore-compression-artifacts`) doesn't sum up a whole window for every different pixel
-          anymore. With a `compression-artifact-texture-tolerance` greater than 0, the lightness values are
+          anymore. With a `texture-tolerance` (in `ignore-compression-artifacts`) greater than 0, the lightness values are
           rounded to 3 decimals now, so pixels exactly at the threshold can be rated differently than before.
 * Bugfix: The quick check for identical images considered images with swapped dimensions (and the same number of
           pixels) as equal.
@@ -238,14 +238,14 @@
 ## Release 4.11.1 - 2024-05-07
 
 * Feature: New additional anti-alias detection ported from Pixelmatch. Runs automatically if
-  ìgnore-anti-aliasing` is set to `true`.
+  `ignore-anti-aliasing` is set to `true`.
 
 ## Release 4.11.0 - 2024-05-06
 
 * Feature: Add `merge-config` field to the global config. The merge config can include a full config that is
   merged with the main config.
-* Feature: Make max anti-alias color difference configurable via `max-anti-alias-color-difference` field in the
-  global config.
+* Feature: Make max anti-alias color difference configurable via `max-anti-alias-color-distance` field in the
+  site config.
 * Improvement: Cookie, LocalStorage and SessionStorage values are now masked in the report and in logs to not
   accidentally leak sensitive data.
 * Bugfix: The `setup-paths` and `cleanup-paths` feature did not work since introduction of the `--merge-config` option.
