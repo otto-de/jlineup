@@ -19,7 +19,7 @@ dependencies {
     api "tools.jackson.dataformat:jackson-dataformat-yaml"
     api "com.fasterxml.jackson.core:jackson-annotations"
     api "ch.qos.logback:logback-classic"
-    api "com.google.guava:guava:33.7.2-jre"
+    api "com.google.guava:guava:33.8.0-jre"
 
     implementation 'org.apache.httpcomponents.client5:httpclient5'
 
