@@ -17,14 +17,15 @@ public class ImageService {
 
     private static final Logger LOG = LoggerFactory.getLogger(lookup().lookupClass());
 
+    //Accepted differences use dim colors, so rejected pixels (bright red) stand out even in areas full of accepted ones
     public static final int SAME_COLOR = Color.BLACK.getRGB();
-    public static final int HIGHLIGHT_COLOR = Color.WHITE.getRGB();
-    public static final int DIFFERENT_SIZE_COLOR = Color.GRAY.getRGB();
-    public static final int LOOK_SAME_COLOR = Color.BLUE.getRGB();
-    public static final int ANTI_ALIAS_DETECTED_COLOR = Color.GREEN.getRGB();
-    public static final int PIXELMATCH_ANTI_ALIAS_DETECTED_COLOR = new Color(180, 255, 180).getRGB();
-    public static final int COMPRESSION_ARTIFACT_DETECTED_COLOR = Color.CYAN.getRGB();
-    public static final int IMAGE_CONTENT_ACCEPTED_COLOR = new Color(255, 160, 0).getRGB();
+    public static final int HIGHLIGHT_COLOR = Color.RED.getRGB();
+    public static final int DIFFERENT_SIZE_COLOR = new Color(80, 80, 80).getRGB();
+    public static final int LOOK_SAME_COLOR = new Color(0, 0, 110).getRGB();
+    public static final int ANTI_ALIAS_DETECTED_COLOR = new Color(0, 90, 0).getRGB();
+    public static final int PIXELMATCH_ANTI_ALIAS_DETECTED_COLOR = ANTI_ALIAS_DETECTED_COLOR;
+    public static final int COMPRESSION_ARTIFACT_DETECTED_COLOR = new Color(0, 80, 90).getRGB();
+    public static final int IMAGE_CONTENT_ACCEPTED_COLOR = new Color(100, 60, 0).getRGB();
 
     public static class ImageComparisonResult {
         private final BufferedImage differenceImage;
@@ -144,10 +145,7 @@ public class ImageService {
                     colorDistance = getColorDistance(image1Pixels[i1], image2Pixels[i2]);
                     maxDetectedColorDistance = max(maxDetectedColorDistance, colorDistance);
                     if (colorDistance < maxColorDistance) {
-                        Color color = Color.blue;
-                        //Add red to the color if the color distance is higher than 0.5
-                        color = new Color(min(255, color.getRed() + (int) (colorDistance * 255)), color.getGreen(), color.getBlue());
-                        differenceImagePixels[iD] = color.getRGB();
+                        differenceImagePixels[iD] = LOOK_SAME_COLOR;
                         LOG.debug("Same-looking pixels detected at pixel {}|{} with a max color distance of {}", x, y, maxColorDistance);
                         lookSameDiffPixelCounter++;
                         acceptableDifferenceDetected = true;

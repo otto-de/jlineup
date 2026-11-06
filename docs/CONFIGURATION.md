@@ -1122,7 +1122,7 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  With this option, JLineup accepts a different pixel as compression artifact if its own color distance is at most
  `max-pixel-color-distance` and the average colors of the surrounding square (see `radius`) are closer than the
  maximum color distance. Compression noise cancels out in the average, real changes like text, shifted content or
- changed colors don't. Accepted pixels are shown in cyan in the difference image.
+ changed colors don't. Accepted pixels are shown in dark cyan in the difference image.
 
  Very faint changes (i.e. a 1px line in nearly the same color) may be accepted as well.
 
@@ -1168,7 +1168,7 @@ If you want to see the different cookies in the HTML report, you can specify `sh
    ```
    </details>
 
- Since: 6.3.1
+ Since: 6.4.0
 
 ---
 
@@ -1188,7 +1188,7 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * The page has the same set of image URLs in both runs. If they differ, nothing is accepted and the report shows a
    neutral note with the changed URLs. If the page looks identical anyway (i.e. after a refactoring), it passes.
 
- The result with this option never contains more differences than without it. Accepted pixels are shown in orange in
+ The result with this option never contains more differences than without it. Accepted pixels are shown in dark orange in
  the difference image. The report has a switch between the screenshots with and without images, for all contexts in
  the filter bar and for a single context in its header.
 
@@ -1217,7 +1217,7 @@ If you want to see the different cookies in the HTML report, you can specify `sh
    `"ignore-image-content": true`
    </details>
 
- Since: 6.3.1
+ Since: 6.4.0
 
 ---
 
@@ -1249,7 +1249,7 @@ If you want to see the different cookies in the HTML report, you can specify `sh
 ### `max-color-distance`
 
  The maximum color distance (CIEDE2000) of two different pixels that still look the same for the human eye. Pixels
- with a lower distance are not reported as difference and are shown in blue in the difference image. The default of
+ with a lower distance are not reported as difference and are shown in dark blue in the difference image. The default of
  `2.3` is the just noticeable difference. See https://en.wikipedia.org/wiki/Color_difference for details.
 
  [`ignore-compression-artifacts`](#ignore-compression-artifacts) uses this value as the limit for the average colors

@@ -1,6 +1,6 @@
 # JLineup Release History
 
-## Release 6.3.1-SNAPSHOT
+## Release 6.4.0 - 2026-11-06
 * Feature: The comparison of screenshots uses multiple threads now. The number can be set with the new job
            config option `compare-threads` (or `--compare-threads` on the command line), default is one thread per
            CPU core, reduced automatically if the heap is too small. The web server limits the screenshots that are
@@ -17,6 +17,12 @@
           build didn't pass `CHROME_MAJOR_VERSION`/`AMI_LINUX_2023_VERSION`. `scripts/check-latest-versions.sh`
           now keeps the defaults in sync with `.chrome-version` and `.al2023-version` (`--update` and new
           `--sync`), and `--check` reports differences.
+* Update: New colors in the difference images (and the legend of the HTML report): Rejected pixels are bright red
+          instead of white, and all accepted differences (look same, anti-aliasing, compression artifacts, image
+          content) use dim colors, so rejected pixels stand out even between many accepted ones. Different sizes are
+          dark gray. Look-same pixels don't get redder with the color distance anymore, and both anti-aliasing
+          detections share one color.
+* Update: Dependency updates (Selenium 4.52.0, Guava 33.8.0, jsoup 1.24.1, AWS dependencies)
 
 ## Release 6.3.0 - 2026-10-26
 * Feature: Direct upload of 'before' runs to the lambda S3 bucket (`POST /uploads`, then `POST /runs` with
