@@ -22,7 +22,24 @@
           content) use dim colors, so rejected pixels stand out even between many accepted ones. Different sizes are
           dark gray. Look-same pixels don't get redder with the color distance anymore, and both anti-aliasing
           detections share one color.
-* Update: Dependency updates (Selenium 4.52.0, Guava 33.8.0, jsoup 1.24.1, AWS dependencies)
+* Feature: New option `ignore-compression-artifacts` (default: off) accepts small, noisy pixel differences of lossy
+           images (JPEG, WebP, AVIF) that are encoded twice, i.e. by different CDN nodes. A pixel is accepted if its
+           own color distance is small and the average colors of its surrounding square are the same. Besides `true`,
+           it can be a group with `radius`, `max-pixel-color-distance` and `texture-tolerance`.
+* Feature: New option `ignore-image-content` (default: off) accepts differences inside images whose URL and position
+           didn't change, i.e. images exchanged in a CMS under the same URL. Layout, text and overlays on images are
+           still compared. The report has switches between the screenshots with and without images.
+* Feature: The reports have a "Download archive" button that saves the report page, `report.json`, `jlineup.log` and
+           all screenshots as zip file (or into a local folder, where the browser supports it). The shared styles and
+           scripts of `report.html` and `report_before.html` moved to a common fragment.
+* Feature: Native Linux binaries of `jlineup-cli` and `jlineup-cli-lambda` (linux-amd64, linux-arm64) built with
+           GraalVM Community Edition. They are built daily and attached to the GitHub releases, but not published
+           to Maven Central.
+* Bugfix: Screenshots of small viewports (i.e. 320px mobile) are not upscaled beyond their rendered width in the HTML
+          reports anymore. The device pixel ratio is measured in the browser and stored in `files.json`.
+* Bugfix: The legend of the difference images is rendered once and now shows for every context in the HTML report.
+* Update: Dependency updates (Selenium 4.52.0, Guava 33.8.0, jsoup 1.24.1, AWS dependencies, Chrome
+          157.0.8103.38 in Lambda, Amazon Linux 2023.12.20261102)
 
 ## Release 6.3.0 - 2026-10-26
 * Feature: Direct upload of 'before' runs to the lambda S3 bucket (`POST /uploads`, then `POST /runs` with

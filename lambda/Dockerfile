@@ -2,11 +2,11 @@ FROM public.ecr.aws/lambda/java:21-x86_64
 
 # Chrome major version for querying the Chrome for Testing API.
 # Default is synced with /.chrome-version by scripts/check-latest-versions.sh, override with --build-arg CHROME_MAJOR_VERSION=...
-ARG CHROME_MAJOR_VERSION="156"
+ARG CHROME_MAJOR_VERSION="157"
 
 # Amazon Linux 2023 release version for dnf repositories.
 # Default is synced with /.al2023-version by scripts/check-latest-versions.sh, override with --build-arg AMI_LINUX_2023_VERSION=...
-ARG AMI_LINUX_2023_VERSION="2023.12.20261026"
+ARG AMI_LINUX_2023_VERSION="2023.12.20261102"
 
 USER root
 

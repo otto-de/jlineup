@@ -166,7 +166,7 @@ Set `JLINEUP_LAMBDA_S3_BUNDLE=false` on the Lambda function to go back to the ol
 
 Download the CLI Lambda variant, which bundles both the CLI and the Lambda client:
 
-`wget https://repo1.maven.org/maven2/de/otto/jlineup-cli-lambda/6.3.0/jlineup-cli-lambda-6.3.0.jar -O jlineup.jar`
+`wget https://repo1.maven.org/maven2/de/otto/jlineup-cli-lambda/6.4.0/jlineup-cli-lambda-6.4.0.jar -O jlineup.jar`
 
 On Linux (x86_64 and arm64), there is also a native binary that doesn't need Java,
 `jlineup-cli-lambda-linux-amd64.tar.gz` or `jlineup-cli-lambda-linux-arm64.tar.gz` in the
@@ -215,7 +215,7 @@ Instead of CLI flags you can also use environment variables:
 
 Download the web Lambda variant, which bundles both the web server and the Lambda client:
 
-`wget https://repo1.maven.org/maven2/de/otto/jlineup-web-lambda/6.3.0/jlineup-web-lambda-6.3.0.jar -O jlineup-web.jar`
+`wget https://repo1.maven.org/maven2/de/otto/jlineup-web-lambda/6.4.0/jlineup-web-lambda-6.4.0.jar -O jlineup-web.jar`
 
 Start it the same way as the regular web server:
 
