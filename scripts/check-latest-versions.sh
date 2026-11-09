@@ -7,10 +7,12 @@
 # so their ARG defaults (CHROME_MAJOR_VERSION, AMI_LINUX_2023_VERSION) are kept in sync by this script.
 # Builds that don't pass these build args (e.g. external pipelines) then still use the current versions.
 #
-# Usage: check-latest-versions.sh [--update | --sync | --check]
-#   --update  write the latest versions to .chrome-version and .al2023-version and sync the Dockerfiles
-#   --sync    only sync the Dockerfile defaults with .chrome-version and .al2023-version (no network access)
-#   --check   only check if the Dockerfile defaults match .chrome-version and .al2023-version (exit code 1 if not)
+# Usage: check-latest-versions.sh [--update | --sync | --check | --check-cdp]
+#   --update     write the latest versions to .chrome-version and .al2023-version and sync the Dockerfiles
+#   --sync       only sync the Dockerfile defaults with .chrome-version and .al2023-version (no network access)
+#   --check      only check if the Dockerfile defaults match .chrome-version and .al2023-version (exit code 1 if not)
+#   --check-cdp  warn if the Selenium version has no CDP bindings for the Chrome major version in .chrome-version
+#                (never fails: JLineup doesn't use CDP, Chrome is kept on the latest version for security fixes)
 #
 
 set -euo pipefail
@@ -21,7 +23,8 @@ for arg in "$@"; do
         --update) MODE=update ;;
         --sync) MODE=sync ;;
         --check) MODE=check ;;
-        *) echo "Unknown parameter: $arg" >&2; echo "Usage: $0 [--update | --sync | --check]" >&2; exit 1 ;;
+        --check-cdp) MODE=check-cdp ;;
+        *) echo "Unknown parameter: $arg" >&2; echo "Usage: $0 [--update | --sync | --check | --check-cdp]" >&2; exit 1 ;;
     esac
 done
 
@@ -75,6 +78,28 @@ if [ "$MODE" = check ]; then
         exit 1
     fi
     echo "Dockerfile defaults match .chrome-version and .al2023-version."
+    exit 0
+fi
+
+if [ "$MODE" = check-cdp ]; then
+    chrome_major=$(cut -d. -f1 "$PROJECT_DIR/.chrome-version")
+    cdp_versions=$("$PROJECT_DIR/gradlew" -q -p "$PROJECT_DIR" :jlineup-core:dependencies --configuration runtimeClasspath \
+        | grep -o 'selenium-devtools-v[0-9]*' \
+        | sed 's/selenium-devtools-v//' \
+        | sort -un \
+        | tr '\n' ' ' || true)
+    if [ -z "$cdp_versions" ]; then
+        echo "Could not determine the CDP versions bundled with Selenium." >&2
+    elif [[ " $cdp_versions" == *" $chrome_major "* ]]; then
+        echo "Selenium bundles CDP bindings for Chrome $chrome_major (available: ${cdp_versions% })."
+    else
+        message="Selenium has no CDP bindings for Chrome $chrome_major (available: ${cdp_versions% }). Update Selenium once a release supports it."
+        if [ -n "${GITHUB_ACTIONS:-}" ]; then
+            echo "::warning title=Chrome/CDP version mismatch::$message"
+        else
+            echo "WARNING: $message" >&2
+        fi
+    fi
     exit 0
 fi
 

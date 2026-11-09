@@ -38,6 +38,15 @@ public class BrowserUtils {
     private static final boolean CHROME_DETERMINISTIC_OPTIONS = true;
     public static final String RANDOM_FOLDER_PLACEHOLDER = "{random-folder}";
 
+    //Selenium warns if Chrome is newer than its bundled CDP bindings. JLineup doesn't use CDP, so this is harmless.
+    //Selenium logs via java.util.logging, which holds loggers weakly - the strong reference keeps the level.
+    private static final java.util.logging.Logger CDP_VERSION_LOGGER =
+            java.util.logging.Logger.getLogger("org.openqa.selenium.devtools.CdpVersionFinder");
+
+    static {
+        CDP_VERSION_LOGGER.setLevel(java.util.logging.Level.SEVERE);
+    }
+
     public static String buildUrl(String url, String path, final Map<String, String> envMapping) {
         if (envMapping != null && !envMapping.isEmpty()) {
             for (Map.Entry<String, String> envMappingEntry : envMapping.entrySet()) {
