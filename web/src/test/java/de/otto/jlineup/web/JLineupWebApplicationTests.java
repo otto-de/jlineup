@@ -7,6 +7,8 @@ import de.otto.jlineup.config.JobConfig;
 import de.otto.jlineup.config.UrlConfig;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,13 +19,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import static com.google.common.collect.ImmutableList.of;
 import static de.otto.jlineup.config.JobConfig.copyOfBuilder;
 import static de.otto.jlineup.config.JobConfig.jobConfigBuilder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.ACCEPTED;
 
@@ -32,6 +37,9 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @AutoConfigureTestRestTemplate
 class JLineupWebApplicationTests {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JLineupWebApplicationTests.class);
+    private static final int MAX_ATTEMPTS = 3;
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
@@ -45,38 +53,16 @@ class JLineupWebApplicationTests {
 
     @Test
     void shouldMakeFullJLineupRun() {
-        JobConfig jobConfig = createTestConfig();
+        List<JLineupRunStatus> finalStates = runBeforeAndAfterWithRetries(List.of(createTestConfig()));
 
-        String location = startBeforeRun(jobConfig);
-
-        awaitRunState(State.BEFORE_DONE, location);
-
-        String locationAfter = startAfterRun(location);
-
-        JLineupRunStatus finalState = awaitRunState(State.FINISHED_WITHOUT_DIFFERENCES, locationAfter);
-
-        assertReportExists(finalState);
+        finalStates.forEach(this::assertReportExists);
     }
 
     @Test
     public void shouldMakeFullJLineupRunInParallel() {
-        JobConfig jobConfig = createTestConfig();
-        JobConfig jobConfig2 = createTestConfig();
+        List<JLineupRunStatus> finalStates = runBeforeAndAfterWithRetries(List.of(createTestConfig(), createTestConfig()));
 
-        String location = startBeforeRun(jobConfig);
-        String location2 = startBeforeRun(jobConfig2);
-
-        awaitRunState(State.BEFORE_DONE, location);
-        awaitRunState(State.BEFORE_DONE, location2);
-
-        String locationAfter = startAfterRun(location);
-        String locationAfter2 = startAfterRun(location2);
-
-        JLineupRunStatus finalState = awaitRunState(State.FINISHED_WITHOUT_DIFFERENCES, locationAfter);
-        JLineupRunStatus finalState2 = awaitRunState(State.FINISHED_WITHOUT_DIFFERENCES, locationAfter2);
-
-        assertReportExists(finalState);
-        assertReportExists(finalState2);
+        finalStates.forEach(this::assertReportExists);
     }
 
     @Test
@@ -90,13 +76,9 @@ class JLineupWebApplicationTests {
                 .withThreads(2)
                 .build();
 
-        String location = startBeforeRun(jobConfig);
-        awaitRunState(State.BEFORE_DONE, location);
+        List<JLineupRunStatus> finalStates = runBeforeAndAfterWithRetries(List.of(jobConfig));
 
-        String locationAfter = startAfterRun(location);
-        JLineupRunStatus finalState = awaitRunState(State.FINISHED_WITHOUT_DIFFERENCES, locationAfter);
-
-        assertReportExists(finalState);
+        finalStates.forEach(this::assertReportExists);
     }
 
     @Test
@@ -138,7 +120,50 @@ class JLineupWebApplicationTests {
         assertThat(response.getStatusCode().value(), equalTo(statusCode));
     }
 
+    /**
+     * Runs 'before' for all given configs, then 'after' for all of them, and expects every run to finish without
+     * differences. The tests screenshot a live website, which occasionally renders differently between 'before'
+     * and 'after'. Only that case (FINISHED_WITH_DIFFERENCES) is retried with a completely fresh before/after cycle;
+     * errors and timeouts fail immediately.
+     */
+    private List<JLineupRunStatus> runBeforeAndAfterWithRetries(List<JobConfig> jobConfigs) {
+        for (int attempt = 1; ; attempt++) {
+            List<String> beforeLocations = jobConfigs.stream().map(this::startBeforeRun).toList();
+            beforeLocations.forEach(location -> awaitRunState(State.BEFORE_DONE, location));
+
+            List<String> afterLocations = beforeLocations.stream().map(this::startAfterRun).toList();
+            List<JLineupRunStatus> finalStates = afterLocations.stream().map(this::awaitRunDone).toList();
+
+            if (finalStates.stream().allMatch(status -> status.getState() == State.FINISHED_WITHOUT_DIFFERENCES)) {
+                return finalStates;
+            }
+
+            List<String> runsWithDifferences = finalStates.stream()
+                    .filter(status -> status.getState() == State.FINISHED_WITH_DIFFERENCES)
+                    .map(JLineupRunStatus::getId)
+                    .toList();
+            if (attempt >= MAX_ATTEMPTS) {
+                fail("Runs " + runsWithDifferences + " still finished with differences after " + MAX_ATTEMPTS + " attempts.");
+            }
+            LOG.warn("Attempt {}/{}: runs {} finished with differences, retrying the whole before/after cycle.",
+                    attempt, MAX_ATTEMPTS, runsWithDifferences);
+        }
+    }
+
+    private JLineupRunStatus awaitRunDone(String location) {
+        JLineupRunStatus status = awaitStatus(location, State::isDone);
+        assertThat("Run " + status.getId() + " ended in an unexpected state",
+                status.getState(), is(oneOf(State.FINISHED_WITHOUT_DIFFERENCES, State.FINISHED_WITH_DIFFERENCES)));
+        return status;
+    }
+
     private JLineupRunStatus awaitRunState(State expectedState, String location) {
+        JLineupRunStatus status = awaitStatus(location, state -> state == expectedState || state.isDone());
+        assertThat("Run " + status.getId() + " ended in an unexpected state", status.getState(), is(expectedState));
+        return status;
+    }
+
+    private JLineupRunStatus awaitStatus(String location, Predicate<State> stopCondition) {
         final JLineupRunStatus[] status = new JLineupRunStatus[1];
         Awaitility.await()
                 .atMost(60, TimeUnit.SECONDS)
@@ -146,7 +171,7 @@ class JLineupWebApplicationTests {
                 .until(() -> {
                     status[0] = this.testRestTemplate.getForEntity(location, JLineupRunStatus.class).getBody();
                     assertThat(status[0], notNullValue());
-                    return status[0].getState() == expectedState;
+                    return stopCondition.test(status[0].getState());
                 });
         return status[0];
     }
