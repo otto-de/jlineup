@@ -22,7 +22,7 @@ buildscript {
         // Override vulnerable transitive dependencies of the dependency-check plugin.
         // They are only on the build classpath, but GitHub's Gradle dependency submission reports them.
         constraints {
-            classpath("com.fasterxml.jackson.core:jackson-core:2.22.4")
+            classpath("com.fasterxml.jackson.core:jackson-core:2.23.0")
             classpath("com.fasterxml.jackson.core:jackson-databind:2.22.4")
             classpath("org.jsoup:jsoup:1.24.1")
             classpath("com.google.guava:guava:33.8.0-jre")
