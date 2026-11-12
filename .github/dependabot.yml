@@ -30,6 +30,10 @@ updates:
       - dependency-name: "software.amazon.awscdk:*"
       - dependency-name: "software.constructs:*"
     groups:
+      jackson:
+        patterns:
+          - "com.fasterxml.jackson.*"
+          - "tools.jackson.*"
       test-dependencies:
         patterns:
           - "org.junit.*"
