@@ -68,7 +68,9 @@ public class ConfigMerger {
                     .withWarmupBrowserCacheTime(mainUrlConfig.warmupBrowserCacheTime != DEFAULT_WARMUP_BROWSER_CACHE_TIME ? mainUrlConfig.warmupBrowserCacheTime : mergeUrlConfig.warmupBrowserCacheTime)
                     .withStyle(mainUrlConfig.style != null ? mainUrlConfig.style : mergeUrlConfig.style)
                     .withWindowWidths(mergeAndOnlyKeepDistinct(mainUrlConfig.windowWidths, mergeUrlConfig.windowWidths))
-                    .withFlakyTolerance(mainUrlConfig.flakyTolerance != DEFAULT_FLAKY_TOLERANCE ? mainUrlConfig.flakyTolerance : mergeUrlConfig.flakyTolerance);
+                    .withFlakyTolerance(mainUrlConfig.flakyTolerance != DEFAULT_FLAKY_TOLERANCE ? mainUrlConfig.flakyTolerance : mergeUrlConfig.flakyTolerance)
+                    .withHoverElement(mainUrlConfig.hoverElement != null ? mainUrlConfig.hoverElement : mergeUrlConfig.hoverElement)
+                    .withHoverWaitMs(mainUrlConfig.hoverWaitMs != DEFAULT_HOVER_WAIT_MS ? mainUrlConfig.hoverWaitMs : mergeUrlConfig.hoverWaitMs);
 
                     mainUrlConfig = urlConfigBuilder.build();
                 }

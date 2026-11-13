@@ -17,6 +17,7 @@ import org.graalvm.nativeimage.ImageInfo;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.logging.LogType;
@@ -486,6 +487,8 @@ public class Browser implements AutoCloseable {
 
         LOG.debug("Page height before scrolling: {}", pageHeight);
         scrollToTop();
+
+        hoverElement(screenshotContext);
 
         boolean hideScrollbars = effectiveBrowserType.isWebkit();
         if (hideScrollbars) {
@@ -983,6 +986,34 @@ public class Browser implements AutoCloseable {
             if (!found && failIfNotFound) {
                 throw new RuntimeException("Didn't find element with selector '" + cssSelector + "'.");
             }
+        }
+    }
+
+    void hoverElement(ScreenshotContext screenshotContext) throws InterruptedException {
+        String selector = screenshotContext.urlConfig.hoverElement;
+        if (selector == null || selector.trim().isEmpty()) {
+            return;
+        }
+
+        LOG.debug("Hovering over element with CSS selector: '{}'", selector);
+        WebDriver webDriver = getWebDriver();
+        boolean success = false;
+        try {
+            WebElement element = webDriver.findElement(By.cssSelector(selector));
+            Actions actions = new Actions(webDriver);
+            actions.moveToElement(element).perform();
+            LOG.info("Hovered over element with selector '{}'", selector);
+            success = true;
+        } catch (Exception e) {
+            LOG.warn("Could not hover over element with selector '{}': {}", selector, e.getMessage());
+            if (screenshotContext.urlConfig.failIfSelectorsNotFound) {
+                throw new RuntimeException("Didn't find element to hover with selector '" + selector + "'.", e);
+            }
+        }
+
+        if (success && screenshotContext.urlConfig.hoverWaitMs > 0) {
+            LOG.debug("Waiting for {} ms after hover", screenshotContext.urlConfig.hoverWaitMs);
+            Thread.sleep(screenshotContext.urlConfig.hoverWaitMs);
         }
     }
 

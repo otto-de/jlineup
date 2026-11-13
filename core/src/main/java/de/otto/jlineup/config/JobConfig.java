@@ -71,6 +71,7 @@ public final class JobConfig  {
     public static final int DEFAULT_FLAKY_TOLERANCE = 0;
     public static final String DEFAULT_BEFORE_LABEL = "Before";
     public static final String DEFAULT_AFTER_LABEL = "After";
+    public static final int DEFAULT_HOVER_WAIT_MS = 100;
 
     public static final HttpCheckConfig DEFAULT_HTTP_CHECK_CONFIG = new HttpCheckConfig();
 

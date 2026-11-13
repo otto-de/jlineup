@@ -188,6 +188,8 @@ urls:
     fail-if-selectors-not-found: false
     remove-selectors:
     - "#remove-id"
+    hover-element: ".hover-class"
+    hover-wait-ms: 100
     flaky-tolerance: 0
 browser: Chrome
 before-label: Before
@@ -276,6 +278,8 @@ http-check:
       "remove-selectors": [
         "#remove-id"
       ],
+      "hover-element": ".hover-class",
+      "hover-wait-ms": 100,
       "flaky-tolerance": 0
     }
   },
@@ -1037,6 +1041,52 @@ If you want to see the different cookies in the HTML report, you can specify `sh
    </details>
  
  Since: 4.1.0
+
+---
+
+### `hover-element`
+
+ You can specify a CSS selector of an element to hover over with the mouse pointer before screenshots are taken.
+ This is useful for checking the `:hover` state of navigation menus, buttons, cards, or other interactive elements.
+
+ JLineup uses native Selenium WebDriver Actions to move the cursor to the center of the matching element, which
+ reliably triggers CSS `:hover` pseudo-classes in all supported browsers.
+
+ The hover operation happens after page load, scripts, styles, node removals, and after the initial scroll to top.
+
+ * Scope: Site
+ * Type: String (CSS selector)
+ * Default: `null`
+ * Example:
+   ```yaml
+   hover-element: ".main-nav > li:first-child"
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"hover-element": ".main-nav > li:first-child"`
+   </details>
+
+---
+
+### `hover-wait-ms`
+
+ Time to wait in milliseconds after hovering over the `hover-element` before taking the screenshot. This gives
+ CSS transitions or hover animations time to settle.
+
+ * Scope: Site
+ * Type: Integer
+ * Unit: Milliseconds
+ * Default: 100
+ * Example:
+   ```yaml
+   hover-wait-ms: 250
+   ```
+   <details>
+   <summary>JSON</summary>
+
+   `"hover-wait-ms": 250`
+   </details>
 
 ---
 
