@@ -71,6 +71,10 @@ public class UrlConfig {
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public final int flakyTolerance;
 
+    public final String hoverElement;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    public final int hoverWaitMs;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public final List<Browser.Type> browsers;
 
@@ -109,6 +113,8 @@ public class UrlConfig {
         waitForSelectorsTimeout = builder.waitForSelectorsTimeout;
         failIfSelectorsNotFound = builder.failIfSelectorsNotFound;
         flakyTolerance = builder.flakyTolerance;
+        hoverElement = builder.hoverElement;
+        hoverWaitMs = builder.hoverWaitMs;
         browsers = builder.browsers;
     }
 
@@ -266,6 +272,14 @@ public class UrlConfig {
         return flakyTolerance;
     }
 
+    public String getHoverElement() {
+        return hoverElement;
+    }
+
+    public int getHoverWaitMs() {
+        return hoverWaitMs;
+    }
+
     public List<Browser.Type> getBrowsers() {
         return browsers;
     }
@@ -322,6 +336,8 @@ public class UrlConfig {
         builder.waitForSelectorsTimeout = copy.waitForSelectorsTimeout;
         builder.failIfSelectorsNotFound = copy.failIfSelectorsNotFound;
         builder.flakyTolerance = copy.flakyTolerance;
+        builder.hoverElement = copy.hoverElement;
+        builder.hoverWaitMs = copy.hoverWaitMs;
         builder.browsers = copy.browsers;
 
         return builder;
@@ -376,6 +392,8 @@ public class UrlConfig {
         private float waitForSelectorsTimeout = DEFAULT_WAIT_FOR_SELECTORS_TIMEOUT;
         private boolean failIfSelectorsNotFound;
         private int flakyTolerance = DEFAULT_FLAKY_TOLERANCE;
+        private String hoverElement = null;
+        private int hoverWaitMs = DEFAULT_HOVER_WAIT_MS;
         private List<Browser.Type> browsers = null;
 
         private Builder() {
@@ -579,6 +597,16 @@ public class UrlConfig {
             return this;
         }
 
+        public Builder withHoverElement(String val) {
+            hoverElement = val;
+            return this;
+        }
+
+        public Builder withHoverWaitMs(int val) {
+            hoverWaitMs = val;
+            return this;
+        }
+
         public Builder withBrowsers(List<Browser.Type> val) {
             browsers = val;
             return this;
@@ -626,6 +654,8 @@ public class UrlConfig {
                 ", ignoreCompressionArtifacts=" + ignoreCompressionArtifacts +
                 ", ignoreImageContent=" + ignoreImageContent +
                 ", flakyTolerance=" + flakyTolerance +
+                ", hoverElement='" + hoverElement + '\'' +
+                ", hoverWaitMs=" + hoverWaitMs +
                 ", browsers=" + browsers +
                 '}';
     }
@@ -634,12 +664,12 @@ public class UrlConfig {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         UrlConfig urlConfig = (UrlConfig) o;
-        return Double.compare(maxDiff, urlConfig.maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(waitAfterPageLoad, urlConfig.waitAfterPageLoad) == 0 && Float.compare(waitAfterScroll, urlConfig.waitAfterScroll) == 0 && Float.compare(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) == 0 && Float.compare(scrollDistanceFactor, urlConfig.scrollDistanceFactor) == 0 && Float.compare(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime) == 0 && Float.compare(waitForFontsTime, urlConfig.waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(waitForSelectorsTimeout, urlConfig.waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && Double.compare(maxAntiAliasColorDistance, urlConfig.maxAntiAliasColorDistance) == 0 && strictColorComparison == urlConfig.strictColorComparison && Double.compare(maxColorDistance, urlConfig.maxColorDistance) == 0 && Objects.equals(ignoreCompressionArtifacts, urlConfig.ignoreCompressionArtifacts) && ignoreImageContent == urlConfig.ignoreImageContent && flakyTolerance == urlConfig.flakyTolerance && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(style, urlConfig.style) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors) && Objects.equals(browsers, urlConfig.browsers);
+        return Double.compare(maxDiff, urlConfig.maxDiff) == 0 && maxScrollHeight == urlConfig.maxScrollHeight && Float.compare(waitAfterPageLoad, urlConfig.waitAfterPageLoad) == 0 && Float.compare(waitAfterScroll, urlConfig.waitAfterScroll) == 0 && Float.compare(waitForNoAnimationAfterScroll, urlConfig.waitForNoAnimationAfterScroll) == 0 && Float.compare(scrollDistanceFactor, urlConfig.scrollDistanceFactor) == 0 && Float.compare(warmupBrowserCacheTime, urlConfig.warmupBrowserCacheTime) == 0 && Float.compare(waitForFontsTime, urlConfig.waitForFontsTime) == 0 && hideImages == urlConfig.hideImages && Float.compare(waitForSelectorsTimeout, urlConfig.waitForSelectorsTimeout) == 0 && failIfSelectorsNotFound == urlConfig.failIfSelectorsNotFound && ignoreAntiAliasing == urlConfig.ignoreAntiAliasing && Double.compare(maxAntiAliasColorDistance, urlConfig.maxAntiAliasColorDistance) == 0 && strictColorComparison == urlConfig.strictColorComparison && Double.compare(maxColorDistance, urlConfig.maxColorDistance) == 0 && Objects.equals(ignoreCompressionArtifacts, urlConfig.ignoreCompressionArtifacts) && ignoreImageContent == urlConfig.ignoreImageContent && flakyTolerance == urlConfig.flakyTolerance && Objects.equals(url, urlConfig.url) && Objects.equals(paths, urlConfig.paths) && Objects.equals(setupPaths, urlConfig.setupPaths) && Objects.equals(cleanupPaths, urlConfig.cleanupPaths) && Objects.equals(cookies, urlConfig.cookies) && Objects.equals(alternatingCookies, urlConfig.alternatingCookies) && Objects.equals(envMapping, urlConfig.envMapping) && Objects.equals(localStorage, urlConfig.localStorage) && Objects.equals(sessionStorage, urlConfig.sessionStorage) && Objects.equals(windowWidths, urlConfig.windowWidths) && Objects.equals(devices, urlConfig.devices) && Objects.equals(javaScript, urlConfig.javaScript) && Objects.equals(style, urlConfig.style) && Objects.equals(httpCheck, urlConfig.httpCheck) && Objects.equals(removeSelectors, urlConfig.removeSelectors) && Objects.equals(waitForSelectors, urlConfig.waitForSelectors) && Objects.equals(browsers, urlConfig.browsers) && hoverWaitMs == urlConfig.hoverWaitMs && Objects.equals(hoverElement, urlConfig.hoverElement);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, scrollDistanceFactor, warmupBrowserCacheTime, waitForFontsTime, javaScript, style, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, maxAntiAliasColorDistance, strictColorComparison, maxColorDistance, ignoreCompressionArtifacts, ignoreImageContent, flakyTolerance, browsers);
+        return Objects.hash(url, paths, setupPaths, cleanupPaths, maxDiff, cookies, alternatingCookies, envMapping, localStorage, sessionStorage, windowWidths, devices, maxScrollHeight, waitAfterPageLoad, waitAfterScroll, waitForNoAnimationAfterScroll, scrollDistanceFactor, warmupBrowserCacheTime, waitForFontsTime, javaScript, style, httpCheck, hideImages, removeSelectors, waitForSelectors, waitForSelectorsTimeout, failIfSelectorsNotFound, ignoreAntiAliasing, maxAntiAliasColorDistance, strictColorComparison, maxColorDistance, ignoreCompressionArtifacts, ignoreImageContent, flakyTolerance, hoverElement, hoverWaitMs, browsers);
     }
 
 }

@@ -21,6 +21,9 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.logging.Logs;
 
 import java.io.File;
@@ -41,6 +44,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -542,6 +546,67 @@ class BrowserTest {
         verify(webDriverMock, times(1)).executeScript(";console.log(4);");
         verify(webDriverMock, times(1)).executeScript("/* sleeping 1 milliseconds */");
 
+    }
+
+    @Test
+    void shouldHoverElement() throws Exception {
+        //given
+        WebElement webElementMock = mock(WebElement.class);
+        when(webDriverMock.findElement(By.cssSelector("#hover-me"))).thenReturn(webElementMock);
+
+        UrlConfig urlConfig = urlConfigBuilder()
+                .withPath("/")
+                .withHoverElement("#hover-me")
+                .withHoverWaitMs(10)
+                .build();
+
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 600), before, urlConfig, ImmutableList.of());
+
+        //when
+        testee.hoverElement(screenshotContext);
+
+        //then
+        verify(webDriverMock).findElement(By.cssSelector("#hover-me"));
+        verify(webDriverMock).perform(any());
+    }
+
+    @Test
+    void shouldNotFailOnHoverWhenElementNotFoundAndFailIfSelectorsNotFoundIsFalse() throws Exception {
+        //given
+        when(webDriverMock.findElement(By.cssSelector("#missing"))).thenThrow(new NoSuchElementException("Element not found"));
+
+        UrlConfig urlConfig = urlConfigBuilder()
+                .withPath("/")
+                .withHoverElement("#missing")
+                .withFailIfSelectorsNotFound(false)
+                .withHoverWaitMs(10)
+                .build();
+
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 600), before, urlConfig, ImmutableList.of());
+
+        //when
+        testee.hoverElement(screenshotContext);
+
+        //then
+        verify(webDriverMock).findElement(By.cssSelector("#missing"));
+        verify(webDriverMock, never()).perform(any());
+    }
+
+    @Test
+    void shouldThrowExceptionOnHoverWhenElementNotFoundAndFailIfSelectorsNotFoundIsTrue() {
+        //given
+        when(webDriverMock.findElement(By.cssSelector("#missing"))).thenThrow(new NoSuchElementException("Element not found"));
+
+        UrlConfig urlConfig = urlConfigBuilder()
+                .withPath("/")
+                .withHoverElement("#missing")
+                .withFailIfSelectorsNotFound(true)
+                .build();
+
+        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 600), before, urlConfig, ImmutableList.of());
+
+        //when & then
+        assertThrows(RuntimeException.class, () -> testee.hoverElement(screenshotContext));
     }
 
     @Test
