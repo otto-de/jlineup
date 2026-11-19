@@ -70,6 +70,32 @@ class ConfigMergerTest {
         assertThat(mergedIgnoreCompressionArtifacts(IgnoreCompressionArtifactsConfig.DISABLED, IgnoreCompressionArtifactsConfig.DISABLED), is(IgnoreCompressionArtifactsConfig.DISABLED));
     }
 
+    @Test
+    void shouldMergeHoverElementAndHoverWait() {
+        UrlConfig localUrlConfig = UrlConfig.copyOfBuilder(JobConfig.exampleConfig().urls.get(EXAMPLE_URL))
+                .withHoverElement(".local-hover")
+                .withHoverWait(0.25f)
+                .build();
+        UrlConfig mergeUrlConfig = UrlConfig.copyOfBuilder(JobConfig.exampleConfig().urls.get(EXAMPLE_URL))
+                .withHoverElement(".merge-hover")
+                .withHoverWait(0.5f)
+                .build();
+
+        JobConfig local = JobConfig.copyOfBuilder(JobConfig.exampleConfig()).withUrls(null).addUrlConfig(EXAMPLE_URL, localUrlConfig).build();
+        JobConfig merge = JobConfig.copyOfBuilder(JobConfig.exampleConfig()).withUrls(null).addUrlConfig(EXAMPLE_URL, mergeUrlConfig).build();
+
+        JobConfig merged = ConfigMerger.mergeJobConfigWithMergeConfig(local, merge);
+        assertThat(merged.urls.get(EXAMPLE_URL).hoverElement, is(".local-hover"));
+        assertThat(merged.urls.get(EXAMPLE_URL).hoverWait, is(0.25f));
+
+        UrlConfig unsetLocalUrlConfig = UrlConfig.copyOfBuilder(JobConfig.exampleConfig().urls.get(EXAMPLE_URL)).build();
+        JobConfig unsetLocal = JobConfig.copyOfBuilder(JobConfig.exampleConfig()).withUrls(null).addUrlConfig(EXAMPLE_URL, unsetLocalUrlConfig).build();
+
+        JobConfig mergedWithUnset = ConfigMerger.mergeJobConfigWithMergeConfig(unsetLocal, merge);
+        assertThat(mergedWithUnset.urls.get(EXAMPLE_URL).hoverElement, is(".merge-hover"));
+        assertThat(mergedWithUnset.urls.get(EXAMPLE_URL).hoverWait, is(0.5f));
+    }
+
     private static IgnoreCompressionArtifactsConfig mergedIgnoreCompressionArtifacts(IgnoreCompressionArtifactsConfig local, IgnoreCompressionArtifactsConfig merge) {
         JobConfig localConfig = withIgnoreCompressionArtifacts(local);
         JobConfig mergeConfig = withIgnoreCompressionArtifacts(merge);

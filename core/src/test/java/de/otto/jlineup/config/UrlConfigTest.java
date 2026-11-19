@@ -1,10 +1,10 @@
 package de.otto.jlineup.config;
 
+import de.otto.jlineup.JacksonWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,6 +52,27 @@ class UrlConfigTest {
     @Test
     void sanitizeShouldSanitize() {
 
+    }
+
+    @Test
+    void shouldDeserializeHoverElementAndHoverWaitFromJson() throws Exception {
+        String json = "{\n" +
+                "  \"hover-element\": \".hover-class\",\n" +
+                "  \"hover-wait\": 0.25\n" +
+                "}";
+
+        UrlConfig urlConfig = JacksonWrapper.jsonMapper().readValue(json, UrlConfig.class);
+        assertEquals(".hover-class", urlConfig.hoverElement);
+        assertEquals(0.25f, urlConfig.hoverWait);
+    }
+
+    @Test
+    void shouldDeserializeHoverElementFromYaml() throws Exception {
+        String yaml = "hover-element: '.hover-btn'\nhover-wait: 0.3\n";
+
+        UrlConfig urlConfig = JacksonWrapper.yamlMapper().readValue(yaml, UrlConfig.class);
+        assertEquals(".hover-btn", urlConfig.hoverElement);
+        assertEquals(0.3f, urlConfig.hoverWait);
     }
 
     private Object getDummyValue(Class<?> type) {
