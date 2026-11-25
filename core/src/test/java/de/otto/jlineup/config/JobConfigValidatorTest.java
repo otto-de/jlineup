@@ -80,33 +80,33 @@ class JobConfigValidatorTest {
     }
 
     @Test
-    void shouldDenyHoverWaitGreaterThan20() {
+    void shouldDenyWaitAfterHoverGreaterThan20() {
         JobConfig jobConfig = jobConfigBuilder()
                 .addUrlConfig("someUrl", urlConfigBuilder()
                         .withWindowWidths(Arrays.asList(800))
-                        .withHoverWait(21f)
+                        .withWaitAfterHover(21f)
                         .build())
                 .build();
 
         ValidationError e = assertThrows(ValidationError.class, () ->
                 JobConfigValidator.validateJobConfig(jobConfig));
 
-        assertThat(e.getMessage(), containsString("Configured hover wait time"));
+        assertThat(e.getMessage(), containsString("Configured wait after hover time of"));
     }
 
     @Test
-    void shouldDenyNegativeHoverWait() {
+    void shouldDenyNegativeWaitAfterHover() {
         JobConfig jobConfig = jobConfigBuilder()
                 .addUrlConfig("someUrl", urlConfigBuilder()
                         .withWindowWidths(Arrays.asList(800))
-                        .withHoverWait(-1f)
+                        .withWaitAfterHover(-1f)
                         .build())
                 .build();
 
         ValidationError e = assertThrows(ValidationError.class, () ->
                 JobConfigValidator.validateJobConfig(jobConfig));
 
-        assertThat(e.getMessage(), containsString("Configured hover wait time"));
+        assertThat(e.getMessage(), containsString("Configured wait after hover time of"));
     }
 
 }

@@ -1,0 +1,25 @@
+{
+  "urls": {
+    "file://###DIR###/hover.html": {
+      "devices": [
+        {
+          "width": 800,
+          "height": 600
+        }
+      ],
+      "hover-selector": "#box",
+      "wait-after-hover": 1.0,
+      "fail-if-selectors-not-found": true
+    },
+    "file://###DIR###/no_hover.html": {
+      "devices": [
+        {
+          "width": 800,
+          "height": 600
+        }
+      ]
+    }
+  },
+  "report-format" : 2,
+  "browser" : "chrome-headless"
+}

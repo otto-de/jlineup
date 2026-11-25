@@ -47,8 +47,8 @@ public class JobConfigValidator {
             if (urlConfig.waitForFontsTime > 20 || urlConfig.waitForFontsTime < 0) {
                 throw new ValidationError(String.format("Configured wait for fonts time of %f seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitForFontsTime, url));
             }
-            if (urlConfig.hoverWait > 20 || urlConfig.hoverWait < 0) {
-                throw new ValidationError(String.format("Configured hover wait time of %f seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.hoverWait, url));
+            if (urlConfig.waitAfterHover > 20 || urlConfig.waitAfterHover < 0) {
+                throw new ValidationError(String.format("Configured wait after hover time of %f seconds for %s is invalid. Valid values are between 0 and 20.", urlConfig.waitAfterHover, url));
             }
 
             //Check max scroll height

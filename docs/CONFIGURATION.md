@@ -188,8 +188,8 @@ urls:
     fail-if-selectors-not-found: false
     remove-selectors:
     - "#remove-id"
-    hover-element: ".hover-class"
-    hover-wait: 0.0
+    hover-selector: ".hover-class"
+    wait-after-hover: 0.0
     flaky-tolerance: 0
 browser: Chrome
 before-label: Before
@@ -278,8 +278,8 @@ http-check:
       "remove-selectors": [
         "#remove-id"
       ],
-      "hover-element": ".hover-class",
-      "hover-wait": 0.0,
+      "hover-selector": ".hover-class",
+      "wait-after-hover": 0.0,
       "flaky-tolerance": 0
     }
   },
@@ -996,7 +996,8 @@ If you want to see the different cookies in the HTML report, you can specify `sh
 
 ### `fail-if-selectors-not-found`
 
- See `wait-for-selectors-timeout` above.
+ See `wait-for-selectors-timeout` above. Also applies to `hover-selector`: If enabled, the run fails if the element
+ to hover isn't found or can't be hovered.
 
   * Scope: Site
   * Type: Boolean
@@ -1044,35 +1045,53 @@ If you want to see the different cookies in the HTML report, you can specify `sh
 
 ---
 
-### `hover-element`
+### `hover-selector`
 
- You can specify a CSS selector of an element to hover over with the mouse pointer before screenshots are taken.
- This is useful for checking the `:hover` state of navigation menus, buttons, cards, or other interactive elements.
+ You can specify a CSS selector of an element to hover over with the pointer before the screenshots of a page are
+ taken. This is useful for comparing the `:hover` state of navigation menus, buttons, cards or other interactive
+ elements. If the selector matches multiple elements, only the first one is hovered.
 
- JLineup uses native Selenium WebDriver Actions to move the cursor to the center of the matching element, which
- reliably triggers CSS `:hover` pseudo-classes in all supported browsers.
+ JLineup uses Selenium WebDriver Actions to move the pointer to the center of the element. These are input events
+ of the browser itself (also in headless mode), so CSS `:hover` pseudo-classes apply, unlike with events dispatched
+ by JavaScript.
 
- The hover operation happens after page load, scripts, styles, node removals, and after the initial scroll to top.
+ The hover happens after page load, `javascript`, `style`, `remove-selectors` and the scroll to the top of the
+ page. The page height is measured after the hover, so i.e. opened dropdowns are included. After the screenshots of
+ the page are taken, the pointer is moved back to 0,0 of the viewport, where it is at the start of a browser
+ session, so the hover doesn't affect the following pages.
+
+ If the element isn't found or can't be hovered, a warning is logged and the screenshots are taken without hover.
+ With `fail-if-selectors-not-found: true`, the run fails instead.
+
+ Limitations:
+ * The element should be visible at the top of the page (without scrolling). Depending on the browser, an element
+   outside the viewport is scrolled into view (and the screenshots don't start at the top of the page), or it can't
+   be hovered at all.
+ * The pointer stays at the same position of the viewport while JLineup scrolls down the page for the next
+   screenshots. The browser then applies `:hover` to the element that is under the pointer after scrolling, so the
+   hover is only reliable in the first screenshot. Use `max-scroll-height` to limit the screenshots to the top of the
+   page if needed.
+ * Devices that emulate touch input (i.e. mobile devices) may not apply `:hover` styles.
 
  * Scope: Site
  * Type: String (CSS selector)
  * Default: `null`
  * Example:
    ```yaml
-   hover-element: ".main-nav > li:first-child"
+   hover-selector: ".main-nav > li:first-child"
    ```
    <details>
    <summary>JSON</summary>
 
-   `"hover-element": ".main-nav > li:first-child"`
+   `"hover-selector": ".main-nav > li:first-child"`
    </details>
 
 ---
 
-### `hover-wait`
+### `wait-after-hover`
 
- Time to wait in seconds after hovering over the `hover-element` before taking the screenshot. This gives
- CSS transitions or hover animations time to settle.
+ Time to wait in seconds (0 to 20) after hovering over the `hover-selector` element before the screenshots are taken. This
+ gives CSS transitions or hover animations time to finish. There's no wait if the hover failed.
 
  * Scope: Site
  * Type: Float
@@ -1080,12 +1099,12 @@ If you want to see the different cookies in the HTML report, you can specify `sh
  * Default: `0`
  * Example:
    ```yaml
-   hover-wait: 0.25
+   wait-after-hover: 0.25
    ```
    <details>
    <summary>JSON</summary>
 
-   `"hover-wait": 0.25`
+   `"wait-after-hover": 0.25`
    </details>
 
 ---

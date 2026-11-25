@@ -1,5 +1,10 @@
 # JLineup Release History
 
+## Release 6.4.1-SNAPSHOT
+* Feature: New options `hover-selector` and `wait-after-hover` (default: off) move the pointer over the first element
+           matching a CSS selector before the screenshots of a page are taken, so `:hover` states can be compared.
+           The pointer is moved back to 0,0 afterwards. `fail-if-selectors-not-found` also applies to the hover.
+
 ## Release 6.4.0 - 2026-11-06
 * Feature: The comparison of screenshots uses multiple threads now. The number can be set with the new job
            config option `compare-threads` (or `--compare-threads` on the command line), default is one thread per

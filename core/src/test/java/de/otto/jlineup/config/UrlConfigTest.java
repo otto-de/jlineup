@@ -55,24 +55,24 @@ class UrlConfigTest {
     }
 
     @Test
-    void shouldDeserializeHoverElementAndHoverWaitFromJson() throws Exception {
+    void shouldDeserializeHoverSelectorAndWaitAfterHoverFromJson() throws Exception {
         String json = "{\n" +
-                "  \"hover-element\": \".hover-class\",\n" +
-                "  \"hover-wait\": 0.25\n" +
+                "  \"hover-selector\": \".hover-class\",\n" +
+                "  \"wait-after-hover\": 0.25\n" +
                 "}";
 
         UrlConfig urlConfig = JacksonWrapper.jsonMapper().readValue(json, UrlConfig.class);
-        assertEquals(".hover-class", urlConfig.hoverElement);
-        assertEquals(0.25f, urlConfig.hoverWait);
+        assertEquals(".hover-class", urlConfig.hoverSelector);
+        assertEquals(0.25f, urlConfig.waitAfterHover);
     }
 
     @Test
-    void shouldDeserializeHoverElementFromYaml() throws Exception {
-        String yaml = "hover-element: '.hover-btn'\nhover-wait: 0.3\n";
+    void shouldDeserializeHoverSelectorFromYaml() throws Exception {
+        String yaml = "hover-selector: '.hover-btn'\nwait-after-hover: 0.3\n";
 
         UrlConfig urlConfig = JacksonWrapper.yamlMapper().readValue(yaml, UrlConfig.class);
-        assertEquals(".hover-btn", urlConfig.hoverElement);
-        assertEquals(0.3f, urlConfig.hoverWait);
+        assertEquals(".hover-btn", urlConfig.hoverSelector);
+        assertEquals(0.3f, urlConfig.waitAfterHover);
     }
 
     private Object getDummyValue(Class<?> type) {

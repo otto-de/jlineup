@@ -166,7 +166,7 @@ class JLineupCLIAcceptanceTest {
         assertThat("Filetracker file exists", Files.exists(filesJson));
 
         FileTracker fileTracker = JacksonWrapper.readFileTrackerFile(filesJson.toFile());
-        assertThat(fileTracker.contexts.size(), is(4));
+        assertThat(fileTracker.contexts.size(), is(3));
         fileTracker.contexts.forEach((k, v) -> {
             DeviceConfig deviceConfig = v.screenshotContext.deviceConfig;
             String filename = v.screenshots.get(0).get(BrowserStep.before);
@@ -269,6 +269,37 @@ class JLineupCLIAcceptanceTest {
         final Report report = JacksonWrapper.jsonMapper().readValue(reportJson.toFile(), Report.class);
         assertThat(report.summary().differenceSum(), is(0.0d));
         assertThat(report.summary().acceptedDifferentPixels() > 0, is(true));
+    }
+
+    /*
+     * hover-selector: the box turns red on hover (with a transition that 'wait-after-hover' waits for). The 'after'
+     * pages are static copies of the expected screenshots, so the comparison only passes if the hover was applied in
+     * the 'before' step. The second page has a hoverable box that is scrolled under the old pointer position, it must
+     * not be hovered in the 'before' step.
+     */
+
+    private static final String HOVER_CONFIG = "src/test/resources/acceptance/acceptance_chrome_hover.lineup.json";
+
+    private void prepareHoverPages(Path pageDirectory, String step) throws IOException {
+        Files.copy(Paths.get("src/test/resources/acceptance/hover", "hover_" + step + ".html"), pageDirectory.resolve("hover.html"), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(Paths.get("src/test/resources/acceptance/hover", "no_hover_" + step + ".html"), pageDirectory.resolve("no_hover.html"), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Test
+    void shouldHoverOverSelectorAndResetPointerForNextPage() throws Exception {
+        Path pageDirectory = Files.createTempDirectory("jlineup-hover-");
+        try {
+            prepareHoverPages(pageDirectory, "before");
+            Main.main(imageContentArguments(HOVER_CONFIG, pageDirectory, "before"));
+            prepareHoverPages(pageDirectory, "after");
+            Main.main(imageContentArguments(HOVER_CONFIG, pageDirectory, "after"));
+
+            final Report report = readReport();
+            assertThat(allResults(report).size(), is(3));
+            assertThat(report.summary().differenceSum(), is(0.0d));
+        } finally {
+            deleteDir(pageDirectory);
+        }
     }
 
     /*

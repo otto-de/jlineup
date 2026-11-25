@@ -71,7 +71,7 @@ public final class JobConfig  {
     public static final int DEFAULT_FLAKY_TOLERANCE = 0;
     public static final String DEFAULT_BEFORE_LABEL = "Before";
     public static final String DEFAULT_AFTER_LABEL = "After";
-    public static final float DEFAULT_HOVER_WAIT = 0.0f;
+    public static final float DEFAULT_WAIT_AFTER_HOVER = 0.0f;
 
     public static final HttpCheckConfig DEFAULT_HTTP_CHECK_CONFIG = new HttpCheckConfig();
 
@@ -469,6 +469,7 @@ public final class JobConfig  {
                                 .withRemoveSelectors(ImmutableSet.of("#removeNodeWithThisId", ".removeNodesWithThisClass"))
                                 .withWaitForSelectors(ImmutableSet.of("h1"))
                                 .withFailIfSelectorsNotFound(false)
+                                .withHoverSelector(".hoverOverThisElement")
                                 .build())
                 );
     }
