@@ -166,7 +166,7 @@ class JLineupCLIAcceptanceTest {
         assertThat("Filetracker file exists", Files.exists(filesJson));
 
         FileTracker fileTracker = JacksonWrapper.readFileTrackerFile(filesJson.toFile());
-        assertThat(fileTracker.contexts.size(), is(3));
+        assertThat(fileTracker.contexts.size(), is(4));
         fileTracker.contexts.forEach((k, v) -> {
             DeviceConfig deviceConfig = v.screenshotContext.deviceConfig;
             String filename = v.screenshots.get(0).get(BrowserStep.before);
