@@ -12,6 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,6 +27,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.interactions.MoveTargetOutOfBoundsException;
 import org.openqa.selenium.logging.Logs;
 
 import java.io.File;
@@ -31,6 +36,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static de.otto.jlineup.browser.Browser.*;
@@ -549,24 +555,88 @@ class BrowserTest {
     }
 
     @Test
-    void shouldHoverElement() throws Exception {
+    void shouldHoverSelector() throws Exception {
         //given
         WebElement webElementMock = mock(WebElement.class);
         when(webDriverMock.findElement(By.cssSelector("#hover-me"))).thenReturn(webElementMock);
 
-        UrlConfig urlConfig = urlConfigBuilder()
+        ScreenshotContext screenshotContext = hoverContext(urlConfigBuilder()
                 .withPath("/")
-                .withHoverElement("#hover-me")
-                .build();
-
-        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 600), before, urlConfig, ImmutableList.of());
+                .withHoverSelector("#hover-me")
+                .build());
 
         //when
-        testee.hoverElement(screenshotContext);
+        boolean hovered = testee.hover(screenshotContext);
 
         //then
+        assertTrue(hovered);
         verify(webDriverMock).findElement(By.cssSelector("#hover-me"));
         verify(webDriverMock).perform(any());
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"", "   "})
+    void shouldNotHoverWithoutSelector(String selector) throws Exception {
+        //given
+        ScreenshotContext screenshotContext = hoverContext(urlConfigBuilder()
+                .withPath("/")
+                .withHoverSelector(selector)
+                .withFailIfSelectorsNotFound(true)
+                .withWaitAfterHover(5f)
+                .build());
+
+        //when
+        long start = System.nanoTime();
+        boolean hovered = testee.hover(screenshotContext);
+        long elapsedMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+
+        //then
+        assertFalse(hovered);
+        assertTrue(elapsedMillis < 2500, "Should not wait after hover, but took " + elapsedMillis + "ms");
+        verify(webDriverMock, never()).findElement(any());
+        verify(webDriverMock, never()).perform(any());
+    }
+
+    @Test
+    void shouldWaitAfterHover() throws Exception {
+        //given
+        when(webDriverMock.findElement(By.cssSelector("#hover-me"))).thenReturn(mock(WebElement.class));
+
+        ScreenshotContext screenshotContext = hoverContext(urlConfigBuilder()
+                .withPath("/")
+                .withHoverSelector("#hover-me")
+                .withWaitAfterHover(0.3f)
+                .build());
+
+        //when
+        long start = System.nanoTime();
+        testee.hover(screenshotContext);
+        long elapsedMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+
+        //then
+        assertTrue(elapsedMillis >= 300, "Should wait 300ms after hover, but took " + elapsedMillis + "ms");
+    }
+
+    @Test
+    void shouldNotWaitAfterHoverIfHoverFailed() throws Exception {
+        //given
+        when(webDriverMock.findElement(By.cssSelector("#missing"))).thenThrow(new NoSuchElementException("Element not found"));
+
+        ScreenshotContext screenshotContext = hoverContext(urlConfigBuilder()
+                .withPath("/")
+                .withHoverSelector("#missing")
+                .withWaitAfterHover(5f)
+                .build());
+
+        //when
+        long start = System.nanoTime();
+        boolean hovered = testee.hover(screenshotContext);
+        long elapsedMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+
+        //then
+        assertFalse(hovered);
+        assertTrue(elapsedMillis < 2500, "Should not wait after failed hover, but took " + elapsedMillis + "ms");
     }
 
     @Test
@@ -574,18 +644,17 @@ class BrowserTest {
         //given
         when(webDriverMock.findElement(By.cssSelector("#missing"))).thenThrow(new NoSuchElementException("Element not found"));
 
-        UrlConfig urlConfig = urlConfigBuilder()
+        ScreenshotContext screenshotContext = hoverContext(urlConfigBuilder()
                 .withPath("/")
-                .withHoverElement("#missing")
+                .withHoverSelector("#missing")
                 .withFailIfSelectorsNotFound(false)
-                .build();
-
-        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 600), before, urlConfig, ImmutableList.of());
+                .build());
 
         //when
-        testee.hoverElement(screenshotContext);
+        boolean hovered = testee.hover(screenshotContext);
 
         //then
+        assertFalse(hovered);
         verify(webDriverMock).findElement(By.cssSelector("#missing"));
         verify(webDriverMock, never()).perform(any());
     }
@@ -595,16 +664,109 @@ class BrowserTest {
         //given
         when(webDriverMock.findElement(By.cssSelector("#missing"))).thenThrow(new NoSuchElementException("Element not found"));
 
+        ScreenshotContext screenshotContext = hoverContext(urlConfigBuilder()
+                .withPath("/")
+                .withHoverSelector("#missing")
+                .withFailIfSelectorsNotFound(true)
+                .build());
+
+        //when
+        RuntimeException e = assertThrows(RuntimeException.class, () -> testee.hover(screenshotContext));
+
+        //then
+        assertEquals("Didn't find element to hover with selector '#missing'.", e.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionWithHoverErrorWhenHoverFailsAndFailIfSelectorsNotFoundIsTrue() {
+        //given
+        when(webDriverMock.findElement(By.cssSelector("#hover-me"))).thenReturn(mock(WebElement.class));
+        doThrow(new MoveTargetOutOfBoundsException("out of bounds")).when(webDriverMock).perform(any());
+
+        ScreenshotContext screenshotContext = hoverContext(urlConfigBuilder()
+                .withPath("/")
+                .withHoverSelector("#hover-me")
+                .withFailIfSelectorsNotFound(true)
+                .build());
+
+        //when
+        RuntimeException e = assertThrows(RuntimeException.class, () -> testee.hover(screenshotContext));
+
+        //then
+        assertEquals("Could not hover over element with selector '#hover-me'.", e.getMessage());
+    }
+
+    @Test
+    void shouldHoverAfterScrollToTopAndBeforeMeasuringPageHeightAndResetPointerAfterScreenshots() throws Exception {
+        //given
+        List<String> events = new ArrayList<>();
         UrlConfig urlConfig = urlConfigBuilder()
                 .withPath("/")
-                .withHoverElement("#missing")
-                .withFailIfSelectorsNotFound(true)
+                .withHoverSelector("#hover-me")
+                .withWindowWidths(singletonList(600))
                 .build();
 
-        ScreenshotContext screenshotContext = ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 600), before, urlConfig, ImmutableList.of());
+        JobConfig jobConfig = jobConfigBuilder()
+                .withBrowser(FIREFOX)
+                .withUrls(of("http://testurl", urlConfig))
+                .withWindowHeight(100)
+                .build();
+        testee.close();
+        testee = new Browser(runStepConfig, jobConfig, fileService, browserUtilsMock);
 
-        //when & then
-        assertThrows(RuntimeException.class, () -> testee.hoverElement(screenshotContext));
+        when(webDriverMock.findElement(By.cssSelector("#hover-me"))).thenReturn(mock(WebElement.class));
+        when(webDriverMock.executeScript(JS_SCROLL_TO_TOP_CALL)).thenAnswer(invocation -> {
+            events.add("scrollToTop");
+            return null;
+        });
+        when(webDriverMock.executeScript(JS_DOCUMENT_HEIGHT_CALL)).thenAnswer(invocation -> {
+            events.add("pageHeight");
+            return 1000L;
+        });
+        when(webDriverMock.getScreenshotAs(OutputType.FILE)).thenAnswer(invocation -> {
+            events.add("screenshot");
+            return new File(getFilePath("screenshots/test_image_750x500.png"));
+        });
+        doAnswer(invocation -> {
+            events.add("perform");
+            return null;
+        }).when(webDriverMock).perform(any());
+        when(webDriverMock.executeScript(JS_CLIENT_VIEWPORT_HEIGHT_CALL)).thenReturn(500L);
+        when(webDriverMock.executeScript(JS_GET_DEVICE_PIXEL_RATIO_CALL)).thenReturn(1d);
+
+        //when
+        testee.takeScreenshots(ImmutableList.of(ScreenshotContext.of("http://testurl", "/", deviceConfig(600, 100), before, urlConfig)));
+
+        //then
+        List<String> afterScrollToTop = events.subList(events.indexOf("scrollToTop"), events.size());
+        assertEquals(ImmutableList.of("scrollToTop", "perform", "pageHeight", "screenshot"), afterScrollToTop.subList(0, 4));
+        assertEquals("perform", events.get(events.size() - 1));
+        verify(webDriverMock, times(2)).perform(any());
+    }
+
+    @Test
+    void shouldResetPointer() {
+        //when
+        testee.resetPointer();
+
+        //then
+        verify(webDriverMock).perform(any());
+    }
+
+    @Test
+    void shouldNotFailIfPointerCannotBeReset() {
+        //given
+        doThrow(new WebDriverException("no actions")).when(webDriverMock).perform(any());
+
+        //when
+        testee.resetPointer();
+
+        //then
+        verify(webDriverMock).perform(any());
+    }
+
+    private static ScreenshotContext hoverContext(UrlConfig urlConfig) {
+        return ScreenshotContext.of("http://testurl", "/", deviceConfig(800, 600), before, urlConfig, ImmutableList.of());
     }
 
     @Test

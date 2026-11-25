@@ -482,13 +482,9 @@ public class Browser implements AutoCloseable {
             injectStyle(ImageContentScripts.HIDE_SCROLLBARS_STYLE);
         }
 
-        Long pageHeight = getPageHeight();
         int viewportHeight = Math.toIntExact(getViewportHeight());
 
-        LOG.debug("Page height before scrolling: {}", pageHeight);
         scrollToTop();
-
-        hoverElement(screenshotContext);
 
         boolean hideScrollbars = effectiveBrowserType.isWebkit();
         if (hideScrollbars) {
@@ -496,6 +492,13 @@ public class Browser implements AutoCloseable {
             ((JavascriptExecutor) getWebDriver()).executeScript(
                     "document.documentElement.style.overflow = 'hidden';");
         }
+
+        // Hover after the layout changes above, so the element doesn't move away from the pointer
+        final boolean hovered = hover(screenshotContext);
+
+        // Measured after hovering, because a hover (i.e. a dropdown) can change the page height
+        Long pageHeight = getPageHeight();
+        LOG.debug("Page height before scrolling: {}", pageHeight);
 
         viewportHeight = validateViewportHeight(viewportHeight);
         LOG.debug("Viewport height of browser window: {}", viewportHeight);
@@ -561,6 +564,10 @@ public class Browser implements AutoCloseable {
             LOG.debug("Restoring overflow for WebKit");
             ((JavascriptExecutor) getWebDriver()).executeScript(
                     "document.documentElement.style.overflow = '';");
+        }
+
+        if (hovered) {
+            resetPointer();
         }
 
         if (LOG.isDebugEnabled()) {
@@ -989,31 +996,55 @@ public class Browser implements AutoCloseable {
         }
     }
 
-    void hoverElement(ScreenshotContext screenshotContext) throws InterruptedException {
-        String selector = screenshotContext.urlConfig.hoverElement;
+    /**
+     * Moves the pointer to the center of the first element matching 'hover-selector'.
+     *
+     * @return true if the pointer was moved, false if there's nothing to hover or the hover failed
+     */
+    boolean hover(ScreenshotContext screenshotContext) throws InterruptedException {
+        final String selector = screenshotContext.urlConfig.hoverSelector;
         if (selector == null || selector.trim().isEmpty()) {
-            return;
+            return false;
         }
 
         LOG.debug("Hovering over element with CSS selector: '{}'", selector);
-        WebDriver webDriver = getWebDriver();
-        boolean success = false;
+        final WebDriver webDriver = getWebDriver();
+        final boolean failIfNotFound = screenshotContext.urlConfig.failIfSelectorsNotFound;
         try {
             WebElement element = webDriver.findElement(By.cssSelector(selector));
-            Actions actions = new Actions(webDriver);
-            actions.moveToElement(element).perform();
+            new Actions(webDriver).moveToElement(element).perform();
             LOG.info("Hovered over element with selector '{}'", selector);
-            success = true;
-        } catch (Exception e) {
-            LOG.warn("Could not hover over element with selector '{}': {}", selector, e.getMessage());
-            if (screenshotContext.urlConfig.failIfSelectorsNotFound) {
+        } catch (NoSuchElementException e) {
+            if (failIfNotFound) {
                 throw new RuntimeException("Didn't find element to hover with selector '" + selector + "'.", e);
             }
+            LOG.warn("Didn't find element to hover with selector '{}'.", selector);
+            return false;
+        } catch (WebDriverException e) {
+            if (failIfNotFound) {
+                throw new RuntimeException("Could not hover over element with selector '" + selector + "'.", e);
+            }
+            LOG.warn("Could not hover over element with selector '{}': {}", selector, e.getMessage());
+            return false;
         }
 
-        if (success && screenshotContext.urlConfig.hoverWait > 0) {
-            LOG.debug("Waiting for {} seconds after hover", screenshotContext.urlConfig.hoverWait);
-            Thread.sleep(Math.round(screenshotContext.urlConfig.hoverWait * 1000));
+        if (screenshotContext.urlConfig.waitAfterHover > 0) {
+            LOG.debug("Waiting for {} seconds (wait-after-hover)", screenshotContext.urlConfig.waitAfterHover);
+            Thread.sleep(Math.round(screenshotContext.urlConfig.waitAfterHover * 1000));
+        }
+        return true;
+    }
+
+    /**
+     * Moves the pointer back to 0,0 of the viewport, where WebDriver sessions start, so the hover doesn't affect the
+     * screenshots of the next contexts that use the same browser.
+     */
+    void resetPointer() {
+        try {
+            new Actions(getWebDriver()).moveToLocation(0, 0).perform();
+            LOG.debug("Moved pointer back to 0,0 after hover");
+        } catch (WebDriverException e) {
+            LOG.warn("Could not move pointer back to 0,0 after hover: {}", e.getMessage());
         }
     }
 

@@ -1059,6 +1059,10 @@
           "parameterTypes": []
         },
         {
+          "name": "getHoverSelector",
+          "parameterTypes": []
+        },
+        {
           "name": "getHttpCheck",
           "parameterTypes": []
         },
@@ -1120,6 +1124,10 @@
         },
         {
           "name": "getUrl",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWaitAfterHover",
           "parameterTypes": []
         },
         {
@@ -1212,6 +1220,12 @@
           ]
         },
         {
+          "name": "withHoverSelector",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
           "name": "withIgnoreAntiAliasing",
           "parameterTypes": [
             "boolean"
@@ -1275,6 +1289,12 @@
           "name": "withUrl",
           "parameterTypes": [
             "java.lang.String"
+          ]
+        },
+        {
+          "name": "withWaitAfterHover",
+          "parameterTypes": [
+            "float"
           ]
         },
         {
