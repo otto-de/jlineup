@@ -24,7 +24,6 @@ dependencies {
     implementation 'org.apache.httpcomponents.client5:httpclient5'
 
     implementation "org.slf4j:slf4j-api"
-    implementation "org.codehaus.janino:janino"
     implementation 'org.thymeleaf:thymeleaf'
     implementation "org.graalvm.sdk:graal-sdk:${graalvmVersion}"
     implementation "org.reflections:reflections:0.10.2"

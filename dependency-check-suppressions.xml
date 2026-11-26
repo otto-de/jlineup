@@ -53,13 +53,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-   We don't feed janino with user data
-   ]]></notes>
-        <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
-        <cve>CVE-2023-33546</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
    GraalVM is not in use
    ]]></notes>
         <packageUrl regex="true">^pkg:maven/.*$</packageUrl>
