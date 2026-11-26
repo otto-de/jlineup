@@ -579,6 +579,12 @@
             document.getElementsByClassName("legend")[0].style.display = "block";
         }
 
+        function initClickImageFromData(element) {
+            const data = element.dataset;
+            // Missing attributes mean "no image", which initClickImage expects as the string "null"
+            initClickImage(data.clickBefore ?? 'null', data.clickAfter ?? 'null', data.clickDiff ?? 'null', data.clickWidth ?? '');
+        }
+
         function closeClickDiff() {
             document.getElementById("clickdiff").style.display = "none";
             document.getElementById("black").style.display = "none";
@@ -1312,7 +1318,11 @@
                                 </div>
                                 <div style="margin-top: 2em;">
                                     <a href="#"
-                                       th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}','${contextReport.screenshotDisplayWidth}')|">Diff
+                                       th:data-click-before="${result.screenshotBeforeFileNameForHTML}"
+                                       th:data-click-after="${result.screenshotAfterFileNameForHTML}"
+                                       th:data-click-diff="${result.differenceImageFileNameForHTML}"
+                                       th:data-click-width="${contextReport.screenshotDisplayWidth}"
+                                       onclick="initClickImageFromData(this)">Diff
                                         clicker</a>
                                 </div>
                                 <div th:if="${result.imageContentHint != null}" class="image-content-hint"
@@ -1386,7 +1396,11 @@
                                  th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  onmouseenter="initZoom(this)"
                                  onmouseleave="stopZoom()"
-                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}','${contextReport.screenshotDisplayWidth}')|">
+                                 th:data-click-before="${result.screenshotBeforeFileNameForHTML}"
+                                 th:data-click-after="${result.screenshotAfterFileNameForHTML}"
+                                 th:data-click-diff="${result.differenceImageFileNameForHTML}"
+                                 th:data-click-width="${contextReport.screenshotDisplayWidth}"
+                                 onclick="initClickImageFromData(this)">
                                 <div class="zoom-lens invisible keep"
                                      th:classappend="${'lens-' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:id="${'lens-sbs-before_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"></div>
@@ -1402,7 +1416,11 @@
                                  th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  onmouseenter="initZoom(this)"
                                  onmouseleave="stopZoom()"
-                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}','${contextReport.screenshotDisplayWidth}')|">
+                                 th:data-click-before="${result.screenshotBeforeFileNameForHTML}"
+                                 th:data-click-after="${result.screenshotAfterFileNameForHTML}"
+                                 th:data-click-diff="${result.differenceImageFileNameForHTML}"
+                                 th:data-click-width="${contextReport.screenshotDisplayWidth}"
+                                 onclick="initClickImageFromData(this)">
                                 <div class="zoom-lens invisible keep"
                                      th:classappend="${'lens-' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:id="${'lens-sbs-after_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"></div>
@@ -1423,7 +1441,11 @@
                                  th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                  onmouseenter="initZoom(this)"
                                  onmouseleave="stopZoom()"
-                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}','${contextReport.screenshotDisplayWidth}')|">
+                                 th:data-click-before="${result.screenshotBeforeFileNameForHTML}"
+                                 th:data-click-after="${result.screenshotAfterFileNameForHTML}"
+                                 th:data-click-diff="${result.differenceImageFileNameForHTML}"
+                                 th:data-click-width="${contextReport.screenshotDisplayWidth}"
+                                 onclick="initClickImageFromData(this)">
                                 <div class="zoom-lens invisible keep"
                                      th:classappend="${'lens-' + contextReport.contextHash + '-' + result.verticalScrollPosition}"
                                      th:id="${'lens-difference_' + contextReport.contextHash + '-' + result.verticalScrollPosition}"></div>
@@ -1435,7 +1457,11 @@
                             </div>
                             <div th:case="${false}"
                                  th:data-contextid="${contextReport.contextHash + '-' + result.verticalScrollPosition}"
-                                 th:attr="onclick=|initClickImage('${result.screenshotBeforeFileNameForHTML}','${result.screenshotAfterFileNameForHTML}','${result.differenceImageFileNameForHTML}','${contextReport.screenshotDisplayWidth}')|">
+                                 th:data-click-before="${result.screenshotBeforeFileNameForHTML}"
+                                 th:data-click-after="${result.screenshotAfterFileNameForHTML}"
+                                 th:data-click-diff="${result.differenceImageFileNameForHTML}"
+                                 th:data-click-width="${contextReport.screenshotDisplayWidth}"
+                                 onclick="initClickImageFromData(this)">
                                 <div th:if="${result.screenshotBeforeFileNameForHTML != null && result.screenshotAfterFileNameForHTML == null}"
                                      th:style="${'background-color: ' + legend_different_size_rgb}">
                                     <img class="screenshot-difference screenshot-transparent" width="100%"

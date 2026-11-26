@@ -201,7 +201,9 @@ class HTMLReportWriterTest {
 
         assertThat(html, containsString("<div class=\"compare-grid\" style=\"--screenshot-max-width: 320px\">"));
         assertThat(html, containsString("<div class=\"compare-cell screenshot-cell\">"));
-        assertThat(html, containsString("&#39;differenceSum&#39;,&#39;320&#39;)"));
+        assertThat(html, containsString("data-click-diff=\"differenceSum\""));
+        assertThat(html, containsString("data-click-width=\"320\""));
+        assertThat(html, containsString("onclick=\"initClickImageFromData(this)\""));
     }
 
     @Test
