@@ -82,7 +82,7 @@ public record ScreenshotComparisonResult(String contextHash, @JsonProperty("url"
 
     @UsedInTemplate
     @JsonIgnore
-    public String getDifferenceImageFileNameForHtml() {
+    public String getDifferenceImageFileNameForHTML() {
         return convertToHtmlPath(differenceImageFileName);
     }
 

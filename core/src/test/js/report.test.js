@@ -32,6 +32,7 @@ globalThis.JLINEUP_LABELS = { before: 'Before', after: 'After' };
 // We wrap them in an IIFE that assigns to globalThis so they're reachable.
 const wrappedSrc = `(function(global) { ${scriptSrc}
     global.initClickImage    = initClickImage;
+    global.initClickImageFromData = initClickImageFromData;
     global.closeClickDiff    = closeClickDiff;
     global.initZoom          = initZoom;
     global.stopZoom          = stopZoom;
@@ -168,6 +169,43 @@ describe('initClickImage', () => {
         initClickImage(FILE1, FILE2, FILE3, '320');
         initClickImage(FILE1, FILE2, FILE3, '');
         expect(document.getElementById('clickimage').style.getPropertyValue('--clickimage-max-width')).toBe('');
+    });
+});
+
+describe('initClickImageFromData', () => {
+    beforeEach(() => {
+        buildClickDiffDom();
+    });
+
+    function clickTarget(attributes) {
+        const element = document.createElement('div');
+        Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value));
+        document.body.appendChild(element);
+        return element;
+    }
+
+    test('opens the diff image and display width from the data attributes', () => {
+        initClickImageFromData(clickTarget({
+            'data-click-before': 'before.png',
+            'data-click-after': 'after.png',
+            'data-click-diff': 'diff.png',
+            'data-click-width': '320',
+        }));
+        expect(document.getElementById('clickdiff').style.display).toBe('block');
+        expect(document.getElementById('clickimage').src).toContain('diff.png');
+        expect(document.getElementById('clickimage').style.getPropertyValue('--clickimage-max-width')).toBe('320px');
+    });
+
+    test('treats missing attributes as missing images', () => {
+        initClickImageFromData(clickTarget({ 'data-click-before': 'before.png' }));
+        expect(document.getElementById('clickimage').src).toContain('before.png');
+        expect(document.getElementById('clickimagelabel').innerText).toBe('Before');
+        expect(document.getElementById('clickimage').style.getPropertyValue('--clickimage-max-width')).toBe('');
+    });
+
+    test('passes file names with quotes through unchanged', () => {
+        initClickImageFromData(clickTarget({ 'data-click-diff': "it's-a-diff.png" }));
+        expect(decodeURIComponent(document.getElementById('clickimage').src)).toContain("it's-a-diff.png");
     });
 });
 

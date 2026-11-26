@@ -1602,7 +1602,7 @@
           "parameterTypes": []
         },
         {
-          "name": "getDifferenceImageFileNameForHtml",
+          "name": "getDifferenceImageFileNameForHTML",
           "parameterTypes": []
         },
         {
