@@ -26,6 +26,8 @@ dependencies {
     implementation "org.slf4j:slf4j-api"
     implementation 'org.thymeleaf:thymeleaf'
     implementation "org.graalvm.sdk:graal-sdk:${graalvmVersion}"
+    // Only for the substitutions in de.otto.jlineup.nativeimage, native-image provides it at build time
+    compileOnly "org.graalvm.nativeimage:svm:25.0.2"
     implementation "org.reflections:reflections:0.10.2"
 
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
